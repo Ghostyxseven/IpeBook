@@ -59,6 +59,7 @@ Siga as instruções abaixo para rodar o app no seu simulador ou dispositivo fí
    ```
 
 3. **Abra o aplicativo:**
+   * **Web:** Pressione `w` no terminal para abrir o aplicativo no seu navegador.
    * **Android:** Pressione `a` no terminal para rodar no emulador Android.
    * **iOS:** Pressione `i` no terminal para rodar no simulador iOS (somente macOS).
    * **Dispositivo físico:** Baixe o aplicativo "Expo Go" no seu celular e escaneie o QR Code exibido no terminal.
