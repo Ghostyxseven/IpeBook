@@ -19,13 +19,13 @@ export function InstitutionalBook({
       <section id="inicio" className="reader-chapter reader-cover" aria-labelledby="hero-title">
         <div className="cover-introduction">
           <span className="edition-label">
-            <span className="status-dot" />
+            <Icon name="leaf" size={15} />
             Em construção, com raízes em Piripiri
           </span>
           <h1 id="hero-title">Uma boa história merece continuar.</h1>
           <p className="chapter-lead">
-            Compre, venda, troque ou doe livros na sua comunidade. O IpêBook está nascendo para
-            aproximar quem tem uma história na estante de quem quer começar a próxima.
+            O IpêBook está nascendo para conectar quem quer comprar, vender, trocar ou doar livros
+            usados. Começamos locais, com entrega simples e foco na nossa comunidade.
           </p>
           <div className="reader-actions">
             <button className="button primary" onClick={() => vm.openGuide('comprar')}>
@@ -62,7 +62,7 @@ export function InstitutionalBook({
               IpêBook · Histórias que continuam
             </span>
             <div className="bound-front">
-              <span className="bound-edition">Um encontro entre livros e leitores</span>
+              <span className="bound-edition">Projeto Comunitário</span>
               <img src="/assets/logo-clean.png" alt="" />
               <strong>
                 Histórias que
@@ -72,7 +72,7 @@ export function InstitutionalBook({
               <span className="bound-rule" />
               <span className="bound-place">
                 <strong>IpêBook</strong>
-                <small>Piripiri, Piauí</small>
+                <small>Piripiri, Piauí • 2026</small>
               </span>
             </div>
           </div>

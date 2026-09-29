@@ -110,14 +110,15 @@ export default function InstitutionalScreen() {
           </a>
           <button
             ref={menuButton}
-            className="icon-button menu-toggle"
+            className="menu-toggle"
             type="button"
-            aria-label={vm.menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-label={vm.menuOpen ? 'Fechar sumário' : 'Abrir sumário'}
             aria-expanded={vm.menuOpen}
             aria-controls="main-navigation"
             onClick={vm.toggleMenu}
           >
-            <Icon name={vm.menuOpen ? 'close' : 'menu'} />
+            <Icon name={vm.menuOpen ? 'close' : 'menu'} size={18} />
+            <span>{vm.menuOpen ? 'Fechar' : 'Sumário'}</span>
           </button>
           <nav
             id="main-navigation"
