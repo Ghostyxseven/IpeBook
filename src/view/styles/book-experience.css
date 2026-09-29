@@ -242,7 +242,15 @@
     10px 12px 0 -4px var(--color-background),
     12px 12px 0 -3px color-mix(in srgb, var(--color-brown) 40%, var(--color-surface)),
     20px 25px 35px color-mix(in srgb, var(--color-actionDeep) 22%, transparent);
-  background: var(--color-actionDeep);
+  background-color: var(--color-actionDeep);
+  background-image:
+    radial-gradient(
+      circle at 30% 30%,
+      color-mix(in srgb, var(--color-surface) 8%, transparent),
+      transparent 70%
+    ),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+  z-index: 1;
   color: var(--color-surface);
 }
 .bound-book::after {
@@ -251,14 +259,17 @@
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent 5%,
-    color-mix(in srgb, var(--color-text) 24%, transparent) 6%,
-    transparent 9%,
-    transparent 97%,
-    color-mix(in srgb, var(--color-text) 20%, transparent)
-  );
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-text) 50%, transparent) 0%,
+      transparent 4%,
+      color-mix(in srgb, var(--color-text) 24%, transparent) 6%,
+      transparent 10%,
+      transparent 97%,
+      color-mix(in srgb, var(--color-text) 20%, transparent)
+    ),
+    inset 4px 0 10px color-mix(in srgb, var(--color-text) 50%, transparent);
 }
 .bound-front {
   min-height: 100%;
@@ -270,23 +281,28 @@
   padding: var(--spacing-24) var(--spacing-32) var(--spacing-24) var(--spacing-48);
 }
 .bound-edition {
-  font-size: 11px;
-  color: var(--color-soft);
+  font-size: 10px;
+  color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 .bound-front img {
-  width: 58%;
-  margin-block: var(--spacing-16);
+  width: 55%;
+  margin-block: var(--spacing-24) var(--spacing-16);
+  filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--color-text) 40%, transparent));
 }
 .bound-front > strong {
-  font-size: clamp(26px, 2.5vw, 38px);
-  line-height: 1.12;
-  letter-spacing: -1px;
+  font-size: clamp(28px, 2.8vw, 42px);
+  line-height: 1.05;
+  letter-spacing: -0.5px;
+  margin-top: var(--spacing-8);
 }
 .bound-rule {
-  height: 1px;
-  width: var(--spacing-32);
-  background: var(--color-highlight);
-  margin-block: var(--spacing-24) var(--spacing-16);
+  height: 2px;
+  width: var(--spacing-48);
+  margin-block: var(--spacing-24);
+  background: linear-gradient(135deg, #e6c875 0%, #c99a2e 50%, #e6c875 100%);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-text) 30%, transparent);
 }
 .bound-place {
   font-size: 18px;
@@ -310,9 +326,26 @@
   text-align: center;
 }
 .cover-scene-caption {
-  text-align: center;
-  font-size: 12px;
+  position: absolute;
+  top: -10px;
+  right: 15%;
+  background: var(--color-highlight);
+  color: var(--color-text);
+  padding: var(--spacing-24) var(--spacing-16) var(--spacing-32);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  border-radius: 4px 4px 0 0;
+  box-shadow: 2px -4px 8px color-mix(in srgb, var(--color-text) 15%, transparent);
+  margin: 0;
+  z-index: 0;
+  transform: rotate(2deg);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 16px), 0 100%);
 }
+
 .cover-bottom {
   grid-column: 1 / -1;
   display: flex;
@@ -1132,4 +1165,18 @@
   background: var(--color-badge-trade-chip);
   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 20%, 0 100%);
   z-index: 5;
+}
+
+.bound-place {
+  font-family: serif;
+  font-size: 15px;
+  opacity: 0.9;
+}
+.bound-place strong {
+  font-family: sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 13px;
+  display: block;
+  margin-bottom: 4px;
 }
