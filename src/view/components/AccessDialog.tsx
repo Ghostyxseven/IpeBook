@@ -1,6 +1,7 @@
 import { useEffect, useRef, type RefObject } from 'react';
 import type { AccessIntent } from '../../model/entities/Institutional';
 import { Icon } from './Icon';
+import { instagram } from '../../model/services/institutional.ts';
 
 export function AccessDialog({
   intent,
@@ -75,6 +76,14 @@ export function AccessDialog({
       <button type="button" className="button primary" onClick={onClose}>
         Continuar conhecendo
       </button>
+      <a
+        className="button secondary"
+        href={instagram.url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Acompanhe no Instagram
+      </a>
       <a className="text-link" href="#privacidade" onClick={onClose}>
         Ler a Política de Privacidade
       </a>

@@ -36,6 +36,8 @@ async function verificarWeb(page) {
       .evaluate((el) => el === document.activeElement),
     'Foco deveria retornar ao botão',
   );
+  await page.getByRole('button', { name: 'Próxima página' }).click();
+  for (let i = 0; i < 5; i++) await page.getByRole('button', { name: 'Próxima página' }).click();
   for (const [hash, title] of [
     ['termos', 'Termos de Uso'],
     ['privacidade', 'Política de Privacidade'],
@@ -87,7 +89,12 @@ async function verificarWeb(page) {
       .getAttribute('aria-expanded')) === 'false',
     'Navegação deve fechar o menu',
   );
-  await page.locator('summary').first().focus();
+  await page.getByRole('button', { name: 'Abrir menu', exact: true }).click();
+  await page
+    .getByRole('navigation', { name: 'Navegação principal', exact: true })
+    .getByRole('link', { name: 'Dúvidas', exact: true })
+    .click();
+  await page.locator('.book-page.is-current summary').first().focus();
   await page.keyboard.press('Enter');
   assert(
     (await page.locator('details').first().getAttribute('open')) !== null,
@@ -110,3 +117,5 @@ async function verificarWeb(page) {
     result: 'Navegação, histórico, documentos, menu, diálogo e FAQ aprovados.',
   };
 }
+
+module.exports = { verificarWeb };
