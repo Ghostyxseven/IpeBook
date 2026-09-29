@@ -82,7 +82,13 @@ export default function InstitutionalScreen() {
       >
         <div className="container header-inner">
           <a className="brand" href="#inicio" aria-label="IpêBook — início">
-            <img src="/assets/book-open.svg" alt="" width="32" height="32" />
+            <img
+              src="/assets/logo.jpg"
+              alt=""
+              width="36"
+              height="36"
+              style={{ borderRadius: '50%', objectFit: 'cover' }}
+            />
             <span>IpêBook</span>
           </a>
           <button
@@ -199,7 +205,7 @@ export default function InstitutionalScreen() {
                   className="button primary large"
                   onClick={() => vm.openAccess('criar')}
                 >
-                  Quero fazer parte <Icon name="arrow" size={20} />
+                  Quero participar <Icon name="arrow" size={20} />
                 </button>
                 <a className="button secondary large" href="#como-funciona">
                   Conhecer o projeto
@@ -238,7 +244,10 @@ export default function InstitutionalScreen() {
             </div>
             <div className="modalities-grid">
               {modalities.map((item) => (
-                <article className={`modality-card ${item.className}`} key={item.title}>
+                <article
+                  className={`modality-card animate-fade-in ${item.className}`}
+                  key={item.title}
+                >
                   <span className="feature-icon">
                     <Icon name={item.icon} size={26} />
                   </span>
@@ -263,8 +272,8 @@ export default function InstitutionalScreen() {
                   para um novo capítulo.
                 </h2>
                 <p className="section-description">
-                  Queremos tornar mais fácil encontrar livros e encontrar quem vai cuidar bem dos
-                  seus.
+                  Três passos simples para dar uma nova vida aos livros da sua estante e conhecer
+                  outras pessoas.
                 </p>
                 <span className="status-label">Conheça a experiência que estamos preparando</span>
               </div>
@@ -408,7 +417,13 @@ export default function InstitutionalScreen() {
         <div className="footer-top">
           <div>
             <a className="brand" href="#inicio">
-              <img src="/assets/book-open.svg" alt="" width="32" height="32" />
+              <img
+                src="/assets/logo.jpg"
+                alt=""
+                width="36"
+                height="36"
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
+              />
               <span>IpêBook</span>
             </a>
             <p>Boas histórias merecem novos leitores.</p>
