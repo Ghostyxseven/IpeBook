@@ -63,3 +63,15 @@ Siga as instruções abaixo para rodar o app no seu simulador ou dispositivo fí
    * **Android:** Pressione `a` no terminal para rodar no emulador Android.
    * **iOS:** Pressione `i` no terminal para rodar no simulador iOS (somente macOS).
    * **Dispositivo físico:** Baixe o aplicativo "Expo Go" no seu celular e escaneie o QR Code exibido no terminal.
+
+---
+
+## 🎨 Design system e instruções para IA
+
+- [Guia visual e de experiência](docs/design-system.md)
+- [Tokens de design em JSON](design-tokens.json)
+- [Regras para agentes de IA](AGENTS.md)
+- [Instruções do GitHub Copilot](.github/copilot-instructions.md)
+- [Protótipo no Figma](https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1)
+
+Para implementar uma tela, informe a plataforma e o fluxo; por exemplo: “Implemente Descobrir no Android seguindo AGENTS.md, docs/design-system.md, design-tokens.json e o quadro Android do Figma”.

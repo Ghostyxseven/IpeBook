@@ -1,0 +1,218 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "IpêBook — valores extraídos das coleções IpêBook / Valores e IpêBook / Interface no Figma. Medidas em px; cores em sRGB.",
+  "source": {
+    "figmaFile": "qSTmNLUhC6PwJlbyUmytbe",
+    "figmaUrl": "https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1",
+    "pages": {
+      "android": "0:1",
+      "ios": "33:94",
+      "web": "33:95"
+    }
+  },
+  "color": {
+    "background": {
+      "$type": "color",
+      "$value": "#F6F1E8"
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "#FCFAF6"
+    },
+    "text": {
+      "$type": "color",
+      "$value": "#3C302A"
+    },
+    "secondaryText": {
+      "$type": "color",
+      "$value": "#645B55"
+    },
+    "action": {
+      "$type": "color",
+      "$value": "#426B55"
+    },
+    "actionDeep": {
+      "$type": "color",
+      "$value": "#2F503D"
+    },
+    "soft": {
+      "$type": "color",
+      "$value": "#E7F0EA"
+    },
+    "border": {
+      "$type": "color",
+      "$value": "#8F8478"
+    },
+    "brown": {
+      "$type": "color",
+      "$value": "#8A5945"
+    },
+    "success": {
+      "$type": "color",
+      "$value": "#2F6B4F"
+    },
+    "error": {
+      "$type": "color",
+      "$value": "#B3382C"
+    },
+    "gold": {
+      "$type": "color",
+      "$value": "#D99719"
+    },
+    "highlight": {
+      "$type": "color",
+      "$value": "#F4B942"
+    },
+    "badge": {
+      "sale": {
+        "background": {
+          "$type": "color",
+          "$value": "#E7F0EA"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "#2F503D"
+        }
+      },
+      "trade": {
+        "background": {
+          "$type": "color",
+          "$value": "#F4B942"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "#3C302A"
+        },
+        "chip": {
+          "$type": "color",
+          "$value": "#FBF0D0"
+        }
+      },
+      "donation": {
+        "background": {
+          "$type": "color",
+          "$value": "#F2E3DA"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "#7A4430"
+        }
+      }
+    },
+    "state": {
+      "focus": {
+        "$type": "color",
+        "$value": "#426B55"
+      },
+      "error": {
+        "$type": "color",
+        "$value": "#B3382C"
+      },
+      "disabledBackground": {
+        "$type": "color",
+        "$value": "#E7F0EA"
+      },
+      "disabledText": {
+        "$type": "color",
+        "$value": "#645B55"
+      },
+      "hover": {
+        "$type": "color",
+        "$value": "#E7F0EA"
+      },
+      "pressed": {
+        "$type": "color",
+        "$value": "#E7F0EA"
+      }
+    }
+  },
+  "spacing": {
+    "0": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "8": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "12": {
+      "$type": "dimension",
+      "$value": "12px"
+    },
+    "16": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "24": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "32": {
+      "$type": "dimension",
+      "$value": "32px"
+    },
+    "48": {
+      "$type": "dimension",
+      "$value": "48px"
+    },
+    "56": {
+      "$type": "dimension",
+      "$value": "56px"
+    }
+  },
+  "platform": {
+    "android": {
+      "fieldRadius": "16px",
+      "cardRadius": "18px",
+      "navigationRadius": "16px",
+      "controlHeight": "56px",
+      "pagePadding": "24px"
+    },
+    "ios": {
+      "fieldRadius": "20px",
+      "cardRadius": "22px",
+      "navigationRadius": "28px",
+      "controlHeight": "52px",
+      "pagePadding": "24px"
+    },
+    "web": {
+      "fieldRadius": "14px",
+      "cardRadius": "18px",
+      "navigationRadius": "18px",
+      "controlHeight": "48px",
+      "pagePadding": "32px"
+    }
+  },
+  "typography": {
+    "fontFamily": "Roboto",
+    "caption": {
+      "weight": 400,
+      "fontSize": "12px",
+      "lineHeight": "16px"
+    },
+    "body": {
+      "weight": 400,
+      "fontSize": "16px",
+      "lineHeight": "24px"
+    },
+    "action": {
+      "weight": 700,
+      "fontSize": "16px",
+      "lineHeight": "24px"
+    },
+    "section": {
+      "weight": 700,
+      "fontSize": "24px",
+      "lineHeight": "32px"
+    },
+    "title": {
+      "weight": 700,
+      "fontSize": "32px",
+      "lineHeight": "40px"
+    }
+  }
+}
