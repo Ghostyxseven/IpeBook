@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import type { AccessIntent } from '../model/entities/Institutional';
-import { documents, legalLinks, questions, resolvePage } from '../model/services/institutional.ts';
+import {
+  documents,
+  instagram,
+  legalLinks,
+  questions,
+  resolvePage,
+} from '../model/services/institutional.ts';
 
 export function useInstitutionalViewModel() {
   const [hash, setHash] = useState(() =>
@@ -28,6 +34,7 @@ export function useInstitutionalViewModel() {
     menuOpen,
     accessIntent,
     legalLinks,
+    instagram,
     questions,
     toggleMenu: () => setMenuOpen((open) => !open),
     closeMenu: () => setMenuOpen(false),
