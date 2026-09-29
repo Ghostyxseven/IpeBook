@@ -1,0 +1,1 @@
+echo "[Husky] Running pre-commit hooks..." && npx lint-staged
