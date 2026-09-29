@@ -1311,3 +1311,75 @@ button {
 .steps li:hover {
   transform: translateX(4px);
 }
+
+/* PROFESSIONAL VISUAL ENHANCEMENTS */
+
+/* Floating animation for Hero Image */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.hero-illustration {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  justify-self: center;
+  animation:
+    float 6s ease-in-out infinite,
+    fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: 0s, 0.3s;
+  filter: drop-shadow(0 20px 40px rgba(66, 107, 85, 0.15));
+}
+
+/* Glassmorphism Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(252, 250, 246, 0.85) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(60, 48, 42, 0.05);
+  transition: all 0.3s ease;
+}
+
+/* Improve Typography & Spacing */
+.hero h1 {
+  background: linear-gradient(135deg, var(--color-actionDeep) 0%, var(--color-action) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 10px rgba(47, 80, 61, 0.1);
+}
+
+.button.primary {
+  box-shadow: 0 4px 14px rgba(66, 107, 85, 0.3);
+}
+.button.primary:hover {
+  box-shadow: 0 6px 20px rgba(66, 107, 85, 0.4);
+}
+
+.modality-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.steps li .step-number {
+  background: var(--color-highlight);
+  color: var(--color-actionDeep);
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(244, 185, 66, 0.3);
+}
+
+.brand img {
+  border-radius: 0 !important; /* The new icon has no background, looks better without forced border-radius */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}

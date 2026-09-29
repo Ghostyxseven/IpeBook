@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useInstitutionalViewModel } from '../../viewmodel/useInstitutionalViewModel';
 import { AccessDialog } from '../components/AccessDialog';
-import { BookComposition } from '../components/BookComposition';
 import { Icon, type IconName } from '../components/Icon';
 import { theme } from '../styles/theme';
 import '../styles/institutional.css';
@@ -83,7 +82,7 @@ export default function InstitutionalScreen() {
         <div className="container header-inner">
           <a className="brand" href="#inicio" aria-label="IpêBook — início">
             <img
-              src="/assets/logo.jpg"
+              src="/assets/logo-clean.png"
               alt=""
               width="36"
               height="36"
@@ -215,7 +214,7 @@ export default function InstitutionalScreen() {
                 <span /> Um projeto crescendo, uma história de cada vez.
               </p>
             </div>
-            <BookComposition />
+            <img src="/assets/logo-clean.png" alt="IpêBook" className="hero-illustration" />
           </section>
           <div className="container values-strip" aria-label="Valores do projeto">
             <div>
@@ -243,9 +242,9 @@ export default function InstitutionalScreen() {
               <p>Na sua estante ou na de outra pessoa, sempre cabe uma nova história.</p>
             </div>
             <div className="modalities-grid">
-              {modalities.map((item) => (
+              {modalities.map((item, index) => (
                 <article
-                  className={`modality-card animate-fade-in ${item.className}`}
+                  className={`modality-card animate-fade-in delay-${index + 1} ${item.className}`}
                   key={item.title}
                 >
                   <span className="feature-icon">
@@ -418,7 +417,7 @@ export default function InstitutionalScreen() {
           <div>
             <a className="brand" href="#inicio">
               <img
-                src="/assets/logo.jpg"
+                src="/assets/logo-clean.png"
                 alt=""
                 width="36"
                 height="36"
