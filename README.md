@@ -1,6 +1,6 @@
 # IpeBook 🌳📚
 
-O **IpêBook** é uma plataforma comunitária para doação, troca e descoberta de livros. Encontre livros disponíveis perto de você, compartilhe os que já leu e ajude novas histórias a circularem pela comunidade de forma simples e sustentável.
+O **IpêBook** é uma projeto de plataforma comunitária para compra, venda, troca e doação de livros. Encontre livros disponíveis perto de você, compartilhe os que já leu e ajude novas histórias a circularem pela comunidade de forma simples e sustentável.
 
 ---
 
@@ -98,3 +98,14 @@ O teste da ViewModel usa jsdom do ambiente compartilhado descrito em `/home/user
 Abra `http://localhost:8082` para verificar o build. A apresentação usa JavaScript e ainda não tem pré-renderização para SEO. Fonte Roboto servida localmente sob licença OFL em `public/assets/Roboto-LICENSE.txt`.
 
 **Documentos preliminares:** antes de publicar/operar, definir responsável/controlador, canal de atendimento, hospedagem, eventuais logs e tratamento de dados. Os textos não certificam conformidade com a LGPD. Ver [especificação](specs/001-pagina-institucional/spec.md), [plano](specs/001-pagina-institucional/plan.md) e [ADR 0004](docs/adr/0004-pagina-institucional-web.md).
+
+## Apresentação em livro
+
+A apresentação Web tem sete capítulos, sumário, virada lateral e guias de compra, venda, troca e doação. A estante permite buscar, filtrar e abrir exemplos fictícios. Isso não habilita anúncios reais, compras, pagamentos ou mensagens. A navegação continua lateral; conteúdo longo pode ser rolado dentro da folha.
+
+- Componente principal: `src/view/components/InstitutionalBook.tsx`.
+- Navegação e animação: `BookPresentation.tsx` e `useBookNavigation.ts`.
+- Conteúdo demonstrativo: `src/model/services/bookExperience.ts`; estado em `useBookExperience.ts`.
+- Especificação e verificação: [livro enriquecido](specs/003-livro-conteudo/spec.md) e [resultados](specs/003-livro-conteudo/verify.md).
+
+Os scripts `scripts/verificar-livro.js` e `scripts/verificar-conteudo-livro.js` podem ser executados pelo MCP Playwright (`browser_run_code_unsafe`, parâmetro `filename`). Eles esperam a exportação em `http://localhost:8081`; para preparar essa prévia, use `python3 -m http.server 8081 --bind 127.0.0.1 --directory dist` após `npm run build:web`, ou ajuste a porta dos scripts à prévia já em execução. O roteiro institucional original está em `scripts/verificar-web.js` e usa a porta 8082.
