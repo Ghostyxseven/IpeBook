@@ -71,8 +71,7 @@ export function InstitutionalBook({
               </strong>
               <span className="bound-rule" />
               <span className="bound-place">
-                IpêBook
-                <br />
+                <strong>IpêBook</strong>
                 <small>Piripiri, Piauí</small>
               </span>
             </div>
