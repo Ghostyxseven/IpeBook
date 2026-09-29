@@ -243,6 +243,23 @@
     "heroTracking": {
       "$type": "dimension",
       "$value": "-2.8px"
+    },
+    "book": {
+      "duration": "1100ms",
+      "perspective": "2400px",
+      "controlsHeight": "72px",
+      "heroMax": "96px",
+      "imageMax": "640px",
+      "frameMargin": "24px",
+      "paperInset": "48px",
+      "runningHeight": "48px",
+      "chapterWidth": "1400px",
+      "chapterTitle": "46px",
+      "coverTitle": "68px",
+      "coverWidth": "360px",
+      "paperEdge": "6px",
+      "dialogWidth": "760px",
+      "easing": "cubic-bezier(0.77, 0, 0.175, 1)"
     }
   }
 }
