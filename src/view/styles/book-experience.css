@@ -99,8 +99,8 @@
   align-items: center;
   gap: var(--spacing-6);
   padding: 8px 16px;
-  border-radius: 9999px;
-  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  border: var(--border-thin) solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-actionDeep);
   font-size: 14px;
@@ -115,7 +115,7 @@
   border-color: var(--color-action);
 }
 .book-turn:disabled {
-  opacity: 0.35;
+  opacity: var(--opacity-disabledContent);
   cursor: not-allowed;
   border-color: color-mix(in srgb, var(--color-border) 40%, transparent);
 }
@@ -1122,7 +1122,7 @@
   }
   .reader-actions .button {
     flex: 1;
-    min-height: 48px;
+    min-height: var(--accessibility-touchTarget);
     border-radius: 9999px;
     font-size: 14px;
     font-weight: 600;
@@ -1159,7 +1159,7 @@
     color: var(--color-actionDeep);
     text-decoration: underline;
     text-underline-offset: 4px;
-    min-height: 48px;
+    min-height: var(--accessibility-touchTarget);
     padding: 8px 12px;
     display: inline-flex;
     align-items: center;
@@ -1262,7 +1262,7 @@
     justify-content: space-between;
     padding: 10px var(--spacing-12);
     font-size: 13px;
-    min-height: 44px;
+    min-height: var(--accessibility-touchTarget);
     border-radius: 9999px;
   }
   .reader-steps li {
@@ -1328,7 +1328,7 @@
     width: 100%;
   }
   .shelf-search input {
-    min-height: 48px;
+    min-height: var(--accessibility-touchTarget);
     font-size: 15px;
     border-radius: var(--spacing-8);
   }
@@ -1339,7 +1339,7 @@
     width: 100%;
   }
   .shelf-filters button {
-    min-height: 44px;
+    min-height: var(--accessibility-touchTarget);
     padding: 8px 4px;
     font-size: 13px;
     font-weight: 600;
@@ -1416,7 +1416,7 @@
     line-height: 1.35;
   }
   .example-detail {
-    min-height: 44px;
+    min-height: var(--accessibility-touchTarget);
     padding: 6px 14px;
     font-size: 13px;
     font-weight: 600;
