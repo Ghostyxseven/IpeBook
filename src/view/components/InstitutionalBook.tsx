@@ -59,7 +59,15 @@ export function InstitutionalBook({
         >
           <div className="bound-book">
             <div className="bound-front">
-              <img src={require('../../../assets/logo-clean.png')} alt="" />
+              <img
+                src={require('../../../assets/logo-web-320.webp')}
+                srcSet={`${require('../../../assets/logo-web-128.webp')} 128w, ${require('../../../assets/logo-web-224.webp')} 224w, ${require('../../../assets/logo-web-320.webp')} 320w`}
+                sizes="(max-width: 760px) 67px, 145px"
+                width={320}
+                height={320}
+                fetchPriority="high"
+                alt=""
+              />
               <strong>
                 Histórias que
                 <br />

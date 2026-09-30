@@ -53,7 +53,7 @@ export default function InstitutionalScreen() {
         <div>
           <a className="brand" href="#inicio">
             <img
-              src={require('../../../assets/logo-clean.png')}
+              src={require('../../../assets/logo-web-96.webp')}
               alt=""
               width="36"
               height="36"
@@ -114,7 +114,7 @@ export default function InstitutionalScreen() {
         <div className="container header-inner">
           <a className="brand" href="#inicio" aria-label="IpêBook — início">
             <img
-              src={require('../../../assets/logo-clean.png')}
+              src={require('../../../assets/logo-web-96.webp')}
               alt=""
               width="36"
               height="36"

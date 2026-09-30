@@ -126,3 +126,9 @@ A [especificação 009](../specs/009-folha-acompanha-gesto/spec.md) detalha conf
 ### Leitura dos documentos
 
 A especificação 010 melhora Privacidade, Segurança e Termos na Web móvel. O componente `LegalDocumentContent` compartilha a apresentação com LGPD: resumo visível, índice expansível com atalhos por assunto, texto completo disponível e retorno ao índice. No celular, os quatro documentos aparecem em grade, sem links escondidos em uma faixa horizontal. Títulos recebem foco ao usar atalhos, sem mudar a rota do documento; os controles têm pelo menos 48 px. O corpo usa 16 px e entrelinha de 1,75. Os tokens `landing.legal.readingWidth` (720 px) e `landing.legal.titleSize` (40 px no desktop) limitam o comprimento das linhas e a escala do título. A adaptação editorial é própria da apresentação institucional, sem quadro equivalente no Figma Web consultado; preserva cores, tipografia e estados do contrato visual.
+
+### Arquivos da marca e zoom na Web
+
+A correção da [auditoria 011](../specs/011-auditoria-web/spec.md) preserva a composição visual: o PNG original da marca permanece como fonte, com derivados WebP de 96 px para a marca do cabeçalho/rodapé e variantes de 128, 224 e 320 px para a capa. O `sizes` acompanha a área da marca na capa existente (aproximadamente 67 px no celular e até 145 px no desktop), permitindo ao navegador escolher pelo tamanho e densidade de pixels. As dimensões intrínsecas reservam espaço sem alterar a proporção. A fonte Roboto é a mesma, comprimida em WOFF2 com sua licença preservada. O viewport permite ampliação por gesto; não há mudança de tokens nem nova divergência em relação ao Figma.
+
+O ícone original `book-open` é preservado; a aba do navegador recebe PNG de 32 px e o atalho iOS recebe PNG de 180 px, evitando baixar os arquivos originais maiores como favicon.
