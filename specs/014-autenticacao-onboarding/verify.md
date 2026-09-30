@@ -22,7 +22,7 @@ Implementado na branch `feature/autenticacao` para Android e iOS: abertura, onbo
 ## Evidências gerais
 
 - `npm run typecheck`: aprovado.
-- `npm test`: 31 testes aprovados.
+- `npm test`: 35 testes aprovados.
 - `npx expo export --platform android --platform ios`: bundles gerados sem erros.
 - `npm run build:web`: aprovado, sem mudança de tamanho na Web.
 

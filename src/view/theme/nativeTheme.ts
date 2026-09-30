@@ -1,8 +1,10 @@
 import { Platform, type TextStyle } from 'react-native';
 import tokens from '../../../design-tokens.json';
 
-/** Converte "16px" em 16. Os tokens guardam medidas como texto em px. */
-const px = (value: string) => Number.parseFloat(value);
+type Token<T> = { $value: T };
+
+/** Converte o token "16px" em 16. Os tokens guardam medidas como texto em px. */
+const px = (token: Token<string>) => Number.parseFloat(token.$value);
 
 const platform = Platform.select({
   android: tokens.platform.android,
@@ -10,10 +12,14 @@ const platform = Platform.select({
   default: tokens.platform.web,
 });
 
-const typeStyle = (style: { weight: number; fontSize: string; lineHeight: string }): TextStyle => ({
+const typeStyle = (style: {
+  weight: Token<number>;
+  fontSize: Token<string>;
+  lineHeight: Token<string>;
+}): TextStyle => ({
   // Android já usa Roboto no sistema; iOS mantém a fonte nativa (design-system.md).
-  fontFamily: Platform.OS === 'web' ? tokens.typography.fontFamily : undefined,
-  fontWeight: String(style.weight) as TextStyle['fontWeight'],
+  fontFamily: Platform.OS === 'web' ? tokens.typography.fontFamily.$value : undefined,
+  fontWeight: String(style.weight.$value) as TextStyle['fontWeight'],
   fontSize: px(style.fontSize),
   lineHeight: px(style.lineHeight),
 });
@@ -38,13 +44,13 @@ export const colors = {
 } as const;
 
 export const spacing = {
-  xxs: px(tokens.spacing['4'].$value),
-  xs: px(tokens.spacing['8'].$value),
-  sm: px(tokens.spacing['12'].$value),
-  md: px(tokens.spacing['16'].$value),
-  lg: px(tokens.spacing['24'].$value),
-  xl: px(tokens.spacing['32'].$value),
-  xxl: px(tokens.spacing['48'].$value),
+  xxs: px(tokens.spacing['4']),
+  xs: px(tokens.spacing['8']),
+  sm: px(tokens.spacing['12']),
+  md: px(tokens.spacing['16']),
+  lg: px(tokens.spacing['24']),
+  xl: px(tokens.spacing['32']),
+  xxl: px(tokens.spacing['48']),
 } as const;
 
 export const metrics = {
@@ -53,10 +59,13 @@ export const metrics = {
   cardRadius: px(platform.cardRadius),
   navigationRadius: px(platform.navigationRadius),
   pagePadding: px(platform.pagePadding),
-  /** Alvo mínimo de toque exigido pelo AGENTS.md. */
-  touchTarget: 48,
-  /** Largura máxima de formulários na Web e em tablets. */
-  formMaxWidth: px(tokens.app.formMaxWidth.$value),
+  touchTarget: px(tokens.accessibility.touchTarget),
+  focusWidth: px(tokens.accessibility.focusWidth),
+  focusOffset: px(tokens.accessibility.focusOffset),
+  borderThin: px(tokens.border.thin),
+  borderStrong: px(tokens.border.strong),
+  /** Largura máxima de formulários em tablets. */
+  formMaxWidth: px(tokens.app.formMaxWidth),
 } as const;
 
 export const typography = {

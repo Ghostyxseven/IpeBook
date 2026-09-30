@@ -56,12 +56,21 @@ const styles = StyleSheet.create({
   },
   primary: { backgroundColor: colors.action },
   primaryPressed: { backgroundColor: colors.actionDeep },
-  secondary: { borderWidth: 1, borderColor: colors.action, backgroundColor: colors.surface },
+  secondary: {
+    borderWidth: metrics.borderThin,
+    borderColor: colors.action,
+    backgroundColor: colors.surface,
+  },
   text: { backgroundColor: 'transparent', paddingHorizontal: spacing.sm },
   pressed: { backgroundColor: colors.pressed },
   disabled: { backgroundColor: colors.disabledBackground, borderColor: colors.disabledBackground },
   focused: Platform.select({
-    web: { outlineColor: colors.focus, outlineStyle: 'solid', outlineWidth: 3, outlineOffset: 2 },
+    web: {
+      outlineColor: colors.focus,
+      outlineStyle: 'solid',
+      outlineWidth: metrics.focusWidth,
+      outlineOffset: metrics.focusOffset,
+    },
     default: {},
   }),
   label: { ...typography.action, textAlign: 'center' },

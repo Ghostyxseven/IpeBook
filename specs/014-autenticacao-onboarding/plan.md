@@ -1,6 +1,6 @@
 # Plano
 
-Depende da [spec 012](../012-base-app-nativo/spec.md). Dependências: `@supabase/supabase-js` e `expo-sqlite` (guia oficial do Expo para Supabase).
+Depende da [spec 013](../013-base-app-nativo/spec.md). Dependências: `@supabase/supabase-js` e `expo-sqlite` (guia oficial do Expo para Supabase).
 
 ## Model
 

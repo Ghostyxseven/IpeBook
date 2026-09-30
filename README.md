@@ -87,7 +87,7 @@ A entrada `index.js` carrega o Expo Router; as rotas ficam em `src/app/` e só r
 - `(auth)`: só sem sessão. `(app)`: só com sessão; **as outras features criam suas rotas aqui**.
 - Componentes base: `src/view/components/ui/` (`Button`, `TextField`, `FormMessage`, `AuthLayout`) e estados em `src/view/components/feedback/` (`LoadingState`, `EmptyState`, `ErrorState`, `OfflineBanner`). Tema: `src/view/theme/nativeTheme.ts`.
 - Injeção de dependências: `src/factories/auth.ts` liga as ViewModels ao Supabase. Nos testes, use `createMemoryAuthRepository`.
-- Especificações: [base do app](specs/012-base-app-nativo/spec.md) e [autenticação](specs/013-autenticacao-onboarding/spec.md).
+- Especificações: [base do app](specs/013-base-app-nativo/spec.md) e [autenticação](specs/014-autenticacao-onboarding/spec.md).
 
 ---
 

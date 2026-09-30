@@ -27,7 +27,7 @@ export function FormMessage({
 const styles = StyleSheet.create({
   box: {
     borderRadius: metrics.cardRadius,
-    borderLeftWidth: 4,
+    borderLeftWidth: spacing.xxs,
     padding: spacing.md,
     gap: spacing.xxs,
     backgroundColor: colors.surface,

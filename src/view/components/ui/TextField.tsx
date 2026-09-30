@@ -87,20 +87,30 @@ export const TextField = forwardRef<TextInput, Props>(function TextField(
   );
 });
 
+const strongOffset = metrics.borderStrong - metrics.borderThin;
+
 const styles = StyleSheet.create({
   container: { gap: spacing.xs },
   label: { ...typography.action, color: colors.text },
   field: {
     borderRadius: metrics.fieldRadius,
-    borderWidth: 1,
+    borderWidth: metrics.borderThin,
     borderColor: colors.border,
     backgroundColor: colors.surface,
     flexDirection: 'row',
     alignItems: 'center',
   },
-  // Borda de 2 px com margem de -1 px: destaca foco e erro sem deslocar o layout.
-  fieldFocused: { borderColor: colors.focus, borderWidth: 2, margin: -1 },
-  fieldError: { borderColor: colors.error, borderWidth: 2, margin: -1 },
+  // Borda forte com margem negativa equivalente: destaca foco e erro sem deslocar o layout.
+  fieldFocused: {
+    borderColor: colors.focus,
+    borderWidth: metrics.borderStrong,
+    margin: -strongOffset,
+  },
+  fieldError: {
+    borderColor: colors.error,
+    borderWidth: metrics.borderStrong,
+    margin: -strongOffset,
+  },
   fieldDisabled: { backgroundColor: colors.disabledBackground },
   input: {
     ...typography.body,

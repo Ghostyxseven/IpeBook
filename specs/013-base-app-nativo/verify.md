@@ -7,7 +7,7 @@ Implementado na branch `feature/autenticacao`. O app Android/iOS tem Expo Router
 ## Evidências
 
 - `npm run typecheck`: aprovado.
-- `npm test`: 31 testes aprovados (15 anteriores + 16 novos). Os testes com jsdom agora rodam em qualquer máquina após `npm install`.
+- `npm test`: 35 testes aprovados (19 anteriores, incluindo o contrato do design system, + 16 novos). Os testes com jsdom agora rodam em qualquer máquina após `npm install`.
 - `npm run build:web`: exportação sem erros; um único arquivo JS de 112 KB gzip, contra 112 KB na `develop`.
 - `npx expo export --platform android --platform ios`: bundles gerados sem erros (iOS com 1.235 módulos, Android com 1.380).
 - `node scripts/verificar-recursos-web.mjs`: aprovado (zoom, WOFF2, robots/llms, 404 para arquivos ausentes).
@@ -38,3 +38,5 @@ A primeira execução de cada série inclui aquecimento do navegador. A decisão
 - **Ícones**: a opção Mostrar/Ocultar senha usa texto em vez de ícone, até a equipe escolher as bibliotecas Material Symbols e SF Symbols.
 - **Novo token** `app.formMaxWidth` (480 px), para limitar a largura dos formulários em tablets.
 - O roteiro `scripts/verificar-gesto-livro.mjs` falha na linha 90 tanto nesta branch quanto na `develop` no Chrome 154 headless (a emulação de toque não inicia a virada). Não é regressão desta branch.
+- **Controles de sistema**: a versão 1.1 do design system (PR #6, integrada por rebase) recomenda que Button e Text Field venham das bibliotecas de cada plataforma (Material 3 no Android, componentes nativos no iOS). `Button` e `TextField` desta spec são próprios, construídos só com React Native e com os tokens. Adotar uma biblioteca de componentes, como React Native Paper, é uma decisão para a equipe registrar em ADR; a troca fica isolada nesses dois componentes.
+- Após o rebase sobre o PR #6, o tema nativo passou a ler os tokens estruturados (`$value`) e a usar `accessibility.touchTarget`, `accessibility.focusWidth`, `accessibility.focusOffset`, `border.thin` e `border.strong` em vez de números fixos.
