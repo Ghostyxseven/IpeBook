@@ -1656,215 +1656,6 @@ button {
   }
 }
 
-/* Animations and Visual Polish added for UX improvement */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  opacity: 0;
-}
-
-.delay-1 {
-  animation-delay: 0.1s;
-}
-.delay-2 {
-  animation-delay: 0.2s;
-}
-.delay-3 {
-  animation-delay: 0.3s;
-}
-.delay-4 {
-  animation-delay: 0.4s;
-}
-
-.modality-card {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.modality-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(60, 48, 42, 0.08);
-}
-
-.button {
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease;
-}
-
-.button:hover {
-  transform: translateY(-2px);
-}
-
-.steps li {
-  transition: transform 0.2s ease;
-}
-
-.steps li:hover {
-  transform: translateX(4px);
-}
-
-/* PROFESSIONAL VISUAL ENHANCEMENTS */
-
-/* Floating animation for Hero Image */
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-.hero-illustration {
-  width: 100%;
-  max-width: 480px;
-  height: auto;
-  justify-self: center;
-  animation:
-    float 6s ease-in-out infinite,
-    fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-  animation-delay: 0s, 0.3s;
-  filter: drop-shadow(0 20px 40px rgba(66, 107, 85, 0.15));
-}
-
-/* Glassmorphism Header */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(252, 250, 246, 0.85) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(60, 48, 42, 0.05);
-  transition: all 0.3s ease;
-}
-
-/* Improve Typography & Spacing */
-.hero h1 {
-  background: linear-gradient(135deg, var(--color-actionDeep) 0%, var(--color-action) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 2px 10px rgba(47, 80, 61, 0.1);
-}
-
-.button.primary {
-  box-shadow: 0 4px 14px rgba(66, 107, 85, 0.3);
-}
-.button.primary:hover {
-  box-shadow: 0 6px 20px rgba(66, 107, 85, 0.4);
-}
-
-.modality-card {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.03);
-}
-
-.steps li .step-number {
-  background: var(--color-highlight);
-  color: var(--color-actionDeep);
-  font-weight: 800;
-  box-shadow: 0 4px 10px rgba(244, 185, 66, 0.3);
-}
-
-.brand img {
-  border-radius: 0 !important; /* The new icon has no background, looks better without forced border-radius */
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
-/* Specific overrides for the "Em breve" page version */
-.location-tag.em-breve {
-  background: var(--color-soft);
-  color: var(--color-actionDeep);
-}
-
-.mockup-layout {
-  display: block;
-  text-align: center;
-}
-
-.mockup-header {
-  margin-bottom: var(--spacing-48);
-}
-
-.mockup-title {
-  font-size: 32px;
-  color: var(--color-action);
-}
-
-.mockup-description {
-  max-width: 600px;
-  margin: var(--spacing-16) auto;
-}
-
-.mockup-label {
-  color: var(--color-secondaryText);
-  font-weight: 500;
-}
-
-.closing-note.with-margin {
-  margin-top: var(--spacing-24);
-}
-
-/* Mockup Carousel for Desktop and Mobile */
-.mockup-carousel {
-  display: flex;
-  gap: var(--spacing-24);
-  overflow-x: auto;
-  padding-bottom: var(--spacing-24);
-  width: 100%;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-}
-.mockup-item {
-  flex-shrink: 0;
-  width: 260px;
-  height: 520px;
-  border-radius: 24px;
-  background-color: var(--color-surface);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 8px solid var(--color-soft);
-  cursor: pointer;
-  transition:
-    transform 0.2s,
-    border-color 0.2s;
-  scroll-snap-align: center;
-}
-.mockup-item:hover {
-  transform: translateY(-4px);
-  border-color: var(--color-action);
-}
-.mockup-item:focus-visible {
-  transform: translateY(-4px);
-  border-color: var(--color-action);
-  outline: 3px solid var(--color-state-focus);
-  outline-offset: 4px;
-}
-
-@media (min-width: 860px) {
-  .mockup-carousel {
-    justify-content: center;
-  }
-}
-
 /* Apresentação em folhas: a moldura permanece estável durante a virada. */
 .institutional-book {
   height: 100dvh;
@@ -1923,16 +1714,6 @@ button {
 .book-page .hero-description {
   max-width: 660px;
   font-size: clamp(16px, 1.55vw, 26px);
-}
-.book-page .hero-illustration {
-  max-width: min(var(--landing-book-imageMax), 65vh);
-  animation: none;
-}
-.book-page .mockup-item {
-  height: clamp(200px, 42vh, 440px);
-}
-.book-page .mockup-header {
-  margin-bottom: var(--spacing-24);
 }
 .book-page .site-footer {
   display: flex;
@@ -2034,9 +1815,6 @@ button {
     gap: var(--spacing-16);
     text-align: center;
   }
-  .book-page .hero-copy {
-    margin-inline: auto;
-  }
   .book-page .hero h1 {
     font-size: clamp(36px, 7vw, 64px);
     max-width: 680px;
@@ -2044,12 +1822,6 @@ button {
   .book-page .hero-description {
     max-width: 600px;
     margin-inline: auto;
-  }
-  .book-page .hero-illustration {
-    width: auto;
-    max-width: 70%;
-    height: clamp(120px, 24vh, 240px);
-    order: -1;
   }
   .book-page .hero-actions {
     justify-content: center;
@@ -2080,9 +1852,6 @@ button {
   }
   .book-page .hero-actions {
     margin-top: var(--spacing-24);
-  }
-  .book-page .hero-illustration {
-    height: clamp(100px, 20vh, 180px);
   }
 }
 @media (prefers-reduced-motion: reduce) {

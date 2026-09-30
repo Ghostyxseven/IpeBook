@@ -20,8 +20,11 @@ export function BookDialog({
     const dialog = ref.current!;
     const previous = document.activeElement as HTMLElement | null;
     dialog.showModal();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     return () => {
       dialog.close();
+      document.body.style.overflow = previousOverflow;
       if (previous?.isConnected && !previous.closest('[inert]'))
         previous.focus({ preventScroll: true });
     };

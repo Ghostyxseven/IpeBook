@@ -156,7 +156,7 @@ export function createBookTurn(
     suppressClick = false;
     if (
       (event.target as Element).closest(
-        'a, button, input, textarea, select, dialog, [role="dialog"], [contenteditable], .mockup-carousel',
+        'a, button, input, textarea, select, dialog, [role="dialog"], [contenteditable]',
       )
     )
       return;
