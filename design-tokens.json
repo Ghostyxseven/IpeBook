@@ -224,6 +224,14 @@
     }
   },
   "landing": {
+    "legal": {
+      "readingWidth": "720px",
+      "titleSize": "40px"
+    },
+    "mobileNavigation": {
+      "headerHeight": "72px",
+      "pagePadding": "16px"
+    },
     "maxWidth": {
       "$type": "dimension",
       "$value": "1200px"
@@ -253,7 +261,7 @@
       "$value": "-2.8px"
     },
     "book": {
-      "duration": "1800ms",
+      "duration": "250ms",
       "perspective": "2400px",
       "controlsHeight": "72px",
       "heroMax": "96px",
@@ -267,7 +275,7 @@
       "coverWidth": "360px",
       "paperEdge": "6px",
       "dialogWidth": "760px",
-      "easing": "cubic-bezier(0.77, 0, 0.175, 1)"
+      "easing": "cubic-bezier(0.23, 1, 0.32, 1)"
     }
   }
 }

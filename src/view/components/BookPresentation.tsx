@@ -2,6 +2,7 @@ import { Children, useLayoutEffect, useRef, useState, type ReactNode } from 'rea
 import { useBookNavigation } from '../../viewmodel/useBookNavigation';
 import { BookDialog } from './BookDialog';
 import { Icon } from './Icon';
+import { createBookTurn } from '../animations/bookTurn';
 
 /** Faixas contíguas dão curvatura à folha; o conteúdo real permanece sem duplicação acessível. */
 export function BookPresentation({ hash, children }: { hash: string; children: ReactNode }) {
@@ -9,99 +10,32 @@ export function BookPresentation({ hash, children }: { hash: string; children: R
   const stage = useRef<HTMLDivElement>(null);
   const overlay = useRef<HTMLDivElement>(null);
   const previous = useRef(vm.index);
-  const touch = useRef<{ x: number; y: number } | null>(null);
+  const controller = useRef<ReturnType<typeof createBookTurn> | null>(null);
+  const latest = useRef(vm);
+  latest.current = vm;
+  const [gestureUsed, setGestureUsed] = useState(false);
   const keyboard = useRef(false);
   const pages = Children.toArray(children);
   const [contentsOpen, setContentsOpen] = useState(false);
 
   useLayoutEffect(() => {
-    const root = stage.current!;
-    const layer = overlay.current!;
+    controller.current = createBookTurn(stage.current!, overlay.current!, {
+      index: () => latest.current.index,
+      reduced: () => latest.current.reducedMotion,
+      navigate: (index) => latest.current.goTo(index),
+      onGesture: () => setGestureUsed(true),
+    });
+    return () => controller.current?.destroy();
+  }, []);
+
+  useLayoutEffect(() => {
     const old = previous.current;
     previous.current = vm.index;
-    if (old === vm.index) return;
-    const target = root.children[vm.index] as HTMLElement;
-    if (root.contains(document.activeElement)) target.focus({ preventScroll: true });
-    if (vm.reducedMotion || keyboard.current) {
-      keyboard.current = false;
-      return;
+    controller.current?.sync(old, vm.index, keyboard.current);
+    keyboard.current = false;
+    if (old !== vm.index && stage.current?.contains(document.activeElement)) {
+      (stage.current.children[vm.index] as HTMLElement).focus({ preventScroll: true });
     }
-    const backwards = vm.index < old;
-    const source = root.children[backwards ? vm.index : old] as HTMLElement;
-    const width = root.clientWidth;
-    const height = root.clientHeight;
-    const count = 60;
-    const stripWidth = width / count;
-    const duration =
-      parseFloat(getComputedStyle(root).getPropertyValue('--landing-book-duration')) || 1800;
-    const animations: Animation[] = [];
-    const frames: Keyframe[][] = Array.from({ length: count }, () => []);
-    const shading: Keyframe[][] = Array.from({ length: count }, () => []);
-    const faces: Keyframe[][] = Array.from({ length: count }, () => []);
-    for (let step = 0; step <= 60; step++) {
-      const progress = step / 60;
-      let x = 0;
-      let z = 0;
-      for (let strip = 0; strip < count; strip++) {
-        const angle = Math.max(
-          0,
-          Math.min(Math.PI, ((strip / count - (1 - progress * 1.4)) / 0.35) * Math.PI),
-        );
-        frames[strip].push({
-          transform: `translate3d(${x}px, ${Math.sin(angle) * -15}px, ${z}px) rotateY(${-angle}rad) rotateX(${Math.sin(angle) * 0.05}rad)`,
-        });
-        shading[strip].push({ opacity: Math.sin(angle) * 0.22 });
-        faces[strip].push({ opacity: angle > Math.PI / 2 ? 0 : 1 });
-        x += Math.cos(angle) * stripWidth;
-        z += Math.sin(angle) * stripWidth;
-      }
-    }
-    for (let strip = 0; strip < count; strip++) {
-      const paper = document.createElement('div');
-      paper.className = 'book-strip';
-      paper.style.width = `${stripWidth + 1}px`;
-      paper.style.height = `${height}px`;
-      const snapshot = source.cloneNode(true) as HTMLElement;
-      snapshot.removeAttribute('inert');
-      snapshot.removeAttribute('aria-hidden');
-      snapshot.className = 'book-page book-snapshot';
-      snapshot.style.width = `${width}px`;
-      snapshot.style.height = `${height}px`;
-      snapshot.style.left = `${-strip * stripWidth}px`;
-      snapshot.removeAttribute('id');
-      snapshot.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
-      paper.appendChild(snapshot);
-      const shade = document.createElement('div');
-      shade.className = 'book-strip-shade';
-      shade.style.background = 'var(--color-text)';
-      paper.appendChild(shade);
-      layer.appendChild(paper);
-      snapshot.scrollTop = source.scrollTop;
-      const options: KeyframeAnimationOptions = {
-        duration,
-        easing: getComputedStyle(root).getPropertyValue('--landing-book-easing').trim(),
-        fill: 'both',
-        direction: backwards ? 'reverse' : 'normal',
-      };
-      animations.push(paper.animate(frames[strip], options));
-      animations.push(shade.animate(shading[strip], options));
-      animations.push(snapshot.animate(faces[strip], options));
-    }
-    // Ao voltar, a folha anterior se abre sobre a página atual.
-    if (backwards) (root.children[old] as HTMLElement).classList.add('book-underlay');
-    const clear = () => {
-      animations.forEach((animation) => animation.cancel());
-      layer.replaceChildren();
-      root
-        .querySelectorAll('.book-underlay')
-        .forEach((node) => node.classList.remove('book-underlay'));
-    };
-    animations[0].finished.then(clear).catch(() => {});
-    window.addEventListener('resize', clear);
-    return () => {
-      window.removeEventListener('resize', clear);
-      clear();
-    };
   }, [vm.index, vm.reducedMotion]);
 
   return (
@@ -117,7 +51,9 @@ export function BookPresentation({ hash, children }: { hash: string; children: R
           return;
         if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
           event.preventDefault();
-          keyboard.current = true;
+          keyboard.current =
+            vm.index + (event.key === 'ArrowRight' ? 1 : -1) >= 0 &&
+            vm.index + (event.key === 'ArrowRight' ? 1 : -1) < pages.length;
           vm.goTo(vm.index + (event.key === 'ArrowRight' ? 1 : -1));
         }
       }}
@@ -137,30 +73,7 @@ export function BookPresentation({ hash, children }: { hash: string; children: R
         </button>
       </div>
       <div className="book-sheet-surface">
-        <div
-          className="book-stage"
-          ref={stage}
-          onTouchStart={(event) => {
-            if (
-              (event.target as HTMLElement).closest(
-                'a, button, summary, input, select, dialog, .mockup-carousel',
-              )
-            )
-              return;
-            touch.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-          }}
-          onTouchCancel={() => {
-            touch.current = null;
-          }}
-          onTouchEnd={(event) => {
-            if (!touch.current) return;
-            const dx = event.changedTouches[0].clientX - touch.current.x;
-            const dy = event.changedTouches[0].clientY - touch.current.y;
-            touch.current = null;
-            if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5)
-              vm.goTo(vm.index + (dx < 0 ? 1 : -1));
-          }}
-        >
+        <div className="book-stage" ref={stage}>
           {pages.map((page, index) => (
             <div
               key={vm.pages[index].id}
@@ -195,7 +108,7 @@ export function BookPresentation({ hash, children }: { hash: string; children: R
           value={vm.index + 1}
           aria-label="Progresso de leitura"
         />
-        <div className="book-swipe-indicator" aria-hidden="true">
+        <div className={`book-swipe-indicator ${gestureUsed ? 'is-used' : ''}`} aria-hidden="true">
           <span className="swipe-arrow swipe-arrow-left">‹</span>
           <span className="swipe-text">Deslize para navegar</span>
           <span className="swipe-arrow swipe-arrow-right">›</span>

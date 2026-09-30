@@ -14,3 +14,7 @@ Aprimorar o componente de Sumário (navegação móvel) em `InstitutionalScreen.
 6. A fita marcadora na capa encadernada (`.cover-scene-caption`) é reposicionada para a borda lateral direita, eliminando qualquer sobreposição ou corte sobre o título "Histórias que continuam." e o logotipo.
 7. A navegação desktop permanece limpa, horizontal e sem quebras visuais.
 8. Fechamento por tecla Escape e gerenciamento de foco preservados.
+
+## Correção do cabeçalho — 30/09/2026
+
+Eliminar o recorte da marca e do botão provocado pelo menu sobreposto ao cabeçalho. Manter marca e Fechar centralizados na mesma linha, margens alinhadas aos capítulos, título e contagem próximos ao topo e divisor discreto antes da lista. O controle deve ter alvo mínimo de 48 × 48 px. Validar em 320, 390, 768 e 1440 px, incluindo abrir, fechar, Escape e seleção de capítulo, sem transbordamento ou sobreposição.

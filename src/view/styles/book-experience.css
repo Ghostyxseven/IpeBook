@@ -7,9 +7,6 @@
   backdrop-filter: none;
   transition: none;
 }
-.institutional-book .header-inner {
-  min-height: var(--landing-headerHeight);
-}
 .book-presentation {
   margin: var(--spacing-12) var(--landing-book-frameMargin) 0;
   border-left: var(--landing-book-paperEdge) solid var(--color-actionDeep);
@@ -109,7 +106,9 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 .book-turn:hover:not(:disabled) {
   background: var(--color-soft);
@@ -1044,7 +1043,7 @@
     font-weight: 700;
     color: var(--color-action);
     line-height: 1;
-    animation: swipeHintMotion 1.8s ease-in-out infinite;
+    animation: swipeHintMotion 1.8s ease-in-out 3;
   }
   .swipe-arrow-left {
     animation-direction: alternate;
@@ -1489,4 +1488,24 @@
     font-size: 13px;
     gap: var(--spacing-4);
   }
+}
+
+/* O gesto mantém a página acessível original; as faixas são apenas visuais. */
+.book-stage,
+.book-stage > .book-page {
+  touch-action: pan-y pinch-zoom;
+}
+.book-stage.is-dragging {
+  user-select: none;
+}
+.book-page.book-turn-preview {
+  visibility: visible;
+  z-index: 1;
+  pointer-events: none;
+}
+.book-page.book-turn-hidden {
+  visibility: hidden;
+}
+.book-swipe-indicator.is-used .swipe-arrow {
+  animation: none;
 }

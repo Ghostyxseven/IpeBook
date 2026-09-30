@@ -6,3 +6,9 @@
 - [x] Garantir compatibilidade visual no desktop para o menu horizontal.
 - [x] Executar suíte de testes automatizados (`npm test`).
 - [x] Capturar screenshots via Playwright para validação do sumário móvel e da capa do livro.
+
+## Correção do cabeçalho — 30/09/2026
+
+- [x] Corrigir altura, alinhamento, alvo de toque e divisor do sumário usando tokens.
+- [x] Verificar apresentação móvel/desktop e interações no navegador.
+- [x] Executar testes e tipos; revisar diff e registrar resultados.
