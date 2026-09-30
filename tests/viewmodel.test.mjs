@@ -1,19 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { homedir } from 'node:os';
-import { pathToFileURL } from 'node:url';
-import { join } from 'node:path';
+import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useInstitutionalViewModel } from '../src/viewmodel/useInstitutionalViewModel.ts';
 
-// O ambiente compartilhado é usado somente pelo teste, não pelo aplicativo.
-const { JSDOM } = await import(
-  pathToFileURL(
-    process.env.IPEBOOK_JSDOM_PATH ||
-      join(homedir(), '.local/share/ia-integracoes/qualidade/node_modules/jsdom/lib/api.js'),
-  ).href
-);
 const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost/' });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;

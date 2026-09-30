@@ -127,3 +127,18 @@ Tokens específicos da apresentação permanecem sob `landing.*` por compatibili
 5. Reutilize patterns documentados.
 6. Verifique estados e acessibilidade.
 7. Registre divergências no PR.
+
+## Componentes do aplicativo (Android e iOS)
+
+A [spec 013](../specs/013-base-app-nativo/spec.md) cria a base React Native usada pelas features. `src/view/theme/nativeTheme.ts` lê `design-tokens.json` e escolhe por `Platform.select` a altura de controle, os raios e a margem de página de cada plataforma. Os componentes não repetem hexadecimais nem medidas.
+
+| Componente                                 | Local                  | Comportamento                                                                                                                                                                                                        |
+| ------------------------------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Button`                                   | `components/ui/`       | Primária (verde), secundária (contornada) e texto; pressionado usa `actionDeep` ou `state.pressed`; carregando mostra indicador e bloqueia toque; desabilitado usa `state.disabled*`; alvo mínimo de 48 × 48.        |
+| `TextField`                                | `components/ui/`       | Rótulo persistente, dica abaixo, erro com prefixo "Erro:" (não depende só da cor) e borda `state.error`; foco com borda `state.focus` de 2 px sem deslocar o layout; opção Mostrar/Ocultar senha com nome acessível. |
+| `FormMessage`                              | `components/ui/`       | Aviso do formulário inteiro (erro do servidor ou confirmação), com título e faixa lateral de cor, anunciado a leitores de tela.                                                                                      |
+| `AuthLayout`                               | `components/ui/`       | Área segura, rolagem, ajuste ao teclado e largura máxima `app.formMaxWidth` (480 px) em tablets.                                                                                                                     |
+| `LoadingState`, `EmptyState`, `ErrorState` | `components/feedback/` | Mensagem concreta e próxima ação; o erro sempre oferece "Tentar novamente" quando há recuperação.                                                                                                                    |
+| `OfflineBanner`                            | `components/feedback/` | Aparece nos grupos `(auth)` e `(app)` quando a falta de conexão é confirmada; informa que os dados digitados foram mantidos e oferece nova verificação.                                                              |
+
+Divergências registradas no [verify](../specs/013-base-app-nativo/verify.md): Mostrar/Ocultar em texto até a escolha das bibliotecas de ícones por plataforma; iOS com a fonte do sistema; quadros do Figma ainda não comparados.

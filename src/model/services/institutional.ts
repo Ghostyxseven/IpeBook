@@ -58,7 +58,15 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: 'O que posso fazer aqui?',
         paragraphs: [
           'Você pode conhecer o IpêBook, ler os guias, buscar livros na estante de exemplos e abrir seus detalhes. O projeto quer aproximar leitores de Piripiri, no Piauí, para venda, troca e doação de livros.',
-          'Esta versão não permite criar contas, publicar anúncios, negociar, enviar mensagens ou pagar. Entrar e Criar conta apenas mostram um aviso. Visitar o site não cria uma conta nem uma obrigação de compra.',
+          'No site, Entrar e Criar conta apenas mostram um aviso. O aplicativo para Android e iOS, ainda em desenvolvimento, permite criar uma conta com nome, e-mail e senha, confirmar o e-mail com um código e entrar. Nenhuma versão permite publicar anúncios, negociar, enviar mensagens ou pagar. Visitar o site não cria uma conta nem uma obrigação de compra.',
+        ],
+      },
+      {
+        title: 'Como funciona a conta?',
+        paragraphs: [
+          'Use um e-mail seu e uma senha exclusiva para o IpêBook. Mantenha a senha em segredo: quem tiver acesso a ela pode entrar na sua conta.',
+          'A conta existe apenas no aplicativo e, nesta versão, leva a uma área inicial em construção. Ainda não há anúncios, pedidos, mensagens ou perfil público.',
+          'Excluir a conta pelo aplicativo ainda não é possível, e o canal de atendimento continua pendente. Essas duas pendências precisam ser resolvidas antes de o cadastro ser divulgado.',
         ],
       },
       {
@@ -87,7 +95,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: 'O que pode mudar nas próximas versões?',
         paragraphs: [
           'A apresentação pode receber correções e atualizações. Ainda não há data de lançamento, verificação de identidade, avaliação de leitores ou garantia de transações.',
-          'Antes de ativar contas, anúncios e mensagens, o projeto deverá apresentar as novas regras e atualizar a privacidade. Navegar hoje não significa aceitar regras futuras ou autorizar novos usos dos seus dados.',
+          'Antes de ativar anúncios e mensagens, o projeto deverá apresentar as novas regras e atualizar a privacidade. Navegar hoje não significa aceitar regras futuras ou autorizar novos usos dos seus dados.',
         ],
       },
       {
@@ -103,25 +111,36 @@ export const documents: Record<LegalPage, LegalDocument> = {
   privacidade: {
     title: 'Política de Privacidade',
     intro:
-      'Veja o que acontece com suas buscas, quais dados podem passar pela hospedagem e como entender seus direitos.',
+      'Veja quais dados a conta usa, o que acontece com suas buscas, o que a hospedagem recebe e como entender seus direitos.',
     summary: [
       'Suas buscas filtram exemplos no próprio navegador, sem enviar o texto a um servidor.',
-      'O código desta apresentação não usa cookies, publicidade ou ferramentas de análise de visitas.',
+      'Ao criar uma conta no aplicativo, nome, e-mail e senha são tratados pelo Supabase, o serviço de autenticação do projeto.',
+      'O site mede visitas e desempenho de forma agregada com ferramentas da Vercel, sem cookies nem publicidade.',
       'Informações da hospedagem e o contato para pedidos sobre dados ainda precisam ser confirmados.',
     ],
     sections: [
       {
+        title: 'Quais dados a conta usa?',
+        paragraphs: [
+          'O cadastro existe apenas no aplicativo para Android e iOS, ainda em desenvolvimento; o site não coleta esses dados. Para criar a conta, pedimos nome, e-mail e senha. O nome aparece na sua área inicial. O e-mail serve para entrar, confirmar a conta e recuperar a senha, por meio de códigos enviados a ele.',
+          'Esses dados são tratados pelo Supabase, o serviço que hospeda a autenticação. A senha viaja por conexão segura e é guardada cifrada (hash): o IpêBook não consegue lê-la. O serviço pode registrar dados técnicos de acesso, como endereço IP, data e hora, para proteger a conta.',
+          'Depois que você entra, a sessão fica guardada no armazenamento do aplicativo, no celular, para não pedir a senha a cada abertura. Tocar em Sair remove a sessão. O aplicativo também guarda se você já viu a apresentação inicial.',
+          'Ainda faltam confirmar a região onde os dados ficam, o prazo de conservação e a base legal. Excluir a conta pelo aplicativo ainda não é possível, e o canal para pedidos continua pendente.',
+        ],
+      },
+      {
         title: 'O que acontece com minhas buscas?',
         paragraphs: [
           'A busca filtra os livros de exemplo no seu navegador. Não envia a consulta a um servidor. Filtros, guias e detalhes abertos ficam na memória da página; o código não cria um perfil de leitura nem salva essas escolhas para outra visita.',
-          'Digite apenas títulos ou categorias. Não informe CPF, senha ou endereço. Esta versão não tem cadastro, envio de arquivos, pedido de localização precisa ou coleta de pagamento.',
+          'Digite apenas títulos ou categorias. Não informe CPF, senha ou endereço. Esta versão não tem envio de arquivos, pedido de localização precisa ou coleta de pagamento.',
           'Seu navegador pode guardar as páginas visitadas no histórico, conforme suas configurações.',
         ],
       },
       {
         title: 'O site usa cookies ou rastreamento?',
         paragraphs: [
-          'O código da apresentação não instala cookies nem salva buscas em localStorage ou sessionStorage, que são áreas de armazenamento do navegador. Também não inclui publicidade, pixels de rastreamento ou análise de visitas.',
+          'O código da apresentação não instala cookies nem salva buscas em localStorage ou sessionStorage, que são áreas de armazenamento do navegador. Não há publicidade nem pixels de rastreamento de redes sociais.',
+          'O site usa Vercel Web Analytics e Vercel Speed Insights, da empresa que hospeda a página. Eles registram a página aberta, a origem da visita, o país aproximado, o tipo de aparelho e navegador e o tempo de carregamento, e mostram os resultados de forma agregada. Segundo a Vercel, essas ferramentas não usam cookies. A base legal e o prazo de conservação ainda precisam ser confirmados.',
           'Fontes e imagens vêm do próprio site. O navegador pode guardar cópias desses arquivos no cache para carregar a página mais rápido.',
           'Não há banner para cookies opcionais porque eles não estão presentes no código atual. Se isso mudar, as finalidades e as opções deverão ser avaliadas antes da ativação. Ainda é necessário conferir o que a infraestrutura publicada utiliza.',
         ],
@@ -153,15 +172,15 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'O que muda quando o aplicativo funcionar?',
         paragraphs: [
-          'Contas, anúncios, mensagens e pagamentos ainda não estão disponíveis. Antes de ativá-los, será preciso informar quais dados serão usados, para quê, com quem serão compartilhados e por quanto tempo serão guardados, além da base legal e dos cuidados de segurança.',
-          'O projeto também deverá avaliar a proteção de dados de crianças e adolescentes, conforme a lei e seu melhor interesse. Hoje não há cadastro para nenhuma faixa etária.',
+          'Anúncios, mensagens e pagamentos ainda não estão disponíveis. Antes de ativá-los, será preciso informar quais dados serão usados, para quê, com quem serão compartilhados e por quanto tempo serão guardados, além da base legal e dos cuidados de segurança.',
+          'O projeto também deverá avaliar a proteção de dados de crianças e adolescentes, conforme a lei e seu melhor interesse. O cadastro ainda não verifica a idade; essa avaliação precisa ser feita antes de divulgar o aplicativo.',
           'Navegar nesta apresentação não autoriza usos futuros dos seus dados. As dicas da página Segurança não significam que já exista verificação de identidade ou proteção de pagamentos.',
         ],
       },
       {
         title: 'Quando este texto foi atualizado?',
         paragraphs: [
-          'Última revisão: 30 de setembro de 2026. Este aviso trata somente da apresentação atual do IpêBook.',
+          'Última revisão: 30 de setembro de 2026. Este aviso trata da apresentação e da conta do IpêBook nesta versão.',
           'Ainda faltam a identificação do responsável, o contato de privacidade e os detalhes reais da hospedagem. O texto deverá ser atualizado quando essas informações forem confirmadas.',
         ],
       },
@@ -241,6 +260,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: 'Como reconheço uma mensagem suspeita?',
         paragraphs: [
           'Desconfie de pressa para pagar, prêmios inesperados, pedidos de códigos e links com endereço estranho. Confira o destino antes de abrir um link.',
+          'O IpêBook só pede o código de confirmação dentro do próprio aplicativo. Ninguém do projeto vai pedir esse código ou sua senha por mensagem.',
           'O perfil indicado é @ipebook no Instagram. Nomes parecidos não comprovam vínculo com o projeto. O link deste site não garante que uma mensagem recebida seja legítima.',
           'Nas suas contas externas, use senhas diferentes e ative a verificação em duas etapas, quando disponível. Não compartilhe códigos de acesso.',
         ],
@@ -284,7 +304,7 @@ export const questions = [
   {
     question: 'Já posso criar uma conta ou anunciar um livro?',
     answer:
-      'Ainda não. Esta é a página de apresentação do projeto. O cadastro, os anúncios e o contato entre leitores estão em preparação.',
+      'No site, ainda não. O cadastro está sendo construído no aplicativo para Android e iOS, que ainda não foi lançado. Os anúncios, os pedidos e o contato entre leitores também estão em preparação.',
   },
   {
     question: 'Qual é a diferença entre venda, troca e doação?',
@@ -299,7 +319,7 @@ export const questions = [
   {
     question: 'Preciso informar meus dados para conhecer o projeto?',
     answer:
-      'Não é necessário se cadastrar para navegar por esta apresentação. Ela não inclui formulários, publicidade ou análise de audiência. Os detalhes e as pendências de hospedagem estão na Política de Privacidade.',
+      'Não. Navegar por esta apresentação não exige cadastro. No aplicativo, a conta usa nome, e-mail e senha. O site mede visitas de forma agregada, sem publicidade. Os detalhes e as pendências estão na Política de Privacidade.',
   },
   {
     question: 'Como preparar um livro para vender?',

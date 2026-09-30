@@ -18,9 +18,15 @@ test('documentos legais abrem por endereço e fragmentos da página não viram d
 });
 
 test('conteúdo delimita operação e identifica pendências sem contato inventado', () => {
-  assert.match(JSON.stringify(documents.termos), /não permite criar contas/);
+  assert.match(JSON.stringify(documents.termos), /Entrar e Criar conta apenas mostram um aviso/);
+  assert.match(JSON.stringify(documents.termos), /aplicativo.*permite criar uma conta/);
+  assert.match(JSON.stringify(documents.termos), /Nenhuma versão permite publicar anúncios/);
   assert.match(JSON.stringify(documents.privacidade), /controlador.*pendentes/);
   assert.match(JSON.stringify(documents.privacidade), /não instala cookies/);
+  // A política precisa descrever o que o código realmente usa (constituição).
+  assert.match(JSON.stringify(documents.privacidade), /Supabase/);
+  assert.match(JSON.stringify(documents.privacidade), /Vercel Web Analytics.*Speed Insights/);
+  assert.doesNotMatch(JSON.stringify(documents), /não usa.*ferramentas de análise de visitas/);
   assert.match(JSON.stringify(documents.lgpd), /não está disponível/);
   // O perfil informado pelo usuário agora é permitido; contatos inventados continuam proibidos.
   assert.doesNotMatch(JSON.stringify(documents), /mailto:|100%/);

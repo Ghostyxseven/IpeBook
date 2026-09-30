@@ -47,3 +47,5 @@ yarn-error.*
 .playwright-mcp/
 
 .scripts
+# variáveis de ambiente (Supabase)
+.env

@@ -1,15 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { homedir } from 'node:os';
-import { pathToFileURL } from 'node:url';
-import { join } from 'node:path';
+import { JSDOM } from 'jsdom';
 import { createBookTurn } from '../src/view/animations/bookTurn.ts';
-const { JSDOM } = await import(
-  pathToFileURL(
-    process.env.IPEBOOK_JSDOM_PATH ||
-      join(homedir(), '.local/share/ia-integracoes/qualidade/node_modules/jsdom/lib/api.js'),
-  ).href
-);
 
 function setup(initial = 0, reduced = false) {
   const dom = new JSDOM(
