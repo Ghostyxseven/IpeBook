@@ -5,7 +5,11 @@ type TokenTree = { [key: string]: unknown };
 type CssValue = string | number;
 
 function cssValue(value: unknown): CssValue {
-  if (Array.isArray(value) && value.length === 4 && value.every((item) => typeof item === 'number')) {
+  if (
+    Array.isArray(value) &&
+    value.length === 4 &&
+    value.every((item) => typeof item === 'number')
+  ) {
     return `cubic-bezier(${value.join(', ')})`;
   }
 
