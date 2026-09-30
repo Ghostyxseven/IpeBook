@@ -39,3 +39,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Vercel local
+.vercel/
+
+# Evidências locais de validação no navegador
+.playwright-mcp/
+
+.scripts
