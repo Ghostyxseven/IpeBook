@@ -45,3 +45,5 @@ yarn-error.*
 
 # Evidências locais de validação no navegador
 .playwright-mcp/
+
+.scripts

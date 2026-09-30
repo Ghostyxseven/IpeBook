@@ -1,11 +1,12 @@
-// Executar pelo MCP Playwright; usa a exportação Web servida localmente na porta 8081.
-async function verificarLivro(page) {
+// Executar pelo MCP Playwright; usa a exportação Web servida localmente na porta 8082.
+async (page) => {
+  // Livro(page) {
   const assert = (value, message) => {
     if (!value) throw new Error(message);
   };
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('http://localhost:8081/#inicio');
+  await page.goto('http://localhost:8082/#inicio');
   await page.reload();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const sizes = [];
@@ -78,11 +79,11 @@ async function verificarLivro(page) {
   assert((await page.locator('.book-strip').count()) === 0, 'Movimento reduzido sem rotação');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.getByRole('button', { name: 'Página anterior' }).click();
-  await page.waitForTimeout(1200);
+  await page.waitForTimeout(2500);
   assert((await page.locator('.book-strip').count()) === 0, 'Limpar animação concluída');
   await page.getByRole('button', { name: 'Próxima página' }).click();
   await page.getByRole('button', { name: 'Página anterior' }).click();
-  await page.waitForTimeout(1200);
+  await page.waitForTimeout(2500);
   assert((await page.locator('.book-strip').count()) === 0, 'Cliques rápidos não deixam clones');
   assert(errors.length === 0, errors.join(', '));
   return {
@@ -91,6 +92,4 @@ async function verificarLivro(page) {
     result:
       'Livro, limites, documentos, diálogo, FAQ, teclado, histórico, gesto e movimento reduzido aprovados.',
   };
-}
-
-module.exports = { verificarLivro };
+};
