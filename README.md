@@ -71,6 +71,10 @@ Siga as instruções abaixo para rodar o app no seu simulador ou dispositivo fí
 ## 🎨 Design system e instruções para IA
 
 - [Guia visual e de experiência](docs/design-system.md)
+- [Foundations](docs/design-system/foundations.md)
+- [Components e Patterns](docs/design-system/components-patterns.md)
+- [Plataformas e Acessibilidade](docs/design-system/platforms-accessibility.md)
+- [IA e Governança](docs/design-system/ai-governance.md)
 - [Tokens de design em JSON](design-tokens.json)
 - [Regras para agentes de IA](AGENTS.md)
 - [Instruções do GitHub Copilot](.github/copilot-instructions.md)
