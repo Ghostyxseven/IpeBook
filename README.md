@@ -10,6 +10,8 @@ Este aplicativo é construído utilizando as seguintes tecnologias:
 
 - **React Native** / **Expo**: Framework para desenvolvimento móvel cruzado (iOS e Android).
 - **TypeScript**: Adicionando tipagem estática e maior confiabilidade ao código.
+- **Expo Router**: navegação do app Android e iOS ([ADR 0005](docs/adr/0005-navegacao-expo-router.md)).
+- **Supabase Auth**: contas, confirmação de e-mail e recuperação de senha ([ADR 0006](docs/adr/0006-autenticacao-supabase.md)).
 
 ---
 
@@ -54,17 +56,38 @@ Siga as instruções abaixo para rodar o app no seu simulador ou dispositivo fí
    npm install
    ```
 
-2. **Inicie o servidor do Expo:**
+2. **Configure o Supabase:** copie `.env.example` para `.env` e preencha `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (Project Settings → API). No painel, mantenha **Confirm email** ligado e inclua `{{ .Token }}` nos modelos **Confirm signup** e **Reset password**, para o e-mail trazer o código. Sem o `.env`, o app abre, mas as telas de conta avisam que a autenticação não foi configurada.
+
+3. **Inicie o servidor do Expo:**
 
    ```bash
    npx expo start
    ```
 
-3. **Abra o aplicativo:**
+4. **Abra o aplicativo:**
    - **Web:** Pressione `w` no terminal para abrir o aplicativo no seu navegador.
    - **Android:** Pressione `a` no terminal para rodar no emulador Android.
    - **iOS:** Pressione `i` no terminal para rodar no simulador iOS (somente macOS).
    - **Dispositivo físico:** Baixe o aplicativo "Expo Go" no seu celular e escaneie o QR Code exibido no terminal.
+
+---
+
+## 📱 Aplicativo (Android e iOS)
+
+A entrada `index.js` carrega o Expo Router; as rotas ficam em `src/app/` e só reexportam telas de `src/view/screens/`.
+
+| Rota                                   | Tela                                               |
+| -------------------------------------- | -------------------------------------------------- |
+| `/`                                    | Abertura: decide entre onboarding, Entrar e Início |
+| `/onboarding`                          | Apresentação na primeira abertura                  |
+| `/entrar`, `/criar-conta`              | Entrar e cadastro                                  |
+| `/verificar-email`, `/recuperar-senha` | Códigos enviados por e-mail                        |
+| `/inicio`                              | Área autenticada (provisória)                      |
+
+- `(auth)`: só sem sessão. `(app)`: só com sessão; **as outras features criam suas rotas aqui**.
+- Componentes base: `src/view/components/ui/` (`Button`, `TextField`, `FormMessage`, `AuthLayout`) e estados em `src/view/components/feedback/` (`LoadingState`, `EmptyState`, `ErrorState`, `OfflineBanner`). Tema: `src/view/theme/nativeTheme.ts`.
+- Injeção de dependências: `src/factories/auth.ts` liga as ViewModels ao Supabase. Nos testes, use `createMemoryAuthRepository`.
+- Especificações: [base do app](specs/012-base-app-nativo/spec.md) e [autenticação](specs/013-autenticacao-onboarding/spec.md).
 
 ---
 
@@ -84,9 +107,9 @@ Para implementar uma tela, informe a plataforma e o fluxo; por exemplo: “Imple
 
 ## Página institucional Web (`/`)
 
-Apresenta o projeto, modalidades, como funciona e dúvidas. Documentos acessíveis em `/#termos`, `/#privacidade` e `/#lgpd`. As ações Entrar/Criar conta mostram um aviso: autenticação e cadastro ainda não estão disponíveis. Nenhum dado de cadastro é coletado e não há analytics ou cookies opcionais no código.
+Apresenta o projeto, modalidades, como funciona e dúvidas. Documentos acessíveis em `/#termos`, `/#privacidade` e `/#lgpd`. As ações Entrar/Criar conta mostram um aviso: no site, autenticação e cadastro ainda não estão disponíveis. O site não coleta dados de cadastro (as contas existem só no aplicativo) e não usa cookies opcionais. Vercel Web Analytics e Speed Insights medem visitas e desempenho de forma agregada, como descrito na Política de Privacidade.
 
-A entrada Web (`App.web.tsx` → `src/app/index.web.tsx`) só encaminha para `src/view/screens/InstitutionalScreen.web.tsx`. Componentes e estilos ficam na View; estado em `src/viewmodel/useInstitutionalViewModel.ts`; documentos e resolução de destinos no Model. A entrada nativa permanece independente.
+A entrada Web (`index.web.js`) registra `src/view/screens/InstitutionalScreen.web.tsx`, sem o Expo Router, para manter o JavaScript inicial pequeno (ADR 0005). Componentes e estilos ficam na View; estado em `src/viewmodel/useInstitutionalViewModel.ts`; documentos e resolução de destinos no Model.
 
 ```bash
 npm run web
@@ -97,7 +120,7 @@ npm run build:web
 python3 -m http.server 8082 --bind 127.0.0.1 --directory dist
 ```
 
-O teste da ViewModel usa jsdom do ambiente compartilhado descrito em `/home/usermicael/.local/share/ia-integracoes/qualidade/README.md`; em outro computador, informe `IPEBOOK_JSDOM_PATH` com o caminho absoluto para `jsdom/lib/api.js`. Os testes Node usam suporte nativo a TypeScript (Node 22.18+; validados em Node 26.8.2). O aplicativo não depende desse ambiente de testes em produção.
+Os testes de ViewModel usam `jsdom`, instalado como dependência de desenvolvimento. Os testes Node usam suporte nativo a TypeScript (Node 22.18+; validados em Node 26.8.2). O aplicativo não depende desse ambiente de testes em produção.
 
 Abra `http://localhost:8082` para verificar o build. A apresentação usa JavaScript e ainda não tem pré-renderização para SEO. Fonte Roboto servida localmente sob licença OFL em `public/fonts/Roboto-LICENSE.txt`.
 
