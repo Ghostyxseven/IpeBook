@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useInstitutionalViewModel } from '../../viewmodel/useInstitutionalViewModel';
 import { InstitutionalBook } from '../components/InstitutionalBook';
+import { LegalDocumentContent } from '../components/LegalDocumentContent';
 import { AccessDialog } from '../components/AccessDialog';
 import { Icon } from '../components/Icon';
 import { theme } from '../styles/theme';
@@ -303,7 +304,7 @@ export default function InstitutionalScreen() {
         </div>
       </header>
 
-      {vm.document ? (
+      {vm.document && vm.page !== 'inicio' ? (
         <main id="conteudo" tabIndex={-1} className="container legal-main">
           <a href="#inicio" className="text-link back-link">
             ← Voltar à apresentação
@@ -324,49 +325,7 @@ export default function InstitutionalScreen() {
                 ))}
               </nav>
             </aside>
-            <article>
-              <span className="status-label">Versão preliminar · 29 de setembro de 2026</span>
-              <h1>{vm.document.title}</h1>
-              <p className="lead">{vm.document.intro}</p>
-              {vm.document.summary && vm.document.summary.length > 0 && (
-                <div className="legal-summary">
-                  <span className="summary-title">Pontos principais desta leitura</span>
-                  <ul>
-                    {vm.document.summary.map((point) => (
-                      <li key={point}>
-                        <Icon name="check" size={18} />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              <div className="legal-notice">
-                <Icon name="shield" />
-                <p>
-                  O responsável e o canal de atendimento ainda precisam ser definidos. Estes textos
-                  descrevem a apresentação atual e devem ser revisados antes da operação do serviço.
-                </p>
-              </div>
-              {vm.document.sections.map((section) => (
-                <section key={section.title}>
-                  <h2>{section.title}</h2>
-                  {section.paragraphs.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </section>
-              ))}
-              {vm.document.sources.length > 0 && (
-                <section className="legal-sources">
-                  <h2>Fontes para consulta</h2>
-                  {vm.document.sources.map((source) => (
-                    <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer">
-                      {source.label} (abre em nova aba)
-                    </a>
-                  ))}
-                </section>
-              )}
-            </article>
+            <LegalDocumentContent document={vm.document} page={vm.page} />
           </div>
         </main>
       ) : (

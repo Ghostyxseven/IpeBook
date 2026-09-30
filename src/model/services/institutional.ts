@@ -47,122 +47,126 @@ export const documents: Record<LegalPage, LegalDocument> = {
   termos: {
     title: 'Termos de Uso',
     intro:
-      'Entenda o que você pode fazer nesta apresentação e quais condições ainda serão definidas para o aplicativo.',
+      'Conheça o que já funciona no site, o que ainda está em construção e os cuidados ao usar a apresentação.',
     summary: [
-      'A navegação é gratuita e não exige cadastro.',
+      'Você pode explorar o projeto gratuitamente, sem cadastro.',
       'Livros, preços e condições da estante são exemplos fictícios.',
-      'Não há compra, anúncio, reserva, mensagem ou pagamento nesta versão.',
+      'Ainda não é possível comprar, anunciar, reservar ou pagar por aqui.',
     ],
-    sources: [sources.lgpd],
     sections: [
       {
-        title: '1. A que estes termos se aplicam',
+        title: 'O que posso fazer aqui?',
         paragraphs: [
-          'O IpêBook é um projeto para conectar leitores de Piripiri, Piauí, por meio de compra, venda, troca e doação de livros. Estes termos descrevem somente a apresentação institucional que você está acessando.',
-          'Esta versão não permite criar contas, publicar anúncios, negociar, enviar mensagens ou efetuar pagamentos. Entrar e Criar conta exibem um aviso de indisponibilidade. Conhecer o projeto não cria uma conta, um pedido ou uma obrigação de compra.',
+          'Você pode conhecer o IpêBook, ler os guias, buscar livros na estante de exemplos e abrir seus detalhes. O projeto quer aproximar leitores de Piripiri, no Piauí, para venda, troca e doação de livros.',
+          'Esta versão não permite criar contas, publicar anúncios, negociar, enviar mensagens ou pagar. Entrar e Criar conta apenas mostram um aviso. Visitar o site não cria uma conta nem uma obrigação de compra.',
         ],
       },
       {
-        title: '2. Guias e exemplos interativos',
+        title: 'Os livros estão à venda?',
         paragraphs: [
-          'Você pode ler os capítulos, consultar os guias, buscar e filtrar a estante ilustrativa e abrir os detalhes dos exemplos. Títulos, preços e condições foram criados para demonstrar a experiência: não representam ofertas, estoque ou pessoas vendendo livros.',
-          'Os botões Quero comprar e Quero vender levam a orientações. Não confirmam transações. Na proposta futura, venda terá preço em reais, troca indicará o interesse e doação será gratuita. Condições de anúncios, entrega, pagamento, cancelamento e solução de conflitos precisam ser definidas antes da operação.',
+          'Não. Títulos, preços e condições são exemplos fictícios para mostrar como a experiência poderá funcionar. Eles não representam ofertas, estoque ou vendedores reais.',
+          'Quero comprar e Quero vender abrem orientações, sem confirmar negócios. Na proposta do projeto, venda tem preço em reais, troca depende de um acordo e doação é gratuita.',
+          'As regras de entrega, pagamento, cancelamento e solução de conflitos ainda precisam ser definidas antes de o serviço começar a operar.',
         ],
       },
       {
-        title: '3. Uso respeitoso e proteção de direitos',
+        title: 'Quais cuidados devo ter ao usar o site?',
         paragraphs: [
-          'Não use a página para fraude, personificação, distribuição de conteúdo malicioso, acesso indevido ou interferência no funcionamento do serviço. Respeite a privacidade de outras pessoas e os direitos sobre textos, imagens e obras.',
-          'A possibilidade futura de circular exemplares não autoriza copiar ou distribuir obras sem permissão. Estes termos não afastam direitos assegurados por lei, inclusive os de proteção de dados e de consumidores, quando aplicáveis.',
+          'Respeite outras pessoas e os direitos sobre textos, imagens e livros. Não use a página para golpes, para se passar por outra pessoa ou para tentar acessar ou danificar sistemas.',
+          'Vender ou trocar um exemplar não dá autorização para copiar ou distribuir a obra sem permissão. Estes termos preservam os direitos previstos em lei, inclusive de consumidores e de proteção de dados, quando aplicáveis.',
         ],
       },
       {
-        title: '4. Instagram e outros sites',
+        title: 'O que acontece ao abrir o Instagram?',
         paragraphs: [
-          'O perfil @ipebook no Instagram está indicado para acompanhar o projeto. Ao abrir esse link, você sai da apresentação e passa a usar um serviço externo, com termos e práticas de privacidade próprios.',
-          'O link não cria uma integração de cadastro ou compra. Não há pagamento, reserva ou atendimento de pedidos pelo site. A inclusão do perfil não o transforma em canal formal de solicitações LGPD ou suporte com prazo de resposta garantido.',
+          'Você sai do site e passa a usar um serviço com regras e práticas de privacidade próprias. O perfil @ipebook serve para acompanhar o projeto.',
+          'O link não cria cadastro, compra ou reserva. O Instagram não foi definido como canal formal para pedidos sobre dados pessoais; também não há prazo de atendimento garantido pelo site.',
         ],
       },
       {
-        title: '5. Disponibilidade e próximas versões',
+        title: 'O que pode mudar nas próximas versões?',
         paragraphs: [
-          'A apresentação pode ser corrigida e atualizada durante o desenvolvimento. Não há data de lançamento anunciada. Nenhuma avaliação de leitores, verificação de identidade ou garantia de transação é oferecida nesta versão.',
-          'Antes de ativar contas, anúncios ou comunicação entre leitores, será necessário apresentar as regras do serviço e revisar a privacidade. A navegação atual não vale como consentimento para tratamentos futuros nem como aceite antecipado dessas regras.',
+          'A apresentação pode receber correções e atualizações. Ainda não há data de lançamento, verificação de identidade, avaliação de leitores ou garantia de transações.',
+          'Antes de ativar contas, anúncios e mensagens, o projeto deverá apresentar as novas regras e atualizar a privacidade. Navegar hoje não significa aceitar regras futuras ou autorizar novos usos dos seus dados.',
         ],
       },
       {
-        title: '6. Responsável e revisão',
+        title: 'Quem é responsável e como pedir ajuda?',
         paragraphs: [
-          'A identificação do responsável pelo serviço e o canal formal de atendimento ainda precisam ser informados. O Instagram está disponível como referência social; não substitui essas informações.',
-          'Versão preliminar revisada em 29 de setembro de 2026. Alterações serão apresentadas nesta página. Antes da operação real, o responsável deverá completar e revisar os documentos conforme o funcionamento efetivo do serviço.',
+          'A identificação do responsável e o canal formal de atendimento ainda precisam ser informados. O Instagram é uma referência social e não substitui essas informações.',
+          'Texto preliminar revisado em 30 de setembro de 2026. As mudanças serão apresentadas nesta página. Os documentos precisam ser completados e revisados antes de o serviço operar.',
         ],
       },
     ],
+    sources: [sources.lgpd],
   },
   privacidade: {
     title: 'Política de Privacidade',
     intro:
-      'O que fica no seu navegador, quando você acessa um serviço externo e quais informações ainda precisam ser confirmadas.',
+      'Veja o que acontece com suas buscas, quais dados podem passar pela hospedagem e como entender seus direitos.',
     summary: [
-      'A busca e os filtros funcionam localmente, sem envio de termos a uma API.',
-      'O código da apresentação não inclui anúncios, analytics ou cookies opcionais.',
-      'A hospedagem e o Instagram precisam ser considerados separadamente.',
+      'Suas buscas filtram exemplos no próprio navegador, sem enviar o texto a um servidor.',
+      'O código desta apresentação não usa cookies, publicidade ou ferramentas de análise de visitas.',
+      'Informações da hospedagem e o contato para pedidos sobre dados ainda precisam ser confirmados.',
     ],
-    sources: [sources.lgpd, sources.cookies, sources.rights],
     sections: [
       {
-        title: '1. Escopo e responsável pelos dados',
+        title: 'O que acontece com minhas buscas?',
         paragraphs: [
-          'Esta política trata da apresentação institucional, não de um aplicativo de compra e venda em operação. A identificação do controlador e o canal específico de privacidade continuam pendentes. Esses dados deverão ser completados pelo responsável.',
-          'O perfil @ipebook permite acompanhar o projeto no Instagram. Não está definido como canal formal para receber pedidos sobre dados pessoais. Esta política não se apresenta como certificação de conformidade com a LGPD.',
+          'A busca filtra os livros de exemplo no seu navegador. Não envia a consulta a um servidor. Filtros, guias e detalhes abertos ficam na memória da página; o código não cria um perfil de leitura nem salva essas escolhas para outra visita.',
+          'Digite apenas títulos ou categorias. Não informe CPF, senha ou endereço. Esta versão não tem cadastro, envio de arquivos, pedido de localização precisa ou coleta de pagamento.',
+          'Seu navegador pode guardar as páginas visitadas no histórico, conforme suas configurações.',
         ],
       },
       {
-        title: '2. Busca, filtros e navegação',
+        title: 'O site usa cookies ou rastreamento?',
         paragraphs: [
-          'A busca da estante usa o texto digitado para filtrar uma lista de exemplos no próprio navegador. Não envia a consulta a um servidor ou ferramenta de análise. Guias escolhidos, filtros e detalhes abertos ficam no estado temporário da página; o código não os salva como perfil de leitura.',
-          'A busca serve para títulos e categorias: não informe CPF, senhas, endereço ou outros dados pessoais. Não há formulário de cadastro, envio de arquivos, solicitação de localização precisa ou coleta de pagamento nesta versão.',
-          'Os nomes de capítulos e documentos aparecem no fragmento do endereço, como #privacidade. O navegador pode manter essas páginas no seu histórico, conforme suas próprias configurações.',
+          'O código da apresentação não instala cookies nem salva buscas em localStorage ou sessionStorage, que são áreas de armazenamento do navegador. Também não inclui publicidade, pixels de rastreamento ou análise de visitas.',
+          'Fontes e imagens vêm do próprio site. O navegador pode guardar cópias desses arquivos no cache para carregar a página mais rápido.',
+          'Não há banner para cookies opcionais porque eles não estão presentes no código atual. Se isso mudar, as finalidades e as opções deverão ser avaliadas antes da ativação. Ainda é necessário conferir o que a infraestrutura publicada utiliza.',
         ],
       },
       {
-        title: '3. Dados técnicos da infraestrutura',
+        title: 'A hospedagem recebe algum dado?',
         paragraphs: [
-          'Para entregar uma página pela internet, a infraestrutura recebe informações técnicas, como endereço IP e características da requisição. O provedor pode manter registros de acesso ou segurança. A ausência de cadastro não significa ausência total de tratamento de dados.',
-          'Ainda falta confirmar os serviços e registros efetivamente usados, finalidades, bases legais, destinatários, localização do tratamento e prazos de conservação. Não atribuímos um prazo ou uma base legal genérica sem esse levantamento. O aviso deverá ser atualizado com os fatos da hospedagem antes da publicação ou da ampliação do serviço.',
+          'Ao abrir um site, a infraestrutura que entrega a página recebe dados técnicos, como seu endereço IP e informações da conexão. O provedor pode manter registros de acesso ou segurança. Não ter cadastro não significa que nenhum dado seja tratado.',
+          'Falta confirmar os serviços e registros usados, as finalidades e as bases legais (o que permite usar os dados pela lei). Também faltam os destinatários, os locais de tratamento e os prazos de conservação.',
+          'Essas informações devem ser conferidas e incluídas no aviso antes da publicação ou ampliação do serviço. Não há um prazo de retenção confirmado nesta apresentação.',
         ],
       },
       {
-        title: '4. Cookies, armazenamento e recursos locais',
+        title: 'E quando abro o Instagram ou outro link?',
         paragraphs: [
-          'O código desta apresentação não instala cookies, não grava buscas ou preferências em localStorage ou sessionStorage e não inclui publicidade, pixels ou análise de audiência. Fontes e imagens da apresentação são servidas pelo próprio site. Recursos podem permanecer no cache do navegador conforme suas configurações.',
-          'Não há banner de consentimento para tecnologias opcionais que não estão presentes nesta implementação. Se forem adicionadas, suas finalidades e opções deverão ser avaliadas e apresentadas antes de ativá-las. Esta descrição do código não substitui a conferência da infraestrutura publicada.',
+          'O Instagram é apenas um link: não incorporamos publicações, login ou rastreadores da rede social. Nosso código não carrega conteúdo do Instagram só porque você abriu esta página.',
+          'Ao clicar, você passa a usar o serviço externo, que segue suas próprias regras. Isso vale também para os links da ANPD, da legislação e do CERT.br. Consulte a privacidade no destino.',
+          'Evite enviar documentos ou informações sensíveis em comentários e mensagens. Essas interações não fazem parte da busca ou dos filtros do IpêBook.',
         ],
       },
       {
-        title: '5. Ao abrir o Instagram ou uma fonte externa',
+        title: 'Quem cuida dos dados e como faço um pedido?',
         paragraphs: [
-          'O Instagram aparece apenas como link: não incorporamos publicações, botão de login, widget ou pixel da rede social. Abrir a apresentação não carrega conteúdo do Instagram por iniciativa do nosso código.',
-          'Ao clicar no link, você acessa o Instagram, que poderá tratar informações segundo suas próprias políticas e configurações da sua conta. Interações, comentários e mensagens naquela rede não são processados pela busca ou pelos filtros deste site. Evite publicar documentos ou informações sensíveis.',
-          'Os links para legislação, ANPD e CERT.br também levam a serviços externos. A forma como cada serviço trata dados deve ser consultada no próprio destino.',
+          'A identificação do controlador (quem decide como os dados são usados) e o canal de privacidade continuam pendentes. O responsável pelo projeto precisa completar essas informações.',
+          'A página Seus direitos e LGPD explica os pedidos previstos na lei. O canal de privacidade ainda não está disponível: esta apresentação não recebe requerimentos nem emite protocolos.',
+          'O Instagram permite acompanhar o projeto, mas não foi definido como canal formal para esses pedidos. Este aviso não é uma certificação de conformidade com a LGPD.',
         ],
       },
       {
-        title: '6. Novas funcionalidades e segurança',
+        title: 'O que muda quando o aplicativo funcionar?',
         paragraphs: [
-          'Contas, anúncios, mensagens e pagamentos ainda não existem nesta apresentação. Antes de introduzi-los, será necessário identificar os dados necessários, finalidades, bases legais, compartilhamentos, conservação e controles de segurança. Não coletamos autorização antecipada para isso.',
-          'O desenvolvimento futuro também deverá avaliar o tratamento de dados de crianças e adolescentes de acordo com a legislação aplicável e seu melhor interesse. Esta versão não oferece cadastro a nenhuma faixa etária.',
-          'Nenhum serviço pode prometer risco zero. A página Segurança reúne cuidados de navegação; ela não afirma que recursos como verificação de identidade ou proteção de pagamentos estejam implementados.',
+          'Contas, anúncios, mensagens e pagamentos ainda não estão disponíveis. Antes de ativá-los, será preciso informar quais dados serão usados, para quê, com quem serão compartilhados e por quanto tempo serão guardados, além da base legal e dos cuidados de segurança.',
+          'O projeto também deverá avaliar a proteção de dados de crianças e adolescentes, conforme a lei e seu melhor interesse. Hoje não há cadastro para nenhuma faixa etária.',
+          'Navegar nesta apresentação não autoriza usos futuros dos seus dados. As dicas da página Segurança não significam que já exista verificação de identidade ou proteção de pagamentos.',
         ],
       },
       {
-        title: '7. Direitos e atualização',
+        title: 'Quando este texto foi atualizado?',
         paragraphs: [
-          'A página Seus direitos e LGPD explica os principais pedidos previstos na lei e indica orientações da ANPD. O canal de privacidade do IpêBook ainda não está disponível. Não recebemos requerimentos ou emitimos protocolos por esta apresentação.',
-          'Última revisão: 29 de setembro de 2026. Identificação do controlador, contato de privacidade e informações reais da infraestrutura são pendências para completar este aviso.',
+          'Última revisão: 30 de setembro de 2026. Este aviso trata somente da apresentação atual do IpêBook.',
+          'Ainda faltam a identificação do responsável, o contato de privacidade e os detalhes reais da hospedagem. O texto deverá ser atualizado quando essas informações forem confirmadas.',
         ],
       },
     ],
+    sources: [sources.lgpd, sources.cookies, sources.rights],
   },
   lgpd: {
     title: 'Seus direitos e LGPD',
@@ -219,50 +223,55 @@ export const documents: Record<LegalPage, LegalDocument> = {
   seguranca: {
     title: 'Segurança',
     intro:
-      'Cuidados para conhecer o projeto, reconhecer abordagens suspeitas e se preparar para futuros encontros entre leitores.',
+      'Saiba reconhecer uma cobrança suspeita, proteger suas informações e agir se algo parecer errado.',
     summary: [
       'O IpêBook não recebe pagamentos nem confirma reservas nesta apresentação.',
-      'Nunca compartilhe senha, código de acesso ou documento em comentários públicos.',
-      'Os exemplos da estante não são ofertas reais.',
+      'Não envie senhas, códigos de acesso ou documentos a quem fizer uma abordagem suspeita.',
+      'Recebeu uma cobrança por um livro da demonstração? Interrompa o contato e confira a origem.',
     ],
-    sources: [sources.safety],
     sections: [
       {
-        title: '1. O que esta versão não solicita',
+        title: 'Recebi uma cobrança. O que faço?',
         paragraphs: [
-          'Não há cobrança para conhecer o projeto, abrir exemplos ou consultar os guias. Esta apresentação não solicita Pix, cartão, senha, código recebido por SMS ou documentos. Não existe taxa de liberação de livro, reserva ou anúncio aqui.',
-          'Se alguém usar o nome IpêBook para cobrar por um dos exemplos da estante, essa cobrança não foi gerada por esta apresentação. Não confunda a demonstração com uma compra ativa.',
+          'Não pague uma suposta taxa de reserva, anúncio ou liberação de livro desta apresentação. Conhecer o projeto e consultar os exemplos é gratuito.',
+          'O site não solicita Pix, cartão, senha, código de SMS ou documentos. Se alguém cobrar por um livro da estante de exemplos usando o nome IpêBook, a cobrança não foi gerada por aqui.',
         ],
       },
       {
-        title: '2. Links, perfis e mensagens',
+        title: 'Como reconheço uma mensagem suspeita?',
         paragraphs: [
-          'Confira o endereço antes de abrir links e desconfie de urgência, prêmios, pedidos de códigos ou pagamentos inesperados. Use senhas diferentes e verificação em duas etapas nas suas contas externas, quando disponíveis.',
-          'O perfil indicado neste site é @ipebook no Instagram. Verifique a grafia; nomes parecidos não comprovam vínculo. O link serve para acompanhar o projeto e não comprova a legitimidade de mensagens recebidas de outros perfis.',
+          'Desconfie de pressa para pagar, prêmios inesperados, pedidos de códigos e links com endereço estranho. Confira o destino antes de abrir um link.',
+          'O perfil indicado é @ipebook no Instagram. Nomes parecidos não comprovam vínculo com o projeto. O link deste site não garante que uma mensagem recebida seja legítima.',
+          'Nas suas contas externas, use senhas diferentes e ative a verificação em duas etapas, quando disponível. Não compartilhe códigos de acesso.',
         ],
       },
       {
-        title: '3. Antes de combinar um livro',
+        title: 'Já enviei dados ou fiz um pagamento. E agora?',
         paragraphs: [
-          'Nos fluxos futuros, confira título, edição, fotos, conservação e condições combinadas. Venda envolve preço em reais; troca depende do interesse das duas pessoas; doação é gratuita. Não exponha seu endereço residencial desnecessariamente.',
-          'Prefira um encontro em local público, combine horário e confira o exemplar. Essas orientações reduzem riscos, mas não garantem a segurança de uma pessoa ou de uma negociação. O site ainda não verifica vendedores, agenda encontros ou protege pagamentos.',
+          'Interrompa o contato e guarde as mensagens e os comprovantes. Use a ferramenta de denúncia da plataforma onde aconteceu a abordagem.',
+          'Se enviou senha ou código de acesso, procure o serviço legítimo e proteja a conta. Troque a senha comprometida, inclusive em outras contas onde você a repetiu.',
+          'Se fez um pagamento indevido, procure imediatamente sua instituição financeira pelos canais oficiais. Considere registrar ocorrência. Não publique comprovantes com dados pessoais.',
+          'O IpêBook ainda não tem ferramenta de denúncia ou canal dedicado a incidentes nesta apresentação. O site não garante atendimento nem recuperação de valores.',
         ],
       },
       {
-        title: '4. Se uma abordagem parecer suspeita',
+        title: 'Como combinar um livro com mais cuidado?',
         paragraphs: [
-          'Interrompa o contato, guarde registros e utilize a denúncia da plataforma onde ocorreu a abordagem. Se tiver fornecido credenciais, altere-as no serviço legítimo. Se houver pagamento indevido, procure prontamente sua instituição financeira pelos canais oficiais e avalie registrar ocorrência.',
-          'Não publique comprovantes com dados pessoais. O IpêBook ainda não oferece ferramenta de denúncia ou canal dedicado a incidentes nesta apresentação; não há atendimento ou recuperação de valores garantidos pelo site.',
+          'Esta orientação é para futuras negociações: ainda não é possível combinar uma compra, troca ou doação aqui.',
+          'Confira título, edição, fotos e estado do livro. Combine as condições: venda tem preço em reais, troca exige interesse das duas pessoas e doação é gratuita.',
+          'Prefira local público, combine o horário e confira o exemplar. Evite expor seu endereço residencial. Esses cuidados reduzem riscos, mas não garantem a segurança de uma pessoa ou negociação.',
         ],
       },
       {
-        title: '5. Proteção técnica e limites',
+        title: 'Que proteção o IpêBook oferece hoje?',
         paragraphs: [
-          'A implementação atual utiliza exemplos locais e links externos, sem integração de pagamento ou rede social. Isso não elimina riscos da internet nem substitui a análise da hospedagem e do aplicativo futuro.',
-          'Antes de operar contas e anúncios, o projeto precisará definir controles de acesso, tratamento de denúncias, resposta a incidentes e atendimento. Publicar estas orientações não significa que esses recursos já estejam implantados.',
+          'Esta versão mostra exemplos locais e links externos. Não verifica vendedores, agenda encontros ou protege pagamentos.',
+          'Antes de operar contas e anúncios, o projeto precisará definir controles de acesso, denúncias, resposta a incidentes e atendimento. As orientações desta página não significam que esses recursos já existam.',
+          'Texto revisado em 30 de setembro de 2026. Nenhum serviço pode prometer risco zero; a infraestrutura e o aplicativo futuro ainda precisam ser avaliados.',
         ],
       },
     ],
+    sources: [sources.safety],
   },
 };
 
