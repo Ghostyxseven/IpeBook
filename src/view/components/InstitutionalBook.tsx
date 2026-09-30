@@ -58,12 +58,8 @@ export function InstitutionalBook({
           aria-label="Capa ilustrativa do livro de apresentação do IpêBook"
         >
           <div className="bound-book">
-            <span className="bound-spine" aria-hidden="true">
-              IpêBook · Histórias que continuam
-            </span>
             <div className="bound-front">
-              <span className="bound-edition">Projeto Comunitário</span>
-              <img src="/assets/logo-clean.png" alt="" />
+              <img src={require('../../../assets/logo-clean.png')} alt="" />
               <strong>
                 Histórias que
                 <br />
@@ -75,8 +71,8 @@ export function InstitutionalBook({
                 <small>Piripiri, Piauí • 2026</small>
               </span>
             </div>
+            <p className="cover-scene-caption">O próximo capítulo pode começar com você.</p>
           </div>
-          <p className="cover-scene-caption">O próximo capítulo pode começar com você.</p>
         </div>
         <div className="cover-bottom">
           <span>
