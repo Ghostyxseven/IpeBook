@@ -30,9 +30,10 @@ export function BookPresentation({ hash, children }: { hash: string; children: R
     const source = root.children[backwards ? vm.index : old] as HTMLElement;
     const width = root.clientWidth;
     const height = root.clientHeight;
-    const count = 40;
+    const count = 60;
     const stripWidth = width / count;
-    const duration = parseFloat(getComputedStyle(root).getPropertyValue('--landing-book-duration'));
+    const duration =
+      parseFloat(getComputedStyle(root).getPropertyValue('--landing-book-duration')) || 1800;
     const animations: Animation[] = [];
     const frames: Keyframe[][] = Array.from({ length: count }, () => []);
     const shading: Keyframe[][] = Array.from({ length: count }, () => []);
@@ -46,8 +47,10 @@ export function BookPresentation({ hash, children }: { hash: string; children: R
           0,
           Math.min(Math.PI, ((strip / count - (1 - progress * 1.4)) / 0.35) * Math.PI),
         );
-        frames[strip].push({ transform: `translate3d(${x}px,0,${z}px) rotateY(${-angle}rad)` });
-        shading[strip].push({ opacity: Math.sin(angle) * 0.18 });
+        frames[strip].push({
+          transform: `translate3d(${x}px, ${Math.sin(angle) * -15}px, ${z}px) rotateY(${-angle}rad) rotateX(${Math.sin(angle) * 0.05}rad)`,
+        });
+        shading[strip].push({ opacity: Math.sin(angle) * 0.22 });
         faces[strip].push({ opacity: angle > Math.PI / 2 ? 0 : 1 });
         x += Math.cos(angle) * stripWidth;
         z += Math.sin(angle) * stripWidth;
@@ -192,10 +195,20 @@ export function BookPresentation({ hash, children }: { hash: string; children: R
           value={vm.index + 1}
           aria-label="Progresso de leitura"
         />
+        <div className="book-swipe-indicator" aria-hidden="true">
+          <span className="swipe-arrow swipe-arrow-left">‹</span>
+          <span className="swipe-text">Deslize para navegar</span>
+          <span className="swipe-arrow swipe-arrow-right">›</span>
+        </div>
         <p aria-live="polite" aria-atomic="true">
           <span className="book-page-title">{vm.pages[vm.index].label}</span>
           <span className="book-counter">
             {String(vm.index + 1).padStart(2, '0')} / {String(pages.length).padStart(2, '0')}
+          </span>
+          <span className="book-dots" aria-hidden="true">
+            {pages.map((_, i) => (
+              <span key={i} className={`book-dot ${i === vm.index ? 'is-active' : ''}`} />
+            ))}
           </span>
         </p>
         <button
