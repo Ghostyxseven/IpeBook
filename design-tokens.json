@@ -135,6 +135,10 @@
       "$type": "dimension",
       "$value": "4px"
     },
+    "6": {
+      "$type": "dimension",
+      "$value": "6px"
+    },
     "8": {
       "$type": "dimension",
       "$value": "8px"
@@ -146,6 +150,10 @@
     "16": {
       "$type": "dimension",
       "$value": "16px"
+    },
+    "20": {
+      "$type": "dimension",
+      "$value": "20px"
     },
     "24": {
       "$type": "dimension",
@@ -213,6 +221,53 @@
       "weight": 700,
       "fontSize": "32px",
       "lineHeight": "40px"
+    }
+  },
+  "landing": {
+    "maxWidth": {
+      "$type": "dimension",
+      "$value": "1200px"
+    },
+    "headerHeight": {
+      "$type": "dimension",
+      "$value": "88px"
+    },
+    "sectionSpace": {
+      "$type": "dimension",
+      "$value": "96px"
+    },
+    "heroSize": {
+      "$type": "dimension",
+      "$value": "72px"
+    },
+    "headingSize": {
+      "$type": "dimension",
+      "$value": "40px"
+    },
+    "bodyLarge": {
+      "$type": "dimension",
+      "$value": "20px"
+    },
+    "heroTracking": {
+      "$type": "dimension",
+      "$value": "-2.8px"
+    },
+    "book": {
+      "duration": "1800ms",
+      "perspective": "2400px",
+      "controlsHeight": "72px",
+      "heroMax": "96px",
+      "imageMax": "640px",
+      "frameMargin": "24px",
+      "paperInset": "48px",
+      "runningHeight": "48px",
+      "chapterWidth": "1400px",
+      "chapterTitle": "46px",
+      "coverTitle": "68px",
+      "coverWidth": "360px",
+      "paperEdge": "6px",
+      "dialogWidth": "760px",
+      "easing": "cubic-bezier(0.77, 0, 0.175, 1)"
     }
   }
 }
