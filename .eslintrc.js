@@ -9,8 +9,6 @@ module.exports = {
     browser: true,
     node: true,
     es6: true,
-    es2020: true,
-    es2022: true,
   },
   rules: {
     'no-unused-vars': 'warn',

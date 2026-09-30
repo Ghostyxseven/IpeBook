@@ -1,1 +1,0 @@
-{"buildCommand": "npm run build:web", "outputDirectory": "dist", "framework": "create-react-app"}

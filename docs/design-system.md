@@ -7,31 +7,31 @@ O IpêBook ajuda pessoas de Piripiri, PI, a descobrir livros para venda, troca e
 
 ## Cores
 
-| Papel            | Token                 | Valor     |
-| ---------------- | --------------------- | --------- |
-| Fundo            | `color.background`    | `#F6F1E8` |
-| Superfície       | `color.surface`       | `#FCFAF6` |
-| Texto principal  | `color.text`          | `#3C302A` |
+| Papel | Token | Valor |
+| --- | --- | --- |
+| Fundo | `color.background` | `#F6F1E8` |
+| Superfície | `color.surface` | `#FCFAF6` |
+| Texto principal | `color.text` | `#3C302A` |
 | Texto secundário | `color.secondaryText` | `#645B55` |
-| Ação principal   | `color.action`        | `#426B55` |
-| Ação profunda    | `color.actionDeep`    | `#2F503D` |
-| Superfície suave | `color.soft`          | `#E7F0EA` |
-| Borda            | `color.border`        | `#8F8478` |
-| Marrom           | `color.brown`         | `#8A5945` |
-| Sucesso          | `color.success`       | `#2F6B4F` |
-| Erro             | `color.error`         | `#B3382C` |
-| Dourado          | `color.gold`          | `#D99719` |
-| Destaque         | `color.highlight`     | `#F4B942` |
+| Ação principal | `color.action` | `#426B55` |
+| Ação profunda | `color.actionDeep` | `#2F503D` |
+| Superfície suave | `color.soft` | `#E7F0EA` |
+| Borda | `color.border` | `#8F8478` |
+| Marrom | `color.brown` | `#8A5945` |
+| Sucesso | `color.success` | `#2F6B4F` |
+| Erro | `color.error` | `#B3382C` |
+| Dourado | `color.gold` | `#D99719` |
+| Destaque | `color.highlight` | `#F4B942` |
 
 Use fundo na área da página, superfície em cartões e campos, texto principal para conteúdo, verde para a ação prioritária e vermelho somente para erro. Capas de livros podem usar cores editoriais próprias; não transformá-las em novas cores da interface. Os tokens de foco, erro, desabilitado, hover e pressionado reproduzem os aliases atuais do Figma. Hover e pressionado compartilham `#E7F0EA` na fonte; a implementação pode acrescentar feedback de elevação ou animação sem criar uma cor arbitrária.
 
 ### Modalidades
 
-| Modalidade | Fundo     | Texto     | Regra de conteúdo                                    |
-| ---------- | --------- | --------- | ---------------------------------------------------- |
-| Venda      | `#E7F0EA` | `#2F503D` | Mostrar preço formatado em BRL.                      |
-| Troca      | `#F4B942` | `#3C302A` | Indicar interesse e condições; chip suave `#FBF0D0`. |
-| Doação     | `#F2E3DA` | `#7A4430` | Mostrar “Grátis”/“Doação”, sem preço fictício.       |
+| Modalidade | Fundo | Texto | Regra de conteúdo |
+| --- | --- | --- | --- |
+| Venda | `#E7F0EA` | `#2F503D` | Mostrar preço formatado em BRL. |
+| Troca | `#F4B942` | `#3C302A` | Indicar interesse e condições; chip suave `#FBF0D0`. |
+| Doação | `#F2E3DA` | `#7A4430` | Mostrar “Grátis”/“Doação”, sem preço fictício. |
 
 O texto do selo e o ícone devem reforçar a modalidade; nunca depender apenas da cor.
 
@@ -39,38 +39,38 @@ O texto do selo e o ícone devem reforçar a modalidade; nunca depender apenas d
 
 A família dos estilos IpêBook no Figma é **Roboto**. A interface do sistema operacional usa a tipografia nativa quando seu componente nativo a exigir.
 
-| Estilo  | Peso | Tamanho / entrelinha |
-| ------- | ---: | -------------------- |
-| Legenda |  400 | 12 / 16 px           |
-| Corpo   |  400 | 16 / 24 px           |
-| Ação    |  700 | 16 / 24 px           |
-| Seção   |  700 | 24 / 32 px           |
-| Título  |  700 | 32 / 40 px           |
+| Estilo | Peso | Tamanho / entrelinha |
+| --- | ---: | --- |
+| Legenda | 400 | 12 / 16 px |
+| Corpo | 400 | 16 / 24 px |
+| Ação | 700 | 16 / 24 px |
+| Seção | 700 | 24 / 32 px |
+| Título | 700 | 32 / 40 px |
 
 Escala de espaçamento: `0, 4, 8, 12, 16, 24, 32, 48, 56 px`. Prefira a escala; preserve respiro de 24 px entre grupos principais. O tamanho visual de um chip pode ser menor que seu alvo de toque.
 
-| Medida             | Android |   iOS |   Web |
-| ------------------ | ------: | ----: | ----: |
-| Raio de campo      |   16 px | 20 px | 14 px |
-| Raio de cartão     |   18 px | 22 px | 18 px |
-| Raio de navegação  |   16 px | 28 px | 18 px |
-| Altura de controle |   56 px | 52 px | 48 px |
-| Margem de página   |   24 px | 24 px | 32 px |
+| Medida | Android | iOS | Web |
+| --- | ---: | ---: | ---: |
+| Raio de campo | 16 px | 20 px | 14 px |
+| Raio de cartão | 18 px | 22 px | 18 px |
+| Raio de navegação | 16 px | 28 px | 18 px |
+| Altura de controle | 56 px | 52 px | 48 px |
+| Margem de página | 24 px | 24 px | 32 px |
 
 Esses valores vêm das variáveis locais `IpêBook / Interface`, com modos Android, iOS e Web. Não escale uma captura de Android para produzir a versão de iPhone ou Web.
 
 ## Componentes
 
-| Componente              | Conteúdo e comportamento                                                                                                                                                                     |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Navegação               | Destaque da seção atual, ícone e rótulo consistentes; áreas clicáveis de 48 × 48 px; voltar retorna ao contexto correto.                                                                     |
-| Botão                   | Variante primária verde, secundária contornada e texto; rótulo com verbo claro, estados de foco, pressionado, carregamento e desabilitado. Uma ação primária por área de decisão.            |
-| Campo e busca           | Rótulo persistente, dica somente quando vazio, validação próxima do campo, teclado adequado; filtros selecionados visíveis e removíveis.                                                     |
-| Cartão de livro         | Capa, título, autor, modalidade, preço ou gratuidade, estado do livro e localização quando disponíveis. Priorize leitura do título e modalidade; não substitua dados ausentes por invenções. |
-| Selo de modalidade      | Venda, Troca ou Doação com as cores acima e texto legível. Use a mesma semântica em lista, detalhe e publicação.                                                                             |
-| Estados de feedback     | Carregando, vazio, offline, erro e sucesso com mensagem concreta e próxima ação; preservar informações preenchidas quando houver recuperação.                                                |
-| Perfil e confiança      | Identidade, localização e informações verificadas quando existirem; não fabricar notas, selos ou contagens.                                                                                  |
-| Segurança e confirmação | Explicar denúncia, bloqueio e confirmação de ações; uma ação destrutiva deve ser identificada com clareza.                                                                                   |
+| Componente | Conteúdo e comportamento |
+| --- | --- |
+| Navegação | Destaque da seção atual, ícone e rótulo consistentes; áreas clicáveis de 48 × 48 px; voltar retorna ao contexto correto. |
+| Botão | Variante primária verde, secundária contornada e texto; rótulo com verbo claro, estados de foco, pressionado, carregamento e desabilitado. Uma ação primária por área de decisão. |
+| Campo e busca | Rótulo persistente, dica somente quando vazio, validação próxima do campo, teclado adequado; filtros selecionados visíveis e removíveis. |
+| Cartão de livro | Capa, título, autor, modalidade, preço ou gratuidade, estado do livro e localização quando disponíveis. Priorize leitura do título e modalidade; não substitua dados ausentes por invenções. |
+| Selo de modalidade | Venda, Troca ou Doação com as cores acima e texto legível. Use a mesma semântica em lista, detalhe e publicação. |
+| Estados de feedback | Carregando, vazio, offline, erro e sucesso com mensagem concreta e próxima ação; preservar informações preenchidas quando houver recuperação. |
+| Perfil e confiança | Identidade, localização e informações verificadas quando existirem; não fabricar notas, selos ou contagens. |
+| Segurança e confirmação | Explicar denúncia, bloqueio e confirmação de ações; uma ação destrutiva deve ser identificada com clareza. |
 
 ### Ícones
 
@@ -96,23 +96,3 @@ As três páginas do Figma têm 66 telas cada, numeradas 01–51 e 53–67. Mant
 ## Manutenção
 
 Ao criar ou revisar uma tela: confira o quadro correspondente no Figma; utilize os tokens; implemente componentes e estados compartilhados; verifique Android, iPhone e Web; documente no PR divergências justificadas. Se uma decisão de design mudar, atualize este documento e `design-tokens.json` junto com o código.
-
-## Página institucional Web
-
-A rota `/` apresenta o projeto; não é a tela Entrar. A tela fica em `src/view/screens/InstitutionalScreen.web.tsx`, com componentes em `src/view/components/`. `App.web.tsx` e `src/app/index.web.tsx` apenas encaminham para a View. O estado fica na ViewModel e os documentos no Model.
-
-A inspeção da página Web `33:95` não encontrou landing institucional correspondente. O quadro `53:185` foi consultado para marca e mensagem, com screenshot e contexto de design. A composição da apresentação é nova, conforme a correção de escopo do usuário. Usa Roboto local do contrato visual, embora o quadro atual use Inter, e reutiliza o ícone de livro do Figma em 32 × 32 px. As capas são ilustrações originais, sem anunciar exemplares reais.
-
-Os tokens `landing` ampliam a escala para títulos e espaçamento da apresentação desktop; cores, estados e controles continuam usando os tokens existentes. A View converte o JSON em variáveis CSS. A apresentação adapta-se ao navegador móvel; isso não equivale a validar o aplicativo Android/iOS. Menu, FAQ e diálogo usam comportamento acessível de teclado; não há animação automática. Documentos legais têm endereços por fragmentos e impressão simplificada.
-
-### Apresentação em livro
-
-Por solicitação do usuário, a apresentação Web ocupa `100dvh`, com cabeçalho e controles persistentes, uma seção por folha e avanço lateral. É uma divergência intencional da referência estática `53:185`: a marca permanece, mas a interação foi criada para esta apresentação. Tokens `landing.book` controlam duração, perspectiva, controles e escala do hero. A virada usa faixas em 3D durante 1100 ms, com curvatura e sombreamento; teclado e preferência por movimento reduzido fazem troca direta. Botões são alternativa ao gesto horizontal. Conteúdo excedente rola dentro da folha para preservar leitura com zoom e telas baixas; documentos legais mantêm rolagem comum. Não há avanço automático.
-
-### Livro de apresentação enriquecido
-
-A [especificação 003](../specs/003-livro-conteudo/spec.md) mantém sete capítulos e adiciona uma capa encadernada ilustrativa, bordas de papel, sumário em forma de marcador e progresso de leitura. A moldura ocupa a área disponível; capítulos densos permitem rolagem interna em telas baixas e móveis. O sumário é um diálogo nativo com fechamento por Escape e retorno de foco. A rotação fica limitada à virada solicitada pelo leitor.
-
-Os guias Comprar, Vender, Trocar e Doar explicam etapas e checklists. A estante é uma demonstração com busca e filtros locais, não um catálogo operacional. Todos os títulos, condições e o preço são fictícios e identificados como exemplos; não há autor, vendedor ou avaliação inventados. Venda usa BRL, troca descreve o interesse, doação mostra Grátis. O estado vazio oferece limpar busca e filtros; o detalhe orienta para o guia, sem simular reserva ou contato.
-
-Foram consultados os quadros Web Descobrir `33:267` e Detalhes `33:585`: aproveitam-se hierarquia, modalidades e orientação para encontro presencial. A capa, o sumário e a composição editorial dos capítulos são divergências deliberadas solicitadas pelo usuário. Capas originais são elementos CSS, sem reproduzir capas comerciais. `landing.book` centraliza medidas da moldura, título, capa, diálogo e curva de movimento. Os estilos específicos ficam em `book-experience.css`; cores e Roboto continuam no contrato visual existente.
