@@ -304,7 +304,7 @@
   flex-direction: column;
   text-align: center;
   justify-content: center;
-  padding: var(--spacing-24) var(--spacing-32) var(--spacing-24) var(--spacing-48);
+  padding: var(--spacing-24) var(--spacing-48) var(--spacing-24) var(--spacing-48);
 }
 .bound-edition {
   font-size: 10px;
@@ -318,10 +318,11 @@
   filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--color-text) 40%, transparent));
 }
 .bound-front > strong {
-  font-size: clamp(28px, 2.8vw, 42px);
-  line-height: 1.05;
+  font-size: clamp(26px, 2.5vw, 38px);
+  line-height: 1.08;
   letter-spacing: -0.5px;
   margin-top: var(--spacing-8);
+  max-width: 250px;
 }
 .bound-rule {
   height: 2px;
@@ -353,23 +354,23 @@
 }
 .cover-scene-caption {
   position: absolute;
-  top: -10px;
-  right: 15%;
+  top: -14px;
+  right: 16px;
   background: var(--color-highlight);
   color: var(--color-text);
-  padding: var(--spacing-24) var(--spacing-16) var(--spacing-32);
-  font-size: 13px;
-  font-weight: 500;
+  padding: var(--spacing-20, 20px) 9px var(--spacing-24);
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   border-radius: 4px 4px 0 0;
   box-shadow: 2px -4px 8px color-mix(in srgb, var(--color-text) 15%, transparent);
   margin: 0;
-  z-index: 0;
+  z-index: 2;
   transform: rotate(2deg);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 16px), 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 14px), 0 100%);
 }
 
 .cover-bottom {
@@ -600,7 +601,8 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--spacing-24);
 }
-.example-card { max-width: 100%;
+.example-card {
+  max-width: 100%;
   min-width: 0;
   display: grid;
   grid-template-columns: 0.82fr 1fr;
@@ -657,7 +659,8 @@
   place-items: center;
   min-height: var(--spacing-56);
 }
-.example-copy { min-width: 0;
+.example-copy {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -910,7 +913,8 @@
 }
 
 /* --- Animações 3D da Estante (Estante Viva) --- */
-.example-card { max-width: 100%;
+.example-card {
+  max-width: 100%;
   transition:
     background-color 0.4s ease,
     transform 0.4s ease;
@@ -978,7 +982,8 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-20, 20px);
   }
-  .example-card { max-width: 100%;
+  .example-card {
+    max-width: 100%;
     grid-template-columns: minmax(0, 1fr);
   }
   .example-cover {
@@ -1048,9 +1053,18 @@
     animation-direction: alternate-reverse;
   }
   @keyframes swipeHintMotion {
-    0% { transform: translateX(0); opacity: 0.5; }
-    50% { transform: translateX(3px); opacity: 1; }
-    100% { transform: translateX(0); opacity: 0.5; }
+    0% {
+      transform: translateX(0);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateX(3px);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 0.5;
+    }
   }
   .book-page-title {
     display: none;
