@@ -1,134 +1,129 @@
-# Design system — IpêBook
+# Design System — IpêBook
 
-**Fonte:** [Figma — IpêBook, proposta mobile e design revisado](https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1) · páginas Android `0:1`, iPhone `33:94`, Web `33:95`.  
-**Implementação:** [`design-tokens.json`](../design-tokens.json) contém os valores reutilizáveis. Este documento descreve seu uso.
+**Versão:** 1.1  
+**Fonte visual:** [Figma — IpêBook](https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1)  
+**Contrato de implementação:** [`design-tokens.json`](../design-tokens.json)
 
-O IpêBook ajuda pessoas de Piripiri, PI, a descobrir livros para venda, troca e doação e combinar a entrega presencial. A interface deve ser acolhedora, legível e consistente entre plataformas.
+O Design System do IpêBook mantém uma identidade única para Android, iOS e Web sem forçar componentes idênticos entre plataformas.
 
-## Cores
+## Princípios
 
-| Papel            | Token                 | Valor     |
-| ---------------- | --------------------- | --------- |
-| Fundo            | `color.background`    | `#F6F1E8` |
-| Superfície       | `color.surface`       | `#FCFAF6` |
-| Texto principal  | `color.text`          | `#3C302A` |
-| Texto secundário | `color.secondaryText` | `#645B55` |
-| Ação principal   | `color.action`        | `#426B55` |
-| Ação profunda    | `color.actionDeep`    | `#2F503D` |
-| Superfície suave | `color.soft`          | `#E7F0EA` |
-| Borda            | `color.border`        | `#8F8478` |
-| Marrom           | `color.brown`         | `#8A5945` |
-| Sucesso          | `color.success`       | `#2F6B4F` |
-| Erro             | `color.error`         | `#B3382C` |
-| Dourado          | `color.gold`          | `#D99719` |
-| Destaque         | `color.highlight`     | `#F4B942` |
+- clareza antes de decoração;
+- conteúdo é protagonista;
+- comportamento nativo por plataforma;
+- confiança nas interações presenciais;
+- acessibilidade por padrão.
 
-Use fundo na área da página, superfície em cartões e campos, texto principal para conteúdo, verde para a ação prioritária e vermelho somente para erro. Capas de livros podem usar cores editoriais próprias; não transformá-las em novas cores da interface. Os tokens de foco, erro, desabilitado, hover e pressionado reproduzem os aliases atuais do Figma. Hover e pressionado compartilham `#E7F0EA` na fonte; a implementação pode acrescentar feedback de elevação ou animação sem criar uma cor arbitrária.
+## Fonte de verdade
 
-### Modalidades
+| Camada | Responsabilidade |
+| --- | --- |
+| Figma | decisões visuais, componentes e referência por plataforma |
+| `design-tokens.json` | cores, tipografia, medidas, layout, motion e acessibilidade |
+| `docs/design-system/` | regras de uso, patterns e governança |
+| código | implementação que consome o contrato |
 
-| Modalidade | Fundo     | Texto     | Regra de conteúdo                                    |
-| ---------- | --------- | --------- | ---------------------------------------------------- |
-| Venda      | `#E7F0EA` | `#2F503D` | Mostrar preço formatado em BRL.                      |
-| Troca      | `#F4B942` | `#3C302A` | Indicar interesse e condições; chip suave `#FBF0D0`. |
-| Doação     | `#F2E3DA` | `#7A4430` | Mostrar “Grátis”/“Doação”, sem preço fictício.       |
+Mudanças globais devem manter essas quatro camadas sincronizadas.
 
-O texto do selo e o ícone devem reforçar a modalidade; nunca depender apenas da cor.
+## Documentação
 
-## Tipografia e medidas
+- [Foundations](design-system/foundations.md)
+- [Components e Patterns](design-system/components-patterns.md)
+- [Plataformas e Acessibilidade](design-system/platforms-accessibility.md)
+- [IA e Governança](design-system/ai-governance.md)
 
-A família dos estilos IpêBook no Figma é **Roboto**. A interface do sistema operacional usa a tipografia nativa quando seu componente nativo a exigir.
+## Identidade
 
-| Estilo  | Peso | Tamanho / entrelinha |
-| ------- | ---: | -------------------- |
-| Legenda |  400 | 12 / 16 px           |
-| Corpo   |  400 | 16 / 24 px           |
-| Ação    |  700 | 16 / 24 px           |
-| Seção   |  700 | 24 / 32 px           |
-| Título  |  700 | 32 / 40 px           |
+O IpêBook deve parecer **acolhedor, humano, editorial, simples, confiável e local**.
 
-Escala de espaçamento: `0, 4, 8, 12, 16, 24, 32, 48, 56 px`. Prefira a escala; preserve respiro de 24 px entre grupos principais. O tamanho visual de um chip pode ser menor que seu alvo de toque.
+Direção visual:
 
-| Medida             | Android |   iOS |   Web |
-| ------------------ | ------: | ----: | ----: |
-| Raio de campo      |   16 px | 20 px | 14 px |
-| Raio de cartão     |   18 px | 22 px | 18 px |
-| Raio de navegação  |   16 px | 28 px | 18 px |
-| Altura de controle |   56 px | 52 px | 48 px |
-| Margem de página   |   24 px | 24 px | 32 px |
+- fundo creme;
+- superfícies claras;
+- verde profundo para ações e navegação;
+- amarelo-ipê como destaque;
+- cantos suaves;
+- capas e conteúdo dos livros como protagonistas.
 
-Esses valores vêm das variáveis locais `IpêBook / Interface`, com modos Android, iOS e Web. Não escale uma captura de Android para produzir a versão de iPhone ou Web.
+Evite glow/neon, sombras pesadas, ícones decorativos sem função e aparência genérica de IA.
 
-## Componentes
+## Semântica do produto
 
-| Componente              | Conteúdo e comportamento                                                                                                                                                                     |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Navegação               | Destaque da seção atual, ícone e rótulo consistentes; áreas clicáveis de 48 × 48 px; voltar retorna ao contexto correto.                                                                     |
-| Botão                   | Variante primária verde, secundária contornada e texto; rótulo com verbo claro, estados de foco, pressionado, carregamento e desabilitado. Uma ação primária por área de decisão.            |
-| Campo e busca           | Rótulo persistente, dica somente quando vazio, validação próxima do campo, teclado adequado; filtros selecionados visíveis e removíveis.                                                     |
-| Cartão de livro         | Capa, título, autor, modalidade, preço ou gratuidade, estado do livro e localização quando disponíveis. Priorize leitura do título e modalidade; não substitua dados ausentes por invenções. |
-| Selo de modalidade      | Venda, Troca ou Doação com as cores acima e texto legível. Use a mesma semântica em lista, detalhe e publicação.                                                                             |
-| Estados de feedback     | Carregando, vazio, offline, erro e sucesso com mensagem concreta e próxima ação; preservar informações preenchidas quando houver recuperação.                                                |
-| Perfil e confiança      | Identidade, localização e informações verificadas quando existirem; não fabricar notas, selos ou contagens.                                                                                  |
-| Segurança e confirmação | Explicar denúncia, bloqueio e confirmação de ações; uma ação destrutiva deve ser identificada com clareza.                                                                                   |
+### Venda
+- preço em BRL;
+- badge verde suave;
+- texto “Venda”.
 
-### Ícones
+### Troca
+- condições e interesse explícitos;
+- amarelo-ipê como reforço;
+- texto “Troca”.
 
-Use **uma família por plataforma**: Material Symbols/Material 3 no Android, SF Symbols ou a biblioteca iOS do projeto no iPhone, e uma família vetorial coerente na Web. Mantenha significado e peso visual uniformes, com ícones equivalentes para buscar, explorar, favoritos, anunciar, mensagens e perfil. Dê nome acessível a ações só com ícone. Não misture ícones preenchidos e contornados aleatoriamente; selecione o estado ativo deliberadamente.
+### Doação
+- gratuidade explícita;
+- terracota suave;
+- texto “Doação” ou “Grátis”.
 
-## Regras por plataforma
+### Reservado e Concluído
+São estados do ciclo do anúncio, não modalidades. Sempre devem aparecer com texto legível, nunca somente por cor.
 
-- **Android:** componentes e navegação Material 3, respeitando áreas seguras, barra de sistema e gesto de voltar. Altura padrão de controle 56 px.
-- **iPhone:** controles, barra de abas e padrões de retorno nativos; respeitar safe areas e teclado. Altura padrão de controle 52 px.
-- **Web:** shell responsivo, navegação persistente no desktop, largura de leitura confortável e uso de teclado com foco visível. A página do Figma representa desktop de 1440 px; adaptar para larguras menores sem cortar conteúdo. Altura padrão de controle 48 px.
+## Componentes próprios
 
-As três páginas do Figma têm 66 telas cada, numeradas 01–51 e 53–67. Mantenha os fluxos equivalentes entre plataformas, mas adapte sua apresentação. O número 52 está ausente no arquivo atual.
+O Figma possui componentes de produto reutilizáveis para:
 
-## Experiência e acessibilidade
+- **IpêBook / Status Badge**
+- **IpêBook / Book Card**
+- **IpêBook / Empty State**
 
-- Fluxos prioritários: entrar/criar conta → descobrir → filtrar/buscar → detalhe do livro → contato/acordo; anunciar livro → selecionar modalidade → revisar e publicar.
-- Na tela **Entrar**, dê destaque à ação principal, rótulos reais nos campos, mostrar/ocultar senha com nome acessível, recuperação de senha e erros acionáveis. Preserve os dados digitados ao validar.
-- Em **Descobrir**, mostre localização de forma entendível, busca e filtros próximos dos resultados, modalidade identificável e estado vazio com ajuste de filtro.
-- Use português do Brasil, moeda `pt-BR` e termos consistentes. Trate bairros, preços e perfis de protótipo como exemplos.
-- Alvos de toque: mínimo de **48 × 48 px**; ícones decorativos ficam fora da árvore acessível. Respeite ampliação de texto, contraste, leitura por tecnologia assistiva e navegação por teclado na Web.
-- Para estados de erro e offline, explique o que aconteceu e ofereça “Tentar novamente” ou outra saída relevante. Não prometer funcionalidade de rede a partir de um link de protótipo.
+Controles de sistema como Button, Text Field, Search, Navigation, Dialog, Sheet e equivalentes devem vir prioritariamente das bibliotecas da plataforma.
 
-## Manutenção
+## Plataforma
 
-Ao criar ou revisar uma tela: confira o quadro correspondente no Figma; utilize os tokens; implemente componentes e estados compartilhados; verifique Android, iPhone e Web; documente no PR divergências justificadas. Se uma decisão de design mudar, atualize este documento e `design-tokens.json` junto com o código.
+### Android
+Material 3 + Material Symbols.
 
-## Página institucional Web
+### iOS
+Componentes nativos da biblioteca iOS do projeto + SF Symbols.
 
-A rota `/` apresenta o projeto; não é a tela Entrar. A tela fica em `src/view/screens/InstitutionalScreen.web.tsx`, com componentes em `src/view/components/`. `App.web.tsx` e `src/app/index.web.tsx` apenas encaminham para a View. O estado fica na ViewModel e os documentos no Model.
+### Web
+Layout responsivo, grid de 12 colunas, estados hover/focus e navegação por teclado.
 
-A inspeção da página Web `33:95` não encontrou landing institucional correspondente. O quadro `53:185` foi consultado para marca e mensagem, com screenshot e contexto de design. A composição da apresentação é nova, conforme a correção de escopo do usuário. Usa Roboto local do contrato visual, embora o quadro atual use Inter, e reutiliza o ícone de livro do Figma em 32 × 32 px. As capas são ilustrações originais, sem anunciar exemplares reais.
+O objetivo é **equivalência de experiência, não cópia pixel a pixel**.
 
-Os tokens `landing` ampliam a escala para títulos e espaçamento da apresentação desktop; cores, estados e controles continuam usando os tokens existentes. A View converte o JSON em variáveis CSS. A apresentação adapta-se ao navegador móvel; isso não equivale a validar o aplicativo Android/iOS. Menu, FAQ e diálogo usam comportamento acessível de teclado; não há animação automática. Documentos legais têm endereços por fragmentos e impressão simplificada.
+## Acessibilidade
 
-### Apresentação em livro
+- alvo de toque mínimo de 48 × 48 px;
+- foco visível na Web;
+- rótulos acessíveis para icon buttons;
+- estados não dependem somente de cor;
+- erros explicam o problema e a correção;
+- layouts toleram texto ampliado;
+- movimento reduzido é respeitado.
 
-Por solicitação do usuário, a apresentação Web ocupa `100dvh`, com cabeçalho e controles persistentes, uma seção por folha e avanço lateral. É uma divergência intencional da referência estática `53:185`: a marca permanece, mas a interação foi criada para esta apresentação. Tokens `landing.book` controlam duração, perspectiva, controles e escala do hero. A virada usa 12 faixas em 3D, com curvatura e sombreamento. No celular, o progresso acompanha o dedo; após soltar, conclui ou retorna em até 250 ms com a curva `cubic-bezier(0.23, 1, 0.32, 1)` do token. Um novo toque retoma o gesto durante a finalização. A indicação de deslizar encerra após três ciclos ou o primeiro gesto; teclado e preferência por movimento reduzido fazem troca direta. Botões são alternativa ao gesto horizontal. Conteúdo excedente rola dentro da folha para preservar leitura com zoom e telas baixas; documentos legais mantêm rolagem comum. Não há avanço automático.
+## Conteúdo
 
-### Livro de apresentação enriquecido
+Use português do Brasil e CTAs específicos:
 
-A [especificação 003](../specs/003-livro-conteudo/spec.md) mantém sete capítulos e adiciona uma capa encadernada ilustrativa, bordas de papel, sumário em forma de marcador e progresso de leitura. A moldura ocupa a área disponível; capítulos densos permitem rolagem interna em telas baixas e móveis. O sumário é um diálogo nativo com fechamento por Escape e retorno de foco. A rotação fica limitada à virada solicitada pelo leitor.
+- “Explorar livros”
+- “Publicar anúncio”
+- “Enviar mensagem”
+- “Confirmar encontro”
+- “Salvar alterações”
 
-Os guias Comprar, Vender, Trocar e Doar explicam etapas e checklists. A estante é uma demonstração com busca e filtros locais, não um catálogo operacional. Todos os títulos, condições e o preço são fictícios e identificados como exemplos; não há autor, vendedor ou avaliação inventados. Venda usa BRL, troca descreve o interesse, doação mostra Grátis. O estado vazio oferece limpar busca e filtros; o detalhe orienta para o guia, sem simular reserva ou contato.
+Evite CTAs vagos quando houver uma ação específica.
 
-Foram consultados os quadros Web Descobrir `33:267` e Detalhes `33:585`: aproveitam-se hierarquia, modalidades e orientação para encontro presencial. A capa, o sumário e a composição editorial dos capítulos são divergências deliberadas solicitadas pelo usuário. Capas originais são elementos CSS, sem reproduzir capas comerciais. `landing.book` centraliza medidas da moldura, título, capa, diálogo e curva de movimento. Os estilos específicos ficam em `book-experience.css`; cores e Roboto continuam no contrato visual existente.
+## Página institucional
 
-### Cabeçalho do sumário móvel
+A página institucional Web possui decisões específicas registradas nas especificações `001` a `011`. Essas decisões **não são foundations globais do Design System**.
 
-A correção de 30/09/2026 mantém a composição editorial própria da página institucional (sem quadro equivalente na página Web `33:95`, consultada novamente). Os tokens `landing.mobileNavigation` definem cabeçalho de 72 px e margens laterais de 16 px. O painel começa nessa mesma altura, acrescida da área segura superior, sem encobrir marca ou Fechar. O controle tem altura mínima de 48 px; marca, capítulos e divisor usam o mesmo alinhamento lateral. O título e a contagem ficam a 8 px do cabeçalho, com divisor antes da lista. Essa adaptação responde ao recorte relatado pelo usuário e preserva a navegação horizontal no desktop.
+Tokens específicos da apresentação permanecem sob `landing.*` por compatibilidade, enquanto as regras globais ficam nas categorias `color`, `spacing`, `radius`, `border`, `opacity`, `motion`, `layout`, `accessibility`, `platform` e `typography`.
 
-A [especificação 009](../specs/009-folha-acompanha-gesto/spec.md) detalha confirmação, cancelamento, limites e verificações da virada por arrasto. Esta interação permanece uma divergência deliberada da referência Figma estática `53:185`, solicitada pelo usuário. Perguntas do FAQ aceitam arrasto horizontal para virar a folha e toque simples para abrir ou fechar a resposta; o arrasto não dispara a abertura.
+## Ao criar uma nova tela
 
-### Leitura dos documentos
-
-A especificação 010 melhora Privacidade, Segurança e Termos na Web móvel. O componente `LegalDocumentContent` compartilha a apresentação com LGPD: resumo visível, índice expansível com atalhos por assunto, texto completo disponível e retorno ao índice. No celular, os quatro documentos aparecem em grade, sem links escondidos em uma faixa horizontal. Títulos recebem foco ao usar atalhos, sem mudar a rota do documento; os controles têm pelo menos 48 px. O corpo usa 16 px e entrelinha de 1,75. Os tokens `landing.legal.readingWidth` (720 px) e `landing.legal.titleSize` (40 px no desktop) limitam o comprimento das linhas e a escala do título. A adaptação editorial é própria da apresentação institucional, sem quadro equivalente no Figma Web consultado; preserva cores, tipografia e estados do contrato visual.
-
-### Arquivos da marca e zoom na Web
-
-A correção da [auditoria 011](../specs/011-auditoria-web/spec.md) preserva a composição visual: o PNG original da marca permanece como fonte, com derivados WebP de 96 px para a marca do cabeçalho/rodapé e variantes de 128, 224 e 320 px para a capa. O `sizes` acompanha a área da marca na capa existente (aproximadamente 67 px no celular e até 145 px no desktop), permitindo ao navegador escolher pelo tamanho e densidade de pixels. As dimensões intrínsecas reservam espaço sem alterar a proporção. A fonte Roboto é a mesma, comprimida em WOFF2 com sua licença preservada. O viewport permite ampliação por gesto; não há mudança de tokens nem nova divergência em relação ao Figma.
-
-O ícone original `book-open` é preservado; a aba do navegador recebe PNG de 32 px e o atalho iOS recebe PNG de 180 px, evitando baixar os arquivos originais maiores como favicon.
+1. Identifique Android, iOS ou Web.
+2. Consulte o quadro correspondente no Figma.
+3. Reutilize tokens.
+4. Reutilize componentes nativos e componentes próprios do IpêBook.
+5. Reutilize patterns documentados.
+6. Verifique estados e acessibilidade.
+7. Registre divergências no PR.
