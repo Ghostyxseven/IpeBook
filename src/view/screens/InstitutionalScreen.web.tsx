@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { useInstitutionalViewModel } from '../../viewmodel/useInstitutionalViewModel';
 import { InstitutionalBook } from '../components/InstitutionalBook';
 import { LegalDocumentContent } from '../components/LegalDocumentContent';
@@ -334,6 +335,7 @@ export default function InstitutionalScreen() {
 
       {vm.document && footer}
       <AccessDialog intent={vm.accessIntent} onClose={vm.closeAccess} fallbackFocus={menuButton} />
+      <Analytics />
     </div>
   );
 }
