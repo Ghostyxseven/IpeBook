@@ -33,13 +33,24 @@ export default function InstitutionalScreen() {
     }
   }, [vm.page, vm.hash, vm.document]);
 
+  useEffect(() => {
+    if (vm.menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [vm.menuOpen]);
+
   const footer = (
     <footer className="site-footer container">
       <div className="footer-top">
         <div>
           <a className="brand" href="#inicio">
             <img
-              src="/assets/logo-clean.png"
+              src={require('../../../assets/logo-clean.png')}
               alt=""
               width="36"
               height="36"
@@ -100,7 +111,7 @@ export default function InstitutionalScreen() {
         <div className="container header-inner">
           <a className="brand" href="#inicio" aria-label="IpêBook — início">
             <img
-              src="/assets/logo-clean.png"
+              src={require('../../../assets/logo-clean.png')}
               alt=""
               width="36"
               height="36"
@@ -125,31 +136,169 @@ export default function InstitutionalScreen() {
             aria-label="Navegação principal"
             className={`main-navigation ${vm.menuOpen ? 'is-open' : ''}`}
           >
-            <a href="#como-funciona" onClick={vm.closeMenu}>
-              Como funciona
-            </a>
-            <a href="#sobre" onClick={vm.closeMenu}>
-              Sobre o projeto
-            </a>
-            <a href="#duvidas" onClick={vm.closeMenu}>
-              Dúvidas
-            </a>
-            <a
-              href={vm.instagram.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav-social"
-              aria-label="Acompanhe no Instagram (abre em nova aba)"
-            >
-              Instagram
-            </a>
-            <span className="nav-divider" />
-            <button type="button" className="button quiet" onClick={() => vm.openAccess('entrar')}>
-              Entrar
-            </button>
-            <button type="button" className="button primary" onClick={() => vm.openAccess('criar')}>
-              Criar conta <Icon name="arrow" size={18} />
-            </button>
+            {/* Navegação horizontal para desktop */}
+            <div className="nav-desktop-links">
+              <a
+                href="#como-funciona"
+                onClick={vm.closeMenu}
+                aria-current={vm.hash === '#como-funciona' ? 'page' : undefined}
+              >
+                Como funciona
+              </a>
+              <a
+                href="#sobre"
+                onClick={vm.closeMenu}
+                aria-current={vm.hash === '#sobre' ? 'page' : undefined}
+              >
+                Sobre o projeto
+              </a>
+              <a
+                href="#duvidas"
+                onClick={vm.closeMenu}
+                aria-current={vm.hash === '#duvidas' ? 'page' : undefined}
+              >
+                Dúvidas
+              </a>
+              <a
+                href={vm.instagram.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-social"
+                aria-label="Acompanhe no Instagram (abre em nova aba)"
+              >
+                Instagram
+              </a>
+            </div>
+
+            {/* Sumário editorial exclusivo para o menu móvel */}
+            <div className="nav-mobile-editorial">
+              <div className="nav-editorial-header">
+                <span className="nav-editorial-label">
+                  <Icon name="leaf" size={14} /> Capítulos do livro
+                </span>
+                <span className="nav-ribbon-tag">6 capítulos</span>
+              </div>
+              <div className="nav-chapters-grid">
+                {[
+                  {
+                    id: 'inicio',
+                    num: '01',
+                    title: 'Início',
+                    desc: 'Uma boa história merece continuar',
+                  },
+                  {
+                    id: 'sobre',
+                    num: '02',
+                    title: 'Sobre o projeto',
+                    desc: 'O que nos move e raízes em Piripiri',
+                  },
+                  {
+                    id: 'como-funciona',
+                    num: '03',
+                    title: 'Como funciona',
+                    desc: 'Comprar, vender, trocar e doar',
+                  },
+                  {
+                    id: 'em-construcao',
+                    num: '04',
+                    title: 'Estante de livros',
+                    desc: 'Exemplos práticos e filtros de leitura',
+                  },
+                  {
+                    id: 'duvidas',
+                    num: '05',
+                    title: 'Dúvidas frequentes',
+                    desc: 'Perguntas comuns e respostas',
+                  },
+                  {
+                    id: 'proximo-capitulo',
+                    num: '06',
+                    title: 'O próximo capítulo',
+                    desc: 'Construindo juntos na comunidade',
+                  },
+                ].map((chapter) => {
+                  const isActive =
+                    vm.hash === `#${chapter.id}` || (!vm.hash && chapter.id === 'inicio');
+                  return (
+                    <a
+                      key={chapter.id}
+                      href={`#${chapter.id}`}
+                      onClick={vm.closeMenu}
+                      className={`nav-chapter-card ${isActive ? 'is-active' : ''}`}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      <span className="nav-chapter-num">{chapter.num}</span>
+                      <div className="nav-chapter-details">
+                        <strong className="nav-chapter-title">{chapter.title}</strong>
+                        <span className="nav-chapter-desc">{chapter.desc}</span>
+                      </div>
+                      <span className="nav-chapter-arrow" aria-hidden="true">
+                        <Icon name="arrow" size={14} />
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+
+              <div className="nav-community-section">
+                <span className="nav-section-title">Comunidade & Redes</span>
+                <a
+                  href={vm.instagram.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav-community-card"
+                  aria-label="Acompanhe o IpêBook no Instagram (abre em nova aba)"
+                >
+                  <div className="nav-community-badge">
+                    <Icon name="leaf" size={18} />
+                  </div>
+                  <div className="nav-community-info">
+                    <strong>Acompanhe no Instagram</strong>
+                    <span>{vm.instagram.handle} • Novidades e bastidores</span>
+                  </div>
+                  <span className="nav-community-external" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </div>
+            </div>
+
+            <div className="nav-actions">
+              <span className="nav-divider" />
+              <div className="nav-status-badge">
+                <Icon name="pin" size={13} />
+                <span>Em construção para Piripiri, Piauí</span>
+              </div>
+              <div className="nav-action-buttons">
+                <button
+                  type="button"
+                  className="button quiet nav-btn-entrar"
+                  onClick={() => vm.openAccess('entrar')}
+                >
+                  Entrar
+                </button>
+                <button
+                  type="button"
+                  className="button primary nav-btn-criar"
+                  onClick={() => vm.openAccess('criar')}
+                >
+                  Criar conta <Icon name="arrow" size={18} />
+                </button>
+              </div>
+              <div className="nav-mobile-legal">
+                <a href="#termos" onClick={vm.closeMenu}>
+                  Termos
+                </a>
+                <span aria-hidden="true">•</span>
+                <a href="#privacidade" onClick={vm.closeMenu}>
+                  Privacidade
+                </a>
+                <span aria-hidden="true">•</span>
+                <a href="#seguranca" onClick={vm.closeMenu}>
+                  Segurança
+                </a>
+              </div>
+            </div>
           </nav>
         </div>
       </header>
