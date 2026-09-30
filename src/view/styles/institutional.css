@@ -37,8 +37,8 @@ button {
   min-height: 100vh;
 }
 .institutional :focus-visible {
-  outline: 3px solid var(--color-state-focus);
-  outline-offset: 5px;
+  outline: var(--accessibility-focusWidth) solid var(--color-state-focus);
+  outline-offset: var(--accessibility-focusOffset);
 }
 .institutional main:focus {
   outline: none;
@@ -1280,7 +1280,7 @@ button {
   }
   .nav-btn-entrar {
     width: 100%;
-    min-height: 48px;
+    min-height: var(--accessibility-touchTarget);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1293,7 +1293,7 @@ button {
   }
   .nav-btn-criar {
     width: 100%;
-    min-height: 48px;
+    min-height: var(--accessibility-touchTarget);
     display: flex;
     align-items: center;
     justify-content: center;
