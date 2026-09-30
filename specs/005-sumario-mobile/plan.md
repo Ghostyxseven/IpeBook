@@ -23,3 +23,7 @@
 5. **Verificação**:
    - Executar testes automatizados com `npm test`.
    - Inspecionar visualmente via MCP Playwright no viewport 390x844.
+
+## Correção do cabeçalho — 30/09/2026
+
+Centralizar altura e margem móveis em tokens `landing.mobileNavigation`; usar a mesma altura para o cabeçalho e o início do painel. Remover a sobrescrita de 88 px da apresentação em livro e a margem duplicada do contêiner móvel. Ajustar respiro e divisor usando a escala existente. Verificar dimensões e interações via MCP Playwright, além dos testes e análise de tipos existentes.
