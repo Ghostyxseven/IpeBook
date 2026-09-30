@@ -11,11 +11,10 @@ Instaladas com `npx expo install` para manter versões compatíveis com o SDK 57
 ```
 src/
 ├── app/                      # só rotas (reexportam telas)
-│   ├── _layout.tsx           # SafeArea, StatusBar, OfflineBanner, Stack.Protected
-│   ├── index.tsx             # nativo: abertura + redirecionamento
-│   ├── index.web.tsx         # Web: apresentação institucional
-│   ├── (auth)/_layout.tsx
-│   └── (app)/_layout.tsx, inicio.tsx
+│   ├── _layout.tsx           # SafeArea, StatusBar, Stack
+│   ├── index.tsx             # abertura + redirecionamento
+│   ├── (auth)/_layout.tsx    # sessão, aviso offline, redireciona se já entrou
+│   └── (app)/_layout.tsx, inicio.tsx  # sessão, aviso offline, exige sessão
 ├── factories/                # monta repositórios e ViewModels (injeção de dependências)
 ├── viewmodel/useConnectivity.ts
 └── view/
@@ -30,9 +29,10 @@ src/
 - O tema lê `design-tokens.json` diretamente. Os valores por plataforma vêm de `platform.android|ios|web` via `Platform.select`.
 - Fonte: a Web usa Roboto (já carregada em `public/index.html`). O Android usa a fonte do sistema, que é Roboto. O iOS usa a fonte do sistema, conforme a regra do design system sobre tipografia nativa. Divergência registrada no `verify.md`.
 - O aviso offline usa NetInfo. Considera offline só quando `isConnected === false` ou `isInternetReachable === false`; o valor `null` (ainda desconhecido) não mostra aviso.
-- A raiz mostra a abertura enquanto a sessão carrega, exceto em `/` na Web, para não atrasar a apresentação institucional.
-- `vercel.json`: reescritas explícitas das rotas do app para `/index.html`, sem fallback universal.
+- Entradas por plataforma: `index.js` (Expo Router) e `index.web.js` (apresentação institucional). Medições e alternativas no ADR 0005.
+- O aviso offline fica nos layouts `(auth)` e `(app)`.
+- A proteção usa `Redirect` nos layouts dos grupos em vez de `Stack.Protected`, para que entrar e sair levem sempre ao destino certo.
 
 ## Verificação
 
-`npm run typecheck`, `npm test`, `npm run build:web`, os roteiros CDP existentes (`verificar-recursos-web.mjs`, `verificar-gesto-livro.mjs`) no Chrome local e a verificação das rotas nativas no build Web.
+`npm run typecheck`, `npm test`, `npm run build:web`, exportação dos bundles Android e iOS, os roteiros CDP existentes no Chrome local e comparação de tamanho e LCP com a `develop`.

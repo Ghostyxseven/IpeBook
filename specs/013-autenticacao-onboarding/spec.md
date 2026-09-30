@@ -4,7 +4,7 @@ Responsável: Maria Clara Almeida Martins (ver `docs/DIVISAO_FEATURES.md`).
 
 ## Objetivo
 
-Permitir que a pessoa conheça o IpêBook na primeira abertura, crie uma conta, confirme o e-mail, entre, recupere a senha e saia, com Supabase Auth (ADR 0006), no Android, no iOS e na Web.
+Permitir que a pessoa conheça o IpêBook na primeira abertura, crie uma conta, confirme o e-mail, entre, recupere a senha e saia, com Supabase Auth (ADR 0006), no Android e no iOS. A Web continua só com a apresentação institucional (ADR 0005).
 
 ## Fluxos
 
@@ -24,13 +24,13 @@ Permitir que a pessoa conheça o IpêBook na primeira abertura, crie uma conta, 
 - A resposta de "Esqueci minha senha" não revela se o e-mail tem conta.
 - Sem as variáveis do Supabase, as ações mostram que a autenticação não foi configurada; o app não simula sucesso.
 - Teclado de e-mail, `autoComplete` e `textContentType` adequados; alvos de 48 × 48; foco visível na Web; títulos com papel de cabeçalho.
-- Na Web, Entrar e Criar conta da apresentação institucional levam às novas rotas.
-- Política de Privacidade e Termos descrevem os dados do cadastro, o Supabase e as ferramentas de medição já presentes no site.
+- Na Web, Entrar e Criar conta continuam mostrando o aviso de indisponibilidade.
+- Política de Privacidade e Termos descrevem os dados do cadastro no aplicativo, o Supabase e as ferramentas de medição já presentes no site.
 - Model e ViewModels testados com repositório em memória; mapeamento de erros do Supabase testado com cliente falso.
 
 ## Fora do escopo
 
-Login social, autenticação em duas etapas, exclusão de conta (feature de Perfil), tabela de perfis, termos de aceite com registro de consentimento e definição do controlador dos dados.
+Telas de conta na Web, login social, autenticação em duas etapas, exclusão de conta (feature de Perfil), tabela de perfis, termos de aceite com registro de consentimento e definição do controlador dos dados.
 
 ## Referência de design
 

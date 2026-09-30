@@ -31,4 +31,4 @@ Telas em `src/view/screens/` (`OnboardingScreen`, `auth/LoginScreen`, `auth/Sign
 
 ## Verificação
 
-Testes unitários em Node (`tests/auth-*.test.mjs`), typecheck, build Web, navegação real das rotas no Chrome via CDP e registro das pendências (Supabase real, Figma, aparelhos) no `verify.md`.
+Testes unitários em Node (`tests/auth-*.test.mjs`), typecheck, exportação dos bundles Android e iOS e registro das pendências (Supabase real, Figma, aparelhos) no `verify.md`.
