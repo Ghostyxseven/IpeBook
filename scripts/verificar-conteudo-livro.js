@@ -1,12 +1,13 @@
-// Executar com MCP Playwright contra a exportação local na porta 8081.
-async function verificarConteudoLivro(page) {
+// Executar com MCP Playwright contra a exportação local na porta 8082.
+async (page) => {
+  // ConteudoLivro(page) {
   const assert = (value, message) => {
     if (!value) throw new Error(message);
   };
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto('http://localhost:8081/#inicio');
+  await page.goto('http://localhost:8082/#inicio');
   await page.reload();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.getByRole('button', { name: 'Quero comprar', exact: true }).click();
@@ -139,6 +140,4 @@ async function verificarConteudoLivro(page) {
     errors,
     sizes,
   };
-}
-
-module.exports = { verificarConteudoLivro };
+};

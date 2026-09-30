@@ -95,7 +95,7 @@ python3 -m http.server 8082 --bind 127.0.0.1 --directory dist
 
 O teste da ViewModel usa jsdom do ambiente compartilhado descrito em `/home/usermicael/.local/share/ia-integracoes/qualidade/README.md`; em outro computador, informe `IPEBOOK_JSDOM_PATH` com o caminho absoluto para `jsdom/lib/api.js`. Os testes Node usam suporte nativo a TypeScript (Node 22.18+; validados em Node 26.8.2). O aplicativo não depende desse ambiente de testes em produção.
 
-Abra `http://localhost:8082` para verificar o build. A apresentação usa JavaScript e ainda não tem pré-renderização para SEO. Fonte Roboto servida localmente sob licença OFL em `public/assets/Roboto-LICENSE.txt`.
+Abra `http://localhost:8082` para verificar o build. A apresentação usa JavaScript e ainda não tem pré-renderização para SEO. Fonte Roboto servida localmente sob licença OFL em `public/fonts/Roboto-LICENSE.txt`.
 
 **Documentos preliminares:** antes de publicar/operar, definir responsável/controlador, canal de atendimento, hospedagem, eventuais logs e tratamento de dados. Os textos não certificam conformidade com a LGPD. Ver [especificação](specs/001-pagina-institucional/spec.md), [plano](specs/001-pagina-institucional/plan.md) e [ADR 0004](docs/adr/0004-pagina-institucional-web.md).
 

@@ -1,6 +1,6 @@
 // Executar pelo MCP Playwright com browser_run_code_unsafe({ filename: "scripts/verificar-web.js" }).
 // Requer build servido em http://localhost:8082. Não publica nem envia formulários.
-async function verificarWeb(page) {
+async (page) => {
   const assert = (condition, message) => {
     if (!condition) throw new Error(message);
   };
@@ -59,25 +59,25 @@ async function verificarWeb(page) {
     .getByRole('heading', { level: 1, name: 'Uma boa história merece continuar.' })
     .waitFor();
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.getByRole('button', { name: 'Abrir menu', exact: true }).click();
+  await page.getByRole('button', { name: 'Abrir sumário', exact: true }).click();
   await page.keyboard.press('Escape');
   assert(
     (await page
-      .getByRole('button', { name: 'Abrir menu', exact: true })
+      .getByRole('button', { name: 'Abrir sumário', exact: true })
       .getAttribute('aria-expanded')) === 'false',
     'Escape deve fechar o menu',
   );
-  await page.getByRole('button', { name: 'Abrir menu', exact: true }).click();
+  await page.getByRole('button', { name: 'Abrir sumário', exact: true }).click();
   await page.getByRole('button', { name: 'Entrar', exact: true }).click();
   await page.getByRole('dialog').waitFor({ state: 'visible' });
   await page.keyboard.press('Escape');
   assert(
     await page
-      .getByRole('button', { name: 'Abrir menu', exact: true })
+      .getByRole('button', { name: 'Abrir sumário', exact: true })
       .evaluate((el) => el === document.activeElement),
     'Foco móvel deve retornar ao menu',
   );
-  await page.getByRole('button', { name: 'Abrir menu', exact: true }).click();
+  await page.getByRole('button', { name: 'Abrir sumário', exact: true }).click();
   await page
     .getByRole('navigation', { name: 'Navegação principal', exact: true })
     .getByRole('link', { name: 'Como funciona', exact: true })
@@ -85,11 +85,11 @@ async function verificarWeb(page) {
   await page.waitForFunction(() => location.hash === '#como-funciona');
   assert(
     (await page
-      .getByRole('button', { name: 'Abrir menu', exact: true })
+      .getByRole('button', { name: 'Abrir sumário', exact: true })
       .getAttribute('aria-expanded')) === 'false',
     'Navegação deve fechar o menu',
   );
-  await page.getByRole('button', { name: 'Abrir menu', exact: true }).click();
+  await page.getByRole('button', { name: 'Abrir sumário', exact: true }).click();
   await page
     .getByRole('navigation', { name: 'Navegação principal', exact: true })
     .getByRole('link', { name: 'Dúvidas', exact: true })
@@ -116,6 +116,4 @@ async function verificarWeb(page) {
     storage,
     result: 'Navegação, histórico, documentos, menu, diálogo e FAQ aprovados.',
   };
-}
-
-module.exports = { verificarWeb };
+};
