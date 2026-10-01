@@ -25,7 +25,7 @@ Depende das specs [013](../013-base-app-nativo/spec.md) e [014](../014-autentica
 
 - Componentes: `catalog/StatusBadge`, `catalog/BookCard`, `catalog/CategoryChips`, `catalog/ModalityFilter`, `catalog/SearchField` e `catalog/ListingCover`; reutiliza `EmptyState`, `ErrorState`, `LoadingState` e `OfflineBanner`.
 - Telas: `catalog/HomeFeedScreen` (substitui a Início provisória), `catalog/SearchScreen` e `catalog/ListingDetailScreen`, com `FlatList`.
-- Rotas: `src/app/(app)/(tabs)/_layout.tsx` (Tabs Início e Buscar), `(tabs)/inicio.tsx`, `(tabs)/buscar.tsx` e `src/app/(app)/livro/[id].tsx`, que só reexportam telas. O redirecionamento para `/inicio` continua válido porque grupos não entram na URL.
+- Rotas: `src/app/(app)/(tabs)/_layout.tsx` (Tabs Início e Explorar), `(tabs)/inicio.tsx`, `(tabs)/explorar.tsx` e `src/app/(app)/livro/[id].tsx`, que só reexportam telas. O redirecionamento para `/inicio` continua válido porque grupos não entram na URL.
 
 ## Decisões
 

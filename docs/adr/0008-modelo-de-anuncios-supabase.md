@@ -4,7 +4,7 @@ Data: 30/09/2026
 
 ## Status
 
-Proposto. Precisa da concordância do Eric (feature de anúncios, que grava os dados) antes da implementação da [spec 018](../../specs/018-catalogo-descoberta/spec.md).
+Proposto. A migração já foi aplicada no Supabase da equipe (30/09/2026) e a [spec 018](../../specs/018-catalogo-descoberta/spec.md) a usa, mas o ADR ainda aguarda a concordância do Eric (feature de anúncios, que grava os dados) para virar Aceito (issue #23).
 
 ## Contexto
 
