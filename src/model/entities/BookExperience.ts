@@ -1,3 +1,4 @@
+export type ReadingMode = 'livro' | 'normal';
 export type GuideId = 'comprar' | 'vender' | 'trocar' | 'doar';
 export type Modality = 'Venda' | 'Troca' | 'Doação';
 export type ExampleFilter = 'Todos' | Modality;

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useInstitutionalViewModel } from '../../viewmodel/useInstitutionalViewModel';
+import { useReadingMode } from '../../viewmodel/useReadingMode';
 import { InstitutionalBook } from '../components/InstitutionalBook';
 import { LegalDocumentContent } from '../components/LegalDocumentContent';
 import { AccessDialog } from '../components/AccessDialog';
@@ -13,6 +14,7 @@ import '../styles/book-experience.css';
 
 export default function InstitutionalScreen() {
   const vm = useInstitutionalViewModel();
+  const reading = useReadingMode();
   const menuButton = useRef<HTMLButtonElement>(null);
   const previousPage = useRef(vm.page);
 
@@ -93,7 +95,12 @@ export default function InstitutionalScreen() {
   );
 
   return (
-    <div className={`institutional ${vm.document ? '' : 'institutional-book'}`} style={theme}>
+    <div
+      className={`institutional ${vm.document ? '' : 'institutional-book'} ${
+        !vm.document && !reading.isBook ? 'is-normal-reading' : ''
+      }`}
+      style={theme}
+    >
       <a className="skip-link" href="#conteudo">
         Pular para o conteúdo
       </a>
@@ -326,7 +333,13 @@ export default function InstitutionalScreen() {
           </div>
         </main>
       ) : (
-        <InstitutionalBook hash={vm.hash} questions={vm.questions} footer={footer} />
+        <InstitutionalBook
+          hash={vm.hash}
+          mode={reading.mode}
+          onModeChange={reading.setMode}
+          questions={vm.questions}
+          footer={footer}
+        />
       )}
 
       {vm.document && footer}

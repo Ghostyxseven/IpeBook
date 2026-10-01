@@ -1,4 +1,9 @@
-import type { BookExample, ExampleFilter, ReaderGuide } from '../entities/BookExperience';
+import type {
+  BookExample,
+  ExampleFilter,
+  ReaderGuide,
+  ReadingMode,
+} from '../entities/BookExperience';
 
 export const readerGuides: ReaderGuide[] = [
   {
@@ -196,4 +201,14 @@ export function exampleTerms(book: BookExample): string {
     return book.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   if (book.modality === 'Troca') return 'Troca por outra leitura';
   return 'Grátis';
+}
+
+export const readingModes: { id: ReadingMode; label: string; description: string }[] = [
+  { id: 'livro', label: 'Livro 3D', description: 'Vire as páginas como em um livro' },
+  { id: 'normal', label: 'Leitura normal', description: 'Role a página de cima para baixo' },
+];
+
+/** Quem pede menos movimento começa na leitura normal; os demais, no livro. */
+export function defaultReadingMode(prefersReducedMotion: boolean): ReadingMode {
+  return prefersReducedMotion ? 'normal' : 'livro';
 }
