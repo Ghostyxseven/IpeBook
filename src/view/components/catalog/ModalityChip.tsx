@@ -5,7 +5,6 @@ import {
   colors,
   metrics,
   opacity,
-  radius,
   spacing,
   typography,
 } from '../../theme/nativeTheme';
@@ -14,12 +13,12 @@ import { AppIcon } from '../AppIcon';
 const palette = {
   all: { background: colors.surface, text: colors.text },
   sale: badgeColors.sale,
-  trade: badgeColors.trade,
+  trade: { background: badgeColors.tradeChip, text: badgeColors.trade.text },
   donation: badgeColors.donation,
 } as const;
 
 /**
- * Filter chip do Material 3 com as cores da modalidade (Figma 02).
+ * Filter chip do Material 3 com as cores da modalidade (Figma 02), em formato de pílula.
  * Selecionado inverte para fundo de ação e mostra a marca de seleção, sem depender só da cor.
  */
 export function ModalityChip({
@@ -52,7 +51,7 @@ export function ModalityChip({
         <View
           style={[
             styles.chip,
-            { backgroundColor: selected ? colors.actionDeep : tone.background },
+            { backgroundColor: selected ? colors.action : tone.background },
             pressed && styles.pressed,
           ]}
         >
@@ -73,7 +72,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
     paddingHorizontal: spacing.md,
-    borderRadius: radius.small,
+    // Pílula: metade da altura (o raio 9999 não é aplicado pelo Android em todas as vistas).
+    borderRadius: spacing.xl / 2,
     borderWidth: metrics.borderThin,
     borderColor: colors.border,
   },

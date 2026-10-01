@@ -44,6 +44,13 @@ Conta de teste da própria pessoa, migração `20260930120000_catalogo_anuncios.
 | Barra de navegação M3 com ícones `expo-symbols`                                                         | ok; o indicador saía retangular e foi corrigido |
 | `npm test` (60), `npm run typecheck`, bundle Android (Metro) e `expo export --platform ios`             | ok                                              |
 
+## Comparação lado a lado com o Figma (densidade 140 dpi, tela inteira visível)
+
+| Item             | Antes                                                      | Depois                                                                                      |
+| ---------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Chips            | cantos de 8, Troca em amarelo forte, Todos em verde-escuro | pílula, Troca em `color.badge.trade.chip`, selecionado em `color.action`, como no quadro 02 |
+| Indicador da aba | retangular (o ícone nativo impedia o canto arredondado)    | pílula, com `overflow: 'hidden'`                                                            |
+
 ## Pendências
 
 - **Book Card e Detalhe com dados reais:** ainda não há anúncio de outra conta no projeto. Falta conferir card, capa, badges, preço, detalhe, livro reservado e paginação.

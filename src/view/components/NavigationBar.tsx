@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     height: spacing.xl,
     // Pílula: metade da altura (o raio 9999 não é aplicado pelo Android nesta vista).
     borderRadius: spacing.xl / 2,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
   },

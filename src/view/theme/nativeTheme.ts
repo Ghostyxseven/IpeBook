@@ -55,6 +55,8 @@ export const badgeColors = {
   donation: badge('donation'),
   reserved: badge('reserved'),
   completed: badge('completed'),
+  /** Chip de Troca: amarelo-claro, mais suave que o selo (Figma 02). */
+  tradeChip: tokens.color.badge.trade.chip.$value,
 } as const;
 
 export const radius = {
