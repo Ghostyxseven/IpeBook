@@ -30,6 +30,27 @@ A primeira execução de cada série inclui aquecimento do navegador. A decisão
 - Sob o Expo Router, a apresentação institucional perdia a rolagem do documento (contêiner com altura 0). O problema deixou de existir com a Web fora do roteador.
 - `TextField` media 46 px de altura por causa da borda; a altura mínima foi movida para o campo de texto e a borda de foco compensada com margem negativa.
 
+## Issue #9: componentes Android em Material 3 (01/10/2026)
+
+**Referência:** Figma IpêBook-Mobile, página "05 · Componentes": "Botão" (18:60) e "Campo" (18:73), lidos com o MCP do Figma (`get_design_context` e capturas). O arquivo ainda não tem as páginas de telas (06 Android, 07 iPhone, 08 Web); por isso, nesta issue, a referência são os componentes.
+
+| Componente    | Figma                                                                                   | Antes                                                  | Depois (Android e Web)                                                             |
+| ------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Botão         | pílula; 52 px (texto 48); rótulo 14/20 peso 500; Preenchido, Contornado, Texto e Perigo | raio de 16 px, 56 px, rótulo 16 px negrito, sem Perigo | pílula (`radius.full`), rótulo `labelLarge`, variante `danger`, texto com 48 px    |
+| Contornado    | borda `outline`, fundo transparente                                                     | borda verde, fundo de superfície                       | borda `color.border`, fundo transparente                                           |
+| Campo         | rótulo de 12 px dentro da caixa, 16/12, raio médio                                      | rótulo fora da caixa, raio de 16 px                    | rótulo `labelMedium` dentro, `radius.medium`, 16/12; toque na caixa foca o campo   |
+| Erro do campo | borda de 2 px, ícone e mensagem                                                         | borda e o texto "Erro: …"                              | borda de 2 px, ícone `AppIcon` "error" e mensagem; o leitor de tela ouve "Erro: …" |
+
+**Defeito encontrado e corrigido:** no botão principal carregando ou desabilitado, o texto ficava claro sobre o fundo de desabilitado, ilegível. Agora todas as variantes inativas usam `state.disabledText`.
+
+**Evidência:** prévia temporária dos componentes renderizada com react-native-web no Chrome 154 (a Web usa o mesmo visual do Android), comparada com as capturas do Figma: estados padrão, erro, dica, senha, carregando e desabilitado. A prévia não foi versionada.
+
+**Decisão:** sem biblioteca de componentes (ADR 0013). Novo token `typography.scale.labelLarge`. As diferenças de valor (52 px, raio de 12 px, cores) estão em `docs/design-system/divergencias.md`.
+
+**Comandos:** `npm run typecheck`, `npm test` (89 aprovados), exportação Android e iOS e build Web.
+
+**Pendente:** validar pressionado, foco do teclado, TalkBack e texto ampliado num aparelho Android (issue #12). O iOS não mudou (issue #10).
+
 ## Divergências e limitações
 
 - **Não testado em aparelho ou emulador**: esta máquina não tem Android SDK nem simulador iOS. As telas foram renderizadas com react-native-web durante a avaliação da Web e conferidas em captura (390 × 844 e 1440 × 900). O teste no Expo Go fica pendente.
