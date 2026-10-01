@@ -21,6 +21,7 @@ O contrato visual é composto por:
 - [`design-tokens.json`](design-tokens.json): contrato de implementação.
 - [`docs/design-system.md`](docs/design-system.md): visão geral.
 - [`docs/design-system/`](docs/design-system/): foundations, components, platforms, acessibilidade, IA e governança.
+- [`docs/design-system/referencia/`](docs/design-system/referencia/LEIA-ME.md): cópia do design system publicado (voz, tipografia, iOS, Web, movimento, acessibilidade, README de cada componente e `tokens.json`). Todo agente de IA e toda pessoa devem seguir.
 
 Antes de implementar interface, leia essas fontes.
 
