@@ -17,7 +17,7 @@ Depende da [spec 013](../013-base-app-nativo/spec.md). Dependências: `@supabase
 
 ## ViewModels (hooks que recebem o repositório)
 
-`useSession`, `useLoginViewModel`, `useSignUpViewModel`, `useVerifyEmailViewModel`, `usePasswordRecoveryViewModel`, `useOnboardingViewModel`. A navegação é passada pela View como callback, para a ViewModel não depender do roteador. `src/factories/auth.ts` injeta os repositórios reais.
+`useSession`, `useStartViewModel` (abertura; issue #32), `useLoginViewModel`, `useSignUpViewModel`, `useVerifyEmailViewModel`, `usePasswordRecoveryViewModel`, `useOnboardingViewModel`. A navegação é passada pela View como callback, para a ViewModel não depender do roteador. `src/factories/auth.ts` injeta os repositórios reais.
 
 ## Views
 

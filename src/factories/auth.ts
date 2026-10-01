@@ -11,12 +11,14 @@ import { useOnboardingViewModel } from '../viewmodel/useOnboardingViewModel';
 import { usePasswordRecoveryViewModel } from '../viewmodel/usePasswordRecoveryViewModel';
 import { useSession } from '../viewmodel/useSession';
 import { useSignUpViewModel } from '../viewmodel/useSignUpViewModel';
+import { useStartViewModel } from '../viewmodel/useStartViewModel';
 import { useVerifyEmailViewModel } from '../viewmodel/useVerifyEmailViewModel';
 
 export const authRepository = createSupabaseAuthRepository(supabase);
 export const preferencesRepository = createPreferencesRepository(localStore);
 
 export const useAppSession = () => useSession(authRepository);
+export const useStart = () => useStartViewModel(authRepository, preferencesRepository);
 export const useLogin = (options: Parameters<typeof useLoginViewModel>[1]) =>
   useLoginViewModel(authRepository, options);
 export const useSignUp = (options: Parameters<typeof useSignUpViewModel>[1]) =>
