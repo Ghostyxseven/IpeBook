@@ -50,6 +50,13 @@
         "text": { "$type": "color", "$value": "#FFFFFF" }
       }
     },
+    "cover": {
+      "$description": "Fundos das capas ilustrativas usadas quando o anúncio não tem foto (Figma, quadros 02, 03 e 04).",
+      "blue": { "$type": "color", "$value": "#253C4F" },
+      "brown": { "$type": "color", "$value": "#633E36" },
+      "green": { "$type": "color", "$value": "#33584D" },
+      "text": { "$type": "color", "$value": "#F6F1E8" }
+    },
     "state": {
       "focus": { "$type": "color", "$value": "#426B55" },
       "error": { "$type": "color", "$value": "#B3382C" },
