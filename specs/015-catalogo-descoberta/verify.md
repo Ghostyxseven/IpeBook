@@ -32,12 +32,23 @@ Conta de teste da própria pessoa, migração `20260930120000_catalogo_anuncios.
 | Mesmo atalho depois de limpar os filtros                                               | **falhava**; corrigido com o parâmetro `atalho` e conferido de novo |
 | Barra de abas acima do teclado ocupava a tela                                          | corrigido com `tabBarHideOnKeyboard`                                |
 
+## Ajuste ao Figma (Waydroid)
+
+| Cenário                                                                                                 | Resultado                                       |
+| ------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Início: marca, saudação, sair, barra de busca M3, chips coloridos, "Livros recentes" e atalho de doação | conforme quadro 02                              |
+| Chip selecionado inverte a cor e mostra a marca de seleção; vazio muda conforme a modalidade            | ok                                              |
+| Chips quebravam em duas linhas com a fonte do aparelho                                                  | corrigido com rolagem horizontal                |
+| Explorar: título "Encontre sua próxima história.", barra de busca e chips                               | conforme quadro 03                              |
+| Busca "astronomia" sem resultado: "Ainda não encontramos." e "Explorar todos os livros"                 | conforme quadro 12                              |
+| Barra de navegação M3 com ícones `expo-symbols`                                                         | ok; o indicador saía retangular e foi corrigido |
+| `npm test` (60), `npm run typecheck`, bundle Android (Metro) e `expo export --platform ios`             | ok                                              |
+
 ## Pendências
 
 - **Book Card e Detalhe com dados reais:** ainda não há anúncio de outra conta no projeto. Falta conferir card, capa, badges, preço, detalhe, livro reservado e paginação.
 - **Estados de erro e offline no aparelho:** cobertos só pelos testes; desligar a rede do Waydroid derruba o `adb`.
 - **Texto ampliado e leitor de tela (TalkBack):** não conferidos.
 - **ADR 0007:** a migração já foi aplicada no projeto da equipe, mas o ADR continua proposto até a concordância do Eric.
-- **Figma:** comparação com os quadros de Início, Buscar e Detalhe não feita.
-- **Ícones das abas:** as abas mostram só o rótulo até existir o ADR da biblioteca de ícones por plataforma.
+- **iOS:** os SF Symbols e o visual não foram conferidos num iPhone; só o bundle iOS foi gerado.
 - **ESLint:** a configuração do projeto não cobre `src`; só o Prettier foi aplicado nesses arquivos.

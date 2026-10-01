@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     paddingHorizontal: spacing.xs,
     paddingVertical: spacing.xxs,
-    borderRadius: radius.full,
+    borderRadius: radius.small,
   },
-  label: { ...typography.caption, fontWeight: '600' },
+  label: { ...typography.labelMedium },
 });

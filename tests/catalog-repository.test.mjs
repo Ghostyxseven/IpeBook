@@ -79,7 +79,7 @@ test('lista lê a view, aplica filtros e pede um item a mais para paginar', asyn
     row('b', '2026-09-29T10:00:00Z'),
     row('a', '2026-09-28T10:00:00Z'),
   ];
-  const fake = fakeClient({ data: rows, error: null });
+  const fake = fakeClient({ data: rows, error: null, count: 7 });
   const repository = createSupabaseCatalogRepository(fake.client);
   const page = await repository.list({
     filters: { query: ' dom, (casmurro) ', modalities: ['sale', 'trade'], category: 'Outros' },
@@ -87,9 +87,14 @@ test('lista lê a view, aplica filtros e pede um item a mais para paginar', asyn
     limit: 2,
   });
   assert.deepEqual(fake.calls[0], ['from', CATALOG_VIEW]);
+  assert.deepEqual(fake.calls[1].at(-1), { count: 'exact' }, 'conta o total na primeira página');
+  assert.equal(page.total, 7);
   assert.deepEqual(
     fake.calls.find(([method]) => method === 'or'),
-    ['or', 'title.ilike."%dom, (casmurro)%",author.ilike."%dom, (casmurro)%"'],
+    [
+      'or',
+      'title.ilike."%dom, (casmurro)%",author.ilike."%dom, (casmurro)%",category.ilike."%dom, (casmurro)%"',
+    ],
   );
   assert.deepEqual(
     fake.calls.find(([method]) => method === 'in'),
@@ -110,7 +115,7 @@ test('lista lê a view, aplica filtros e pede um item a mais para paginar', asyn
 });
 
 test('busca curta não filtra e cursor continua depois do último item', async () => {
-  const fake = fakeClient({ data: [row('a', '2026-09-28T10:00:00Z')], error: null });
+  const fake = fakeClient({ data: [row('a', '2026-09-28T10:00:00Z')], error: null, count: 9 });
   const repository = createSupabaseCatalogRepository(fake.client);
   const page = await repository.list({
     filters: { ...emptyFilters, query: 'a' },
@@ -125,6 +130,8 @@ test('busca curta não filtra e cursor continua depois do último item', async (
     ],
   ]);
   assert.equal(page.nextCursor, null);
+  assert.equal(fake.calls[1].at(-1), undefined, 'não reconta nas páginas seguintes');
+  assert.equal(page.total, null);
 });
 
 test('detalhe distingue anúncio inexistente de falha de rede', async () => {

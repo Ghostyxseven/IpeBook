@@ -16,4 +16,5 @@
 - [x] Conferir Início e Buscar no Waydroid com o Supabase real (ver `verify.md`).
 - [ ] Conferir Book Card, Detalhe e paginação com anúncios de outra conta.
 - [ ] Testar ponta a ponta com anúncios reais num projeto Supabase de desenvolvimento.
-- [ ] Comparar as telas com os quadros do Figma.
+- [x] Comparar as telas com os quadros do Figma (02, 03, 04, 12, 13, 14 e 26) e refazer o visual (ADR 0008, tokens `color.cover.*`).
+- [ ] Conferir Book Card, grade do Início e Detalhe com anúncios reais contra os quadros 02, 03 e 04.

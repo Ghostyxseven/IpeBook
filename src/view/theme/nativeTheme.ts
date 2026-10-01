@@ -59,7 +59,24 @@ export const badgeColors = {
 
 export const radius = {
   small: px(tokens.radius.small),
+  medium: px(tokens.radius.medium),
+  extraLarge: px(tokens.radius.extraLarge),
   full: px(tokens.radius.full),
+} as const;
+
+/** Fundos das capas ilustrativas (anúncio sem foto), na ordem usada para escolher a cor. */
+export const coverColors = {
+  backgrounds: [
+    tokens.color.cover.blue.$value,
+    tokens.color.cover.brown.$value,
+    tokens.color.cover.green.$value,
+  ],
+  text: tokens.color.cover.text.$value,
+} as const;
+
+export const opacity = {
+  high: tokens.opacity.high.$value,
+  medium: tokens.opacity.medium.$value,
 } as const;
 
 export const spacing = {
@@ -93,4 +110,11 @@ export const typography = {
   action: typeStyle(tokens.typography.action),
   section: typeStyle(tokens.typography.section),
   title: typeStyle(tokens.typography.title),
+  /** Escala Material 3 do Figma (`typography.scale`). */
+  displayLarge: typeStyle(tokens.typography.scale.displayLarge),
+  titleLarge: typeStyle(tokens.typography.scale.titleLarge),
+  titleMedium: typeStyle(tokens.typography.scale.titleMedium),
+  bodyLarge: typeStyle(tokens.typography.scale.bodyLarge),
+  bodyMedium: typeStyle(tokens.typography.scale.bodyMedium),
+  labelMedium: typeStyle(tokens.typography.scale.labelMedium),
 } as const;

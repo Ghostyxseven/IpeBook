@@ -7,3 +7,4 @@
 - [0005 - Navegação do aplicativo com Expo Router](0005-navegacao-expo-router.md)
 - [0006 - Autenticação com Supabase Auth](0006-autenticacao-supabase.md)
 - [0007 - Modelo de anúncios no Supabase](0007-modelo-de-anuncios-supabase.md) (proposto)
+- [0008 - Ícones com expo-symbols](0008-icones-expo-symbols.md)

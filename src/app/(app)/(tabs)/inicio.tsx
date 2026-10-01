@@ -1,1 +1,1 @@
-export { HomeFeedScreen as default } from '../../../view/screens/catalog/HomeFeedScreen';
+export { HomeScreen as default } from '../../../view/screens/catalog/HomeScreen';

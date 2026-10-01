@@ -11,6 +11,7 @@ export function CatalogList({
   items,
   header,
   empty,
+  footer,
   refreshing,
   loadingMore,
   loadMoreError,
@@ -21,6 +22,8 @@ export function CatalogList({
   items: Listing[];
   header: ReactElement;
   empty: ReactElement | null;
+  /** Conteúdo depois do último item, como o "Limpar filtro" do Figma 26. */
+  footer?: ReactElement | null;
   refreshing: boolean;
   loadingMore: boolean;
   loadMoreError?: string;
@@ -47,7 +50,9 @@ export function CatalogList({
             <FormMessage tone="error" message={loadMoreError} />
             <Button label="Carregar mais" variant="secondary" onPress={onEndReached} />
           </View>
-        ) : null
+        ) : (
+          (footer ?? null)
+        )
       }
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
@@ -64,7 +69,8 @@ export function CatalogList({
 const styles = StyleSheet.create({
   content: {
     padding: metrics.pagePadding,
-    gap: spacing.sm,
+    paddingTop: spacing.md,
+    gap: spacing.xs,
     width: '100%',
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',

@@ -1,24 +1,18 @@
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import type { Listing, Modality } from '../../../model/entities/Listing';
+import type { Listing } from '../../../model/entities/Listing';
 import {
   conditionLabels,
   listingAccessibilityLabel,
   locationLabel,
-  modalitySummary,
+  tileValue,
 } from '../../../model/services/catalogFormat';
-import { badgeColors, colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 import { ListingCover } from './ListingCover';
 import { StatusBadge } from './StatusBadge';
 
-const badgePalette: Record<Modality, { background: string; text: string }> = {
-  sale: badgeColors.sale,
-  trade: badgeColors.trade,
-  donation: badgeColors.donation,
-};
-
-/** IpêBook / Book Card na lista do Explorar (Figma 03), lido como um único item. */
-export function BookCard({ listing, onPress }: { listing: Listing; onPress: () => void }) {
-  const badge = badgePalette[listing.modality];
+/** Card compacto da grade do Início (Figma 02, "Seleção de livros"). */
+export function BookTile({ listing, onPress }: { listing: Listing; onPress: () => void }) {
+  const value = tileValue(listing);
   return (
     <Pressable
       accessibilityRole="button"
@@ -26,22 +20,17 @@ export function BookCard({ listing, onPress }: { listing: Listing; onPress: () =
       accessibilityHint="Abre os detalhes do livro"
       onPress={onPress}
       style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
-        styles.card,
+        styles.tile,
         pressed && styles.pressed,
         focused && styles.focused,
       ]}
     >
-      <ListingCover listing={listing} variant="row" />
-      <View style={styles.body}>
-        <Text style={styles.title} numberOfLines={2}>
+      <ListingCover listing={listing} variant="tile" />
+      <View style={styles.info}>
+        <Text style={styles.title} numberOfLines={1}>
           {listing.title}
         </Text>
-        <Text style={styles.author} numberOfLines={1}>
-          {listing.author}
-        </Text>
-        <View style={[styles.badge, { backgroundColor: badge.background }]}>
-          <Text style={[styles.badgeText, { color: badge.text }]}>{modalitySummary(listing)}</Text>
-        </View>
+        {value && <Text style={styles.value}>{value}</Text>}
         {listing.status === 'reservado' && <StatusBadge variant="reserved" />}
         <Text style={styles.meta} numberOfLines={1}>
           {[conditionLabels[listing.condition], locationLabel(listing)].filter(Boolean).join(' · ')}
@@ -52,11 +41,11 @@ export function BookCard({ listing, onPress }: { listing: Listing; onPress: () =
 }
 
 const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
+  tile: {
+    flex: 1,
+    minHeight: 190,
+    overflow: 'hidden',
+    gap: spacing.xxs,
     borderRadius: metrics.fieldRadius,
     borderWidth: metrics.borderThin,
     borderColor: colors.border,
@@ -72,10 +61,8 @@ const styles = StyleSheet.create({
     },
     default: {},
   }),
-  body: { flex: 1, gap: spacing.xs, alignItems: 'flex-start' },
-  title: { ...typography.bodyLarge, fontWeight: '500', color: colors.text },
-  author: { ...typography.labelMedium, color: colors.text },
-  badge: { borderRadius: radius.small, paddingHorizontal: spacing.xxs },
-  badgeText: { ...typography.bodyLarge, fontWeight: '500' },
+  info: { paddingHorizontal: spacing.sm, paddingBottom: spacing.xs, gap: spacing.xxs },
+  title: { ...typography.bodyMedium, fontWeight: '700', color: colors.text },
+  value: { ...typography.bodyMedium, fontWeight: '500', color: colors.text },
   meta: { ...typography.labelMedium, color: colors.secondaryText },
 });

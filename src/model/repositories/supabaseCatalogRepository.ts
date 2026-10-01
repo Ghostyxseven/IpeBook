@@ -78,10 +78,15 @@ export function createSupabaseCatalogRepository(
     async list({ filters, cursor, limit }) {
       const supabase = requireClient();
       const { query, modalities, category } = effectiveFilters(filters);
-      let request = supabase.from(CATALOG_VIEW).select(columns);
+      // Conta o total só na primeira página, para o resumo "3 livros · Mais recentes".
+      let request = supabase
+        .from(CATALOG_VIEW)
+        .select(columns, cursor ? undefined : { count: 'exact' });
       if (query) {
         const pattern = quoted(toLikePattern(query));
-        request = request.or(`title.ilike.${pattern},author.ilike.${pattern}`);
+        request = request.or(
+          `title.ilike.${pattern},author.ilike.${pattern},category.ilike.${pattern}`,
+        );
       }
       if (modalities.length) request = request.in('modality', modalities);
       if (category) request = request.eq('category', category);
@@ -92,7 +97,7 @@ export function createSupabaseCatalogRepository(
         );
       }
       // Pede um a mais para saber se existe próxima página.
-      const { data, error } = await request
+      const { data, error, count } = await request
         .order('created_at', { ascending: false })
         .order('id', { ascending: false })
         .limit(limit + 1);
@@ -103,6 +108,7 @@ export function createSupabaseCatalogRepository(
       return {
         items,
         nextCursor: rows.length > limit && last ? { createdAt: last.createdAt, id: last.id } : null,
+        total: cursor ? null : (count ?? null),
       };
     },
     async getById(id) {

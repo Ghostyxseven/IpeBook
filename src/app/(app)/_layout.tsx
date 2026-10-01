@@ -21,10 +21,12 @@ export default function AppLayout() {
           name="livro/[id]"
           options={{
             headerShown: true,
-            title: 'Livro',
-            headerStyle: { backgroundColor: colors.background },
-            headerTintColor: colors.actionDeep,
-            headerTitleStyle: { ...typography.action, color: colors.text },
+            // Figma 04: voltar e a marca no topo, sobre a superfície.
+            title: 'IpêBook',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
+            headerTitleStyle: { ...typography.bodyLarge, fontWeight: '500', color: colors.text },
+            contentStyle: { backgroundColor: colors.surface },
             headerShadowVisible: false,
             headerBackTitle: 'Voltar',
           }}

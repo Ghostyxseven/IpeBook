@@ -10,11 +10,11 @@ Configurações gerais e notificações também são do Micael, mas ficam numa s
 
 ## Fluxos
 
-1. **Início (feed):** saudação, atalho para a busca, lista de categorias e os anúncios disponíveis mais recentes em Book Cards, com rolagem infinita (20 por página) e "puxar para atualizar". Mantém o botão Sair até existir a área de Perfil.
-2. **Buscar:** campo de busca por título ou autor (a partir de 2 caracteres, com espera de 300 ms após a digitação) e filtros por modalidade (**Venda**, **Troca**, **Doação**) e categoria, combináveis. Mostra a quantidade de filtros ativos e permite limpar tudo.
-3. **Categoria:** ao tocar numa categoria no Início, abre Buscar com a categoria já filtrada.
-4. **Detalhe do livro:** capa, título, autor, Status Badge da modalidade (e **Reservado**, quando for o caso), preço em BRL na venda, "Gratuito" na doação, condições na troca, estado do exemplar, categoria, bairro e cidade, descrição, primeiro nome de quem anunciou e data da publicação.
-5. **Navegação:** abas inferiores Início e Buscar dentro de `(app)`. As outras features acrescentam suas abas depois.
+1. **Início (Figma 02):** marca e saudação, barra de busca que abre o Explorar, chips Todos/Venda/Troca/Doação que filtram a prévia, os 4 anúncios mais recentes em grade, "Ver todos" e o atalho "Explorar livros para doação". O botão Sair fica no topo até existir a área de Perfil.
+2. **Explorar (Figma 03, 12 e 26 a 28):** barra de busca por título, autor ou categoria (a partir de 2 caracteres, com espera de 300 ms), chips de modalidade combináveis, resumo "N livros · Mais recentes", lista com rolagem infinita (20 por página) e "puxar para atualizar". O título muda com o filtro ("Livros à venda.") e, sem resultados, mostra "Ainda não encontramos." com "Explorar todos os livros".
+3. **Categoria:** a categoria é encontrada pela busca de texto, como no Figma ("Buscar título, autor ou categoria"); os atalhos do Início abrem o Explorar já filtrado pela modalidade.
+4. **Detalhe do livro (Figma 04, 13 e 14):** capa (foto ou capa ilustrativa), título, autor, destaque da modalidade ("R$ 25,00 · À VENDA", "Troca · POR OUTRO LIVRO", "Gratuito · DOAÇÃO"), **Reservado** quando for o caso, estado e categoria, condições da troca ou descrição, primeiro nome e bairro de quem anunciou e data da publicação.
+5. **Navegação:** barra de navegação do Material 3 com Início e Explorar e ícones `expo-symbols` (ADR 0008). Estante e Perfil entram com as features de Anúncios e Perfil.
 
 ## Aceite
 
@@ -31,7 +31,7 @@ Configurações gerais e notificações também são do Micael, mas ficam numa s
 
 ## Fora do escopo
 
-Publicar, editar e arquivar anúncios (feature do Eric), solicitar o livro e conversar (feature do Antonio), perfil de quem anunciou, favoritos, ordenação por distância ou preço, busca por ISBN, catálogo na Web, configurações e notificações (spec 016).
+Publicar, editar e arquivar anúncios e as abas Estante e Perfil (feature do Eric); "Combinar encontro" e conversa (feature do Antonio); "ver perfil" e reputação de quem anunciou; favoritos, "Avisar quando aparecer" e compartilhar no WhatsApp; "Livros perto de você" e cidade no topo (exigem localização); ordenação por distância ou preço; busca por ISBN; catálogo na Web; configurações e notificações (spec 016).
 
 ## Dependências
 

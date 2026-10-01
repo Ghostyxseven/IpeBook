@@ -7,12 +7,19 @@ import { categories, isCategory } from '../src/model/services/categories.ts';
 import {
   activeFilterCount,
   effectiveFilters,
+  exploreTitle,
   hasActiveSearch,
   normalizeQuery,
+  resultSummary,
   toLikePattern,
   toggleModality,
 } from '../src/model/services/catalogFilters.ts';
 import {
+  coverIndex,
+  detailHeadline,
+  detailMeta,
+  modalitySummary,
+  tileValue,
   formatBRL,
   listingAccessibilityLabel,
   locationLabel,
@@ -113,4 +120,48 @@ test('categorias fixas e mensagens de erro em português', () => {
   const error = new CatalogError('not_found');
   assert.equal(toCatalogError(error), error);
   assert.match(catalogErrorMessage('not_configured'), /não foi configurado/);
+});
+
+test('textos do Figma para lista, Início e detalhe', () => {
+  assert.equal(modalitySummary(listing), 'Venda · R$ 25,00');
+  assert.equal(modalitySummary({ modality: 'trade', priceCents: null }), 'Disponível para troca');
+  assert.equal(modalitySummary({ modality: 'donation', priceCents: null }), 'Doação · Gratuito');
+  assert.equal(tileValue({ modality: 'trade', priceCents: null }), 'Para trocar');
+  assert.equal(tileValue(listing), 'R$ 25,00');
+  assert.deepEqual(detailHeadline(listing), { value: 'R$ 25,00', label: 'À VENDA' });
+  assert.deepEqual(detailHeadline({ modality: 'trade', priceCents: null }), {
+    value: 'Troca',
+    label: 'POR OUTRO LIVRO',
+  });
+  assert.deepEqual(detailHeadline({ modality: 'donation', priceCents: null }), {
+    value: 'Gratuito',
+    label: 'DOAÇÃO',
+  });
+  assert.equal(detailMeta(listing), 'BOM ESTADO · LITERATURA BRASILEIRA');
+});
+
+test('título e resumo do Explorar acompanham os filtros', () => {
+  assert.equal(exploreTitle(emptyFilters, false), 'Encontre sua próxima história.');
+  assert.equal(exploreTitle({ ...emptyFilters, modalities: ['sale'] }, false), 'Livros à venda.');
+  assert.equal(
+    exploreTitle({ ...emptyFilters, modalities: ['sale', 'trade'] }, false),
+    'Encontre sua próxima história.',
+  );
+  assert.equal(
+    exploreTitle({ ...emptyFilters, query: 'astronomia' }, true),
+    'Ainda não encontramos.',
+  );
+  assert.equal(exploreTitle(emptyFilters, true), 'Encontre sua próxima história.');
+  assert.equal(resultSummary(3, emptyFilters), '3 livros · Mais recentes');
+  assert.equal(resultSummary(1, { ...emptyFilters, modalities: ['sale'] }), '1 livro · Venda');
+  assert.equal(resultSummary(null, emptyFilters), 'Mais recentes');
+});
+
+test('cor da capa ilustrativa é estável para o mesmo anúncio', () => {
+  assert.equal(coverIndex('abc', 3), coverIndex('abc', 3));
+  for (const id of ['a', 'b', 'c', 'uuid-1', 'uuid-2']) {
+    const index = coverIndex(id, 3);
+    assert.ok(index >= 0 && index < 3);
+  }
+  assert.equal(coverIndex('x', 0), 0);
 });

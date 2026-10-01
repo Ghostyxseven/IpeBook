@@ -14,6 +14,7 @@ export type CatalogPagesStatus = 'loading' | 'ready' | 'error';
  */
 export function useCatalogPages(repository: CatalogRepository, filters: CatalogFilters) {
   const [items, setItems] = useState<Listing[]>([]);
+  const [total, setTotal] = useState<number | null>(null);
   const [status, setStatus] = useState<CatalogPagesStatus>('loading');
   const [error, setError] = useState<string>();
   const [refreshing, setRefreshing] = useState(false);
@@ -37,6 +38,7 @@ export function useCatalogPages(repository: CatalogRepository, filters: CatalogF
         if (id !== requestId.current) return;
         cursor.current = page.nextCursor;
         setItems(page.items);
+        setTotal(page.total);
         setError(undefined);
         setStatus('ready');
         loaded.current = true;
@@ -47,6 +49,7 @@ export function useCatalogPages(repository: CatalogRepository, filters: CatalogF
         if (mode === 'refresh' && loaded.current) setError(message);
         else {
           setItems([]);
+          setTotal(null);
           setError(message);
           setStatus('error');
           loaded.current = false;
@@ -86,6 +89,7 @@ export function useCatalogPages(repository: CatalogRepository, filters: CatalogF
 
   return {
     items,
+    total,
     status,
     error,
     refreshing,

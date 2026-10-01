@@ -36,18 +36,21 @@ export function createMemoryCatalogRepository(initial: Listing[] = []) {
           (item) =>
             !text ||
             item.title.toLocaleLowerCase('pt-BR').includes(text) ||
-            item.author.toLocaleLowerCase('pt-BR').includes(text),
+            item.author.toLocaleLowerCase('pt-BR').includes(text) ||
+            item.category.toLocaleLowerCase('pt-BR').includes(text),
         )
         .filter((item) => !modalities.length || modalities.includes(item.modality))
         .filter((item) => !category || item.category === category)
-        .sort(newestFirst)
-        .filter((item) => !cursor || isAfter(item, cursor));
-      const items = matches.slice(0, limit);
+        .sort(newestFirst);
+      const total = matches.length;
+      const remaining = matches.filter((item) => !cursor || isAfter(item, cursor));
+      const items = remaining.slice(0, limit);
       const last = items[items.length - 1];
       return {
         items,
         nextCursor:
-          matches.length > limit && last ? { createdAt: last.createdAt, id: last.id } : null,
+          remaining.length > limit && last ? { createdAt: last.createdAt, id: last.id } : null,
+        total: cursor ? null : total,
       };
     },
     async getById(id) {

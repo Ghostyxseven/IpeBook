@@ -1,27 +1,22 @@
 import { Tabs } from 'expo-router/js-tabs';
-import { colors, typography } from '../../../view/theme/nativeTheme';
+import { NavigationBar } from '../../../view/components/NavigationBar';
+import { colors } from '../../../view/theme/nativeTheme';
 
 /**
- * Abas da área autenticada. As outras features acrescentam suas abas aqui.
- * Sem ícones até existir o ADR da biblioteca de ícones por plataforma (spec 013).
+ * Abas da área autenticada com a barra de navegação do Material 3 (Figma).
+ * As abas Estante e Perfil entram com as features de Anúncios e Perfil.
  */
 export default function TabsLayout() {
   return (
     <Tabs
+      tabBar={(props) => <NavigationBar {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarHideOnKeyboard: true,
-        tabBarActiveTintColor: colors.actionDeep,
-        tabBarInactiveTintColor: colors.secondaryText,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
-        tabBarLabelStyle: { ...typography.action },
-        tabBarLabelPosition: 'beside-icon',
-        tabBarIconStyle: { display: 'none' },
-        sceneStyle: { backgroundColor: colors.background },
+        sceneStyle: { backgroundColor: colors.surface },
       }}
     >
       <Tabs.Screen name="inicio" options={{ title: 'Início' }} />
-      <Tabs.Screen name="buscar" options={{ title: 'Buscar' }} />
+      <Tabs.Screen name="explorar" options={{ title: 'Explorar' }} />
     </Tabs>
   );
 }

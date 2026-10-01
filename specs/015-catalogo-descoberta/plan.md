@@ -1,6 +1,6 @@
 # Plano
 
-Depende das specs [013](../013-base-app-nativo/spec.md) e [014](../014-autenticacao-onboarding/spec.md) e do [ADR 0007](../../docs/adr/0007-modelo-de-anuncios-supabase.md). Nenhuma dependência nova: usa `@supabase/supabase-js` e `expo-router` já instalados, com `Tabs` do Expo Router.
+Depende das specs [013](../013-base-app-nativo/spec.md) e [014](../014-autenticacao-onboarding/spec.md) e do [ADR 0007](../../docs/adr/0007-modelo-de-anuncios-supabase.md). Dependências novas: `expo-symbols` (ícones, ADR 0008) e `expo-image` (SVGs da capa ilustrativa e fotos das capas), ambas do SDK 57 e incluídas no Expo Go. As abas usam `expo-router/js-tabs` com a barra própria `NavigationBar` (Material 3).
 
 ## Model
 
@@ -37,3 +37,15 @@ Depende das specs [013](../013-base-app-nativo/spec.md) e [014](../014-autentica
 ## Verificação
 
 Testes unitários em Node (`tests/catalog-*.test.mjs`), typecheck, exportação dos bundles Android e iOS, conferência visual em celular (estados: carregando, vazio, nenhum resultado, erro, offline e foco) e registro das pendências (Supabase real, Figma, aparelhos) no `verify.md`.
+
+## Ajuste ao Figma (30/09/2026)
+
+Depois da primeira versão, as telas foram comparadas com os quadros 02, 03, 04, 12, 13, 14 e 26 e refeitas: `SearchBar` (M3), `ModalityChip` (filter chip com cores de `color.badge.*`), `BookCard` (lista), `BookTile` (grade do Início), `ListingCover` (capa ilustrativa com os SVGs do Figma em `assets/catalog/` e as cores `color.cover.*`), `NavigationBar` (M3) e `AppIcon`. Os textos do Figma ficam em funções puras testadas (`modalitySummary`, `tileValue`, `detailHeadline`, `detailMeta`, `exploreTitle`, `resultSummary`).
+
+Diferenças conscientes em relação ao Figma:
+
+- Chips em linha com rolagem horizontal, porque a fonte do aparelho pode ser maior que a do quadro.
+- Chips de modalidade também no Explorar, para filtrar sem voltar ao Início.
+- Raio da capa na lista: 12 no Figma, `radius.medium` (14) nos tokens.
+- Botões continuam com o raio do componente compartilhado `Button` (16), e não em pílula como no Figma; mudar é decisão do padrão global.
+- "Olá, nome" no lugar da cidade e ícone de sair no lugar do sino, até existirem localização, notificações (spec 016) e Perfil.

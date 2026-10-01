@@ -1,27 +1,29 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { CatalogFilters, Modality } from '../model/entities/Listing';
 import type { CatalogRepository } from '../model/repositories/CatalogRepository';
 import {
   activeFilterCount,
+  exploreTitle,
   hasActiveSearch,
   normalizeQuery,
+  resultSummary,
   toggleModality as toggle,
 } from '../model/services/catalogFilters.ts';
-import { categories } from '../model/services/categories.ts';
 import { useCatalogPages } from './useCatalogPages.ts';
 
 export const SEARCH_DEBOUNCE_MS = 300;
 
-/** Buscar: texto com espera após a digitação, filtros combináveis e paginação. */
+/** Explorar: texto com espera após a digitação, modalidades combináveis e paginação. */
 export function useCatalogSearchViewModel(
   repository: CatalogRepository,
-  options: { initialCategory?: string | null; debounceMs?: number } = {},
+  options: { initialModality?: Modality | null; debounceMs?: number } = {},
 ) {
-  const { initialCategory = null, debounceMs = SEARCH_DEBOUNCE_MS } = options;
+  const { initialModality = null, debounceMs = SEARCH_DEBOUNCE_MS } = options;
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
-  const [modalities, setModalities] = useState<Modality[]>([]);
-  const [category, setCategory] = useState<string | null>(initialCategory);
+  const [modalities, setModalities] = useState<Modality[]>(
+    initialModality ? [initialModality] : [],
+  );
 
   useEffect(() => {
     const next = normalizeQuery(query);
@@ -31,10 +33,20 @@ export function useCatalogSearchViewModel(
   }, [query, appliedQuery, debounceMs]);
 
   const filters = useMemo<CatalogFilters>(
-    () => ({ query: appliedQuery, modalities, category }),
-    [appliedQuery, modalities, category],
+    () => ({ query: appliedQuery, modalities, category: null }),
+    [appliedQuery, modalities],
   );
   const pages = useCatalogPages(repository, filters);
+  const empty = pages.status === 'ready' && pages.items.length === 0;
+
+  /** Atalho do Início: mostra só a modalidade escolhida, ou todas com `null`. */
+  const showOnly = useCallback((modality: Modality | null) => {
+    setModalities((current) => {
+      const next = modality ? [modality] : [];
+      const same = current.length === next.length && current.every((item, i) => item === next[i]);
+      return same ? current : next;
+    });
+  }, []);
 
   return {
     ...pages,
@@ -42,16 +54,15 @@ export function useCatalogSearchViewModel(
     setQuery,
     modalities,
     toggleModality: (modality: Modality) => setModalities((current) => toggle(current, modality)),
-    category,
-    setCategory,
-    categories,
+    showOnly,
     activeFilterCount: activeFilterCount(filters),
     searching: hasActiveSearch(filters),
+    title: exploreTitle(filters, empty),
+    summary: resultSummary(pages.total, filters),
     clear: () => {
       setQuery('');
       setAppliedQuery('');
       setModalities([]);
-      setCategory(null);
     },
   };
 }
