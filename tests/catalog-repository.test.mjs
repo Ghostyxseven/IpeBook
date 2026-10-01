@@ -147,5 +147,10 @@ test('erros do PostgREST viram códigos do domínio', () => {
     'not_found',
   );
   assert.equal(mapSupabaseCatalogError({ message: 'Failed to fetch' }).code, 'network');
+  assert.equal(
+    mapSupabaseCatalogError({ code: 'PGRST205', message: 'Could not find the table' }).code,
+    'not_configured',
+    'migração ainda não aplicada',
+  );
   assert.equal(mapSupabaseCatalogError({ code: '42501', message: 'denied' }).code, 'unknown');
 });

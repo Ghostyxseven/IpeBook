@@ -35,6 +35,8 @@ type Row = {
 export function mapSupabaseCatalogError(error: unknown): CatalogError {
   if (error instanceof CatalogError) return error;
   const { code, message } = (error ?? {}) as { code?: string; message?: string };
+  // PGRST205/42P01: a view do ADR 0007 ainda não foi criada neste projeto.
+  if (code === 'PGRST205' || code === '42P01') return new CatalogError('not_configured', error);
   // 22P02: texto que não é UUID na rota de detalhe; PGRST116: nenhuma linha.
   if (code === '22P02' || code === 'PGRST116') return new CatalogError('not_found', error);
   if (/fetch|network/i.test(message ?? '')) return new CatalogError('network', error);

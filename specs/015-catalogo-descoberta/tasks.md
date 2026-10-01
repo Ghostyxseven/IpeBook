@@ -1,7 +1,8 @@
 # Tarefas
 
 - [ ] Combinar o ADR 0007 (tabela `listings`, view `catalog_listings`, bucket de capas e RLS) com o Eric e marcar como aceito.
-- [ ] Criar a migração SQL em `supabase/migrations/` (tabela com o Eric; view `catalog_listings` do catálogo) e documentar como aplicá-la.
+- [x] Criar a migração SQL em `supabase/migrations/` e documentar como aplicá-la (`supabase/README.md`). SQL não validado localmente (sem Postgres nesta máquina).
+- [ ] Aplicar a migração no projeto Supabase da equipe.
 - [x] Model: entidades, formatação, filtros, categorias e mensagens.
 - [x] Model: `CatalogRepository`, implementação Supabase (lê a view `catalog_listings`) e implementação em memória.
 - [x] Testes do Model independentes da tabela (formatação BRL, filtros, categorias e mensagens) em `tests/catalog-model.test.mjs`.
