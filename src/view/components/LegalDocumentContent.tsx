@@ -1,5 +1,5 @@
 import type { LegalDocument, LegalPage } from '../../model/entities/Institutional';
-import { contact, team } from '../../model/services/institutional.ts';
+import { contact } from '../../model/services/institutional.ts';
 import { Icon } from './Icon';
 
 function focusReadingTarget(id: string) {
@@ -65,7 +65,7 @@ export function LegalDocumentContent({
       <div className="legal-notice">
         <Icon name="shield" />
         <p>
-          <strong>O projeto ainda está em construção.</strong> Conduzido por {team.join(', ')}. A
+          <strong>O projeto ainda está em construção.</strong> Conduzido pela equipe do IpêBook. A
           formalização do controlador dos dados ainda precisa ser definida. Para dúvidas e pedidos,
           escreva para <a href={contact.url}>{contact.email}</a>. Estes textos explicam a
           apresentação atual.

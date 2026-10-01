@@ -20,15 +20,6 @@ export const contact = {
   url: 'mailto:ipebook738@gmail.com',
 } as const;
 
-// Equipe que conduz o projeto (nomes já públicos em docs/DIVISAO_FEATURES.md).
-export const team = [
-  'Maria Clara Almeida Martins',
-  'Micael Cardoso Reis',
-  'Antonio Carlos Gomes',
-  'Eric Vinícius dos Santos Oliveira',
-] as const;
-const teamNames = `${team.slice(0, -1).join(', ')} e ${team[team.length - 1]}`;
-
 export const legalLinks = [
   { id: 'termos', label: 'Termos de Uso' },
   { id: 'privacidade', label: 'Privacidade' },
@@ -121,7 +112,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quem é responsável e como pedir ajuda?',
         paragraphs: [
-          `O IpêBook é conduzido por ${teamNames}, que respondem pelo projeto. A formalização do controlador dos dados (pessoa física ou jurídica) ainda precisa ser definida. Você pode escrever para ${contact.email}, sem prazo de resposta garantido. O Instagram é uma referência social e não substitui o e-mail.`,
+          `O IpêBook é conduzido pela equipe do IpêBook, que responde pelo projeto. A formalização do controlador dos dados (pessoa física ou jurídica) ainda precisa ser definida. Você pode escrever para ${contact.email}, sem prazo de resposta garantido. O Instagram é uma referência social e não substitui o e-mail.`,
           'Texto preliminar revisado em 1 de outubro de 2026. As mudanças serão apresentadas nesta página. Os documentos precisam ser completados e revisados antes de o serviço operar.',
         ],
       },
@@ -187,7 +178,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quem cuida dos dados e como faço um pedido?',
         paragraphs: [
-          `A formalização do controlador (quem decide como os dados são usados) continua pendente. Enquanto isso, o projeto é conduzido por ${teamNames}, e o contato de privacidade é ${contact.email}.`,
+          `A formalização do controlador (quem decide como os dados são usados) continua pendente. Enquanto isso, o projeto é conduzido pela equipe do IpêBook, e o contato de privacidade é ${contact.email}.`,
           `A página Seus direitos e LGPD explica os pedidos previstos na lei. Pedidos podem ser enviados para ${contact.email}; esta apresentação não tem formulário, não emite protocolos e não garante prazo de resposta.`,
           'O Instagram permite acompanhar o projeto, mas não foi definido como canal formal para esses pedidos. Este aviso não é uma certificação de conformidade com a LGPD.',
         ],
@@ -251,7 +242,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: '5. Como preparar uma solicitação',
         paragraphs: [
           'Indique qual direito deseja exercer, a situação envolvida e uma forma de receber resposta. Compartilhe somente informações necessárias; não publique documentos, senhas ou dados de terceiros em comentários de redes sociais.',
-          `Pedidos podem ser enviados para ${contact.email}, mas a formalização do controlador precisa ser definida pela equipe (${teamNames}). O perfil do Instagram não foi definido como canal formal LGPD. Por isso, esta apresentação não possui formulário de solicitação, prazo operacional anunciado ou protocolo de atendimento.`,
+          `Pedidos podem ser enviados para ${contact.email}, mas a formalização do controlador precisa ser definida pela equipe do IpêBook. O perfil do Instagram não foi definido como canal formal LGPD. Por isso, esta apresentação não possui formulário de solicitação, prazo operacional anunciado ou protocolo de atendimento.`,
           'O exercício dos direitos é gratuito. A identidade do solicitante pode precisar ser verificada de forma proporcional para evitar entrega de dados à pessoa errada. Prazos variam conforme o pedido e a legislação: não existe aqui uma promessa de resposta única para todos os casos.',
         ],
       },
