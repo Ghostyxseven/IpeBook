@@ -212,3 +212,10 @@ export const readingModes: { id: ReadingMode; label: string; description: string
 export function defaultReadingMode(prefersReducedMotion: boolean): ReadingMode {
   return prefersReducedMotion ? 'normal' : 'livro';
 }
+
+export const readingModeStorageKey = 'ipebook:modo-de-leitura';
+
+/** Só aceita valores conhecidos; qualquer outra coisa guardada no navegador é ignorada. */
+export function parseReadingMode(value: unknown): ReadingMode | null {
+  return value === 'livro' || value === 'normal' ? value : null;
+}
