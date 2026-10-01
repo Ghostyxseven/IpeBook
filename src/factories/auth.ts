@@ -1,0 +1,28 @@
+/**
+ * Monta as dependências reais da autenticação (padrão Factory da disciplina).
+ * As telas usam estes hooks e não conhecem o Supabase.
+ */
+import { localStore } from '../model/repositories/localStore';
+import { createPreferencesRepository } from '../model/repositories/preferencesRepository';
+import { createSupabaseAuthRepository } from '../model/repositories/supabaseAuthRepository';
+import { supabase } from '../model/repositories/supabaseClient';
+import { useLoginViewModel } from '../viewmodel/useLoginViewModel';
+import { useOnboardingViewModel } from '../viewmodel/useOnboardingViewModel';
+import { usePasswordRecoveryViewModel } from '../viewmodel/usePasswordRecoveryViewModel';
+import { useSession } from '../viewmodel/useSession';
+import { useSignUpViewModel } from '../viewmodel/useSignUpViewModel';
+import { useVerifyEmailViewModel } from '../viewmodel/useVerifyEmailViewModel';
+
+export const authRepository = createSupabaseAuthRepository(supabase);
+export const preferencesRepository = createPreferencesRepository(localStore);
+
+export const useAppSession = () => useSession(authRepository);
+export const useLogin = (options: Parameters<typeof useLoginViewModel>[1]) =>
+  useLoginViewModel(authRepository, options);
+export const useSignUp = (options: Parameters<typeof useSignUpViewModel>[1]) =>
+  useSignUpViewModel(authRepository, options);
+export const useVerifyEmail = (email: string) => useVerifyEmailViewModel(authRepository, email);
+export const usePasswordRecovery = (initialEmail?: string) =>
+  usePasswordRecoveryViewModel(authRepository, initialEmail);
+export const useOnboarding = (options: Parameters<typeof useOnboardingViewModel>[1]) =>
+  useOnboardingViewModel(preferencesRepository, options);

@@ -1,0 +1,23 @@
+# IpêBook
+
+> Projeto comunitário em construção para aproximar leitores de Piripiri, Piauí, por meio de compra, venda, troca e doação de livros.
+
+Este site apresenta a proposta do projeto e orientações. Cadastro, autenticação, anúncios, pagamentos e contato entre usuários ainda não estão disponíveis. Os livros e preços da estante são exemplos fictícios, não ofertas reais. O site não oferece API pública, servidor MCP ou catálogo de agentes.
+
+## Conhecer o projeto
+
+- [Apresentação](/): Uma boa história merece continuar.
+- [Sobre o IpêBook](/#sobre): Propósito e comunidade.
+- [Como funciona](/#como-funciona): Guias de compra, venda, troca e doação.
+- [Estante de demonstração](/#em-construcao): Exemplos fictícios com busca e filtros locais.
+- [Dúvidas frequentes](/#duvidas): Perguntas e respostas sobre a proposta.
+- [Próximo capítulo](/#proximo-capitulo): Estado de desenvolvimento do projeto.
+
+## Informações e documentos
+
+- [Informações do projeto](/#informacoes): Acesso aos documentos e informações institucionais.
+- [Termos de Uso](/#termos): Condições aplicáveis ao site de apresentação.
+- [Política de Privacidade](/#privacidade): Informações sobre o tratamento de dados.
+- [LGPD](/#lgpd): Informações sobre proteção de dados pessoais.
+
+A navegação usa fragmentos na URL e requer JavaScript para exibir os capítulos. Consulte os documentos vinculados para as condições atuais; este resumo não substitui esses textos.

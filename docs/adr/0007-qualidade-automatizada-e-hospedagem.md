@@ -1,4 +1,4 @@
-# 0005 — Qualidade automatizada e endurecimento da hospedagem estática
+# 0007 — Qualidade automatizada e endurecimento da hospedagem estática
 
 Data: 01/10/2026
 

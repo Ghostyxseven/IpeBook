@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useInstitutionalViewModel } from '../../viewmodel/useInstitutionalViewModel';
 import { InstitutionalBook } from '../components/InstitutionalBook';
 import { LegalDocumentContent } from '../components/LegalDocumentContent';
@@ -43,7 +45,7 @@ export default function InstitutionalScreen() {
         <div>
           <a className="brand" href="#inicio">
             <img
-              src={require('../../../assets/logo-clean.png')}
+              src={require('../../../assets/logo-web-96.webp')}
               alt=""
               width="36"
               height="36"
@@ -104,7 +106,7 @@ export default function InstitutionalScreen() {
         <div className="container header-inner">
           <a className="brand" href="#inicio" aria-label="IpêBook — início">
             <img
-              src={require('../../../assets/logo-clean.png')}
+              src={require('../../../assets/logo-web-96.webp')}
               alt=""
               width="36"
               height="36"
@@ -326,6 +328,8 @@ export default function InstitutionalScreen() {
 
       {vm.document && footer}
       <AccessDialog intent={vm.accessIntent} onClose={vm.closeAccess} fallbackFocus={menuButton} />
+      <Analytics />
+      <SpeedInsights />
     </div>
   );
 }

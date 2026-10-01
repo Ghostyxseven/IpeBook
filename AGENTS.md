@@ -13,19 +13,34 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before 
 - Este projeto adota ADRs (https://github.com/architecture-decision-record/architecture-decision-record).
 - Decisões importantes devem ser registradas em `docs/adr/`.
 
-## Design system — IpêBook
+## Design System — IpêBook
 
-Este repositório usa o [design system](docs/design-system.md) e os [tokens](design-tokens.json) como contrato visual. Consulte também o [arquivo Figma](https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1) antes de implementar telas.
+O contrato visual é composto por:
+
+- [Figma](https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1): decisão visual e bibliotecas.
+- [`design-tokens.json`](design-tokens.json): contrato de implementação.
+- [`docs/design-system.md`](docs/design-system.md): visão geral.
+- [`docs/design-system/`](docs/design-system/): foundations, components, platforms, acessibilidade, IA e governança.
+
+Antes de implementar interface, leia essas fontes.
 
 ## Ao escrever ou revisar interface
 
-1. Identifique a plataforma da tela: Android, iOS ou Web. Use o mesmo fluxo e conteúdo, com componentes e navegação próprios da plataforma. Android segue Material 3; iOS usa padrões nativos; Web usa layout responsivo e navegação persistente quando houver espaço.
-2. Consuma `design-tokens.json` por meio de constantes, tema ou variáveis CSS. Evite hexadecimais e medidas duplicados em componentes. Os valores de raio, altura de controle e margem de página variam por plataforma.
-3. Reutilize componentes de botão, campo, cartão de livro, selo de modalidade, navegação e feedback. Implemente estados padrão, foco, erro, desabilitado, carregando, vazio e offline quando aplicáveis.
-4. Preserve o significado de **Venda**, **Troca** e **Doação**. Preço em BRL aparece só em venda; doação indica gratuidade; troca mostra o que se busca e o acordo possível.
-5. Use português do Brasil. Textos, dados de exemplo, vendedores, avaliação, preço, disponibilidade e bairros não devem ser apresentados como dados reais sem fonte.
-6. Garanta alvos de toque de pelo menos 48 × 48 px, rótulos acessíveis para ícones, foco visível na Web, ordem de leitura coerente e estados que não dependam somente de cor.
-7. Ao alterar um padrão visual, atualize os tokens e a documentação no mesmo PR. Registre divergências em relação ao Figma e o motivo.
-8. Antes de concluir, confira a tela em tamanho de celular e Web, fluxos de entrada, descoberta, detalhe e contato, além dos estados de erro e vazio. Não trate links do protótipo como integração de backend.
+1. Identifique a plataforma: Android, iOS ou Web.
+2. Consulte o quadro correspondente no Figma.
+3. Consuma `design-tokens.json` por meio de tema, constantes ou CSS variables. Não duplique hex, radius, spacing, motion ou opacidade quando houver token.
+4. Android segue Material 3 e Material Symbols. iOS usa componentes nativos e SF Symbols. Web usa layout responsivo, foco visível e navegação por teclado.
+5. Antes de criar um controle, procure na biblioteca da plataforma. Componentes próprios do IpêBook existem para domínio do produto, como Status Badge, Book Card e Empty State.
+6. Preserve a semântica de **Venda**, **Troca**, **Doação**, **Reservado** e **Concluído**. Preço em BRL aparece em venda; doação indica gratuidade; troca explicita condições.
+7. Reutilize os patterns documentados: descobrir livro, publicar anúncio, combinar encontro e concluir negociação.
+8. Use português do Brasil. Dados de exemplo, vendedores, avaliações, disponibilidade, preços e bairros não devem ser apresentados como dados reais sem fonte.
+9. Garanta alvo interativo mínimo de 48 × 48 px, rótulos acessíveis para ícones, foco visível na Web, ordem de leitura coerente, texto ampliável e estados que não dependam apenas de cor.
+10. Respeite preferência por movimento reduzido. Use `motion.*` para durações e easing globais.
+11. Ao alterar um padrão visual global, atualize Figma, tokens e documentação no mesmo fluxo e registre divergências no PR.
+12. Antes de concluir, verifique celular e Web, além de loading, vazio, erro, offline, disabled e focus quando aplicáveis.
 
-O Figma contém as páginas Android (`0:1`), iPhone (`33:94`) e Web (`33:95`) com a mesma cobertura de 66 telas em cada plataforma. O número 52 não faz parte da sequência atual. A documentação do repositório não substitui a inspeção do quadro correspondente ao implementar detalhes de uma tela.
+## Regra para IA
+
+Não invente uma nova cor, medida, radius, família de ícones ou componente equivalente apenas para resolver uma tela isolada. Primeiro procure o token, componente ou pattern existente. Se houver uma lacuna real, documente a necessidade antes de criar um novo padrão.
+
+A documentação do repositório não substitui a inspeção do quadro correspondente quando a tarefa depende de detalhes visuais da tela.

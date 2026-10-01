@@ -11,7 +11,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
+        "backgroundColor": "#F6F1E8",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -19,6 +19,8 @@
     },
     "web": {
       "output": "single"
-    }
+    },
+    "plugins": ["expo-router", "expo-sqlite"],
+    "scheme": "ipebook"
   }
 }

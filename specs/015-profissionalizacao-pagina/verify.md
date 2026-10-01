@@ -6,7 +6,7 @@ Implementado. Verificações automatizadas aprovadas localmente; validação vis
 
 ## Evidências
 
-- `npm test`: 15 testes aprovados (antes, 3 arquivos falhavam por depender de caminho local).
+- `npm test`: 35 testes aprovados após o merge com a `develop` (antes, 3 arquivos falhavam por depender de caminho local).
 - `npm run typecheck` (com `noUnusedLocals`): aprovado.
 - `npm run lint`: aprovado.
 - `npm run build:web`: exportação aprovada; o HTML gerado carrega um único script externo, compatível com `script-src 'self'`.

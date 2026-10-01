@@ -18,5 +18,5 @@ module.exports = {
     'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
   // Arquivos TypeScript são verificados pelo `tsc` estrito (typescript-eslint ainda não suporta o TypeScript 7).
-  ignorePatterns: ['*.ts', '*.tsx', 'App.js', 'dist/', 'node_modules/'],
+  ignorePatterns: ['*.ts', '*.tsx', 'dist/', 'node_modules/'],
 };

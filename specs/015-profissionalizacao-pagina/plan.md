@@ -6,4 +6,4 @@
 4. Código: hook `useScrollLock` com contador compartilhado; remoção da armadilha de foco manual, pois `<dialog>.showModal()` já prende o foco.
 5. Dados: `revisedAt` nos documentos legais; seis exemplos na estante.
 6. Identidade: nome `ipebook`/`IpêBook` em `package.json` e `app.json`.
-7. Documentação: ADR 0005, README, índice de ADRs.
+7. Documentação: ADR 0007, README, índice de ADRs.
