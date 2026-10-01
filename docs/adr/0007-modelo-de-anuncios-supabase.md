@@ -32,7 +32,7 @@ Uma tabela `public.listings` no Postgres do Supabase, com RLS ligada:
 
 Categorias iniciais: Literatura brasileira, Literatura estrangeira, Didáticos, Técnicos e acadêmicos, Infantojuvenil, Quadrinhos, Autoajuda e religião, Outros.
 
-- **View `catalog_listings`** (`security_invoker`): só anúncios `disponivel` ou `reservado`, com o primeiro nome de quem anunciou (de `raw_user_meta_data.name`). O catálogo lê só a view.
+- **View `catalog_listings`** (`security_invoker`): só anúncios `disponivel` ou `reservado` de outras pessoas (`owner_id <> auth.uid()`), com o primeiro nome de quem anunciou (de `raw_user_meta_data.name`). O catálogo lê só a view.
 - **RLS:** pessoas autenticadas leem anúncios `disponivel` e `reservado`; quem anunciou lê, cria, altera e exclui os próprios. A mudança de situação pela negociação fica para o ADR da feature do Antonio.
 - **Migrações** versionadas em `supabase/migrations/`.
 
