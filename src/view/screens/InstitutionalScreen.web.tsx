@@ -86,7 +86,7 @@ export default function InstitutionalScreen() {
         </nav>
       </div>
       <div className="footer-bottom">
-        <span>© 2026 IpêBook. Um projeto em construção.</span>
+        <span>© 2026 IpêBook. Projeto de faculdade, sem fins lucrativos, em construção.</span>
         <span>Livros circulam. Histórias continuam.</span>
       </div>
     </footer>
