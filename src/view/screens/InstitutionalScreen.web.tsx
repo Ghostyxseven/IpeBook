@@ -80,6 +80,9 @@ export default function InstitutionalScreen() {
           >
             {vm.instagram.handle}
           </a>
+          <a href={vm.contact.url} aria-label={`${vm.contact.label}: ${vm.contact.email}`}>
+            {vm.contact.email}
+          </a>
         </nav>
       </div>
       <div className="footer-bottom">
