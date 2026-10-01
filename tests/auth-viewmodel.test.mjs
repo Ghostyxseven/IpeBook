@@ -11,6 +11,7 @@ import { useVerifyEmailViewModel } from '../src/viewmodel/useVerifyEmailViewMode
 import { usePasswordRecoveryViewModel } from '../src/viewmodel/usePasswordRecoveryViewModel.ts';
 import { useOnboardingViewModel } from '../src/viewmodel/useOnboardingViewModel.ts';
 import { startRoute, useSession } from '../src/viewmodel/useSession.ts';
+import { useStartViewModel } from '../src/viewmodel/useStartViewModel.ts';
 
 const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost/' });
 globalThis.window = dom.window;
@@ -306,6 +307,87 @@ test('recuperação: sair da tela com a senha pendente encerra a sessão de recu
   await hook.unmount();
   assert.ok(memory.calls.includes('cancelPasswordRecovery'));
   assert.equal(await memory.repository.getCurrentUser(), null);
+});
+
+test('sessão salva sem internet aguarda conexão em vez de ir para Entrar (#34)', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.restoreSession(ana);
+  memory.failRestore(new AuthError('network'));
+  const session = await renderHook(() => useSession(memory.repository));
+  assert.equal(session.vm.status, 'loading', 'não conta como saída');
+  assert.match(session.vm.restoreError, /internet/);
+  assert.equal(startRoute(session.vm.status, true), null, 'abertura não manda para Entrar');
+
+  // Tentar de novo ainda sem internet mantém o aviso.
+  await act(async () => session.vm.retryRestore());
+  assert.equal(session.vm.status, 'loading');
+  assert.match(session.vm.restoreError, /internet/);
+
+  // A internet volta e a nova tentativa confirma a sessão.
+  memory.failRestore(null);
+  await act(async () => session.vm.retryRestore());
+  assert.equal(session.vm.status, 'signedIn');
+  assert.equal(session.vm.restoreError, null);
+  await session.unmount();
+});
+
+test('o provedor confirmando a sessão depois também libera a entrada (#34)', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.failRestore(new AuthError('network'));
+  const session = await renderHook(() => useSession(memory.repository));
+  assert.equal(session.vm.status, 'loading');
+  await act(async () => memory.emitProviderUser(ana));
+  assert.equal(session.vm.status, 'signedIn');
+  assert.equal(session.vm.restoreError, null);
+  await session.unmount();
+});
+
+test('falha que não é de rede na restauração leva para Entrar (#34)', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.failRestore(new AuthError('unknown'));
+  const session = await renderHook(() => useSession(memory.repository));
+  assert.equal(session.vm.status, 'signedOut');
+  assert.equal(session.vm.restoreError, null);
+  await session.unmount();
+});
+
+test('reabrir o app com sessão salva vai direto para a Início (#34)', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.restoreSession(ana);
+  const primeira = await renderHook(() => useSession(memory.repository));
+  assert.equal(primeira.vm.status, 'signedIn');
+  await primeira.unmount();
+  const reaberto = await renderHook(() => useSession(memory.repository));
+  assert.equal(reaberto.vm.status, 'signedIn');
+  assert.equal(startRoute(reaberto.vm.status, true), '/inicio');
+  await reaberto.unmount();
+});
+
+test('abertura: ViewModel decide o destino pela sessão e pelo onboarding (#32)', async () => {
+  let seen = false;
+  const preferences = { hasSeenOnboarding: () => seen, markOnboardingSeen: () => (seen = true) };
+  const memory = createMemoryAuthRepository();
+
+  const primeira = await renderHook(() => useStartViewModel(memory.repository, preferences));
+  assert.equal(primeira.vm.destination, '/onboarding', 'primeira abertura mostra o onboarding');
+  await primeira.unmount();
+
+  seen = true;
+  const depois = await renderHook(() => useStartViewModel(memory.repository, preferences));
+  assert.equal(depois.vm.destination, '/entrar', 'onboarding visto e sem sessão vai para Entrar');
+  await depois.unmount();
+
+  memory.restoreSession(ana);
+  const logado = await renderHook(() => useStartViewModel(memory.repository, preferences));
+  assert.equal(logado.vm.destination, '/inicio');
+  assert.equal(logado.vm.session.user.email, 'ana@email.com');
+  await logado.unmount();
+
+  memory.failRestore(new AuthError('network'));
+  const semRede = await renderHook(() => useStartViewModel(memory.repository, preferences));
+  assert.equal(semRede.vm.destination, null, 'sem rede aguarda na abertura');
+  assert.match(semRede.vm.session.restoreError, /internet/);
+  await semRede.unmount();
 });
 
 test('onboarding avança, volta e marca como visto ao concluir ou pular', async () => {
