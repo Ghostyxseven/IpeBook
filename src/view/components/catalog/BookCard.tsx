@@ -1,9 +1,8 @@
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Listing, Modality } from '../../../model/entities/Listing';
 import {
-  conditionLabels,
   listingAccessibilityLabel,
-  locationLabel,
+  listingMeta,
   modalitySummary,
 } from '../../../model/services/catalogFormat';
 import { badgeColors, colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
@@ -44,7 +43,7 @@ export function BookCard({ listing, onPress }: { listing: Listing; onPress: () =
         </View>
         {listing.status === 'reservado' && <StatusBadge variant="reserved" />}
         <Text style={styles.meta} numberOfLines={1}>
-          {[conditionLabels[listing.condition], locationLabel(listing)].filter(Boolean).join(' · ')}
+          {listingMeta(listing)}
         </Text>
       </View>
     </Pressable>

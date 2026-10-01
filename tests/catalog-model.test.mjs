@@ -14,7 +14,10 @@ import {
   toLikePattern,
   toggleModality,
 } from '../src/model/services/catalogFilters.ts';
+import { firstName, greeting } from '../src/model/services/userFormat.ts';
 import {
+  listingDetails,
+  listingMeta,
   coverIndex,
   detailHeadline,
   detailMeta,
@@ -164,4 +167,49 @@ test('cor da capa ilustrativa é estável para o mesmo anúncio', () => {
     assert.ok(index >= 0 && index < 3);
   }
   assert.equal(coverIndex('x', 0), 0);
+});
+
+test('linha de apoio dos cards junta estado e localização disponível', () => {
+  assert.equal(listingMeta(listing), 'Bom estado · Centro, Picos');
+  assert.equal(listingMeta({ ...listing, neighborhood: null, city: null }), 'Bom estado');
+});
+
+test('detalhe decide parágrafos, quem anunciou e notas pelas regras da modalidade', () => {
+  const sale = listingDetails({ ...listing, description: 'Bem conservado.' });
+  assert.deepEqual(sale.paragraphs, ['Bem conservado.']);
+  assert.equal(sale.owner, 'Ana · Centro, Picos');
+  assert.match(sale.notes, /^Capa ilustrativa · Publicado em 30 de set\. de 2026$/);
+  assert.deepEqual(sale.headline, { value: 'R$ 25,00', label: 'À VENDA' });
+
+  const trade = listingDetails({
+    ...listing,
+    modality: 'trade',
+    priceCents: null,
+    tradeTerms: 'Troco por um romance.',
+    description: 'Capa gasta.',
+  });
+  assert.deepEqual(trade.paragraphs, ['Troco por um romance.', 'Capa gasta.'], 'condições antes');
+
+  const withoutTerms = listingDetails({ ...listing, tradeTerms: 'ignorado na venda' });
+  assert.deepEqual(withoutTerms.paragraphs, [], 'venda nunca mostra condições de troca');
+
+  const anonymous = listingDetails({
+    ...listing,
+    ownerFirstName: null,
+    neighborhood: null,
+    city: null,
+    coverUrl: 'https://cdn/capa.jpg',
+    description: '  ',
+  });
+  assert.equal(anonymous.owner, null);
+  assert.deepEqual(anonymous.paragraphs, [], 'descrição em branco não vira parágrafo');
+  assert.doesNotMatch(anonymous.notes, /Capa ilustrativa/, 'com foto não há aviso de capa');
+});
+
+test('saudação usa só o primeiro nome e tolera cadastro sem nome', () => {
+  assert.equal(firstName('  Ana   Paula Souza '), 'Ana');
+  assert.equal(firstName(''), null);
+  assert.equal(firstName(undefined), null);
+  assert.equal(greeting('Micael Cardoso Reis'), 'Olá, Micael');
+  assert.equal(greeting(null), 'Olá');
 });

@@ -2,12 +2,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Modality } from '../../../model/entities/Listing';
-import {
-  detailHeadline,
-  detailMeta,
-  locationLabel,
-  publishedLabel,
-} from '../../../model/services/catalogFormat';
 import { useListingDetail } from '../../../factories/catalog';
 import { ListingCover } from '../../components/catalog/ListingCover';
 import { StatusBadge } from '../../components/catalog/StatusBadge';
@@ -36,7 +30,7 @@ export function ListingDetailScreen() {
     );
   }
 
-  if (vm.status !== 'ready' || !vm.listing) {
+  if (vm.status !== 'ready' || !vm.listing || !vm.details) {
     return (
       <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
         <View style={styles.content}>
@@ -55,15 +49,8 @@ export function ListingDetailScreen() {
     );
   }
 
-  const listing = vm.listing;
-  const headline = detailHeadline(listing);
-  const location = locationLabel(listing);
-  const owner = [listing.ownerFirstName, location].filter(Boolean).join(' · ');
-  const notes = [
-    listing.coverUrl ? null : 'Capa ilustrativa',
-    publishedLabel(listing.createdAt),
-  ].filter(Boolean);
-  const about = listing.modality === 'trade' ? listing.tradeTerms : listing.description;
+  const { listing, details } = vm;
+  const { headline } = details;
 
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
@@ -95,17 +82,22 @@ export function ListingDetailScreen() {
             </Text>
           </View>
         )}
-        <Text style={styles.meta}>{detailMeta(listing)}</Text>
-        {about ? <Text style={styles.about}>{about}</Text> : null}
-        {listing.modality === 'trade' && listing.description ? (
-          <Text style={styles.about}>{listing.description}</Text>
-        ) : null}
-        {owner ? (
-          <View style={styles.owner} accessible accessibilityLabel={`Anunciado por ${owner}`}>
-            <Text style={styles.ownerText}>{owner}</Text>
+        <Text style={styles.meta}>{details.meta}</Text>
+        {details.paragraphs.map((text) => (
+          <Text key={text} style={styles.about}>
+            {text}
+          </Text>
+        ))}
+        {details.owner ? (
+          <View
+            style={styles.owner}
+            accessible
+            accessibilityLabel={`Anunciado por ${details.owner}`}
+          >
+            <Text style={styles.ownerText}>{details.owner}</Text>
           </View>
         ) : null}
-        <Text style={styles.notes}>{notes.join(' · ')}</Text>
+        <Text style={styles.notes}>{details.notes}</Text>
       </ScrollView>
     </SafeAreaView>
   );

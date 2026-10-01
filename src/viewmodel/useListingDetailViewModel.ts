@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toCatalogError } from '../model/entities/CatalogError.ts';
 import type { Listing } from '../model/entities/Listing';
 import type { CatalogRepository } from '../model/repositories/CatalogRepository';
+import { listingDetails } from '../model/services/catalogFormat.ts';
 import { catalogErrorMessage } from '../model/services/catalogMessages.ts';
 
 export type ListingDetailStatus = 'loading' | 'ready' | 'notFound' | 'error';
@@ -35,5 +36,8 @@ export function useListingDetailViewModel(repository: CatalogRepository, id: str
     void load();
   }, [load]);
 
-  return { listing, status, error, retry: load };
+  // A tela só exibe: o que mostrar em cada modalidade é decidido no Model.
+  const details = useMemo(() => (listing ? listingDetails(listing) : null), [listing]);
+
+  return { listing, details, status, error, retry: load };
 }

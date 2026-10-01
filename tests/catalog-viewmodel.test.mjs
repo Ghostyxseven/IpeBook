@@ -117,15 +117,24 @@ test('Início filtra a prévia pela modalidade dos chips', async () => {
     listing(1, { modality: 'sale', priceCents: 2000 }),
     listing(2, { modality: 'trade', tradeTerms: 'Por romance' }),
   ]);
-  const hook = await renderHook(() => useCatalogFeedViewModel(memory.repository));
+  const hook = await renderHook(() =>
+    useCatalogFeedViewModel(memory.repository, { userName: 'Micael Cardoso Reis' }),
+  );
+  assert.equal(hook.vm.greeting, 'Olá, Micael');
   assert.equal(hook.vm.modality, null);
   assert.equal(hook.vm.preview.length, 2);
   assert.equal(hook.vm.hasMoreThanPreview, false);
-  await act(async () => hook.vm.setModality('trade'));
+  await act(async () => hook.vm.toggleModality('trade'));
   assert.deepEqual(
     hook.vm.preview.map((item) => item.modality),
     ['trade'],
   );
+  await act(async () => hook.vm.toggleModality('trade'));
+  assert.equal(hook.vm.modality, null, 'tocar no chip ativo volta para Todos');
+  await act(async () => hook.vm.toggleModality('sale'));
+  await act(async () => hook.vm.showAll());
+  assert.equal(hook.vm.modality, null);
+  assert.equal(hook.vm.preview.length, 2);
   await hook.unmount();
 });
 
@@ -224,9 +233,12 @@ test('detalhe carrega, informa anúncio inexistente e permite tentar de novo', a
   const found = await renderHook(() => useListingDetailViewModel(memory.repository, 'id-001'));
   assert.equal(found.vm.status, 'ready');
   assert.equal(found.vm.listing.title, 'Livro 1');
+  assert.deepEqual(found.vm.details.headline, { value: 'Gratuito', label: 'DOAÇÃO' });
+  assert.equal(found.vm.details.owner, 'Ana');
 
   const missing = await renderHook(() => useListingDetailViewModel(memory.repository, 'nada'));
   assert.equal(missing.vm.status, 'notFound');
+  assert.equal(missing.vm.details, null);
   assert.match(missing.vm.error, /não está mais disponível/);
 
   memory.fail('network');

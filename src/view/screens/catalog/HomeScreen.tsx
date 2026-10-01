@@ -49,8 +49,7 @@ const focusRing = Platform.select({
 export function HomeScreen() {
   const router = useRouter();
   const session = useSessionContext();
-  const vm = useCatalogFeed();
-  const firstName = session.user?.name.split(' ')[0];
+  const vm = useCatalogFeed(session.user?.name);
 
   const pairs: (typeof vm.preview)[] = [];
   for (let i = 0; i < vm.preview.length; i += 2) pairs.push(vm.preview.slice(i, i + 2));
@@ -72,7 +71,7 @@ export function HomeScreen() {
             <Text style={styles.brand} accessibilityRole="header">
               IpêBook
             </Text>
-            <Text style={styles.greeting}>{firstName ? `Olá, ${firstName}` : 'Olá'}</Text>
+            <Text style={styles.greeting}>{vm.greeting}</Text>
           </View>
           {/* Temporário: sair fica aqui até a feature de Perfil existir. */}
           <Pressable
@@ -109,7 +108,7 @@ export function HomeScreen() {
             label="Todos"
             selected={vm.modality === null}
             showCheck={false}
-            onPress={() => vm.setModality(null)}
+            onPress={vm.showAll}
           />
           {modalities.map((modality) => (
             <ModalityChip
@@ -117,7 +116,7 @@ export function HomeScreen() {
               modality={modality}
               label={modalityLabels[modality]}
               selected={vm.modality === modality}
-              onPress={() => vm.setModality(vm.modality === modality ? null : modality)}
+              onPress={() => vm.toggleModality(modality)}
             />
           ))}
         </ScrollView>
