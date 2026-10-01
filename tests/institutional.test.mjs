@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  team,
   resolvePage,
   documents,
   legalLinks,
@@ -34,6 +35,7 @@ test('conteúdo delimita operação e identifica pendências sem contato inventa
   const emails = JSON.stringify(documents).match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g) ?? [];
   assert.ok(emails.length > 0 && emails.every((email) => email === contact.email));
   assert.doesNotMatch(JSON.stringify(documents), /mailto:|100%/);
+  for (const name of team) assert.match(JSON.stringify(documents.privacidade), new RegExp(name));
   assert.equal(instagram.url, 'https://www.instagram.com/ipebook/');
   assert.match(JSON.stringify(documents.lgpd), /Instagram não foi definido como canal formal/);
 });

@@ -1,5 +1,5 @@
 import type { LegalDocument, LegalPage } from '../../model/entities/Institutional';
-import { contact } from '../../model/services/institutional.ts';
+import { contact, team } from '../../model/services/institutional.ts';
 import { Icon } from './Icon';
 
 function focusReadingTarget(id: string) {
@@ -65,9 +65,10 @@ export function LegalDocumentContent({
       <div className="legal-notice">
         <Icon name="shield" />
         <p>
-          <strong>O projeto ainda está em construção.</strong> A identificação do responsável ainda
-          precisa ser informada. Para dúvidas e pedidos, escreva para{' '}
-          <a href={contact.url}>{contact.email}</a>. Estes textos explicam a apresentação atual.
+          <strong>O projeto ainda está em construção.</strong> Conduzido por {team.join(', ')}. A
+          formalização do controlador dos dados ainda precisa ser definida. Para dúvidas e pedidos,
+          escreva para <a href={contact.url}>{contact.email}</a>. Estes textos explicam a
+          apresentação atual.
         </p>
       </div>
 
