@@ -65,10 +65,10 @@ export function LegalDocumentContent({
       <div className="legal-notice">
         <Icon name="shield" />
         <p>
-          <strong>O projeto ainda está em construção.</strong> Conduzido pela equipe do IpêBook. A
-          formalização do controlador dos dados ainda precisa ser definida. Para dúvidas e pedidos,
-          escreva para <a href={contact.url}>{contact.email}</a>. Estes textos explicam a
-          apresentação atual.
+          <strong>O projeto ainda está em construção.</strong> Conduzido pela equipe do IpêBook,
+          formada por pessoas físicas. A identificação individual do controlador ainda não foi
+          divulgada. Para dúvidas e pedidos, escreva para <a href={contact.url}>{contact.email}</a>.
+          Estes textos explicam a apresentação atual.
         </p>
       </div>
 

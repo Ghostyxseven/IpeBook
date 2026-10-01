@@ -22,7 +22,10 @@ test('conteúdo delimita operação e identifica pendências sem contato inventa
   assert.match(JSON.stringify(documents.termos), /Entrar e Criar conta apenas mostram um aviso/);
   assert.match(JSON.stringify(documents.termos), /aplicativo.*permite criar uma conta/);
   assert.match(JSON.stringify(documents.termos), /Nenhuma versão permite publicar anúncios/);
-  assert.match(JSON.stringify(documents.privacidade), /controlador.*pendente/);
+  assert.match(
+    JSON.stringify(documents.privacidade),
+    /controlador.*pessoas físicas.*identificação individual do controlador ainda não foi divulgada/,
+  );
   assert.match(JSON.stringify(documents.privacidade), /não instala cookies/);
   // A política precisa descrever o que o código realmente usa (constituição).
   assert.match(JSON.stringify(documents.privacidade), /Supabase/);
@@ -34,7 +37,10 @@ test('conteúdo delimita operação e identifica pendências sem contato inventa
   const emails = JSON.stringify(documents).match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g) ?? [];
   assert.ok(emails.length > 0 && emails.every((email) => email === contact.email));
   assert.doesNotMatch(JSON.stringify(documents), /mailto:|100%/);
-  assert.match(JSON.stringify(documents.privacidade), /conduzido pela equipe do IpêBook/);
+  assert.match(
+    JSON.stringify(documents.privacidade),
+    /equipe do IpêBook, formada por pessoas físicas/,
+  );
   assert.equal(instagram.url, 'https://www.instagram.com/ipebook/');
   assert.match(JSON.stringify(documents.lgpd), /Instagram não foi definido como canal formal/);
 });
