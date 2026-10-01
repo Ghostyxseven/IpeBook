@@ -1,4 +1,4 @@
-# 0008 — Ícones com expo-symbols
+# 0009 — Ícones com expo-symbols
 
 Data: 30/09/2026
 
@@ -8,7 +8,7 @@ Aceito. Resolve a pendência de ícones registrada na [spec 013](../../specs/013
 
 ## Contexto
 
-O `AGENTS.md` pede Material Symbols no Android e SF Symbols no iOS. O Figma usa ícones Material na barra de navegação, na busca e no botão voltar. O app só tinha o componente `Icon` da Web (SVG do HTML), que não funciona no celular. A [spec 015](../../specs/015-catalogo-descoberta/spec.md) precisa de ícones na barra de navegação e na busca.
+O `AGENTS.md` pede Material Symbols no Android e SF Symbols no iOS. O Figma usa ícones Material na barra de navegação, na busca e no botão voltar. O app só tinha o componente `Icon` da Web (SVG do HTML), que não funciona no celular. A [spec 018](../../specs/018-catalogo-descoberta/spec.md) precisa de ícones na barra de navegação e na busca.
 
 ## Decisão
 

@@ -1,6 +1,6 @@
 # Supabase
 
-Migrações do banco do IpêBook (ADR 0006 e ADR 0007).
+Migrações do banco do IpêBook (ADR 0006 e ADR 0008).
 
 ## Aplicar num projeto
 

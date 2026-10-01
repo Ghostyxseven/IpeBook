@@ -13,6 +13,13 @@ export const instagram = {
   url: 'https://www.instagram.com/ipebook/',
 } as const;
 
+// E-mail informado pelo projeto. Não é um canal formal de LGPD nem garante prazo de resposta.
+export const contact = {
+  label: 'E-mail do IpêBook',
+  email: 'ipebook738@gmail.com',
+  url: 'mailto:ipebook738@gmail.com',
+} as const;
+
 export const legalLinks = [
   { id: 'termos', label: 'Termos de Uso' },
   { id: 'privacidade', label: 'Privacidade' },
@@ -43,6 +50,8 @@ const sources = {
   },
 };
 
+const revisedAt = '1 de outubro de 2026';
+
 export const documents: Record<LegalPage, LegalDocument> = {
   termos: {
     title: 'Termos de Uso',
@@ -66,7 +75,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         paragraphs: [
           'Use um e-mail seu e uma senha exclusiva para o IpêBook. Mantenha a senha em segredo: quem tiver acesso a ela pode entrar na sua conta.',
           'A conta existe apenas no aplicativo e, nesta versão, leva a uma área inicial em construção. Ainda não há anúncios, pedidos, mensagens ou perfil público.',
-          'Excluir a conta pelo aplicativo ainda não é possível, e o canal de atendimento continua pendente. Essas duas pendências precisam ser resolvidas antes de o cadastro ser divulgado.',
+          `Excluir a conta pelo aplicativo ainda não é possível. Por enquanto, pedidos sobre a conta podem ser enviados para ${contact.email}, sem prazo de resposta garantido. Essa pendência precisa ser resolvida antes de o cadastro ser divulgado.`,
         ],
       },
       {
@@ -88,7 +97,9 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: 'O que acontece ao abrir o Instagram?',
         paragraphs: [
           'Você sai do site e passa a usar um serviço com regras e práticas de privacidade próprias. O perfil @ipebook serve para acompanhar o projeto.',
-          'O link não cria cadastro, compra ou reserva. O Instagram não foi definido como canal formal para pedidos sobre dados pessoais; também não há prazo de atendimento garantido pelo site.',
+          'O link não cria cadastro, compra ou reserva. O Instagram não foi definido como canal formal para pedidos sobre dados pessoais; também não há prazo de atendimento garantido pelo site. Para pedidos sobre dados, escreva para ' +
+            contact.email +
+            '.',
         ],
       },
       {
@@ -101,11 +112,12 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quem é responsável e como pedir ajuda?',
         paragraphs: [
-          'A identificação do responsável e o canal formal de atendimento ainda precisam ser informados. O Instagram é uma referência social e não substitui essas informações.',
-          'Texto preliminar revisado em 30 de setembro de 2026. As mudanças serão apresentadas nesta página. Os documentos precisam ser completados e revisados antes de o serviço operar.',
+          `O IpêBook é um projeto de faculdade, sem fins lucrativos, conduzido pela equipe do IpêBook, formada por pessoas físicas. O IpêBook não cobra comissão nem recebe o valor das vendas: quando as vendas existirem, serão combinadas diretamente entre os leitores. A identificação individual do controlador dos dados ainda não foi divulgada. Você pode escrever para ${contact.email}, sem prazo de resposta garantido. O Instagram é uma referência social e não substitui o e-mail.`,
+          'Texto preliminar revisado em 1 de outubro de 2026. As mudanças serão apresentadas nesta página. Os documentos precisam ser completados e revisados antes de o serviço operar.',
         ],
       },
     ],
+    revisedAt,
     sources: [sources.lgpd],
   },
   privacidade: {
@@ -116,7 +128,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       'Suas buscas filtram exemplos no próprio navegador, sem enviar o texto a um servidor.',
       'Ao criar uma conta no aplicativo, nome, e-mail e senha são tratados pelo Supabase, o serviço de autenticação do projeto.',
       'O site mede visitas e desempenho de forma agregada com ferramentas da Vercel, sem cookies nem publicidade.',
-      'Informações da hospedagem e o contato para pedidos sobre dados ainda precisam ser confirmados.',
+      `As informações da hospedagem ainda precisam ser confirmadas. O contato para pedidos sobre dados é ${contact.email}.`,
     ],
     sections: [
       {
@@ -125,7 +137,9 @@ export const documents: Record<LegalPage, LegalDocument> = {
           'O cadastro existe apenas no aplicativo para Android e iOS, ainda em desenvolvimento; o site não coleta esses dados. Para criar a conta, pedimos nome, e-mail e senha. O nome aparece na sua área inicial. O e-mail serve para entrar, confirmar a conta e recuperar a senha, por meio de códigos enviados a ele.',
           'Esses dados são tratados pelo Supabase, o serviço que hospeda a autenticação. A senha viaja por conexão segura e é guardada cifrada (hash): o IpêBook não consegue lê-la. O serviço pode registrar dados técnicos de acesso, como endereço IP, data e hora, para proteger a conta.',
           'Depois que você entra, a sessão fica guardada no armazenamento do aplicativo, no celular, para não pedir a senha a cada abertura. Tocar em Sair remove a sessão. O aplicativo também guarda se você já viu a apresentação inicial.',
-          'Ainda faltam confirmar a região onde os dados ficam, o prazo de conservação e a base legal. Excluir a conta pelo aplicativo ainda não é possível, e o canal para pedidos continua pendente.',
+          'Ainda faltam confirmar a região onde os dados ficam, o prazo de conservação e a base legal. Excluir a conta pelo aplicativo ainda não é possível; pedidos podem ser enviados para ' +
+            contact.email +
+            '.',
         ],
       },
       {
@@ -164,8 +178,8 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quem cuida dos dados e como faço um pedido?',
         paragraphs: [
-          'A identificação do controlador (quem decide como os dados são usados) e o canal de privacidade continuam pendentes. O responsável pelo projeto precisa completar essas informações.',
-          'A página Seus direitos e LGPD explica os pedidos previstos na lei. O canal de privacidade ainda não está disponível: esta apresentação não recebe requerimentos nem emite protocolos.',
+          `O controlador (quem decide como os dados são usados) é a equipe do IpêBook, formada por pessoas físicas, num projeto de faculdade, sem fins lucrativos. A identificação individual do controlador ainda não foi divulgada. O contato de privacidade é ${contact.email}.`,
+          `A página Seus direitos e LGPD explica os pedidos previstos na lei. Pedidos podem ser enviados para ${contact.email}; esta apresentação não tem formulário, não emite protocolos e não garante prazo de resposta.`,
           'O Instagram permite acompanhar o projeto, mas não foi definido como canal formal para esses pedidos. Este aviso não é uma certificação de conformidade com a LGPD.',
         ],
       },
@@ -180,11 +194,12 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quando este texto foi atualizado?',
         paragraphs: [
-          'Última revisão: 30 de setembro de 2026. Este aviso trata da apresentação e da conta do IpêBook nesta versão.',
-          'Ainda faltam a identificação do responsável, o contato de privacidade e os detalhes reais da hospedagem. O texto deverá ser atualizado quando essas informações forem confirmadas.',
+          'Última revisão: 1 de outubro de 2026. Este aviso trata da apresentação e da conta do IpêBook nesta versão.',
+          `Ainda faltam a identificação individual do controlador dos dados e os detalhes reais da hospedagem. O contato de privacidade é ${contact.email}. O texto deverá ser atualizado quando essas informações forem confirmadas.`,
         ],
       },
     ],
+    revisedAt,
     sources: [sources.lgpd, sources.cookies, sources.rights],
   },
   lgpd: {
@@ -194,8 +209,9 @@ export const documents: Record<LegalPage, LegalDocument> = {
     summary: [
       'Você pode pedir informações sobre o tratamento dos seus dados.',
       'Os direitos dependem das condições legais de cada situação.',
-      'O canal formal de privacidade do IpêBook ainda não está disponível.',
+      `Pedidos sobre dados pessoais podem ser enviados para ${contact.email}, sem prazo de resposta garantido.`,
     ],
+    revisedAt,
     sources: [sources.lgpd, sources.rights, sources.requests],
     sections: [
       {
@@ -226,7 +242,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: '5. Como preparar uma solicitação',
         paragraphs: [
           'Indique qual direito deseja exercer, a situação envolvida e uma forma de receber resposta. Compartilhe somente informações necessárias; não publique documentos, senhas ou dados de terceiros em comentários de redes sociais.',
-          'O canal dedicado do IpêBook ainda não está disponível e a identificação do controlador precisa ser completada. O perfil do Instagram não foi definido como canal formal LGPD. Por isso, esta apresentação não possui formulário de solicitação, prazo operacional anunciado ou protocolo de atendimento.',
+          `Pedidos podem ser enviados para ${contact.email}, mas a identificação individual do controlador, que é a equipe do IpêBook (pessoas físicas, em projeto de faculdade sem fins lucrativos), ainda não foi divulgada. O perfil do Instagram não foi definido como canal formal LGPD. Por isso, esta apresentação não possui formulário de solicitação, prazo operacional anunciado ou protocolo de atendimento.`,
           'O exercício dos direitos é gratuito. A identidade do solicitante pode precisar ser verificada de forma proporcional para evitar entrega de dados à pessoa errada. Prazos variam conforme o pedido e a legislação: não existe aqui uma promessa de resposta única para todos os casos.',
         ],
       },
@@ -271,7 +287,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
           'Interrompa o contato e guarde as mensagens e os comprovantes. Use a ferramenta de denúncia da plataforma onde aconteceu a abordagem.',
           'Se enviou senha ou código de acesso, procure o serviço legítimo e proteja a conta. Troque a senha comprometida, inclusive em outras contas onde você a repetiu.',
           'Se fez um pagamento indevido, procure imediatamente sua instituição financeira pelos canais oficiais. Considere registrar ocorrência. Não publique comprovantes com dados pessoais.',
-          'O IpêBook ainda não tem ferramenta de denúncia ou canal dedicado a incidentes nesta apresentação. O site não garante atendimento nem recuperação de valores.',
+          `O IpêBook ainda não tem ferramenta de denúncia nesta apresentação. Para relatar um golpe que use o nome do IpêBook, escreva para ${contact.email}. O site não garante atendimento nem recuperação de valores.`,
         ],
       },
       {
@@ -287,10 +303,11 @@ export const documents: Record<LegalPage, LegalDocument> = {
         paragraphs: [
           'Esta versão mostra exemplos locais e links externos. Não verifica vendedores, agenda encontros ou protege pagamentos.',
           'Antes de operar contas e anúncios, o projeto precisará definir controles de acesso, denúncias, resposta a incidentes e atendimento. As orientações desta página não significam que esses recursos já existam.',
-          'Texto revisado em 30 de setembro de 2026. Nenhum serviço pode prometer risco zero; a infraestrutura e o aplicativo futuro ainda precisam ser avaliados.',
+          'Texto revisado em 1 de outubro de 2026. Nenhum serviço pode prometer risco zero; a infraestrutura e o aplicativo futuro ainda precisam ser avaliados.',
         ],
       },
     ],
+    revisedAt,
     sources: [sources.safety],
   },
 };

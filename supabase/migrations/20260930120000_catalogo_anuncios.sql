@@ -1,4 +1,4 @@
--- ADR 0007 — Modelo de anúncios. Spec 015 (catálogo).
+-- ADR 0008 — Modelo de anúncios. Spec 018 (catálogo).
 -- Aplicar no SQL Editor do Supabase ou com `supabase db push`.
 
 create table if not exists public.listings (

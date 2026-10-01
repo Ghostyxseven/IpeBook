@@ -1,6 +1,6 @@
 # Plano
 
-Depende das specs [013](../013-base-app-nativo/spec.md) e [014](../014-autenticacao-onboarding/spec.md) e do [ADR 0007](../../docs/adr/0007-modelo-de-anuncios-supabase.md). Dependências novas: `expo-symbols` (ícones, ADR 0008) e `expo-image` (SVGs da capa ilustrativa e fotos das capas), ambas do SDK 57 e incluídas no Expo Go. As abas usam `expo-router/js-tabs` com a barra própria `NavigationBar` (Material 3).
+Depende das specs [013](../013-base-app-nativo/spec.md) e [014](../014-autenticacao-onboarding/spec.md) e do [ADR 0008](../../docs/adr/0008-modelo-de-anuncios-supabase.md). Dependências novas: `expo-symbols` (ícones, ADR 0009) e `expo-image` (SVGs da capa ilustrativa e fotos das capas), ambas do SDK 57 e incluídas no Expo Go. As abas usam `expo-router/js-tabs` com a barra própria `NavigationBar` (Material 3).
 
 ## Model
 
@@ -8,7 +8,7 @@ Depende das specs [013](../013-base-app-nativo/spec.md) e [014](../014-autentica
 - `entities/CatalogError.ts`: códigos `not_found`, `network`, `not_configured`, `unknown`.
 - `services/catalogFormat.ts`: preço em BRL, rótulos de modalidade, estado e situação, localização e rótulo acessível do card.
 - `services/catalogFilters.ts`: normalização da busca (aparar, mínimo de 2 caracteres), contagem de filtros ativos e limpeza.
-- `services/categories.ts`: lista fixa de categorias (a mesma do ADR 0007).
+- `services/categories.ts`: lista fixa de categorias (a mesma do ADR 0008).
 - `services/catalogMessages.ts`: código → mensagem em português.
 - `repositories/CatalogRepository.ts`: `list({ filters, cursor, limit })` → `{ items, nextCursor }` e `getById(id)`.
 - `repositories/supabaseCatalogRepository.ts`: consulta na view `catalog_listings` com `ilike` em título e autor, `in` na modalidade, `eq` na categoria, ordenação por `created_at desc, id desc` e cursor por `created_at`/`id`; traduz erros.
@@ -48,4 +48,4 @@ Diferenças conscientes em relação ao Figma:
 - Chips de modalidade também no Explorar, para filtrar sem voltar ao Início.
 - Raio da capa na lista: 12 no Figma, `radius.medium` (14) nos tokens.
 - Botões continuam com o raio do componente compartilhado `Button` (16), e não em pílula como no Figma; mudar é decisão do padrão global.
-- "Olá, nome" no lugar da cidade e ícone de sair no lugar do sino, até existirem localização, notificações (spec 016) e Perfil.
+- "Olá, nome" no lugar da cidade e ícone de sair no lugar do sino, até existirem localização, notificações (spec futura) e Perfil.

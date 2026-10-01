@@ -1,21 +1,62 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import type { ReadingMode } from '../../model/entities/BookExperience';
 import { useBookExperience } from '../../viewmodel/useBookExperience';
 import { BookPresentation } from './BookPresentation';
 import { ExampleShelf } from './ExampleShelf';
 import { Icon } from './Icon';
+import { ReadingModeSwitch } from './ReadingModeSwitch';
+import { readingModes } from '../../model/services/bookExperience.ts';
+
+/** Mesmo conteúdo em dois formatos: folhas que viram (livro) ou rolagem contínua (normal). */
+function Reader({
+  mode,
+  onModeChange,
+  hash,
+  children,
+}: {
+  mode: ReadingMode;
+  onModeChange: (mode: ReadingMode) => void;
+  hash: string;
+  children: ReactNode;
+}) {
+  const switcher = <ReadingModeSwitch mode={mode} modes={readingModes} onChange={onModeChange} />;
+  useEffect(() => {
+    // Ao passar para a leitura normal, mantém o leitor no capítulo em que estava.
+    if (mode === 'normal' && hash) {
+      document.getElementById(hash.replace(/^#/, ''))?.scrollIntoView({ block: 'start' });
+    }
+  }, [mode, hash]);
+  if (mode === 'livro') {
+    return (
+      <BookPresentation hash={hash} headExtra={switcher}>
+        {children}
+      </BookPresentation>
+    );
+  }
+  return (
+    <main id="conteudo" tabIndex={-1} className="reading-flow">
+      <div className="reading-toolbar">{switcher}</div>
+      {children}
+    </main>
+  );
+}
 
 export function InstitutionalBook({
   hash,
+  mode,
+  onModeChange,
   questions,
   footer,
 }: {
   hash: string;
+  mode: ReadingMode;
+  onModeChange: (mode: ReadingMode) => void;
   questions: { question: string; answer: string }[];
   footer: ReactNode;
 }) {
   const vm = useBookExperience();
   return (
-    <BookPresentation hash={hash}>
+    <Reader mode={mode} onModeChange={onModeChange} hash={hash}>
       <section id="inicio" className="reader-chapter reader-cover" aria-labelledby="hero-title">
         <div className="cover-introduction">
           <span className="edition-label">
@@ -379,6 +420,6 @@ export function InstitutionalBook({
         </div>
         {footer}
       </section>
-    </BookPresentation>
+    </Reader>
   );
 }

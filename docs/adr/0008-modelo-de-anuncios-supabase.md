@@ -1,10 +1,10 @@
-# 0007 — Modelo de anúncios no Supabase
+# 0008 — Modelo de anúncios no Supabase
 
 Data: 30/09/2026
 
 ## Status
 
-Proposto. Precisa da concordância do Eric (feature de anúncios, que grava os dados) antes da implementação da [spec 015](../../specs/015-catalogo-descoberta/spec.md).
+Proposto. Precisa da concordância do Eric (feature de anúncios, que grava os dados) antes da implementação da [spec 018](../../specs/018-catalogo-descoberta/spec.md).
 
 ## Contexto
 

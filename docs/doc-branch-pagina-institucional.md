@@ -38,10 +38,11 @@ A experiência do livro precisava parecer nativa e natural nos celulares. Para i
 Seguindo o rigor do **GitHub Spec Kit**, todas as entregas passaram pelo fluxo de especificação antes da implementação:
 
 - **Specs 002 e 003:** Estruturação da navegação central do livro, layout estrutural das páginas e conteúdo da estante.
+- **Spec 015:** Profissionalização técnica: CI, testes portáteis, cabeçalhos de segurança, zoom liberado e metadados de compartilhamento.
 - **Spec 004:** Implementação da tela e revisão semântica dos documentos legais.
 - **Specs 005 a 008:** Refinamentos massivos de usabilidade e visualização mobile (sumário adaptado, espaçamentos, feedbacks visuais).
-- **Spec 009 (Refatoração em andamento):** Desacoplamento da lógica de gestos touch e animações 3D para um _controller_ isolado, mantendo a View limpa e ganhando performance.
-- **Spec 010 (Refatoração em andamento):** Separação da renderização dos documentos legais em um componente modular (`LegalDocumentContent.tsx`).
+- **Spec 009 (concluída):** Desacoplamento da lógica de gestos touch e animações 3D para um _controller_ isolado, mantendo a View limpa e ganhando performance.
+- **Spec 010 (implementada; `verify.md` pendente):** Separação da renderização dos documentos legais em um componente modular (`LegalDocumentContent.tsx`).
 
 ---
 

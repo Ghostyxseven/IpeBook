@@ -1,7 +1,7 @@
 import { SymbolView } from 'expo-symbols';
 import { colors } from '../theme/nativeTheme';
 
-/** Nomes por plataforma (ADR 0008): SF Symbols no iOS, Material Symbols no Android e na Web. */
+/** Nomes por plataforma (ADR 0009): SF Symbols no iOS, Material Symbols no Android e na Web. */
 const symbols = {
   home: { ios: 'house', android: 'home', web: 'home' },
   search: { ios: 'magnifyingglass', android: 'search', web: 'search' },

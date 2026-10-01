@@ -56,6 +56,6 @@ Conta de teste da própria pessoa, migração `20260930120000_catalogo_anuncios.
 - **Book Card e Detalhe com dados reais:** ainda não há anúncio de outra conta no projeto. Falta conferir card, capa, badges, preço, detalhe, livro reservado e paginação.
 - **Estados de erro e offline no aparelho:** cobertos só pelos testes; desligar a rede do Waydroid derruba o `adb`.
 - **Texto ampliado e leitor de tela (TalkBack):** não conferidos.
-- **ADR 0007:** a migração já foi aplicada no projeto da equipe, mas o ADR continua proposto até a concordância do Eric.
+- **ADR 0008:** a migração já foi aplicada no projeto da equipe, mas o ADR continua proposto até a concordância do Eric.
 - **iOS:** os SF Symbols e o visual não foram conferidos num iPhone; só o bundle iOS foi gerado.
 - **ESLint:** a configuração do projeto não cobre `src`; só o Prettier foi aplicado nesses arquivos.

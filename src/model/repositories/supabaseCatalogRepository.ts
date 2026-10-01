@@ -7,7 +7,7 @@ import type { CatalogRepository } from './CatalogRepository';
 /** Só `from` e `storage` são usados; facilita testar com um cliente falso. */
 export type SupabaseCatalogClient = Pick<SupabaseClient, 'from' | 'storage'>;
 
-/** View de leitura do ADR 0007: já filtra situação e exclui os anúncios da própria pessoa. */
+/** View de leitura do ADR 0008: já filtra situação e exclui os anúncios da própria pessoa. */
 export const CATALOG_VIEW = 'catalog_listings';
 export const COVERS_BUCKET = 'listing-covers';
 
@@ -35,7 +35,7 @@ type Row = {
 export function mapSupabaseCatalogError(error: unknown): CatalogError {
   if (error instanceof CatalogError) return error;
   const { code, message } = (error ?? {}) as { code?: string; message?: string };
-  // PGRST205/42P01: a view do ADR 0007 ainda não foi criada neste projeto.
+  // PGRST205/42P01: a view do ADR 0008 ainda não foi criada neste projeto.
   if (code === 'PGRST205' || code === '42P01') return new CatalogError('not_configured', error);
   // 22P02: texto que não é UUID na rota de detalhe; PGRST116: nenhuma linha.
   if (code === '22P02' || code === 'PGRST116') return new CatalogError('not_found', error);

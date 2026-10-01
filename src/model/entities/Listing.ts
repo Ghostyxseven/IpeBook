@@ -1,4 +1,4 @@
-/** Modalidades do anúncio (ADR 0007). Os rótulos em português ficam em `catalogFormat`. */
+/** Modalidades do anúncio (ADR 0008). Os rótulos em português ficam em `catalogFormat`. */
 export type Modality = 'sale' | 'trade' | 'donation';
 
 export type ListingCondition = 'novo' | 'como_novo' | 'bom' | 'marcas_de_uso';

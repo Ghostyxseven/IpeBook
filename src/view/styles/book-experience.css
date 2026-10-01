@@ -138,7 +138,8 @@
 .book-progress::-moz-progress-bar {
   background: var(--color-gold);
 }
-.book-page > .reader-chapter {
+.book-page > .reader-chapter,
+.reading-flow > .reader-chapter {
   width: 100%;
   max-width: var(--landing-book-chapterWidth);
   margin-inline: auto;
@@ -972,7 +973,8 @@
   }
 }
 @media (max-width: 1100px) {
-  .book-page > .reader-chapter {
+  .book-page > .reader-chapter,
+  .reading-flow > .reader-chapter {
     padding-inline: var(--spacing-32);
   }
   .reader-cover {
@@ -1078,7 +1080,8 @@
     border-radius: 9999px;
     letter-spacing: 0.08em;
   }
-  .book-page > .reader-chapter {
+  .book-page > .reader-chapter,
+  .reading-flow > .reader-chapter {
     padding: var(--spacing-24) var(--spacing-24) calc(48px + var(--spacing-20, 20px));
     min-height: 100%;
     box-sizing: border-box;
@@ -1461,7 +1464,8 @@
   .book-running-label > span {
     display: none;
   }
-  .book-page > .reader-chapter {
+  .book-page > .reader-chapter,
+  .reading-flow > .reader-chapter {
     padding-inline: var(--spacing-16);
   }
   .reader-actions {
@@ -1509,4 +1513,100 @@
 }
 .book-swipe-indicator.is-used .swipe-arrow {
   animation: none;
+}
+
+/* Modo de leitura: alternância entre livro 3D e rolagem contínua. */
+.reading-switch {
+  display: inline-flex;
+  border: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
+  border-radius: var(--spacing-8);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+.reading-switch button {
+  min-height: var(--platform-web-controlHeight);
+  min-width: var(--platform-web-controlHeight);
+  padding: var(--spacing-8) var(--spacing-16);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  border: 0;
+  background: transparent;
+  color: var(--color-actionDeep);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.reading-switch button + button {
+  border-left: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
+}
+.reading-switch button[aria-pressed='true'] {
+  background: var(--color-actionDeep);
+  color: var(--color-surface);
+}
+.reading-switch button:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: -3px;
+}
+.book-mode-bar {
+  display: none;
+}
+.book-running-head {
+  flex-wrap: wrap;
+  row-gap: var(--spacing-8);
+}
+
+/* Leitura normal: a página rola como um documento comum, sem moldura fixa. */
+.institutional-book.is-normal-reading {
+  height: auto;
+  min-height: 100dvh;
+  /* `clip` corta o excesso sem criar área de rolagem, o que preservaria o cabeçalho fixo. */
+  overflow: clip;
+}
+/* O react-native-web deixa o body como área de rolagem; isso impede o cabeçalho fixo. */
+body:has(.institutional-book.is-normal-reading) {
+  overflow: visible;
+}
+.reading-flow {
+  margin: var(--spacing-12) var(--landing-book-frameMargin) 0;
+  border-radius: var(--spacing-8) var(--spacing-8) 0 0;
+  background: var(--color-surface);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brown) 15%, transparent);
+}
+.reading-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--spacing-12) var(--landing-book-paperInset);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 18%, transparent);
+}
+.reading-flow > .reader-chapter {
+  scroll-margin-top: calc(var(--landing-headerHeight) + var(--spacing-12));
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 18%, transparent);
+  min-height: 0;
+}
+.reading-flow > .reader-chapter:last-child {
+  border-bottom: 0;
+}
+@media (max-width: 760px) {
+  .reading-switch {
+    width: 100%;
+  }
+  .reading-switch button {
+    flex: 1;
+  }
+  .reading-toolbar {
+    justify-content: stretch;
+  }
+  .book-mode-bar {
+    display: flex;
+    flex: none;
+    padding: var(--spacing-8) var(--spacing-16);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 18%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

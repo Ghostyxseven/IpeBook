@@ -1,4 +1,5 @@
 import type { LegalDocument, LegalPage } from '../../model/entities/Institutional';
+import { contact } from '../../model/services/institutional.ts';
 import { Icon } from './Icon';
 
 function focusReadingTarget(id: string) {
@@ -22,7 +23,7 @@ export function LegalDocumentContent({
         <span className="status-label">Sobre esta versão do IpêBook</span>
         <h1>{content.title}</h1>
         <p className="lead">{content.intro}</p>
-        <p className="legal-version">Texto preliminar · Revisto em 30 de setembro de 2026</p>
+        <p className="legal-version">Texto preliminar · Revisto em {content.revisedAt}</p>
       </header>
 
       <div className="legal-summary" aria-labelledby={`${page}-resumo`}>
@@ -64,8 +65,10 @@ export function LegalDocumentContent({
       <div className="legal-notice">
         <Icon name="shield" />
         <p>
-          <strong>O projeto ainda está em construção.</strong> A identificação do responsável e o
-          canal de atendimento precisam ser informados. Estes textos explicam a apresentação atual.
+          <strong>O projeto ainda está em construção.</strong> Trabalho de faculdade, sem fins
+          lucrativos, conduzido pela equipe do IpêBook, formada por pessoas físicas. A identificação
+          individual do controlador ainda não foi divulgada. Para dúvidas e pedidos, escreva para{' '}
+          <a href={contact.url}>{contact.email}</a>. Estes textos explicam a apresentação atual.
         </p>
       </div>
 

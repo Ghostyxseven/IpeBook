@@ -1,4 +1,9 @@
-import type { BookExample, ExampleFilter, ReaderGuide } from '../entities/BookExperience';
+import type {
+  BookExample,
+  ExampleFilter,
+  ReaderGuide,
+  ReadingMode,
+} from '../entities/BookExperience';
 
 export const readerGuides: ReaderGuide[] = [
   {
@@ -146,6 +151,35 @@ export const bookExamples: BookExample[] = [
       'Uma aventura fictícia sobre observar a natureza e inventar histórias perto de casa.',
     condition: 'Exemplo: marcas de uso na lombada, com todas as páginas legíveis.',
   },
+  {
+    id: 'ventania',
+    title: 'Cartas ao vento',
+    category: 'Poesia',
+    modality: 'Venda',
+    price: 18,
+    cover: 'sun',
+    description: 'Uma coletânea fictícia de poemas curtos sobre distância e saudade.',
+    condition: 'Exemplo: bom estado, com uma página dobrada no canto.',
+  },
+  {
+    id: 'rio',
+    title: 'O rio que lembra',
+    category: 'Aventura',
+    modality: 'Troca',
+    interest: 'Romances ou ficção científica; aberto a sugestões.',
+    cover: 'forest',
+    description: 'Uma aventura fictícia de dois irmãos que seguem um rio até a nascente.',
+    condition: 'Exemplo: lombada firme, sem anotações.',
+  },
+  {
+    id: 'nuvens',
+    title: 'Nuvens de papel',
+    category: 'Infantil',
+    modality: 'Doação',
+    cover: 'sun',
+    description: 'Uma história fictícia sobre dobraduras que ganham vida à tarde.',
+    condition: 'Exemplo: páginas completas, com leves marcas de uso.',
+  },
 ];
 
 export function filterBookExamples(query: string, filter: ExampleFilter): BookExample[] {
@@ -167,4 +201,14 @@ export function exampleTerms(book: BookExample): string {
     return book.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   if (book.modality === 'Troca') return 'Troca por outra leitura';
   return 'Grátis';
+}
+
+export const readingModes: { id: ReadingMode; label: string; description: string }[] = [
+  { id: 'livro', label: 'Livro 3D', description: 'Vire as páginas como em um livro' },
+  { id: 'normal', label: 'Leitura normal', description: 'Role a página de cima para baixo' },
+];
+
+/** Quem pede menos movimento começa na leitura normal; os demais, no livro. */
+export function defaultReadingMode(prefersReducedMotion: boolean): ReadingMode {
+  return prefersReducedMotion ? 'normal' : 'livro';
 }

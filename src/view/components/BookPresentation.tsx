@@ -5,7 +5,15 @@ import { Icon } from './Icon';
 import { createBookTurn } from '../animations/bookTurn';
 
 /** Faixas contíguas dão curvatura à folha; o conteúdo real permanece sem duplicação acessível. */
-export function BookPresentation({ hash, children }: { hash: string; children: ReactNode }) {
+export function BookPresentation({
+  hash,
+  headExtra,
+  children,
+}: {
+  hash: string;
+  headExtra?: ReactNode;
+  children: ReactNode;
+}) {
   const vm = useBookNavigation(hash);
   const stage = useRef<HTMLDivElement>(null);
   const overlay = useRef<HTMLDivElement>(null);
@@ -62,6 +70,7 @@ export function BookPresentation({ hash, children }: { hash: string; children: R
         <span className="book-running-label">
           IpêBook <span aria-hidden="true">/</span> Um livro de possibilidades
         </span>
+        {headExtra}
         <button
           type="button"
           className="book-index-trigger"
@@ -72,6 +81,7 @@ export function BookPresentation({ hash, children }: { hash: string; children: R
           Sumário<span className="book-index-hint">Escolha um capítulo</span>
         </button>
       </div>
+      <div className="book-mode-bar">{headExtra}</div>
       <div className="book-sheet-surface">
         <div className="book-stage" ref={stage}>
           {pages.map((page, index) => (

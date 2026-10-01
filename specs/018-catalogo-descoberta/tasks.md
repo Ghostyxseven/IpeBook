@@ -1,6 +1,6 @@
 # Tarefas
 
-- [ ] Combinar o ADR 0007 (tabela `listings`, view `catalog_listings`, bucket de capas e RLS) com o Eric e marcar como aceito.
+- [ ] Combinar o ADR 0008 (tabela `listings`, view `catalog_listings`, bucket de capas e RLS) com o Eric e marcar como aceito.
 - [x] Criar a migração SQL em `supabase/migrations/` e documentar como aplicá-la (`supabase/README.md`). SQL não validado localmente (sem Postgres nesta máquina).
 - [x] Aplicar a migração no projeto Supabase da equipe (aplicada pelo Micael em 30/09/2026; conferida pela API).
 - [x] Model: entidades, formatação, filtros, categorias e mensagens.
@@ -16,5 +16,5 @@
 - [x] Conferir Início e Buscar no Waydroid com o Supabase real (ver `verify.md`).
 - [ ] Conferir Book Card, Detalhe e paginação com anúncios de outra conta.
 - [ ] Testar ponta a ponta com anúncios reais num projeto Supabase de desenvolvimento.
-- [x] Comparar as telas com os quadros do Figma (02, 03, 04, 12, 13, 14 e 26) e refazer o visual (ADR 0008, tokens `color.cover.*`).
+- [x] Comparar as telas com os quadros do Figma (02, 03, 04, 12, 13, 14 e 26) e refazer o visual (ADR 0009, tokens `color.cover.*`).
 - [ ] Conferir Book Card, grade do Início e Detalhe com anúncios reais contra os quadros 02, 03 e 04.

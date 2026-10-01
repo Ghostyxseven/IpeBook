@@ -1,4 +1,4 @@
-/** Categorias fixas do ADR 0007. O texto é gravado no anúncio e mostrado como está. */
+/** Categorias fixas do ADR 0008. O texto é gravado no anúncio e mostrado como está. */
 export const categories = [
   'Literatura brasileira',
   'Literatura estrangeira',

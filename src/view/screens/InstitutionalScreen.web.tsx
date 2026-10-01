@@ -2,16 +2,19 @@ import { useEffect, useRef } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useInstitutionalViewModel } from '../../viewmodel/useInstitutionalViewModel';
+import { useReadingMode } from '../../viewmodel/useReadingMode';
 import { InstitutionalBook } from '../components/InstitutionalBook';
 import { LegalDocumentContent } from '../components/LegalDocumentContent';
 import { AccessDialog } from '../components/AccessDialog';
 import { Icon } from '../components/Icon';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { theme } from '../styles/theme';
 import '../styles/institutional.css';
 import '../styles/book-experience.css';
 
 export default function InstitutionalScreen() {
   const vm = useInstitutionalViewModel();
+  const reading = useReadingMode();
   const menuButton = useRef<HTMLButtonElement>(null);
   const previousPage = useRef(vm.page);
 
@@ -36,16 +39,7 @@ export default function InstitutionalScreen() {
     }
   }, [vm.page, vm.hash, vm.document]);
 
-  useEffect(() => {
-    if (vm.menuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [vm.menuOpen]);
+  useScrollLock(vm.menuOpen);
 
   const footer = (
     <footer className="site-footer container">
@@ -88,17 +82,25 @@ export default function InstitutionalScreen() {
           >
             {vm.instagram.handle}
           </a>
+          <a href={vm.contact.url} aria-label={`${vm.contact.label}: ${vm.contact.email}`}>
+            {vm.contact.email}
+          </a>
         </nav>
       </div>
       <div className="footer-bottom">
-        <span>© 2026 IpêBook. Um projeto em construção.</span>
+        <span>© 2026 IpêBook. Projeto de faculdade, sem fins lucrativos, em construção.</span>
         <span>Livros circulam. Histórias continuam.</span>
       </div>
     </footer>
   );
 
   return (
-    <div className={`institutional ${vm.document ? '' : 'institutional-book'}`} style={theme}>
+    <div
+      className={`institutional ${vm.document ? '' : 'institutional-book'} ${
+        !vm.document && !reading.isBook ? 'is-normal-reading' : ''
+      }`}
+      style={theme}
+    >
       <a className="skip-link" href="#conteudo">
         Pular para o conteúdo
       </a>
@@ -331,7 +333,13 @@ export default function InstitutionalScreen() {
           </div>
         </main>
       ) : (
-        <InstitutionalBook hash={vm.hash} questions={vm.questions} footer={footer} />
+        <InstitutionalBook
+          hash={vm.hash}
+          mode={reading.mode}
+          onModeChange={reading.setMode}
+          questions={vm.questions}
+          footer={footer}
+        />
       )}
 
       {vm.document && footer}
