@@ -22,7 +22,7 @@ export function LegalDocumentContent({
         <span className="status-label">Sobre esta versão do IpêBook</span>
         <h1>{content.title}</h1>
         <p className="lead">{content.intro}</p>
-        <p className="legal-version">Texto preliminar · Revisto em 30 de setembro de 2026</p>
+        <p className="legal-version">Texto preliminar · Revisto em {content.revisedAt}</p>
       </header>
 
       <div className="legal-summary" aria-labelledby={`${page}-resumo`}>

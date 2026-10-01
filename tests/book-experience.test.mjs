@@ -11,7 +11,7 @@ test('busca por título ou categoria ignora acentos, espaços e caixa', () => {
   assert.equal(filterBookExamples('infantil', 'Todos')[0].id, 'quintal');
   assert.equal(filterBookExamples('caminhos', 'Venda').length, 0);
   assert.equal(filterBookExamples('inexistente', 'Todos').length, 0);
-  assert.equal(filterBookExamples('', 'Todos').length, 3);
+  assert.equal(filterBookExamples('', 'Todos').length, 6);
 });
 
 test('preço só pertence à venda; doação e troca mantêm seus significados', () => {

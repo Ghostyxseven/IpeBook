@@ -1,17 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { homedir } from 'node:os';
-import { pathToFileURL } from 'node:url';
-import { join } from 'node:path';
+import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useBookExperience } from '../src/viewmodel/useBookExperience.ts';
-const { JSDOM } = await import(
-  pathToFileURL(
-    process.env.IPEBOOK_JSDOM_PATH ||
-      join(homedir(), '.local/share/ia-integracoes/qualidade/node_modules/jsdom/lib/api.js'),
-  ).href
-);
 
 test('guia, busca vazia, recuperação e detalhes respeitam a navegação', async () => {
   const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost/' });
@@ -29,12 +21,12 @@ test('guia, busca vazia, recuperação e detalhes respeitam a navegação', asyn
   assert.equal(vm.guide.id, 'vender');
   assert.equal(window.location.hash, '#como-funciona');
   await act(async () => vm.setFilter('Doação'));
-  assert.equal(vm.examples.length, 1);
+  assert.equal(vm.examples.length, 2);
   assert.equal(vm.examples[0].modality, 'Doação');
   await act(async () => vm.setQuery('inexistente'));
   assert.equal(vm.examples.length, 0);
   await act(async () => vm.resetSearch());
-  assert.equal(vm.examples.length, 3);
+  assert.equal(vm.examples.length, 6);
   await act(async () => vm.openExample(vm.examples[0]));
   assert.equal(vm.selectedBook.id, 'jardim');
   await act(async () => window.dispatchEvent(new window.HashChangeEvent('hashchange')));

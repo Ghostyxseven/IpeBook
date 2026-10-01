@@ -8,8 +8,12 @@ O **IpêBook** é uma projeto de plataforma comunitária para compra, venda, tro
 
 Este aplicativo é construído utilizando as seguintes tecnologias:
 
-- **React Native** / **Expo**: Framework para desenvolvimento móvel cruzado (iOS e Android).
+- **React Native** / **Expo**: Framework para desenvolvimento móvel cruzado (iOS, Android e Web).
 - **TypeScript**: Adicionando tipagem estática e maior confiabilidade ao código.
+
+## 📍 Estado atual
+
+Hoje existe apenas a **página institucional Web** (livro interativo, estante de exemplos fictícios e documentos legais preliminares). O aplicativo em si (cadastro, catálogo, anúncios, negociação) ainda **não foi implementado**; veja a [divisão de features](docs/DIVISAO_FEATURES.md).
 
 ---
 
@@ -65,6 +69,17 @@ Siga as instruções abaixo para rodar o app no seu simulador ou dispositivo fí
    - **Android:** Pressione `a` no terminal para rodar no emulador Android.
    - **iOS:** Pressione `i` no terminal para rodar no simulador iOS (somente macOS).
    - **Dispositivo físico:** Baixe o aplicativo "Expo Go" no seu celular e escaneie o QR Code exibido no terminal.
+
+---
+
+## ✅ Verificação
+
+```bash
+npm run verify     # tipos, lint, formatação e testes
+npm run build:web  # exportação estática (pasta dist)
+```
+
+O CI (`.github/workflows/ci.yml`) executa esses passos em cada PR. Veja o [ADR 0005](docs/adr/0005-qualidade-automatizada-e-hospedagem.md).
 
 ---
 

@@ -4,6 +4,7 @@ import { InstitutionalBook } from '../components/InstitutionalBook';
 import { LegalDocumentContent } from '../components/LegalDocumentContent';
 import { AccessDialog } from '../components/AccessDialog';
 import { Icon } from '../components/Icon';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { theme } from '../styles/theme';
 import '../styles/institutional.css';
 import '../styles/book-experience.css';
@@ -34,16 +35,7 @@ export default function InstitutionalScreen() {
     }
   }, [vm.page, vm.hash, vm.document]);
 
-  useEffect(() => {
-    if (vm.menuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [vm.menuOpen]);
+  useScrollLock(vm.menuOpen);
 
   const footer = (
     <footer className="site-footer container">
