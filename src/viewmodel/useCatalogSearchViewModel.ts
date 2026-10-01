@@ -23,9 +23,6 @@ export function useCatalogSearchViewModel(
   const [modalities, setModalities] = useState<Modality[]>([]);
   const [category, setCategory] = useState<string | null>(initialCategory);
 
-  // A categoria pode mudar quando a tela é reaberta por outro atalho do Início.
-  useEffect(() => setCategory(initialCategory), [initialCategory]);
-
   useEffect(() => {
     const next = normalizeQuery(query);
     if (next === appliedQuery) return;

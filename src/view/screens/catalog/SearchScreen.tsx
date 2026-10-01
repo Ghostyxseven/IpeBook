@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Modality } from '../../../model/entities/Listing';
@@ -21,8 +22,14 @@ const modalities: Modality[] = ['sale', 'trade', 'donation'];
 /** Buscar: texto, modalidade e categoria combináveis, seguindo o pattern Descobrir livro. */
 export function SearchScreen() {
   const router = useRouter();
-  const { categoria } = useLocalSearchParams<{ categoria?: string }>();
-  const vm = useCatalogSearch(categoria && isCategory(categoria) ? categoria : null);
+  // `atalho` muda a cada toque numa categoria do Início, mesmo quando a categoria se repete.
+  const { categoria, atalho } = useLocalSearchParams<{ categoria?: string; atalho?: string }>();
+  const shortcut = categoria && isCategory(categoria) ? categoria : null;
+  const vm = useCatalogSearch(shortcut);
+  const { setCategory } = vm;
+  useEffect(() => {
+    if (shortcut) setCategory(shortcut);
+  }, [shortcut, atalho, setCategory]);
   const count = vm.activeFilterCount;
 
   const header = (

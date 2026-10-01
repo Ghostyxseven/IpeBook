@@ -43,7 +43,12 @@ export function HomeFeedScreen() {
         title="Categorias"
         options={vm.categories}
         isSelected={() => false}
-        onToggle={(categoria) => router.push({ pathname: '/buscar', params: { categoria } })}
+        onToggle={(categoria) =>
+          router.navigate({
+            pathname: '/buscar',
+            params: { categoria, atalho: String(Date.now()) },
+          })
+        }
       />
       <Text style={styles.section} accessibilityRole="header">
         Anunciados recentemente
