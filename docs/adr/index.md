@@ -6,3 +6,4 @@
 - [0004 - Página institucional Web](0004-pagina-institucional-web.md)
 - [0005 - Navegação do aplicativo com Expo Router](0005-navegacao-expo-router.md)
 - [0006 - Autenticação com Supabase Auth](0006-autenticacao-supabase.md)
+- [0007 - Modelo de anúncios no Supabase](0007-modelo-de-anuncios-supabase.md) (proposto)
