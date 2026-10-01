@@ -5,6 +5,10 @@ import type { User } from '../entities/User';
  * Todas as operações rejeitam com `AuthError` (ver entities/AuthError.ts).
  */
 export interface AuthRepository {
+  /**
+   * Sessão salva no aparelho. Rejeita com `AuthError('network')` quando não dá para
+   * confirmá-la sem internet (token vencido): isso não significa que a pessoa saiu.
+   */
   getCurrentUser(): Promise<User | null>;
   /** Avisa a cada entrada ou saída. Retorna a função para cancelar a inscrição. */
   onUserChange(listener: (user: User | null) => void): () => void;

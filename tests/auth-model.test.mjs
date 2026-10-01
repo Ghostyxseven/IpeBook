@@ -287,3 +287,90 @@ test('Supabase: código de recuperação inválido não grava a senha nem prende
   providerCallback('SIGNED_IN', { user: { id: 'u2', email: 'bia@email.com', user_metadata: {} } });
   assert.deepEqual(seen, ['bia@email.com'], 'o portão foi reaberto');
 });
+
+/** Cliente supabase-js real com armazenamento em memória, como um app reaberto (#34). */
+async function reopenedApp({ expiresIn, fetchImpl }) {
+  const { createClient } = await import('@supabase/supabase-js');
+  const store = new Map();
+  const storage = {
+    getItem: (key) => store.get(key) ?? null,
+    setItem: (key, value) => store.set(key, value),
+    removeItem: (key) => store.delete(key),
+  };
+  const now = Math.floor(Date.now() / 1000);
+  store.set(
+    'sb-projetoteste-auth-token',
+    JSON.stringify({
+      access_token: 'a.b.c',
+      refresh_token: 'r',
+      token_type: 'bearer',
+      expires_in: 3600,
+      expires_at: now + expiresIn,
+      user: {
+        id: 'u1',
+        aud: 'authenticated',
+        email: 'ana@email.com',
+        email_confirmed_at: '2026-09-30T12:00:00Z',
+        user_metadata: { name: 'Ana' },
+        app_metadata: {},
+        created_at: '2026-09-30T12:00:00Z',
+      },
+    }),
+  );
+  const client = createClient('https://projetoteste.supabase.co', 'sb_publishable_teste', {
+    auth: { storage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false },
+    global: { fetch: fetchImpl ?? (async () => Promise.reject(new TypeError('sem rede'))) },
+  });
+  return { repository: createSupabaseAuthRepository(client), store };
+}
+
+test('reabrir o app restaura a sessão salva, inclusive na troca de telas (#34)', async () => {
+  const { repository } = await reopenedApp({ expiresIn: 3600 });
+  assert.equal((await repository.getCurrentUser()).email, 'ana@email.com');
+  // Abertura se inscreve, sai, e a área logada se inscreve de novo.
+  const abertura = [];
+  const offAbertura = repository.onUserChange((user) => abertura.push(user?.email ?? null));
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  offAbertura();
+  const inicio = [];
+  const offInicio = repository.onUserChange((user) => inicio.push(user?.email ?? null));
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  offInicio();
+  assert.deepEqual(abertura, ['ana@email.com']);
+  assert.deepEqual(inicio, ['ana@email.com']);
+});
+
+test('token vencido e sem internet não equivale a sair: sessão continua salva (#34)', async () => {
+  // Retorno medido com o supabase-js real (1º/10/2026): com o token vencido e sem rede, a
+  // sessão continua no armazenamento e getSession devolve AuthRetryableFetchError. O
+  // supabase-js real leva cerca de 25 s tentando renovar, por isso o cenário é simulado.
+  const offline = createSupabaseAuthRepository({
+    auth: {
+      getSession: async () => ({
+        data: { session: null },
+        error: Object.assign(new Error('Network request failed'), {
+          name: 'AuthRetryableFetchError',
+          status: 0,
+        }),
+      }),
+    },
+  });
+  await assert.rejects(offline.getCurrentUser(), { code: 'network' });
+
+  const silence = console.error;
+  console.error = () => {};
+  try {
+    const refused = await reopenedApp({
+      expiresIn: -600,
+      fetchImpl: async () =>
+        new Response(JSON.stringify({ error_code: 'refresh_token_not_found', msg: 'Invalid' }), {
+          status: 400,
+          headers: { 'content-type': 'application/json' },
+        }),
+    });
+    await assert.rejects(refused.repository.getCurrentUser(), (error) => error.code !== 'network');
+    assert.ok(!refused.store.has('sb-projetoteste-auth-token'), 'sessão recusada é removida');
+  } finally {
+    console.error = silence;
+  }
+});

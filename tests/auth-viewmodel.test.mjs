@@ -308,6 +308,60 @@ test('recuperação: sair da tela com a senha pendente encerra a sessão de recu
   assert.equal(await memory.repository.getCurrentUser(), null);
 });
 
+test('sessão salva sem internet aguarda conexão em vez de ir para Entrar (#34)', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.restoreSession(ana);
+  memory.failRestore(new AuthError('network'));
+  const session = await renderHook(() => useSession(memory.repository));
+  assert.equal(session.vm.status, 'loading', 'não conta como saída');
+  assert.match(session.vm.restoreError, /internet/);
+  assert.equal(startRoute(session.vm.status, true), null, 'abertura não manda para Entrar');
+
+  // Tentar de novo ainda sem internet mantém o aviso.
+  await act(async () => session.vm.retryRestore());
+  assert.equal(session.vm.status, 'loading');
+  assert.match(session.vm.restoreError, /internet/);
+
+  // A internet volta e a nova tentativa confirma a sessão.
+  memory.failRestore(null);
+  await act(async () => session.vm.retryRestore());
+  assert.equal(session.vm.status, 'signedIn');
+  assert.equal(session.vm.restoreError, null);
+  await session.unmount();
+});
+
+test('o provedor confirmando a sessão depois também libera a entrada (#34)', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.failRestore(new AuthError('network'));
+  const session = await renderHook(() => useSession(memory.repository));
+  assert.equal(session.vm.status, 'loading');
+  await act(async () => memory.emitProviderUser(ana));
+  assert.equal(session.vm.status, 'signedIn');
+  assert.equal(session.vm.restoreError, null);
+  await session.unmount();
+});
+
+test('falha que não é de rede na restauração leva para Entrar (#34)', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.failRestore(new AuthError('unknown'));
+  const session = await renderHook(() => useSession(memory.repository));
+  assert.equal(session.vm.status, 'signedOut');
+  assert.equal(session.vm.restoreError, null);
+  await session.unmount();
+});
+
+test('reabrir o app com sessão salva vai direto para a Início (#34)', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.restoreSession(ana);
+  const primeira = await renderHook(() => useSession(memory.repository));
+  assert.equal(primeira.vm.status, 'signedIn');
+  await primeira.unmount();
+  const reaberto = await renderHook(() => useSession(memory.repository));
+  assert.equal(reaberto.vm.status, 'signedIn');
+  assert.equal(startRoute(reaberto.vm.status, true), '/inicio');
+  await reaberto.unmount();
+});
+
 test('onboarding avança, volta e marca como visto ao concluir ou pular', async () => {
   let seen = false;
   let finished = 0;
