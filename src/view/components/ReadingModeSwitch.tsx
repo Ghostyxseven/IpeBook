@@ -1,8 +1,8 @@
 import type { ReadingMode } from '../../model/entities/BookExperience';
-import type { useReadingMode } from '../../viewmodel/useReadingMode';
+import type { useReadingModePreference } from '../../factories/readingMode';
 import { Icon } from './Icon';
 
-type Reading = ReturnType<typeof useReadingMode>;
+type Reading = ReturnType<typeof useReadingModePreference>;
 
 export function ReadingModeSwitch({
   mode,

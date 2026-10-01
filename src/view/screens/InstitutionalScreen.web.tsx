@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useInstitutionalViewModel } from '../../viewmodel/useInstitutionalViewModel';
-import { useReadingMode } from '../../viewmodel/useReadingMode';
+import { useReadingModePreference } from '../../factories/readingMode';
 import { InstitutionalBook } from '../components/InstitutionalBook';
 import { LegalDocumentContent } from '../components/LegalDocumentContent';
 import { AccessDialog } from '../components/AccessDialog';
@@ -14,7 +14,7 @@ import '../styles/book-experience.css';
 
 export default function InstitutionalScreen() {
   const vm = useInstitutionalViewModel();
-  const reading = useReadingMode();
+  const reading = useReadingModePreference();
   const menuButton = useRef<HTMLButtonElement>(null);
   const previousPage = useRef(vm.page);
 
