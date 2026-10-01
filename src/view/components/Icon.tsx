@@ -1,7 +1,20 @@
 export type IconName =
-  'arrow' | 'pin' | 'exchange' | 'heart' | 'leaf' | 'shield' | 'menu' | 'close' | 'plus' | 'check';
+  | 'arrow'
+  | 'book'
+  | 'rows'
+  | 'pin'
+  | 'exchange'
+  | 'heart'
+  | 'leaf'
+  | 'shield'
+  | 'menu'
+  | 'close'
+  | 'plus'
+  | 'check';
 const paths: Record<IconName, string> = {
   arrow: 'M4 12h16M14 6l6 6-6 6',
+  book: 'M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2ZM22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8Z',
+  rows: 'M4 5h16v5H4ZM4 14h16v5H4Z',
   pin: 'M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0ZM15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
   exchange: 'M4 7h16l-4-4M20 17H4l4 4M20 7l-4 4M4 17l4-4',
   heart:
