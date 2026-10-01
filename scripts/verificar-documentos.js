@@ -65,7 +65,7 @@ async (page) => {
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('http://localhost:8082/#privacidade');
+  await page.goto('http://localhost:8082/privacidade');
   await page
     .getByRole('navigation', { name: 'Documentos legais' })
     .getByRole('link', { name: 'Segurança' })

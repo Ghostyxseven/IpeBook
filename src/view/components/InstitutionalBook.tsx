@@ -80,13 +80,13 @@ export function InstitutionalBook({
             Conheça os guias. Compras e anúncios ainda não estão disponíveis.
           </p>
           <div className="cover-paths">
-            <a href="#como-funciona" onClick={() => vm.selectGuide('trocar')}>
+            <a href="/#como-funciona" onClick={() => vm.selectGuide('trocar')}>
               <Icon name="exchange" size={20} />
               <span>
                 Prefere trocar?<small>Uma leitura por outra.</small>
               </span>
             </a>
-            <a href="#como-funciona" onClick={() => vm.selectGuide('doar')}>
+            <a href="/#como-funciona" onClick={() => vm.selectGuide('doar')}>
               <Icon name="heart" size={20} />
               <span>
                 Quer doar?<small>Um novo leitor, sem custo.</small>
@@ -128,7 +128,7 @@ export function InstitutionalBook({
             <Icon name="pin" size={18} />
             Pensado para encontros na comunidade
           </span>
-          <a href="#sobre">
+          <a href="/#sobre">
             Abra o próximo capítulo <Icon name="arrow" size={18} />
           </a>
         </div>
@@ -199,7 +199,7 @@ export function InstitutionalBook({
             </div>
           </div>
         </div>
-        <a href="#como-funciona" className="chapter-next">
+        <a href="/#como-funciona" className="chapter-next">
           Veja como participar de cada jeito <Icon name="arrow" size={18} />
         </a>
       </section>
@@ -257,7 +257,7 @@ export function InstitutionalBook({
               ))}
             </ul>
             <p className="guide-status">{vm.guide.note}</p>
-            <a href="#em-construcao" className="chapter-next">
+            <a href="/#em-construcao" className="chapter-next">
               Explorar os exemplos <Icon name="arrow" size={18} />
             </a>
           </aside>
@@ -306,10 +306,10 @@ export function InstitutionalBook({
             <p>
               Prefira um local público, combine o horário e confira o exemplar antes de concluir.
             </p>
-            <a className="chapter-next" href="#como-funciona">
+            <a className="chapter-next" href="/#como-funciona">
               Rever os guias <Icon name="arrow" size={18} />
             </a>
-            <a className="chapter-next" href="#privacidade">
+            <a className="chapter-next" href="/privacidade">
               Como tratamos seus dados <Icon name="arrow" size={18} />
             </a>
           </aside>
@@ -340,7 +340,7 @@ export function InstitutionalBook({
               Guias de compra, venda, troca e doação; exemplos interativos; dúvidas e informações do
               projeto.
             </p>
-            <a href="#em-construcao" className="chapter-next">
+            <a href="/#em-construcao" className="chapter-next">
               Visitar a estante ilustrativa <Icon name="arrow" size={18} />
             </a>
           </article>

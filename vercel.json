@@ -42,8 +42,9 @@
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/(termos|privacidade|lgpd|seguranca)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "trailingSlash": false
 }

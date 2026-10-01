@@ -16,8 +16,8 @@ Este site apresenta a proposta do projeto e orientações. Cadastro, autenticaç
 ## Informações e documentos
 
 - [Informações do projeto](/#informacoes): Acesso aos documentos e informações institucionais.
-- [Termos de Uso](/#termos): Condições aplicáveis ao site de apresentação.
-- [Política de Privacidade](/#privacidade): Informações sobre o tratamento de dados.
-- [LGPD](/#lgpd): Informações sobre proteção de dados pessoais.
+- [Termos de Uso](/termos): Condições aplicáveis ao site de apresentação.
+- [Política de Privacidade](/privacidade): Informações sobre o tratamento de dados.
+- [LGPD](/lgpd): Informações sobre proteção de dados pessoais.
 
 A navegação usa fragmentos na URL e requer JavaScript para exibir os capítulos. Consulte os documentos vinculados para as condições atuais; este resumo não substitui esses textos.

@@ -7,7 +7,7 @@ const html = await htmlResponse.text();
 const viewport = html.match(/<meta\s+name="viewport"\s+content="([^"]+)"/i)?.[1];
 assert.ok(viewport, 'viewport presente');
 assert.doesNotMatch(viewport, /user-scalable\s*=\s*(?:0|no)|maximum-scale\s*=/i);
-assert.match(html, /Roboto\.woff2/);
+assert.match(html, /Roboto-pt-br\.woff2/);
 assert.doesNotMatch(html, /Roboto\.ttf/);
 const robots = await fetch(`${base}/robots.txt`);
 assert.equal(robots.status, 200);
@@ -33,7 +33,7 @@ for (const path of [
   const response = await fetch(`${base}${path}`);
   assert.equal(response.status, 404, `${path} não pode cair no HTML da apresentação`);
 }
-const font = await fetch(`${base}/fonts/Roboto.woff2`);
+const font = await fetch(`${base}/fonts/Roboto-pt-br.woff2`);
 assert.equal(font.status, 200);
 const fontBytes = new Uint8Array(await font.arrayBuffer());
 assert.equal(new TextDecoder().decode(fontBytes.slice(0, 4)), 'wOF2');

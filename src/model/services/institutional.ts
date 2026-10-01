@@ -7,6 +7,21 @@ export function resolvePage(hash: string): Page {
     : 'inicio';
 }
 
+/** Os documentos têm endereço próprio (/privacidade); os capítulos do livro seguem em /#capitulo. */
+export function resolveRoute(pathname: string, hash: string): Page {
+  const path = pathname.replace(/^\/+|\/+$/g, '');
+  return path ? resolvePage(path) : resolvePage(hash);
+}
+
+/** Endereço canônico quando o visitante chega por um link antigo (/#privacidade) ou desconhecido. */
+export function canonicalPath(pathname: string, hash: string): string | null {
+  const page = resolveRoute(pathname, hash);
+  const wanted = page === 'inicio' ? '/' : `/${page}`;
+  const current = pathname.replace(/\/+$/, '') || '/';
+  if (current === wanted) return null;
+  return page === 'inicio' ? `/${hash}` : wanted;
+}
+
 export const instagram = {
   label: 'Instagram do IpêBook',
   handle: '@ipebook',
@@ -21,10 +36,10 @@ export const contact = {
 } as const;
 
 export const legalLinks = [
-  { id: 'termos', label: 'Termos de Uso' },
-  { id: 'privacidade', label: 'Privacidade' },
-  { id: 'lgpd', label: 'Seus direitos e LGPD' },
-  { id: 'seguranca', label: 'Segurança' },
+  { id: 'termos', label: 'Termos de Uso', href: '/termos' },
+  { id: 'privacidade', label: 'Privacidade', href: '/privacidade' },
+  { id: 'lgpd', label: 'Seus direitos e LGPD', href: '/lgpd' },
+  { id: 'seguranca', label: 'Segurança', href: '/seguranca' },
 ] as const;
 
 const sources = {
@@ -145,7 +160,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'O que acontece com minhas buscas?',
         paragraphs: [
-          'A busca filtra os livros de exemplo no seu navegador. Não envia a consulta a um servidor. Filtros, guias e detalhes abertos ficam na memória da página; o código não cria um perfil de leitura nem salva essas escolhas para outra visita.',
+          'A busca filtra os livros de exemplo no seu navegador. Não envia a consulta a um servidor. Filtros, guias e detalhes abertos ficam na memória da página; o código não cria um perfil de leitura nem salva essas escolhas para outra visita. A única preferência guardada é o modo de leitura, explicado abaixo.',
           'Digite apenas títulos ou categorias. Não informe CPF, senha ou endereço. Esta versão não tem envio de arquivos, pedido de localização precisa ou coleta de pagamento.',
           'Seu navegador pode guardar as páginas visitadas no histórico, conforme suas configurações.',
         ],
@@ -153,7 +168,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'O site usa cookies ou rastreamento?',
         paragraphs: [
-          'O código da apresentação não instala cookies nem salva buscas em localStorage ou sessionStorage, que são áreas de armazenamento do navegador. Não há publicidade nem pixels de rastreamento de redes sociais.',
+          'O código da apresentação não instala cookies nem salva buscas. Em localStorage, uma área de armazenamento do navegador, guarda apenas a sua escolha entre Livro 3D e Leitura normal, para lembrá-la na próxima visita. Essa informação fica no seu aparelho, só é gravada depois que você escolhe um modo e pode ser apagada limpando os dados do site. Não há publicidade nem pixels de rastreamento de redes sociais.',
           'O site usa Vercel Web Analytics e Vercel Speed Insights, da empresa que hospeda a página. Eles registram a página aberta, a origem da visita, o país aproximado, o tipo de aparelho e navegador e o tempo de carregamento, e mostram os resultados de forma agregada. Segundo a Vercel, essas ferramentas não usam cookies. A base legal e o prazo de conservação ainda precisam ser confirmados.',
           'Fontes e imagens vêm do próprio site. O navegador pode guardar cópias desses arquivos no cache para carregar a página mais rápido.',
           'Não há banner para cookies opcionais porque eles não estão presentes no código atual. Se isso mudar, as finalidades e as opções deverão ser avaliadas antes da ativação. Ainda é necessário conferir o que a infraestrutura publicada utiliza.',

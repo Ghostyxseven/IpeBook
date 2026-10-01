@@ -45,7 +45,7 @@ export default function InstitutionalScreen() {
     <footer className="site-footer container">
       <div className="footer-top">
         <div>
-          <a className="brand" href="#inicio">
+          <a className="brand" href="/#inicio">
             <img
               src={require('../../../assets/logo-web-96.webp')}
               alt=""
@@ -60,14 +60,14 @@ export default function InstitutionalScreen() {
         </div>
         <nav aria-label="Sobre o IpêBook">
           <h2>O projeto</h2>
-          <a href="#sobre">Sobre o IpêBook</a>
-          <a href="#como-funciona">Como funciona</a>
-          <a href="#duvidas">Dúvidas frequentes</a>
+          <a href="/#sobre">Sobre o IpêBook</a>
+          <a href="/#como-funciona">Como funciona</a>
+          <a href="/#duvidas">Dúvidas frequentes</a>
         </nav>
         <nav aria-label="Transparência">
           <h2>Transparência</h2>
           {vm.legalLinks.map((link) => (
-            <a href={`#${link.id}`} key={link.id}>
+            <a href={link.href} key={link.id}>
               {link.label}
             </a>
           ))}
@@ -96,6 +96,26 @@ export default function InstitutionalScreen() {
 
   return (
     <div
+      onClick={(event) => {
+        // Links internos navegam sem recarregar; abas novas, downloads e teclas modificadoras ficam com o navegador.
+        const link = (event.target as HTMLElement).closest?.('a[href]');
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey ||
+          !link ||
+          link.hasAttribute('download') ||
+          (link.getAttribute('target') ?? '_self') !== '_self'
+        )
+          return;
+        const href = link.getAttribute('href') ?? '';
+        if (!href.startsWith('/') || href.startsWith('//')) return;
+        event.preventDefault();
+        vm.navigate(href);
+      }}
       className={`institutional ${vm.document ? '' : 'institutional-book'} ${
         !vm.document && !reading.isBook ? 'is-normal-reading' : ''
       }`}
@@ -114,7 +134,7 @@ export default function InstitutionalScreen() {
         }}
       >
         <div className="container header-inner">
-          <a className="brand" href="#inicio" aria-label="IpêBook — início">
+          <a className="brand" href="/#inicio" aria-label="IpêBook — início">
             <img
               src={require('../../../assets/logo-web-96.webp')}
               alt=""
@@ -144,21 +164,21 @@ export default function InstitutionalScreen() {
             {/* Navegação horizontal para desktop */}
             <div className="nav-desktop-links">
               <a
-                href="#como-funciona"
+                href="/#como-funciona"
                 onClick={vm.closeMenu}
                 aria-current={vm.hash === '#como-funciona' ? 'page' : undefined}
               >
                 Como funciona
               </a>
               <a
-                href="#sobre"
+                href="/#sobre"
                 onClick={vm.closeMenu}
                 aria-current={vm.hash === '#sobre' ? 'page' : undefined}
               >
                 Sobre o projeto
               </a>
               <a
-                href="#duvidas"
+                href="/#duvidas"
                 onClick={vm.closeMenu}
                 aria-current={vm.hash === '#duvidas' ? 'page' : undefined}
               >
@@ -227,7 +247,7 @@ export default function InstitutionalScreen() {
                   return (
                     <a
                       key={chapter.id}
-                      href={`#${chapter.id}`}
+                      href={`/#${chapter.id}`}
                       onClick={vm.closeMenu}
                       className={`nav-chapter-card ${isActive ? 'is-active' : ''}`}
                       aria-current={isActive ? 'page' : undefined}
@@ -291,15 +311,15 @@ export default function InstitutionalScreen() {
                 </button>
               </div>
               <div className="nav-mobile-legal">
-                <a href="#termos" onClick={vm.closeMenu}>
+                <a href="/termos" onClick={vm.closeMenu}>
                   Termos
                 </a>
                 <span aria-hidden="true">•</span>
-                <a href="#privacidade" onClick={vm.closeMenu}>
+                <a href="/privacidade" onClick={vm.closeMenu}>
                   Privacidade
                 </a>
                 <span aria-hidden="true">•</span>
-                <a href="#seguranca" onClick={vm.closeMenu}>
+                <a href="/seguranca" onClick={vm.closeMenu}>
                   Segurança
                 </a>
               </div>
@@ -310,7 +330,7 @@ export default function InstitutionalScreen() {
 
       {vm.document && vm.page !== 'inicio' ? (
         <main id="conteudo" tabIndex={-1} className="container legal-main">
-          <a href="#inicio" className="text-link back-link">
+          <a href="/#inicio" className="text-link back-link">
             ← Voltar à apresentação
           </a>
           <div className="legal-layout">
@@ -320,7 +340,7 @@ export default function InstitutionalScreen() {
                 {vm.legalLinks.map((link) => (
                   <a
                     key={link.id}
-                    href={`#${link.id}`}
+                    href={link.href}
                     aria-current={vm.page === link.id ? 'page' : undefined}
                   >
                     {link.label}

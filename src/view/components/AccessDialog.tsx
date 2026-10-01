@@ -70,7 +70,7 @@ export function AccessDialog({
       >
         Acompanhe no Instagram
       </a>
-      <a className="text-link" href="#privacidade" onClick={onClose}>
+      <a className="text-link" href="/privacidade" onClick={onClose}>
         Ler a Política de Privacidade
       </a>
     </dialog>
