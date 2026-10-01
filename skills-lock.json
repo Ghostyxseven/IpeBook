@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "skill_mvvm_simplificado": {
+      "source": "Ghostyxseven/skill_mvvm_simplificado",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "bc7b08d845931f23c6703e950a7f882991314c900b09ae48989792b49294232e"
+    }
+  }
+}

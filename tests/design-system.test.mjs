@@ -1,0 +1,62 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
+
+const tokens = JSON.parse(readFileSync(new URL('../design-tokens.json', import.meta.url), 'utf8'));
+
+test('design system mantém tokens fundamentais e compatíveis', () => {
+  assert.equal(tokens.color.action.$value, '#426B55');
+  assert.equal(tokens.color.background.$value, '#F6F1E8');
+  assert.equal(tokens.platform.web.controlHeight.$value, '48px');
+  assert.equal(tokens.spacing['24'].$value, '24px');
+  assert.equal(tokens.typography.body.fontSize.$value, '16px');
+});
+
+test('design system inclui foundations da versão 1.1', () => {
+  assert.equal(tokens.source.version, '1.1');
+  assert.equal(tokens.layout.web.columns.$value, 12);
+  assert.equal(tokens.layout.web.contentWidth.$value, '1280px');
+  assert.equal(tokens.accessibility.touchTarget.$value, '48px');
+  assert.equal(tokens.border.thin.$value, '1px');
+  assert.equal(tokens.opacity.disabledContent.$value, 0.38);
+  assert.equal(tokens.motion.duration.standard.$value, '250ms');
+  assert.deepEqual(tokens.motion.easing.standard.$value, [0.2, 0, 0, 1]);
+});
+
+test('design system cobre estados de produto', () => {
+  assert.equal(tokens.color.badge.sale.text.$value, '#2F503D');
+  assert.equal(tokens.color.badge.trade.text.$value, '#3C302A');
+  assert.equal(tokens.color.badge.donation.text.$value, '#7A4430');
+  assert.equal(tokens.color.badge.reserved.text.$value, '#3C302A');
+  assert.equal(tokens.color.badge.completed.text.$value, '#FFFFFF');
+});
+
+test('tokens globais usam objetos tipados com $value', () => {
+  const groups = [
+    tokens.color,
+    tokens.spacing,
+    tokens.radius,
+    tokens.border,
+    tokens.opacity,
+    tokens.motion,
+    tokens.layout,
+    tokens.accessibility,
+    tokens.platform,
+    tokens.typography,
+    tokens.landing,
+  ];
+
+  const validate = (node) => {
+    for (const [key, value] of Object.entries(node)) {
+      if (key.startsWith('$')) continue;
+      assert.ok(value && typeof value === 'object', `Token/grupo inválido em ${key}`);
+      if ('$value' in value) {
+        assert.ok('$type' in value, `Token ${key} precisa declarar $type`);
+      } else {
+        validate(value);
+      }
+    }
+  };
+
+  for (const group of groups) validate(group);
+});
