@@ -89,7 +89,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: 'Como funciona a conta?',
         paragraphs: [
           'Use um e-mail seu e uma senha exclusiva para o IpêBook. Mantenha a senha em segredo: quem tiver acesso a ela pode entrar na sua conta.',
-          'A conta existe apenas no aplicativo e, nesta versão, leva a uma área inicial em construção. Ainda não há anúncios, pedidos, mensagens ou perfil público.',
+          'A conta existe apenas no aplicativo. Depois de entrar, você pode ver o catálogo de livros anunciados por outras pessoas (Início, Explorar e detalhe do livro). Ainda não é possível publicar anúncios, fazer pedidos, trocar mensagens nem ter perfil público.',
           `Excluir a conta pelo aplicativo ainda não é possível. Por enquanto, pedidos sobre a conta podem ser enviados para ${contact.email}, sem prazo de resposta garantido. Essa pendência precisa ser resolvida antes de o cadastro ser divulgado.`,
         ],
       },
@@ -158,6 +158,14 @@ export const documents: Record<LegalPage, LegalDocument> = {
         ],
       },
       {
+        title: 'O que outras pessoas veem no catálogo?',
+        paragraphs: [
+          'No aplicativo, quem está com a conta ativa vê anúncios de outras pessoas: título, autor, categoria, modalidade (venda, troca ou doação), preço, condição do livro, descrição, capa, bairro, cidade e o primeiro nome de quem anunciou. Não há endereço completo.',
+          'Quando for possível publicar anúncios, essas informações ficarão visíveis para as outras pessoas que tiverem conta no aplicativo. Não coloque no anúncio dados que você não queira mostrar, como telefone ou endereço.',
+          'Os anúncios ficam no Supabase. A região do servidor, o prazo de conservação e a base legal ainda precisam ser confirmados e serão informados aqui.',
+        ],
+      },
+      {
         title: 'O que acontece com minhas buscas?',
         paragraphs: [
           'A busca filtra os livros de exemplo no seu navegador. Não envia a consulta a um servidor. Filtros, guias e detalhes abertos ficam na memória da página; o código não cria um perfil de leitura nem salva essas escolhas para outra visita. A única preferência guardada é o modo de leitura, explicado abaixo.',
@@ -201,7 +209,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'O que muda quando o aplicativo funcionar?',
         paragraphs: [
-          'Anúncios, mensagens e pagamentos ainda não estão disponíveis. Antes de ativá-los, será preciso informar quais dados serão usados, para quê, com quem serão compartilhados e por quanto tempo serão guardados, além da base legal e dos cuidados de segurança.',
+          'A publicação de anúncios, as mensagens e os pagamentos ainda não estão disponíveis. Antes de ativá-los, será preciso informar quais dados serão usados, para quê, com quem serão compartilhados e por quanto tempo serão guardados, além da base legal e dos cuidados de segurança.',
           'O projeto também deverá avaliar a proteção de dados de crianças e adolescentes, conforme a lei e seu melhor interesse. O cadastro ainda não verifica a idade; essa avaliação precisa ser feita antes de divulgar o aplicativo.',
           'Navegar nesta apresentação não autoriza usos futuros dos seus dados. As dicas da página Segurança não significam que já exista verificação de identidade ou proteção de pagamentos.',
         ],
