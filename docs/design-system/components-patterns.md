@@ -36,6 +36,8 @@ Conteúdo mínimo:
 
 Variantes principais: Venda, Troca e Doação.
 
+No app: `BookCard` (lista do Explorar, Figma 03) e `BookTile` (grade do Início, Figma 02). Sem foto, a capa ilustrativa usa `color.cover.*` e os SVGs do Figma em `assets/catalog/`, com a nota "Capa ilustrativa" no detalhe.
+
 ### Empty State
 
 Estados principais:
@@ -53,15 +55,19 @@ Botão, campo, busca, chips, navegação, dialog, sheet, snackbar e controles eq
 ## Patterns do produto
 
 ### Descobrir livro
+
 Buscar → comparar resultados → abrir detalhe → agir.
 
 ### Publicar anúncio
+
 ISBN/manual → dados do livro → modalidade → revisar → publicar.
 
 ### Combinar encontro
+
 Conversar → escolher local público → escolher horário → confirmar resumo.
 
 ### Concluir negociação
+
 Confirmar recebimento → marcar concluído → avaliar → registrar no histórico.
 
 A IA deve reutilizar estes padrões antes de propor uma estrutura nova.

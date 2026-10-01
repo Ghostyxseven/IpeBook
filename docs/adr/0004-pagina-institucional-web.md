@@ -30,4 +30,4 @@ Referências: [ADR](https://github.com/architecture-decision-record/architecture
 
 Conforme correção explícita do usuário, `App.web.tsx` e `src/app/index.web.tsx` apenas exportam a tela. A interface está em `src/view/screens/InstitutionalScreen.web.tsx`; não concentrar JSX em `app`.
 
-Atualização: os documentos passaram a ter endereços reais (`/privacidade` etc.) pelo [ADR 0008](0008-rotas-reais-para-documentos.md); os capítulos do livro seguem como fragmentos.
+Atualização: os documentos passaram a ter endereços reais (`/privacidade` etc.) pelo [ADR 0010](0010-rotas-reais-para-documentos.md); os capítulos do livro seguem como fragmentos.

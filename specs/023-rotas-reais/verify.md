@@ -11,4 +11,5 @@
   7. "Voltar à apresentação" e logo: `/#inicio`; "Quero comprar": `/#como-funciona`;
   8. celular: menu → Privacidade abre `/privacidade` e fecha o menu;
   9. 0 erros de JavaScript.
-- Limitações: não testado na Vercel de verdade nem em aparelho real; caminhos desconhecidos respondem 200 (aplicação de arquivo único); sem `sitemap.xml` e sem URL canônica até haver domínio.
+- Hospedagem: o `rewrite` cobre só os quatro documentos; `scripts/verificar-recursos-web.mjs` (spec 011) confirma 404 para arquivos inexistentes.
+- Limitações: não testado na Vercel de verdade nem em aparelho real; sem `sitemap.xml` e sem URL canônica até haver domínio.

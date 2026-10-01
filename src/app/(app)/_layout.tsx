@@ -1,7 +1,7 @@
 import { Redirect, Stack } from 'expo-router';
 import { OfflineBanner } from '../../view/components/feedback/OfflineBanner';
 import { SplashScreen } from '../../view/screens/SplashScreen';
-import { colors } from '../../view/theme/nativeTheme';
+import { colors, typography } from '../../view/theme/nativeTheme';
 import { useAppSession } from '../../factories/auth';
 import { SessionContext } from '../../viewmodel/useSession';
 
@@ -15,7 +15,23 @@ export default function AppLayout() {
       <OfflineBanner />
       <Stack
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
-      />
+      >
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="livro/[id]"
+          options={{
+            headerShown: true,
+            // Figma 04: voltar e a marca no topo, sobre a superfície.
+            title: 'IpêBook',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
+            headerTitleStyle: { ...typography.bodyLarge, fontWeight: '500', color: colors.text },
+            contentStyle: { backgroundColor: colors.surface },
+            headerShadowVisible: false,
+            headerBackTitle: 'Voltar',
+          }}
+        />
+      </Stack>
     </SessionContext.Provider>
   );
 }

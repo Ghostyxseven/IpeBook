@@ -1,4 +1,4 @@
-# 0008 — Endereços reais para os documentos legais
+# 0010 — Endereços reais para os documentos legais
 
 Data: 01/10/2026
 
@@ -8,7 +8,7 @@ Aceito. Substitui, em parte, o [ADR 0004](0004-pagina-institucional-web.md), que
 
 ## Contexto
 
-Links como `/#privacidade` não são tratados por buscadores como páginas distintas, o servidor não os enxerga e eles ficam menos claros ao serem compartilhados. A hospedagem na Vercel já devolve o `index.html` para qualquer caminho (`rewrites` em `vercel.json`), e a página continua sendo uma aplicação de arquivo único.
+Links como `/#privacidade` não são tratados por buscadores como páginas distintas, o servidor não os enxerga e eles ficam menos claros ao serem compartilhados. A página é uma aplicação de arquivo único. A spec 011 exige que arquivos inexistentes (por exemplo `/.well-known/ai-catalog.json`) respondam 404 e não caiam no HTML da apresentação; por isso o `rewrite` não pode ser genérico.
 
 ## Decisão
 
@@ -26,6 +26,6 @@ Links como `/#privacidade` não são tratados por buscadores como páginas disti
 
 ## Consequências
 
-- A hospedagem precisa devolver o `index.html` para qualquer caminho; em `vercel.json` isso já existe.
-- Caminhos desconhecidos mostram a página inicial com status HTTP 200 (não há 404 de verdade em uma aplicação de arquivo único) e a URL é corrigida para `/`.
+- `vercel.json` reescreve para `index.html` **somente** `/termos`, `/privacidade`, `/lgpd` e `/seguranca`. Qualquer outro caminho inexistente responde 404 de verdade, e novos documentos exigem acrescentar o caminho à regra.
+- Em servidores de desenvolvimento que devolvem o `index.html` para tudo, a ViewModel ainda leva caminhos desconhecidos para `/`.
 - Mapa do site (`sitemap.xml`) e URL canônica dependem do domínio definitivo, que ainda não foi informado; ficam como pendência.

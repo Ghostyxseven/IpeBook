@@ -1,41 +1,36 @@
-export type ListingModality = 'Venda' | 'Troca' | 'Doação';
-export type ListingStatus = 'disponivel' | 'reservado' | 'concluido';
-export type ListingFilter = 'Todos' | ListingModality;
+/** Modalidades do anúncio (ADR 0008). Os rótulos em português ficam em `catalogFormat`. */
+export type Modality = 'sale' | 'trade' | 'donation';
 
-type ListingBase = {
+export type ListingCondition = 'novo' | 'como_novo' | 'bom' | 'marcas_de_uso';
+
+/** Situações visíveis no catálogo; `concluido` e `arquivado` nunca chegam aqui. */
+export type ListingStatus = 'disponivel' | 'reservado';
+
+export type Listing = {
   id: string;
   title: string;
   author: string;
   category: string;
-  /** Estado do exemplar, em texto livre curto (ex.: "Bom estado"). */
-  condition: string;
-  description: string;
+  modality: Modality;
+  /** Só na venda; em centavos para evitar arredondamento. */
+  priceCents: number | null;
+  /** Só na troca. */
+  tradeTerms: string | null;
+  condition: ListingCondition;
+  neighborhood: string | null;
+  city: string | null;
+  description: string | null;
+  coverUrl: string | null;
   status: ListingStatus;
-  coverUrl?: string;
-  /** Só aparece quando a pessoa informou; nunca é inventada. */
-  location?: string;
+  ownerFirstName: string | null;
+  /** Data ISO 8601. */
   createdAt: string;
 };
 
-/** Preço só existe em venda; troca explicita o interesse; doação é gratuita. */
-export type Listing = ListingBase &
-  (
-    | { modality: 'Venda'; priceCents: number }
-    | { modality: 'Troca'; exchangeInterest: string }
-    | { modality: 'Doação' }
-  );
+export type CatalogFilters = {
+  query: string;
+  modalities: Modality[];
+  category: string | null;
+};
 
-export type CatalogErrorCode = 'network' | 'not_configured' | 'unknown';
-
-export class CatalogError extends Error {
-  readonly code: CatalogErrorCode;
-  constructor(code: CatalogErrorCode, cause?: unknown) {
-    super(code, { cause });
-    this.name = 'CatalogError';
-    this.code = code;
-  }
-}
-
-export function toCatalogError(error: unknown): CatalogError {
-  return error instanceof CatalogError ? error : new CatalogError('unknown', error);
-}
+export const emptyFilters: CatalogFilters = { query: '', modalities: [], category: null };

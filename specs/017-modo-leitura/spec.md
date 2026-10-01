@@ -12,7 +12,7 @@ Fora do escopo: salvar a escolha entre visitas, rotas reais no lugar de `#fragme
 - Quem pede menos movimento no sistema (`prefers-reduced-motion`) começa na leitura normal; os demais começam no livro.
 - Na leitura normal a página rola como um documento comum, sem moldura fixa; os links `#sobre`, `#como-funciona` etc. levam ao capítulo.
 - Ao passar para a leitura normal, o leitor continua no capítulo em que estava.
-- (Substituído pela spec 021) Na entrega original a escolha não era gravada; hoje ela é lembrada em `localStorage`, só depois que o visitante escolhe.
+- (Substituído pela spec 022) Na entrega original a escolha não era gravada; hoje ela é lembrada em `localStorage`, só depois que o visitante escolhe.
 - Documentos legais (`#termos` etc.) não mudam.
 
 ## Validação
