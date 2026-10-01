@@ -12,3 +12,4 @@
 - [0010 - Endereços reais para os documentos legais](0010-rotas-reais-para-documentos.md)
 - [0011 - Entrega de notificações](0011-entrega-de-notificacoes.md) (proposto)
 - [0012 - Camada de infraestrutura para clientes e recursos da plataforma](0012-camada-de-infraestrutura.md)
+- [0013 - Controles próprios seguindo a biblioteca de componentes do Figma](0013-controles-proprios-seguindo-o-figma.md)

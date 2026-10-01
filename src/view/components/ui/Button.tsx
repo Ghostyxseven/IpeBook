@@ -1,7 +1,14 @@
 import { ActivityIndicator, Platform, Pressable, StyleSheet, Text } from 'react-native';
-import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
-type Variant = 'primary' | 'secondary' | 'text';
+type Variant = 'primary' | 'secondary' | 'text' | 'danger';
+
+/**
+ * Android e Web seguem o componente "Botão" do Figma (Material 3, ADR 0013): pílula,
+ * rótulo `m3-label-lg` e variantes Preenchido, Contornado, Texto e Perigo.
+ * O iOS mantém a forma atual até a adequação ao contrato nativo (issue #10).
+ */
+const material = Platform.OS !== 'ios';
 
 export function Button({
   label,
@@ -19,8 +26,16 @@ export function Button({
   accessibilityHint?: string;
 }) {
   const inactive = disabled || loading;
-  const foreground =
-    variant === 'primary' ? colors.surface : inactive ? colors.disabledText : colors.actionDeep;
+  // Inativo (desabilitado ou carregando) usa o texto de desabilitado em todas as variantes:
+  // texto claro sobre o fundo de desabilitado ficava ilegível no botão principal.
+  const foreground = inactive
+    ? colors.disabledText
+    : variant === 'primary'
+      ? colors.surface
+      : variant === 'danger'
+        ? colors.error
+        : colors.actionDeep;
+  const textual = variant === 'text' || variant === 'danger';
   return (
     <Pressable
       accessibilityRole="button"
@@ -31,9 +46,9 @@ export function Button({
       onPress={onPress}
       style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
         styles.base,
-        styles[variant],
+        textual ? styles.textual : styles[variant as 'primary' | 'secondary'],
         pressed && !inactive && (variant === 'primary' ? styles.primaryPressed : styles.pressed),
-        inactive && variant !== 'text' && styles.disabled,
+        inactive && !textual && styles.disabled,
         focused && styles.focused,
       ]}
     >
@@ -45,9 +60,11 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
+    // Figma: 52 px (texto: 48 px). Vale o token de altura da plataforma; a diferença
+    // está registrada em docs/design-system/divergencias.md.
     minHeight: Math.max(metrics.controlHeight, metrics.touchTarget),
     minWidth: metrics.touchTarget,
-    borderRadius: metrics.fieldRadius,
+    borderRadius: material ? radius.full : metrics.fieldRadius,
     paddingHorizontal: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
@@ -58,10 +75,14 @@ const styles = StyleSheet.create({
   primaryPressed: { backgroundColor: colors.actionDeep },
   secondary: {
     borderWidth: metrics.borderThin,
-    borderColor: colors.action,
-    backgroundColor: colors.surface,
+    borderColor: material ? colors.border : colors.action,
+    backgroundColor: material ? 'transparent' : colors.surface,
   },
-  text: { backgroundColor: 'transparent', paddingHorizontal: spacing.sm },
+  textual: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: spacing.sm,
+    ...(material && { minHeight: metrics.touchTarget }),
+  },
   pressed: { backgroundColor: colors.pressed },
   disabled: { backgroundColor: colors.disabledBackground, borderColor: colors.disabledBackground },
   focused: Platform.select({
@@ -73,5 +94,5 @@ const styles = StyleSheet.create({
     },
     default: {},
   }),
-  label: { ...typography.action, textAlign: 'center' },
+  label: { ...(material ? typography.labelLarge : typography.action), textAlign: 'center' },
 });

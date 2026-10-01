@@ -13,6 +13,7 @@ const symbols = {
   },
   check: { ios: 'checkmark', android: 'check', web: 'check' },
   chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
+  error: { ios: 'exclamationmark.circle', android: 'error', web: 'error' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;

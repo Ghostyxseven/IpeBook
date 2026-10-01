@@ -213,6 +213,11 @@
         "weight": { "$type": "fontWeight", "$value": 500 },
         "fontSize": { "$type": "dimension", "$value": "12px" },
         "lineHeight": { "$type": "dimension", "$value": "16px" }
+      },
+      "labelLarge": {
+        "weight": { "$type": "fontWeight", "$value": 500 },
+        "fontSize": { "$type": "dimension", "$value": "14px" },
+        "lineHeight": { "$type": "dimension", "$value": "20px" }
       }
     }
   },

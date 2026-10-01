@@ -8,29 +8,29 @@ Comparação de `design-tokens.json` (raiz, usado pelo app) com [`referencia/tok
 
 ## Cores com valores diferentes
 
-| Papel | `design-tokens.json` | `referencia/tokens.json` (claro) |
-| --- | --- | --- |
-| Ação principal | `action` `#426B55` | `primary` `#2C5E45` |
-| Superfície | `surface` `#FCFAF6` | `surface` `#FCFAF5` |
-| Erro | `error` `#B3382C` | `error` `#B3261E` |
-| Tag Venda (fundo) | `badge.sale.background` `#E7F0EA` | `secondary-container` `#DCE8DE` |
-| Tag Venda (texto) | `badge.sale.text` `#2F503D` | `on-secondary-container` `#18291F` |
-| Tag Troca (fundo) | `badge.trade.background` `#F4B942` | `tertiary-container` `#F8D88A` |
-| Tag Troca (texto) | `badge.trade.text` `#3C302A` | `on-tertiary-container` `#3A2A10` |
-| Tag Doação (fundo) | `badge.donation.background` `#F2E3DA` | `doacao-container` `#F4DDD3` |
-| Tag Doação (texto) | `badge.donation.text` `#7A4430` | `on-doacao-container` `#6E3A28` |
-| Capa verde | `cover.green` `#33584D` | `cover-forest` `#30574A` |
+| Papel              | `design-tokens.json`                  | `referencia/tokens.json` (claro)   |
+| ------------------ | ------------------------------------- | ---------------------------------- |
+| Ação principal     | `action` `#426B55`                    | `primary` `#2C5E45`                |
+| Superfície         | `surface` `#FCFAF6`                   | `surface` `#FCFAF5`                |
+| Erro               | `error` `#B3382C`                     | `error` `#B3261E`                  |
+| Tag Venda (fundo)  | `badge.sale.background` `#E7F0EA`     | `secondary-container` `#DCE8DE`    |
+| Tag Venda (texto)  | `badge.sale.text` `#2F503D`           | `on-secondary-container` `#18291F` |
+| Tag Troca (fundo)  | `badge.trade.background` `#F4B942`    | `tertiary-container` `#F8D88A`     |
+| Tag Troca (texto)  | `badge.trade.text` `#3C302A`          | `on-tertiary-container` `#3A2A10`  |
+| Tag Doação (fundo) | `badge.donation.background` `#F2E3DA` | `doacao-container` `#F4DDD3`       |
+| Tag Doação (texto) | `badge.donation.text` `#7A4430`       | `on-doacao-container` `#6E3A28`    |
+| Capa verde         | `cover.green` `#33584D`               | `cover-forest` `#30574A`           |
 
 Iguais nos dois: `cover.blue`/`cover-navy` `#253C4F` e `cover.brown`/`cover-brown` `#633E36`.
 
 ## Raios
 
-| Uso | `design-tokens.json` | Referência |
-| --- | --- | --- |
-| Pequeno | `small` 8px | `radius-sm` 8px (igual) |
-| Médio | `medium` 14px | `radius-md` 12px |
-| Grande | `large` 18px | `radius-lg` 16px |
-| Extra grande | `extraLarge` 24px | `radius-xxl` 28px (`radius-xl` é 20px) |
+| Uso          | `design-tokens.json` | Referência                             |
+| ------------ | -------------------- | -------------------------------------- |
+| Pequeno      | `small` 8px          | `radius-sm` 8px (igual)                |
+| Médio        | `medium` 14px        | `radius-md` 12px                       |
+| Grande       | `large` 18px         | `radius-lg` 16px                       |
+| Extra grande | `extraLarge` 24px    | `radius-xxl` 28px (`radius-xl` é 20px) |
 
 ## Espaçamento
 
@@ -43,6 +43,19 @@ Tema escuro (todas as cores têm par `dark`), papéis M3 (`primary-container`, `
 ## Só existe na raiz
 
 Tags Reservado e Concluído, `landing`, `app`, `opacity`, `motion`, `accessibility` e `platform`.
+
+## Componentes do Figma IpêBook-Mobile × tokens (01/10/2026, issue #9)
+
+O arquivo [IpêBook-Mobile](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/Ip%C3%AABook-Mobile?node-id=0-1), página "05 · Componentes", usa as variáveis da referência. Os componentes `Button` e `TextField` foram ajustados à forma do Figma com os tokens atuais; seguem os valores que só mudam quando o token mudar:
+
+| Item                             | Figma                                   | Token usado hoje                                                              |
+| -------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------- |
+| Altura do botão                  | 52 px (texto: 48 px)                    | `platform.*.controlHeight` (Android 56, iOS 52, Web 48); o de texto já usa 48 |
+| Raio do campo                    | `radius-md` 12 px                       | `radius.medium` 14 px                                                         |
+| Fundo do campo                   | `surface-container-low` `#F7F3EC`       | `color.surface` `#FCFAF6`                                                     |
+| Borda do campo e do contornado   | `outline` `#7E776F`                     | `color.border` `#8F8478`                                                      |
+| Cor do botão principal e do erro | `primary` `#2C5E45` e `error` `#B3261E` | ver "Cores com valores diferentes"                                            |
+| Rótulo do botão                  | `m3-label-lg` 14/20, peso 500           | `typography.scale.labelLarge` (**adicionado**, mesmo valor)                   |
 
 ## Próximo passo
 
