@@ -307,7 +307,7 @@
   padding: var(--spacing-24) var(--spacing-48) var(--spacing-24) var(--spacing-48);
 }
 .bound-edition {
-  font-size: 10px;
+  font-size: 12px;
   color: color-mix(in srgb, var(--color-surface) 80%, transparent);
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -338,7 +338,7 @@
 }
 .bound-place small {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
   color: var(--color-soft);
 }
@@ -349,7 +349,7 @@
   bottom: var(--spacing-32);
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 9px;
+  font-size: 12px;
   color: var(--color-soft);
   text-align: center;
 }
@@ -360,7 +360,7 @@
   background: var(--color-highlight);
   color: var(--color-text);
   padding: var(--spacing-20, 20px) 9px var(--spacing-24);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -646,7 +646,7 @@
 }
 .cover-collection,
 .cover-edition {
-  font-size: 9px;
+  font-size: 12px;
   line-height: 1.4;
 }
 .example-cover strong {
@@ -668,7 +668,7 @@
 }
 .modality-label {
   display: inline-flex;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   padding: var(--spacing-4) var(--spacing-8);
   border-radius: 4px;
@@ -1213,7 +1213,7 @@
     font-size: 22px;
   }
   .bound-edition {
-    font-size: 9px;
+    font-size: 12px;
     letter-spacing: 1.5px;
   }
   .bound-front img {
@@ -1228,10 +1228,10 @@
     font-size: 14px;
   }
   .bound-place strong {
-    font-size: 11px;
+    font-size: 12px;
   }
   .bound-place small {
-    font-size: 10px;
+    font-size: 12px;
   }
   .cover-scene-caption {
     display: none;
@@ -1381,7 +1381,7 @@
   }
   .cover-collection,
   .cover-edition {
-    font-size: 8px;
+    font-size: 12px;
   }
   .cover-symbol {
     min-height: 28px;
