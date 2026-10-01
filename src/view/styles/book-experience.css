@@ -1524,6 +1524,7 @@
   background: var(--color-surface);
 }
 .reading-switch button {
+  white-space: nowrap;
   min-height: var(--platform-web-controlHeight);
   min-width: var(--platform-web-controlHeight);
   padding: var(--spacing-8) var(--spacing-16);
@@ -1594,15 +1595,28 @@ body:has(.institutional-book.is-normal-reading) {
   }
   .reading-switch button {
     flex: 1;
+    min-width: 0;
+    padding-inline: var(--spacing-8);
+  }
+  /* Como o livro no celular: folha de borda a borda, sem moldura nem margens. */
+  .reading-flow {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
   .reading-toolbar {
-    justify-content: stretch;
+    padding: var(--spacing-8) var(--spacing-16);
   }
   .book-mode-bar {
     display: flex;
     flex: none;
     padding: var(--spacing-8) var(--spacing-16);
     border-bottom: 1px solid color-mix(in srgb, var(--color-border) 18%, transparent);
+  }
+}
+@media (max-width: 380px) {
+  .reading-switch button svg {
+    display: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
