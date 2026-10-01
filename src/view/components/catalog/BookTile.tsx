@@ -1,9 +1,8 @@
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Listing } from '../../../model/entities/Listing';
 import {
-  conditionLabels,
   listingAccessibilityLabel,
-  locationLabel,
+  listingMeta,
   tileValue,
 } from '../../../model/services/catalogFormat';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
@@ -33,7 +32,7 @@ export function BookTile({ listing, onPress }: { listing: Listing; onPress: () =
         {value && <Text style={styles.value}>{value}</Text>}
         {listing.status === 'reservado' && <StatusBadge variant="reserved" />}
         <Text style={styles.meta} numberOfLines={1}>
-          {[conditionLabels[listing.condition], locationLabel(listing)].filter(Boolean).join(' · ')}
+          {listingMeta(listing)}
         </Text>
       </View>
     </Pressable>

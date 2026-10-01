@@ -11,7 +11,8 @@ import { useListingDetailViewModel } from '../viewmodel/useListingDetailViewMode
 
 export const catalogRepository = createSupabaseCatalogRepository(supabase);
 
-export const useCatalogFeed = () => useCatalogFeedViewModel(catalogRepository);
+export const useCatalogFeed = (userName?: string | null) =>
+  useCatalogFeedViewModel(catalogRepository, { userName });
 export const useCatalogSearch = (initialModality?: Modality | null) =>
   useCatalogSearchViewModel(catalogRepository, { initialModality });
 export const useListingDetail = (id: string) => useListingDetailViewModel(catalogRepository, id);

@@ -18,3 +18,5 @@
 - [ ] Testar ponta a ponta com anúncios reais num projeto Supabase de desenvolvimento.
 - [x] Comparar as telas com os quadros do Figma (02, 03, 04, 12, 13, 14 e 26) e refazer o visual (ADR 0009, tokens `color.cover.*`).
 - [ ] Conferir Book Card, grade do Início e Detalhe com anúncios reais contra os quadros 02, 03 e 04.
+- [x] Revisão do MVVM (01/10/2026): regras do detalhe, linha de apoio dos cards e saudação movidas para o Model (`listingDetails`, `listingMeta`, `greeting`); alternância dos chips do Início virou ação da ViewModel (`toggleModality`, `showAll`).
+- [ ] Conferir no aparelho a saudação e a alternância dos chips depois da revisão do MVVM (sessão caiu no Waydroid; precisa de login).

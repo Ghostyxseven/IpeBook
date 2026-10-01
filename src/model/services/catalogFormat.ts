@@ -112,3 +112,38 @@ export function coverIndex(id: string, count: number) {
   for (const char of id) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
   return count > 0 ? hash % count : 0;
 }
+
+/** Linha de apoio dos cards: "Bom estado · Centro, Picos" (sem localização, só o estado). */
+export function listingMeta(listing: Pick<Listing, 'condition' | 'neighborhood' | 'city'>) {
+  return [conditionLabels[listing.condition], locationLabel(listing)].filter(Boolean).join(' · ');
+}
+
+/** Tudo o que a tela de detalhe mostra, já decidido pelas regras de cada modalidade. */
+export type ListingDetails = {
+  headline: { value: string; label: string };
+  meta: string;
+  /** Na troca, as condições vêm antes da descrição; nas outras, só a descrição. */
+  paragraphs: string[];
+  /** "Ana · Centro, Picos", ou `null` sem nome nem localização. */
+  owner: string | null;
+  /** "Capa ilustrativa · Publicado em …" */
+  notes: string;
+};
+
+export function listingDetails(listing: Listing): ListingDetails {
+  const paragraphs = [
+    listing.modality === 'trade' ? listing.tradeTerms : null,
+    listing.description,
+  ].filter((text): text is string => Boolean(text?.trim()));
+  const owner = [listing.ownerFirstName, locationLabel(listing)].filter(Boolean).join(' · ');
+  const notes = [listing.coverUrl ? null : 'Capa ilustrativa', publishedLabel(listing.createdAt)]
+    .filter(Boolean)
+    .join(' · ');
+  return {
+    headline: detailHeadline(listing),
+    meta: detailMeta(listing),
+    paragraphs,
+    owner: owner || null,
+    notes,
+  };
+}

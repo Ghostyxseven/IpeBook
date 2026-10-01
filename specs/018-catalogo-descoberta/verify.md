@@ -51,6 +51,10 @@ Conta de teste da própria pessoa, migração `20260930120000_catalogo_anuncios.
 | Chips            | cantos de 8, Troca em amarelo forte, Todos em verde-escuro | pílula, Troca em `color.badge.trade.chip`, selecionado em `color.action`, como no quadro 02 |
 | Indicador da aba | retangular (o ícone nativo impedia o canto arredondado)    | pílula, com `overflow: 'hidden'`                                                            |
 
+## Revisão do MVVM (01/10/2026)
+
+Checklist da skill `skill_mvvm_simplificado` aplicado ao catálogo: telas e componentes sem regra de domínio (sem `split`, `filter(Boolean).join` nem decisões por modalidade). Novas funções do Model testadas em `catalog-model.test.mjs`; `details`, `greeting`, `toggleModality` e `showAll` testados em `catalog-viewmodel.test.mjs`. `npm run lint`, `format:check`, `typecheck`, `npm test` (79), `build:web` e bundle Android: ok. Conferência no aparelho pendente: a sessão caiu no Waydroid após reiniciar e o login precisa ser feito pela pessoa.
+
 ## Pendências
 
 - **Book Card e Detalhe com dados reais:** ainda não há anúncio de outra conta no projeto. Falta conferir card, capa, badges, preço, detalhe, livro reservado e paginação.
