@@ -27,6 +27,7 @@ Telas em `src/view/screens/` (`OnboardingScreen`, `auth/LoginScreen`, `auth/Sign
 
 - Verificação e recuperação por código OTP (ADR 0006).
 - Na recuperação, a nova senha é validada localmente antes de enviar o código, porque a confirmação do código já inicia a sessão.
+- Issue #8: os repositórios distribuem as mudanças de usuário por um portão (`userChangeGate.ts`). Durante a recuperação, os avisos do provedor ficam retidos e `getCurrentUser` devolve `null`; o login só é avisado depois que `updateUser` confirma a senha. Se a gravação falhar, o código continua confirmado e uma nova tentativa grava só a senha. Trocar de e-mail ou sair da tela chama `cancelPasswordRecovery`, que encerra a sessão de recuperação. Nada depende de temporizador.
 - Cadastro com e-mail já existente: o Supabase devolve um usuário ofuscado para não revelar contas. O app segue para a verificação da mesma forma.
 
 ## Verificação

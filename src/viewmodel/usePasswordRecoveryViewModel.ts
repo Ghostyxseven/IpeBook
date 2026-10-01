@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toAuthError } from '../model/entities/AuthError.ts';
 import type { AuthRepository } from '../model/repositories/AuthRepository';
 import { authErrorMessage } from '../model/services/authMessages.ts';
@@ -32,6 +32,13 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
   const [resending, runResend] = useAsyncAction();
   const cooldown = useResendCooldown(0);
   const address = normalizeEmail(values.email);
+
+  // Sair da tela com o código confirmado e a senha não gravada encerra a sessão de
+  // recuperação, para ninguém ficar autenticado sem ter trocado a senha (issue #8).
+  useEffect(
+    () => () => void repository.cancelPasswordRecovery().catch(() => undefined),
+    [repository],
+  );
 
   // A resposta é a mesma com ou sem conta, para não revelar quem está cadastrado.
   const sentNotice = () =>
@@ -75,6 +82,7 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
         }
       }),
     changeEmail: () => {
+      void repository.cancelPasswordRecovery().catch(() => undefined);
       setStep('request');
       setNotice(undefined);
       setErrors({});

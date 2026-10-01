@@ -189,3 +189,101 @@ test('onboarding apresenta as três modalidades sem prometer recursos inexistent
     assert.match(text.toLowerCase(), new RegExp(word));
   assert.doesNotMatch(text, /garantid|100%|verificad/i);
 });
+
+test('Supabase: evento de sessão da recuperação não autentica antes de gravar a senha (#8)', async () => {
+  const supabaseUser = {
+    id: 'u1',
+    email: 'ana@email.com',
+    email_confirmed_at: '2026-09-30T12:00:00Z',
+    user_metadata: { name: 'Ana' },
+  };
+  let providerCallback;
+  let updateResult = {
+    data: { user: null },
+    error: { name: 'AuthRetryableFetchError', status: 0 },
+  };
+  const calls = [];
+  const client = {
+    auth: {
+      getSession: () => Promise.resolve({ data: { session: { user: supabaseUser } }, error: null }),
+      onAuthStateChange: (callback) => {
+        providerCallback = callback;
+        return { data: { subscription: { unsubscribe: () => calls.push('unsubscribe') } } };
+      },
+      verifyOtp: async () => {
+        calls.push('verifyOtp');
+        // Como no Supabase: a sessão de recuperação é avisada antes de verifyOtp resolver.
+        providerCallback('PASSWORD_RECOVERY', { user: supabaseUser });
+        return { data: { user: supabaseUser }, error: null };
+      },
+      updateUser: async () => {
+        calls.push('updateUser');
+        return updateResult;
+      },
+      signOut: async () => {
+        calls.push('signOut');
+        providerCallback('SIGNED_OUT', null);
+        return { error: null };
+      },
+    },
+  };
+  const repository = createSupabaseAuthRepository(client);
+  const seen = [];
+  const unsubscribe = repository.onUserChange((user) => seen.push(user?.email ?? null));
+
+  await assert.rejects(repository.resetPassword('ana@email.com', '654321', 'novaSenha1'), {
+    code: 'network',
+  });
+  assert.deepEqual(seen, [], 'nenhum aviso de login enquanto a senha não foi gravada');
+  assert.equal(await repository.getCurrentUser(), null);
+
+  updateResult = { data: { user: supabaseUser }, error: null };
+  await repository.resetPassword('ana@email.com', '654321', 'novaSenha1');
+  assert.deepEqual(
+    calls.filter((call) => call === 'verifyOtp').length,
+    1,
+    'não pede o código de novo',
+  );
+  assert.deepEqual(seen, ['ana@email.com'], 'avisa o login só depois de gravar');
+  assert.equal((await repository.getCurrentUser()).email, 'ana@email.com');
+
+  // Desistir de uma recuperação pendente encerra a sessão sem avisar login.
+  updateResult = { data: { user: null }, error: { code: 'same_password', status: 422 } };
+  providerCallback('SIGNED_OUT', null);
+  seen.length = 0;
+  await assert.rejects(repository.resetPassword('bia@email.com', '111111', 'outraSenha1'), {
+    code: 'same_password',
+  });
+  await repository.cancelPasswordRecovery();
+  assert.ok(calls.includes('signOut'));
+  assert.deepEqual(seen, [null]);
+  unsubscribe();
+  assert.ok(calls.includes('unsubscribe'));
+});
+
+test('Supabase: código de recuperação inválido não grava a senha nem prende os avisos (#8)', async () => {
+  let providerCallback;
+  const calls = [];
+  const client = {
+    auth: {
+      onAuthStateChange: (callback) => {
+        providerCallback = callback;
+        return { data: { subscription: { unsubscribe() {} } } };
+      },
+      verifyOtp: async () => ({
+        data: { user: null },
+        error: { code: 'otp_expired', status: 403 },
+      }),
+      updateUser: async () => (calls.push('updateUser'), { data: {}, error: null }),
+    },
+  };
+  const repository = createSupabaseAuthRepository(client);
+  const seen = [];
+  repository.onUserChange((user) => seen.push(user?.email ?? null));
+  await assert.rejects(repository.resetPassword('ana@email.com', '000000', 'novaSenha1'), {
+    code: 'invalid_code',
+  });
+  assert.deepEqual(calls, []);
+  providerCallback('SIGNED_IN', { user: { id: 'u2', email: 'bia@email.com', user_metadata: {} } });
+  assert.deepEqual(seen, ['bia@email.com'], 'o portão foi reaberto');
+});

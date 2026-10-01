@@ -2,6 +2,7 @@ import type { SupabaseClient, User as SupabaseUser } from '@supabase/supabase-js
 import { AuthError, type AuthErrorCode } from '../entities/AuthError.ts';
 import type { User } from '../entities/User';
 import type { AuthRepository } from './AuthRepository';
+import { createUserChangeGate } from './userChangeGate.ts';
 
 /** Só a parte `auth` do cliente é usada; facilita testar com um cliente falso. */
 export type SupabaseAuthClient = Pick<SupabaseClient, 'auth'>;
@@ -56,21 +57,36 @@ export function createSupabaseAuthRepository(client: SupabaseAuthClient | null):
     if (!client) throw new AuthError('not_configured');
     return client.auth;
   };
+  const gate = createUserChangeGate();
+  let providerSubscription: (() => void) | null = null;
+  /** E-mail cuja recuperação teve o código confirmado e aguarda a nova senha. */
+  let recoveringEmail: string | null = null;
 
   return {
     async getCurrentUser() {
-      if (!client) return null;
+      if (!client || gate.holding) return null;
       const { data } = await client.auth.getSession();
       return data.session ? toUser(data.session.user) : null;
     },
 
     onUserChange(listener) {
       if (!client) return () => {};
-      // Não chamar outros métodos do Supabase dentro deste callback (pode travar a sessão).
-      const { data } = client.auth.onAuthStateChange((_event, session) =>
-        listener(session ? toUser(session.user) : null),
-      );
-      return () => data.subscription.unsubscribe();
+      if (!providerSubscription) {
+        // Uma inscrição no provedor, compartilhada pelas ViewModels por meio do portão.
+        // Não chamar outros métodos do Supabase dentro deste callback (pode travar a sessão).
+        const { data } = client.auth.onAuthStateChange((_event, session) =>
+          gate.emit(session ? toUser(session.user) : null),
+        );
+        providerSubscription = () => data.subscription.unsubscribe();
+      }
+      const unsubscribe = gate.subscribe(listener);
+      return () => {
+        unsubscribe();
+        if (!gate.listenerCount) {
+          providerSubscription?.();
+          providerSubscription = null;
+        }
+      };
     },
 
     async signIn(email, password) {
@@ -99,8 +115,31 @@ export function createSupabaseAuthRepository(client: SupabaseAuthClient | null):
     },
 
     async resetPassword(email, code, newPassword) {
-      await run(() => auth().verifyOtp({ email, token: code, type: 'recovery' }));
-      await run(() => auth().updateUser({ password: newPassword }));
+      if (recoveringEmail !== email) {
+        // verifyOtp cria a sessão de recuperação antes de a senha ser gravada.
+        gate.hold();
+        try {
+          await run(() => auth().verifyOtp({ email, token: code, type: 'recovery' }));
+        } catch (error) {
+          gate.release();
+          throw error;
+        }
+        recoveringEmail = email;
+      }
+      // Se falhar, o portão continua fechado: a tela mostra o erro e permite tentar de novo.
+      const { data } = await run(() => auth().updateUser({ password: newPassword }));
+      recoveringEmail = null;
+      gate.release(data.user ? toUser(data.user) : null);
+    },
+
+    async cancelPasswordRecovery() {
+      if (!gate.holding) return;
+      recoveringEmail = null;
+      try {
+        if (client) await client.auth.signOut();
+      } finally {
+        gate.release(null);
+      }
     },
 
     async signOut() {

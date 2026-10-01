@@ -33,6 +33,28 @@ Implementado na branch `feature/autenticacao` para Android e iOS: abertura, onbo
 3. Definir o controlador dos dados, o canal de atendimento, a região do projeto Supabase e o prazo de conservação, e completar a Política de Privacidade.
 4. Oferecer a exclusão de conta (feature de Perfil) e avaliar a verificação de idade.
 
+## Correção da issue #8: redirecionamento prematuro na recuperação (30/09/2026)
+
+**Defeito:** `verifyOtp({ type: 'recovery' })` cria a sessão antes de `updateUser` gravar a senha. O repositório repassava esse aviso, `useSession` passava a `signedIn` e o layout `(auth)` redirecionava para `/inicio`. Se a gravação falhasse, a pessoa saía do formulário sem ver o erro e sem ter trocado a senha.
+
+**Correção:**
+
+- `userChangeGate.ts` retém os avisos do provedor durante a recuperação.
+- `getCurrentUser` devolve `null` até a senha ser gravada; o login é avisado só depois.
+- A falha mantém o formulário com o erro, e a nova tentativa não pede outro código.
+- `cancelPasswordRecovery` encerra a sessão de recuperação ao trocar de e-mail ou sair da tela.
+- O layout `(auth)` não mudou: ele só redireciona quando a sessão é avisada, o que agora acontece depois da gravação.
+
+**Testes de regressão** (`npm test`, 67 aprovados):
+
+- `tests/auth-model.test.mjs`: cliente Supabase falso que avisa `PASSWORD_RECOVERY` dentro de `verifyOtp`, antes de `updateUser` resolver. Cobre a falha de rede (nenhum aviso de login, `getCurrentUser` nulo), a nova tentativa sem novo `verifyOtp`, o cancelamento com `signOut` e o código inválido, que não chama `updateUser` e reabre o portão.
+- `tests/auth-viewmodel.test.mjs`: o repositório em memória passou a emitir a sessão antes da gravação (`beforePasswordUpdate`). Cobre carregamento mantido e sessão `signedOut` com a gravação pendente; erro de rede visível e etapa preservada; nova tentativa autenticando só depois de gravar; `same_password` mantendo a tela; trocar de e-mail e sair da tela encerrando a recuperação.
+- Login e confirmação de cadastro continuam cobertos pelos testes existentes, todos aprovados.
+
+**Comandos:** `npm run typecheck` aprovado; `npm test` com 67 aprovados. ESLint e Prettier aprovados com fim de linha automático: neste Windows, `core.autocrlf=true` converte os arquivos para CRLF e o `npm run verify` acusa só `␍`. O CI, no Linux, recebe LF.
+
+**Limitação:** comportamento validado com cliente simulado. O teste com Supabase real e aparelho fica na issue #12.
+
 ## Documentos legais
 
 A Política de Privacidade dizia que o site não usava ferramentas de análise de visitas, mas o código já inclui Vercel Web Analytics e Speed Insights (PRs #4 e #5). O texto foi corrigido junto com a descrição do cadastro no aplicativo, conforme a constituição ("descrever o funcionamento efetivo nos documentos legais").
