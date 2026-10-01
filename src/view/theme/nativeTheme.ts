@@ -43,6 +43,25 @@ export const colors = {
   pressed: tokens.color.state.pressed.$value,
 } as const;
 
+const badge = (name: keyof typeof tokens.color.badge) => ({
+  background: tokens.color.badge[name].background.$value,
+  text: tokens.color.badge[name].text.$value,
+});
+
+/** Cores do Status Badge; o texto do badge é obrigatório e a cor só reforça. */
+export const badgeColors = {
+  sale: badge('sale'),
+  trade: badge('trade'),
+  donation: badge('donation'),
+  reserved: badge('reserved'),
+  completed: badge('completed'),
+} as const;
+
+export const radius = {
+  small: px(tokens.radius.small),
+  full: px(tokens.radius.full),
+} as const;
+
 export const spacing = {
   xxs: px(tokens.spacing['4']),
   xs: px(tokens.spacing['8']),
