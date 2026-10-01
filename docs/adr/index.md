@@ -11,3 +11,4 @@
 - [0009 - Ícones com expo-symbols](0009-icones-expo-symbols.md)
 - [0010 - Endereços reais para os documentos legais](0010-rotas-reais-para-documentos.md)
 - [0011 - Entrega de notificações](0011-entrega-de-notificacoes.md) (proposto)
+- [0012 - Camada de infraestrutura para clientes e recursos da plataforma](0012-camada-de-infraestrutura.md)

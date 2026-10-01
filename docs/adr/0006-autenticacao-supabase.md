@@ -15,7 +15,7 @@ A feature de autenticação precisa de: criar conta com e-mail e senha, verifica
 Usar o **Supabase Auth** com `@supabase/supabase-js`, seguindo o guia oficial do Expo.
 
 - **Configuração por variáveis de ambiente:** `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (ver `.env.example`). A chave publicável pode ir para o app; a chave `service_role` nunca pode.
-- **Sessão persistida:** no Android e no iOS, em `localStorage` do `expo-sqlite`. Para a Web futura, `localStore.web.ts` já usa o `localStorage` do navegador. A renovação automática do token acompanha o `AppState` no celular.
+- **Sessão persistida:** no Android e no iOS, em `localStorage` do `expo-sqlite`. Para a Web futura, `localStore.web.ts` já usa o `localStorage` do navegador. A renovação automática do token acompanha o `AppState` no celular. Cliente, armazenamento e renovação ficam em `src/infra/` ([ADR 0012](0012-camada-de-infraestrutura.md)).
 - **Verificação e recuperação por código (OTP) enviado por e-mail**, em vez de link: `verifyOtp` com `type: 'signup'` e `type: 'recovery'`. Assim o fluxo não depende de deep links nem de URLs de redirecionamento, que mudam entre Expo Go, builds e Web.
 - **Nome da pessoa** fica em `user_metadata.name` no cadastro. A tabela de perfis é da feature de Perfil.
 - **Isolamento:** a interface `AuthRepository` (Model) esconde o Supabase. A implementação `supabaseAuthRepository` traduz os erros do Supabase para códigos do domínio; ViewModels e telas nunca importam o Supabase. Os testes usam `memoryAuthRepository`.

@@ -37,6 +37,7 @@ flowchart LR
     H["Hooks: useCatalogFeedViewModel,<br/>useLoginViewModel, useSession..."]
   end
   F["Factories<br/>src/factories"]
+  I["Infraestrutura<br/>src/infra<br/>(cliente Supabase, AppState, SQLite)"]
   subgraph Model["Model (model/)"]
     E["entities"]
     SV["services<br/>(regras puras)"]
@@ -53,11 +54,13 @@ flowchart LR
   H --> SV
   SV --> E
   RP --> E
-  RP --> SB
-  RP --> LS
+  F --> I
+  I --> SB
+  I --> LS
+  RP -.cliente injetado.-> SB
 ```
 
-**Regra de dependência:** View → ViewModel → Model. O Supabase só aparece nas implementações de repositório. Nos testes, as ViewModels recebem repositórios em memória.
+**Regra de dependência:** View → ViewModel → Model. O Model não importa React, React Native nem Expo: o cliente Supabase e o armazenamento ficam em `src/infra/` e as factories os injetam nos repositórios ([ADR 0012](adr/0012-camada-de-infraestrutura.md); verificado por `tests/architecture.test.mjs`). O Supabase só aparece nas implementações de repositório. Nos testes, as ViewModels recebem repositórios em memória.
 
 **Navegação:** Expo Router com dois grupos, `(auth)` e `(app)`. Os layouts redirecionam conforme a sessão.
 
