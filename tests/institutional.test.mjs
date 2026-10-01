@@ -4,6 +4,7 @@ import {
   resolvePage,
   documents,
   legalLinks,
+  contact,
   instagram,
 } from '../src/model/services/institutional.ts';
 
@@ -21,15 +22,26 @@ test('conteúdo delimita operação e identifica pendências sem contato inventa
   assert.match(JSON.stringify(documents.termos), /Entrar e Criar conta apenas mostram um aviso/);
   assert.match(JSON.stringify(documents.termos), /aplicativo.*permite criar uma conta/);
   assert.match(JSON.stringify(documents.termos), /Nenhuma versão permite publicar anúncios/);
-  assert.match(JSON.stringify(documents.privacidade), /controlador.*pendentes/);
+  assert.match(
+    JSON.stringify(documents.privacidade),
+    /controlador.*pessoas físicas.*identificação individual do controlador ainda não foi divulgada/,
+  );
   assert.match(JSON.stringify(documents.privacidade), /não instala cookies/);
   // A política precisa descrever o que o código realmente usa (constituição).
   assert.match(JSON.stringify(documents.privacidade), /Supabase/);
   assert.match(JSON.stringify(documents.privacidade), /Vercel Web Analytics.*Speed Insights/);
   assert.doesNotMatch(JSON.stringify(documents), /não usa.*ferramentas de análise de visitas/);
-  assert.match(JSON.stringify(documents.lgpd), /não está disponível/);
-  // O perfil informado pelo usuário agora é permitido; contatos inventados continuam proibidos.
+  assert.match(JSON.stringify(documents.lgpd), /sem prazo de resposta garantido/);
+  // O e-mail foi informado pelo projeto; qualquer outro contato continua proibido.
+  assert.equal(contact.email, 'ipebook738@gmail.com');
+  const emails = JSON.stringify(documents).match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g) ?? [];
+  assert.ok(emails.length > 0 && emails.every((email) => email === contact.email));
   assert.doesNotMatch(JSON.stringify(documents), /mailto:|100%/);
+  assert.match(JSON.stringify(documents.privacidade), /projeto de faculdade, sem fins lucrativos/);
+  assert.match(
+    JSON.stringify(documents.termos),
+    /não cobra comissão nem recebe o valor das vendas/,
+  );
   assert.equal(instagram.url, 'https://www.instagram.com/ipebook/');
   assert.match(JSON.stringify(documents.lgpd), /Instagram não foi definido como canal formal/);
 });

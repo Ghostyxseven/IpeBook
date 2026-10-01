@@ -1,4 +1,5 @@
 import type { LegalDocument, LegalPage } from '../../model/entities/Institutional';
+import { contact } from '../../model/services/institutional.ts';
 import { Icon } from './Icon';
 
 function focusReadingTarget(id: string) {
@@ -64,8 +65,10 @@ export function LegalDocumentContent({
       <div className="legal-notice">
         <Icon name="shield" />
         <p>
-          <strong>O projeto ainda está em construção.</strong> A identificação do responsável e o
-          canal de atendimento precisam ser informados. Estes textos explicam a apresentação atual.
+          <strong>O projeto ainda está em construção.</strong> Trabalho de faculdade, sem fins
+          lucrativos, conduzido pela equipe do IpêBook, formada por pessoas físicas. A identificação
+          individual do controlador ainda não foi divulgada. Para dúvidas e pedidos, escreva para{' '}
+          <a href={contact.url}>{contact.email}</a>. Estes textos explicam a apresentação atual.
         </p>
       </div>
 

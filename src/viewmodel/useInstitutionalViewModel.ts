@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { AccessIntent } from '../model/entities/Institutional';
 import {
   documents,
+  contact,
   instagram,
   legalLinks,
   questions,
@@ -34,6 +35,7 @@ export function useInstitutionalViewModel() {
     menuOpen,
     accessIntent,
     legalLinks,
+    contact,
     instagram,
     questions,
     toggleMenu: () => setMenuOpen((open) => !open),
