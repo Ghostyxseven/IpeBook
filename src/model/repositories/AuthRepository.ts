@@ -15,7 +15,14 @@ export interface AuthRepository {
   verifySignUp(email: string, code: string): Promise<User>;
   resendSignUpCode(email: string): Promise<void>;
   requestPasswordReset(email: string): Promise<void>;
-  /** Confirma o código de recuperação, inicia a sessão e grava a nova senha. */
+  /**
+   * Confirma o código de recuperação e grava a nova senha. A pessoa só passa a constar
+   * como autenticada (getCurrentUser/onUserChange) depois que a senha foi gravada.
+   * Se a gravação falhar, o código continua confirmado: chamar de novo com o mesmo
+   * e-mail tenta só gravar a senha, sem pedir outro código.
+   */
   resetPassword(email: string, code: string, newPassword: string): Promise<void>;
+  /** Desiste de uma recuperação com código confirmado e senha não gravada. */
+  cancelPasswordRecovery(): Promise<void>;
   signOut(): Promise<void>;
 }

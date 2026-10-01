@@ -183,28 +183,129 @@ test('recuperar senha não revela contas e valida a nova senha antes do código'
   await act(async () => hook.vm.resetPassword());
   assert.match(hook.vm.errors.password, /8 caracteres/);
   assert.match(hook.vm.errors.confirmation, /Repita/);
-  assert.ok(!memory.calls.includes('resetPassword'), 'não confirma o código com senha inválida');
-
-  await act(async () => hook.vm.setField('password', 'livros2026'));
-  await act(async () => hook.vm.setField('confirmation', 'livros2026'));
-  await act(async () => hook.vm.resetPassword());
-  assert.match(hook.vm.errors.password, /diferente da anterior/);
+  assert.ok(
+    !memory.calls.includes('verifyRecoveryCode'),
+    'não confirma o código com senha inválida',
+  );
 
   await act(async () => hook.vm.setField('code', '000000'));
   await act(async () => hook.vm.setField('password', 'novaLeitura1'));
   await act(async () => hook.vm.setField('confirmation', 'novaLeitura1'));
   await act(async () => hook.vm.resetPassword());
   assert.match(hook.vm.errors.code, /inválido ou expirado/);
+  assert.ok(!memory.calls.includes('updatePassword'), 'código inválido não grava a senha');
 
   await act(async () => hook.vm.setField('code', '654321'));
   await act(async () => hook.vm.resetPassword());
   assert.equal(hook.vm.errors.code, undefined);
+  assert.equal(memory.passwordOf('ana@email.com'), 'novaLeitura1');
   assert.equal((await memory.repository.getCurrentUser()).email, 'ana@email.com');
 
   await act(async () => hook.vm.changeEmail());
   assert.equal(hook.vm.step, 'request');
   assert.equal(hook.vm.values.code, '');
   await hook.unmount();
+});
+
+/** Promessa controlada pelo teste, para segurar a gravação da senha. */
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((ok, fail) => ((resolve = ok), (reject = fail)));
+  return { promise, resolve, reject };
+}
+
+test('recuperação: sessão avisada antes de gravar a senha não autentica nem tira da tela (#8)', async () => {
+  let pending = deferred();
+  const memory = createMemoryAuthRepository({
+    code: '654321',
+    beforePasswordUpdate: () => pending.promise,
+  });
+  memory.addAccount(ana, 'livros2026');
+  const session = await renderHook(() => useSession(memory.repository));
+  const hook = await renderHook(() =>
+    usePasswordRecoveryViewModel(memory.repository, 'ana@email.com'),
+  );
+  await act(async () => hook.vm.requestCode());
+  await act(async () => hook.vm.setField('code', '654321'));
+  await act(async () => hook.vm.setField('password', 'novaLeitura1'));
+  await act(async () => hook.vm.setField('confirmation', 'novaLeitura1'));
+
+  // O código é confirmado e o "provedor" avisa a sessão, mas a senha ainda não foi gravada.
+  let attempt;
+  await act(async () => {
+    attempt = hook.vm.resetPassword();
+  });
+  assert.ok(memory.calls.includes('verifyRecoveryCode'));
+  assert.equal(hook.vm.submitting, true, 'o formulário continua carregando');
+  assert.equal(session.vm.status, 'signedOut', 'ainda não conta como autenticada');
+  assert.equal(await memory.repository.getCurrentUser(), null);
+
+  // A gravação falha (rede): erro visível, sem navegação de sucesso.
+  await act(async () => {
+    pending.reject(new AuthError('network'));
+    await attempt;
+  });
+  assert.equal(hook.vm.submitting, false);
+  assert.match(hook.vm.errors.form, /internet/);
+  assert.equal(hook.vm.step, 'reset');
+  assert.equal(session.vm.status, 'signedOut');
+  assert.equal(memory.passwordOf('ana@email.com'), 'livros2026');
+
+  // Tentar de novo só grava a senha: o código já confirmado não é pedido outra vez.
+  pending = deferred();
+  await act(async () => {
+    attempt = hook.vm.resetPassword();
+  });
+  assert.equal(session.vm.status, 'signedOut');
+  await act(async () => {
+    pending.resolve();
+    await attempt;
+  });
+  assert.equal(memory.calls.filter((call) => call === 'verifyRecoveryCode').length, 1);
+  assert.equal(memory.passwordOf('ana@email.com'), 'novaLeitura1');
+  assert.equal(session.vm.status, 'signedIn', 'autentica só depois de gravar a senha');
+  await hook.unmount();
+  await session.unmount();
+});
+
+test('recuperação: mesma senha mantém a tela e desistir encerra a sessão de recuperação (#8)', async () => {
+  const memory = createMemoryAuthRepository({ code: '654321' });
+  memory.addAccount(ana, 'livros2026');
+  const session = await renderHook(() => useSession(memory.repository));
+  const hook = await renderHook(() =>
+    usePasswordRecoveryViewModel(memory.repository, 'ana@email.com'),
+  );
+  await act(async () => hook.vm.requestCode());
+  await act(async () => hook.vm.setField('code', '654321'));
+  await act(async () => hook.vm.setField('password', 'livros2026'));
+  await act(async () => hook.vm.setField('confirmation', 'livros2026'));
+  await act(async () => hook.vm.resetPassword());
+  assert.match(hook.vm.errors.password, /diferente da anterior/);
+  assert.equal(session.vm.status, 'signedOut');
+
+  await act(async () => hook.vm.changeEmail());
+  assert.ok(memory.calls.includes('cancelPasswordRecovery'));
+  assert.equal(session.vm.status, 'signedOut');
+  assert.equal(await memory.repository.getCurrentUser(), null);
+  await hook.unmount();
+  await session.unmount();
+});
+
+test('recuperação: sair da tela com a senha pendente encerra a sessão de recuperação (#8)', async () => {
+  const memory = createMemoryAuthRepository({ code: '654321' });
+  memory.addAccount(ana, 'livros2026');
+  const hook = await renderHook(() =>
+    usePasswordRecoveryViewModel(memory.repository, 'ana@email.com'),
+  );
+  await act(async () => hook.vm.requestCode());
+  await act(async () => hook.vm.setField('code', '654321'));
+  await act(async () => hook.vm.setField('password', 'livros2026'));
+  await act(async () => hook.vm.setField('confirmation', 'livros2026'));
+  await act(async () => hook.vm.resetPassword());
+  await hook.unmount();
+  assert.ok(memory.calls.includes('cancelPasswordRecovery'));
+  assert.equal(await memory.repository.getCurrentUser(), null);
 });
 
 test('onboarding avança, volta e marca como visto ao concluir ou pular', async () => {

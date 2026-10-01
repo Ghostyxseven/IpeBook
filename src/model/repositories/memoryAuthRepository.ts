@@ -1,32 +1,43 @@
 import { AuthError } from '../entities/AuthError.ts';
 import type { User } from '../entities/User';
 import type { AuthRepository } from './AuthRepository';
+import { createUserChangeGate } from './userChangeGate.ts';
 
 type Account = { user: User; password: string };
 
 /**
  * Implementação em memória para testes das ViewModels.
  * Não é usada pelo aplicativo: sem Supabase configurado, o app informa isso em vez de simular contas.
+ *
+ * Reproduz a ordem do Supabase na recuperação: confirmar o código já avisa uma sessão,
+ * antes de a senha ser gravada. `beforePasswordUpdate` permite atrasar ou rejeitar a gravação.
  */
-export function createMemoryAuthRepository({ code = '123456' }: { code?: string } = {}) {
+export function createMemoryAuthRepository({
+  code = '123456',
+  beforePasswordUpdate,
+}: {
+  code?: string;
+  beforePasswordUpdate?: () => Promise<void>;
+} = {}) {
   const accounts = new Map<string, Account>();
-  const listeners = new Set<(user: User | null) => void>();
+  const gate = createUserChangeGate();
   let current: User | null = null;
+  let recoveringEmail: string | null = null;
   const calls: string[] = [];
 
+  /** Mudança de sessão no "provedor", como o onAuthStateChange do Supabase. */
   const setCurrent = (user: User | null) => {
     current = user;
-    listeners.forEach((listener) => listener(user));
+    gate.emit(user);
   };
   const find = (email: string) => accounts.get(email);
 
   const repository: AuthRepository = {
     async getCurrentUser() {
-      return current;
+      return gate.holding ? null : current;
     },
     onUserChange(listener) {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
+      return gate.subscribe(listener);
     },
     async signIn(email, password) {
       calls.push('signIn');
@@ -59,12 +70,27 @@ export function createMemoryAuthRepository({ code = '123456' }: { code?: string 
       calls.push('requestPasswordReset');
     },
     async resetPassword(email, token, newPassword) {
-      calls.push('resetPassword');
       const account = find(email);
-      if (!account || token !== code) throw new AuthError('invalid_code');
-      if (account.password === newPassword) throw new AuthError('same_password');
-      account.password = newPassword;
-      setCurrent(account.user);
+      if (recoveringEmail !== email) {
+        calls.push('verifyRecoveryCode');
+        if (!account || token !== code) throw new AuthError('invalid_code');
+        gate.hold();
+        recoveringEmail = email;
+        setCurrent(account.user); // Sessão de recuperação avisada antes da gravação.
+      }
+      calls.push('updatePassword');
+      await beforePasswordUpdate?.();
+      if (account!.password === newPassword) throw new AuthError('same_password');
+      account!.password = newPassword;
+      recoveringEmail = null;
+      gate.release(account!.user);
+    },
+    async cancelPasswordRecovery() {
+      if (!gate.holding) return;
+      calls.push('cancelPasswordRecovery');
+      recoveringEmail = null;
+      current = null;
+      gate.release(null);
     },
     async signOut() {
       calls.push('signOut');
@@ -78,6 +104,9 @@ export function createMemoryAuthRepository({ code = '123456' }: { code?: string 
     /** Cria uma conta já confirmada para cenários de teste. */
     addAccount(user: User, password: string) {
       accounts.set(user.email, { user, password });
+    },
+    passwordOf(email: string) {
+      return accounts.get(email)?.password;
     },
   };
 }
