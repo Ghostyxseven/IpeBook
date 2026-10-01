@@ -31,7 +31,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
     "build:web": "expo export --platform web",
-    "format:check": "prettier --check index.js index.web.js src tests scripts specs docs/adr/0007-qualidade-automatizada-e-hospedagem.md design-tokens.json tsconfig.json public/index.html vercel.json .github/workflows",
+    "format:check": "prettier --check index.js index.web.js src tests scripts specs docs/adr/0007-qualidade-automatizada-e-hospedagem.md docs/adr/0008-rotas-reais-para-documentos.md design-tokens.json tsconfig.json public/index.html vercel.json .github/workflows",
     "lint": "eslint . --ext .js,.mjs",
     "verify": "npm run typecheck && npm run lint && npm run format:check && npm test"
   },

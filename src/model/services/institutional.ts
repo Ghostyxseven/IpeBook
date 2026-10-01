@@ -7,6 +7,21 @@ export function resolvePage(hash: string): Page {
     : 'inicio';
 }
 
+/** Os documentos têm endereço próprio (/privacidade); os capítulos do livro seguem em /#capitulo. */
+export function resolveRoute(pathname: string, hash: string): Page {
+  const path = pathname.replace(/^\/+|\/+$/g, '');
+  return path ? resolvePage(path) : resolvePage(hash);
+}
+
+/** Endereço canônico quando o visitante chega por um link antigo (/#privacidade) ou desconhecido. */
+export function canonicalPath(pathname: string, hash: string): string | null {
+  const page = resolveRoute(pathname, hash);
+  const wanted = page === 'inicio' ? '/' : `/${page}`;
+  const current = pathname.replace(/\/+$/, '') || '/';
+  if (current === wanted) return null;
+  return page === 'inicio' ? `/${hash}` : wanted;
+}
+
 export const instagram = {
   label: 'Instagram do IpêBook',
   handle: '@ipebook',
@@ -21,10 +36,10 @@ export const contact = {
 } as const;
 
 export const legalLinks = [
-  { id: 'termos', label: 'Termos de Uso' },
-  { id: 'privacidade', label: 'Privacidade' },
-  { id: 'lgpd', label: 'Seus direitos e LGPD' },
-  { id: 'seguranca', label: 'Segurança' },
+  { id: 'termos', label: 'Termos de Uso', href: '/termos' },
+  { id: 'privacidade', label: 'Privacidade', href: '/privacidade' },
+  { id: 'lgpd', label: 'Seus direitos e LGPD', href: '/lgpd' },
+  { id: 'seguranca', label: 'Segurança', href: '/seguranca' },
 ] as const;
 
 const sources = {

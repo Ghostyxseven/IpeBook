@@ -29,9 +29,10 @@ test('navegação preserva destinos e fecha estados transitórios', async () => 
     window.dispatchEvent(new window.HashChangeEvent('hashchange'));
   });
   assert.equal(model.document.title, 'Política de Privacidade');
+  assert.equal(window.location.pathname, '/privacidade', 'link antigo vira endereço real');
   assert.equal(model.accessIntent, null);
   await act(async () => {
-    window.history.replaceState(null, '', '#como-funciona');
+    window.history.replaceState(null, '', '/#como-funciona');
     window.dispatchEvent(new window.HashChangeEvent('hashchange'));
   });
   assert.equal(model.page, 'inicio');

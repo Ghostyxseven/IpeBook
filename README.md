@@ -120,7 +120,7 @@ Para implementar uma tela, informe a plataforma e o fluxo; por exemplo: “Imple
 
 ## Página institucional Web (`/`)
 
-Apresenta o projeto, modalidades, como funciona e dúvidas. Documentos acessíveis em `/#termos`, `/#privacidade` e `/#lgpd`. As ações Entrar/Criar conta mostram um aviso: no site, autenticação e cadastro ainda não estão disponíveis. O site não coleta dados de cadastro (as contas existem só no aplicativo) e não usa cookies opcionais. Vercel Web Analytics e Speed Insights medem visitas e desempenho de forma agregada, como descrito na Política de Privacidade.
+Apresenta o projeto, modalidades, como funciona e dúvidas. Documentos acessíveis em `/termos`, `/privacidade`, `/lgpd` e `/seguranca` (links antigos como `/#privacidade` redirecionam). As ações Entrar/Criar conta mostram um aviso: no site, autenticação e cadastro ainda não estão disponíveis. O site não coleta dados de cadastro (as contas existem só no aplicativo) e não usa cookies opcionais. Vercel Web Analytics e Speed Insights medem visitas e desempenho de forma agregada, como descrito na Política de Privacidade.
 
 A entrada Web (`index.web.js`) registra `src/view/screens/InstitutionalScreen.web.tsx`, sem o Expo Router, para manter o JavaScript inicial pequeno (ADR 0005). Componentes e estilos ficam na View; estado em `src/viewmodel/useInstitutionalViewModel.ts`; documentos e resolução de destinos no Model.
 

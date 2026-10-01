@@ -7,3 +7,4 @@
 - [0005 - Navegação do aplicativo com Expo Router](0005-navegacao-expo-router.md)
 - [0006 - Autenticação com Supabase Auth](0006-autenticacao-supabase.md)
 - [0007 - Qualidade automatizada e endurecimento da hospedagem estática](0007-qualidade-automatizada-e-hospedagem.md)
+- [0008 - Endereços reais para os documentos legais](0008-rotas-reais-para-documentos.md)

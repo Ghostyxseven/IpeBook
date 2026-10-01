@@ -156,7 +156,7 @@ export function BookPresentation({
           {vm.pages.map((page, index) => (
             <a
               key={page.id}
-              href={`#${page.id}`}
+              href={`/#${page.id}`}
               aria-current={index === vm.index ? 'page' : undefined}
               onClick={() => setContentsOpen(false)}
             >
