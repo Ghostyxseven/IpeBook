@@ -112,7 +112,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quem é responsável e como pedir ajuda?',
         paragraphs: [
-          `O IpêBook é um projeto de faculdade, sem fins lucrativos, conduzido pela equipe do IpêBook, formada por pessoas físicas. A identificação individual do controlador dos dados ainda não foi divulgada. Você pode escrever para ${contact.email}, sem prazo de resposta garantido. O Instagram é uma referência social e não substitui o e-mail.`,
+          `O IpêBook é um projeto de faculdade, sem fins lucrativos, conduzido pela equipe do IpêBook, formada por pessoas físicas. O IpêBook não cobra comissão nem recebe o valor das vendas: quando as vendas existirem, serão combinadas diretamente entre os leitores. A identificação individual do controlador dos dados ainda não foi divulgada. Você pode escrever para ${contact.email}, sem prazo de resposta garantido. O Instagram é uma referência social e não substitui o e-mail.`,
           'Texto preliminar revisado em 1 de outubro de 2026. As mudanças serão apresentadas nesta página. Os documentos precisam ser completados e revisados antes de o serviço operar.',
         ],
       },

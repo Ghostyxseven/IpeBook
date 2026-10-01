@@ -38,6 +38,10 @@ test('conteúdo delimita operação e identifica pendências sem contato inventa
   assert.ok(emails.length > 0 && emails.every((email) => email === contact.email));
   assert.doesNotMatch(JSON.stringify(documents), /mailto:|100%/);
   assert.match(JSON.stringify(documents.privacidade), /projeto de faculdade, sem fins lucrativos/);
+  assert.match(
+    JSON.stringify(documents.termos),
+    /não cobra comissão nem recebe o valor das vendas/,
+  );
   assert.equal(instagram.url, 'https://www.instagram.com/ipebook/');
   assert.match(JSON.stringify(documents.lgpd), /Instagram não foi definido como canal formal/);
 });

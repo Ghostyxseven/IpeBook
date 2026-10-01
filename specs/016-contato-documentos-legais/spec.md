@@ -6,7 +6,9 @@ Informar o e-mail de contato do projeto (ipebook738@gmail.com) nos Termos, na Pr
 
 A "equipe do IpêBook" é identificada como responsável pelo projeto, sem divulgar nomes individuais, a pedido do projeto.
 
-O IpêBook é declarado como trabalho de faculdade, sem fins lucrativos, e o controlador dos dados como pessoa física (a equipe, sem pessoa jurídica). Fora do escopo: identificação individual do controlador (nome completo, CPF), prazo de resposta, formulário, protocolo e encarregado de dados (DPO). Essas pendências continuam declaradas nos textos.
+O IpêBook é declarado como trabalho de faculdade, sem fins lucrativos, e o controlador dos dados como pessoa física (a equipe, sem pessoa jurídica). O texto dos Termos afirma que o IpêBook não cobra comissão nem recebe o valor das vendas, que serão combinadas diretamente entre os leitores.
+
+Fora do escopo: identificação individual do controlador (nome completo, CPF), prazo de resposta, formulário, protocolo e encarregado de dados (DPO). Essas pendências continuam declaradas nos textos.
 
 ## Critérios de aceite
 
