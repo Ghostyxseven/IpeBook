@@ -8,10 +8,14 @@ O **IpêBook** é uma projeto de plataforma comunitária para compra, venda, tro
 
 Este aplicativo é construído utilizando as seguintes tecnologias:
 
-- **React Native** / **Expo**: Framework para desenvolvimento móvel cruzado (iOS e Android).
+- **React Native** / **Expo**: Framework para desenvolvimento móvel cruzado (iOS, Android e Web).
 - **TypeScript**: Adicionando tipagem estática e maior confiabilidade ao código.
 - **Expo Router**: navegação do app Android e iOS ([ADR 0005](docs/adr/0005-navegacao-expo-router.md)).
 - **Supabase Auth**: contas, confirmação de e-mail e recuperação de senha ([ADR 0006](docs/adr/0006-autenticacao-supabase.md)).
+
+## 📍 Estado atual
+
+Existem a **página institucional Web** (livro interativo, estante de exemplos fictícios e documentos legais preliminares) e a **base do aplicativo nativo** com autenticação e onboarding. Catálogo, anúncios e negociação ainda **não foram implementados**; veja a [divisão de features](docs/DIVISAO_FEATURES.md).
 
 ---
 
@@ -88,6 +92,15 @@ A entrada `index.js` carrega o Expo Router; as rotas ficam em `src/app/` e só r
 - Componentes base: `src/view/components/ui/` (`Button`, `TextField`, `FormMessage`, `AuthLayout`) e estados em `src/view/components/feedback/` (`LoadingState`, `EmptyState`, `ErrorState`, `OfflineBanner`). Tema: `src/view/theme/nativeTheme.ts`.
 - Injeção de dependências: `src/factories/auth.ts` liga as ViewModels ao Supabase. Nos testes, use `createMemoryAuthRepository`.
 - Especificações: [base do app](specs/013-base-app-nativo/spec.md) e [autenticação](specs/014-autenticacao-onboarding/spec.md).
+
+## ✅ Verificação
+
+```bash
+npm run verify     # tipos, lint, formatação e testes
+npm run build:web  # exportação estática (pasta dist)
+```
+
+O CI (`.github/workflows/ci.yml`) executa esses passos em cada PR. Veja o [ADR 0007](docs/adr/0007-qualidade-automatizada-e-hospedagem.md).
 
 ---
 

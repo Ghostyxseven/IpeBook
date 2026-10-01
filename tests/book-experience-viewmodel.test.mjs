@@ -21,12 +21,12 @@ test('guia, busca vazia, recuperação e detalhes respeitam a navegação', asyn
   assert.equal(vm.guide.id, 'vender');
   assert.equal(window.location.hash, '#como-funciona');
   await act(async () => vm.setFilter('Doação'));
-  assert.equal(vm.examples.length, 1);
+  assert.equal(vm.examples.length, 2);
   assert.equal(vm.examples[0].modality, 'Doação');
   await act(async () => vm.setQuery('inexistente'));
   assert.equal(vm.examples.length, 0);
   await act(async () => vm.resetSearch());
-  assert.equal(vm.examples.length, 3);
+  assert.equal(vm.examples.length, 6);
   await act(async () => vm.openExample(vm.examples[0]));
   assert.equal(vm.selectedBook.id, 'jardim');
   await act(async () => window.dispatchEvent(new window.HashChangeEvent('hashchange')));

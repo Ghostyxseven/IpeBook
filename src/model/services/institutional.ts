@@ -43,6 +43,8 @@ const sources = {
   },
 };
 
+const revisedAt = '30 de setembro de 2026';
+
 export const documents: Record<LegalPage, LegalDocument> = {
   termos: {
     title: 'Termos de Uso',
@@ -106,6 +108,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         ],
       },
     ],
+    revisedAt,
     sources: [sources.lgpd],
   },
   privacidade: {
@@ -185,6 +188,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         ],
       },
     ],
+    revisedAt,
     sources: [sources.lgpd, sources.cookies, sources.rights],
   },
   lgpd: {
@@ -196,6 +200,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       'Os direitos dependem das condições legais de cada situação.',
       'O canal formal de privacidade do IpêBook ainda não está disponível.',
     ],
+    revisedAt,
     sources: [sources.lgpd, sources.rights, sources.requests],
     sections: [
       {
@@ -291,6 +296,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         ],
       },
     ],
+    revisedAt,
     sources: [sources.safety],
   },
 };

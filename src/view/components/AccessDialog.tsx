@@ -1,6 +1,7 @@
 import { useEffect, useRef, type RefObject } from 'react';
 import type { AccessIntent } from '../../model/entities/Institutional';
 import { Icon } from './Icon';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { instagram } from '../../model/services/institutional.ts';
 
 export function AccessDialog({
@@ -13,16 +14,14 @@ export function AccessDialog({
   fallbackFocus: RefObject<HTMLButtonElement | null>;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  useScrollLock(Boolean(intent));
   useEffect(() => {
     const dialog = ref.current;
     if (!intent || !dialog) return;
     const previous = document.activeElement as HTMLElement | null;
     dialog.showModal();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     return () => {
       dialog.close();
-      document.body.style.overflow = previousOverflow;
       if (previous?.isConnected && previous !== document.body && previous.getClientRects().length) {
         previous.focus();
       } else if (fallbackFocus.current?.getClientRects().length) {
@@ -37,19 +36,6 @@ export function AccessDialog({
       aria-labelledby="access-title"
       aria-describedby="access-description"
       onCancel={onClose}
-      onKeyDown={(event) => {
-        if (event.key !== 'Tab') return;
-        const controls = event.currentTarget.querySelectorAll<HTMLElement>('button, a[href]');
-        const first = controls[0];
-        const last = controls[controls.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last?.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first?.focus();
-        }
-      }}
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
