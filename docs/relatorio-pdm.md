@@ -185,21 +185,66 @@ sequenceDiagram
   V->>V: abre livro/[id] (useListingDetailViewModel)
 ```
 
+### 6.3 Recuperar senha
+
+```mermaid
+sequenceDiagram
+  actor U as Pessoa
+  participant VM as usePasswordRecoveryViewModel
+  participant R as supabaseAuthRepository
+  participant G as userChangeGate
+  participant S as Supabase Auth
+  participant L as layout (auth)
+  U->>VM: código, nova senha e confirmação
+  VM->>VM: valida a senha antes de confirmar o código
+  VM->>R: resetPassword(email, código, senha)
+  R->>G: hold()
+  R->>S: verifyOtp(recovery)
+  S-->>G: aviso de sessão (retido)
+  R->>S: updateUser(senha)
+  alt gravação falhou
+    S-->>R: erro
+    R-->>VM: AuthError (portão continua fechado)
+    VM-->>U: erro no formulário; nova tentativa sem novo código
+  else senha gravada
+    S-->>R: usuário
+    R->>G: release(usuário)
+    G-->>L: sessão iniciada
+    L-->>U: vai para a Início
+  end
+```
+
+### 6.4 Abrir o app com sessão salva
+
+```mermaid
+flowchart TD
+  A["Abertura: useStartViewModel"] --> B{"getCurrentUser"}
+  B -->|sessão válida| C["Início"]
+  B -->|sem sessão| D{"onboarding visto?"}
+  D -->|não| E["Onboarding"]
+  D -->|sim| F["Entrar"]
+  B -->|"erro de rede (token vencido sem internet)"| G["Sem conexão: Tentar novamente"]
+  G -->|internet voltou| B
+```
+
 ## 7. Padrões de projeto
 
-| Padrão                      | Onde está                                                                      | Para que serve                                                             |
-| --------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| MVVM Simplificado           | `src/model`, `src/viewmodel`, `src/view`, `src/app`                            | Separar regra de negócio, estado de tela e interface                       |
-| Repository                  | `AuthRepository`, `CatalogRepository` e suas implementações Supabase e memória | Esconder o acesso a dados e trocar a fonte nos testes                      |
-| Factory                     | `src/factories/auth.ts` e `catalog.ts`                                         | Montar as dependências reais e entregar hooks prontos às telas             |
-| Injeção de dependência      | ViewModels recebem o repositório por parâmetro                                 | Testar sem rede nem Supabase                                               |
-| Adapter / tradução de erros | `supabaseAuthRepository`, `supabaseCatalogRepository`                          | Converter erros do Supabase em códigos do domínio e mensagens em português |
-| Funções puras no Model      | `catalogFormat`, `catalogFilters`, `userFormat`, `authValidation`              | Regras testáveis sem React                                                 |
+| Padrão                      | Onde está                                                                      | Para que serve                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| MVVM Simplificado           | `src/model`, `src/viewmodel`, `src/view`, `src/app`                            | Separar regra de negócio, estado de tela e interface                                      |
+| Repository                  | `AuthRepository`, `CatalogRepository` e suas implementações Supabase e memória | Esconder o acesso a dados e trocar a fonte nos testes                                     |
+| Factory                     | `src/factories/auth.ts` e `catalog.ts`                                         | Montar as dependências reais e entregar hooks prontos às telas                            |
+| Injeção de dependência      | ViewModels recebem o repositório por parâmetro                                 | Testar sem rede nem Supabase                                                              |
+| Adapter / tradução de erros | `supabaseAuthRepository`, `supabaseCatalogRepository`                          | Converter erros do Supabase em códigos do domínio e mensagens em português                |
+| Funções puras no Model      | `catalogFormat`, `catalogFilters`, `userFormat`, `authValidation`              | Regras testáveis sem React                                                                |
+| Observer com portão         | `userChangeGate` e `onUserChange`                                              | Avisar as ViewModels sobre entrada e saída, retendo avisos durante a recuperação de senha |
+| Camada de infraestrutura    | `src/infra/` (ADR 0012)                                                        | Isolar SDKs e recursos da plataforma do Model                                             |
 
 ## 8. Qualidade e testes
 
 - `npm run verify`: tipos (`tsc` estrito), lint, formatação (Prettier) e testes.
-- 79 testes automatizados em `tests/` (Model, ViewModels, repositórios com cliente falso, rotas e design system) em 01/10/2026.
+- 89 testes automatizados em `tests/` (Model, ViewModels, repositórios com cliente falso e supabase-js real, rotas, design system e arquitetura) em 01/10/2026.
+- `tests/architecture.test.mjs` impede que o Model importe React, React Native ou Expo e que Views importem repositórios.
 - CI no GitHub Actions; hooks de commit com Husky, commitlint e lint-staged.
 - Limites conhecidos: a validação em aparelho real, com anúncios de outra conta, ainda está pendente (issues #28 e #44).
 
@@ -207,7 +252,59 @@ sequenceDiagram
 
 ### 9.1 Autenticação e onboarding — Maria Clara
 
-**A preencher:** decisões, dificuldades, telas e como foi testado (spec 014, ADR 0006).
+**Escopo** ([divisão de features](DIVISAO_FEATURES.md)): abertura, onboarding, criar conta, confirmar e-mail, entrar, recuperar senha e sair, além da base transversal do app (navegação, tema nativo, componentes de formulário e estados de carregamento, vazio, erro e sem conexão). Specs [013](../specs/013-base-app-nativo/spec.md) e [014](../specs/014-autenticacao-onboarding/spec.md).
+
+#### Requisitos e onde estão no código
+
+| Requisito                       | Telas (`src/view/screens`)                      | ViewModel                                       | Repositório                                                       |
+| ------------------------------- | ----------------------------------------------- | ----------------------------------------------- | ----------------------------------------------------------------- |
+| RF1 criar conta                 | `auth/SignUpScreen`                             | `useSignUpViewModel`                            | `signUp`                                                          |
+| RF2 confirmar e-mail por código | `auth/VerifyEmailScreen`                        | `useVerifyEmailViewModel` (reenvio a cada 60 s) | `verifySignUp`, `resendSignUpCode`                                |
+| RF3 entrar e sair               | `auth/LoginScreen`, Início do catálogo ("Sair") | `useLoginViewModel`, `useSession`               | `signIn`, `signOut`                                               |
+| RF4 recuperar senha             | `auth/PasswordRecoveryScreen` (2 etapas)        | `usePasswordRecoveryViewModel`                  | `requestPasswordReset`, `resetPassword`, `cancelPasswordRecovery` |
+| RF5 onboarding na 1ª abertura   | `StartScreen`, `OnboardingScreen`               | `useStartViewModel`, `useOnboardingViewModel`   | `preferencesRepository`                                           |
+| Manter a sessão entre aberturas | `StartScreen`, `SessionPendingScreen`           | `useSession` (`restoreError`, `retryRestore`)   | `getCurrentUser`, `onUserChange`                                  |
+
+#### Decisões
+
+- **Supabase Auth com código (OTP) por e-mail**, em vez de link ([ADR 0006](adr/0006-autenticacao-supabase.md)): o mesmo fluxo funciona no Expo Go, em build e na Web, sem deep links nem URLs de redirecionamento.
+- **Expo Router só no Android e no iOS** ([ADR 0005](adr/0005-navegacao-expo-router.md)): com o roteador, a página institucional passaria de 112 KB para 402 KB de JavaScript inicial e o LCP medido, de cerca de 2 s para 5 s. A Web manteve a entrada própria.
+- **Contrato `AuthRepository`** com duas implementações, Supabase e memória. As ViewModels recebem o repositório por parâmetro e as factories (`src/factories/auth.ts`) injetam o real. Os erros do Supabase viram códigos do domínio (`AuthError`) e mensagens em português (`authMessages`); a tela nunca mostra `invalid_credentials`.
+- **Validação local antes do servidor** (`authValidation`): nome, e-mail, senha com 8 caracteres e letras e números, confirmação e código. Os dados digitados são preservados após o erro.
+- **Portão de mudanças de sessão** (`userChangeGate`, issue #8): confirmar o código de recuperação já cria uma sessão no Supabase, antes de a nova senha ser gravada. O portão retém esse aviso até a senha ser salva; se a gravação falhar, a pessoa continua no formulário e pode tentar de novo sem pedir outro código.
+- **Sessão salva sem internet não é saída** (issue #34): com o token vencido e sem rede, o Supabase mantém a sessão, mas devolve erro de rede. O app mostra "Sem conexão" e "Tentar novamente" em vez de mandar para Entrar.
+- **Camada de infraestrutura** (`src/infra/`, [ADR 0012](adr/0012-camada-de-infraestrutura.md), issue #33): o cliente Supabase, a renovação do token pelo `AppState` e o armazenamento em SQLite saíram do Model.
+- **Controles próprios seguindo o Figma** ([ADR 0013](adr/0013-controles-proprios-seguindo-o-figma.md), issue #9): `Button` (pílula, variantes Preenchido, Contornado, Texto e Perigo) e `TextField` (rótulo dentro da caixa, erro com ícone e mensagem), sem biblioteca externa.
+
+#### Dificuldades e como foram resolvidas
+
+| Dificuldade                                                                         | Solução                                                                                                     |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Na recuperação, a pessoa era levada para a Início antes de a senha ser gravada (#8) | Portão de sessão no Model e teste que reproduz a ordem real do Supabase                                     |
+| O app voltava para Entrar ao reiniciar (#34)                                        | Investigação com o supabase-js real: a causa era o erro de rede de `getSession` tratado como "sem sessão"   |
+| O Expo Router deixava a página institucional lenta                                  | Medição de tamanho e LCP; o roteador ficou restrito ao app nativo                                           |
+| O Model dependia de React Native e Expo (#33)                                       | `src/infra/` e teste de arquitetura que impede a volta                                                      |
+| A tela de abertura lia o repositório direto (#32)                                   | `useStartViewModel`; teste garante que nenhuma View importa repositório                                     |
+| A Política de Privacidade dizia que o site não usava análise de visitas, mas usava  | Documentos legais corrigidos junto com o cadastro (PR #7)                                                   |
+| Telas do Figma indisponíveis para comparação (#10, #11, #35)                        | Componentes conferidos com a página "05 · Componentes"; as telas seguem bloqueadas e registradas nas issues |
+
+#### Telas
+
+Abertura com a marca; onboarding em 3 páginas (o que é o IpêBook, Venda/Troca/Doação, combinar com cuidado), com Pular, Voltar e Próxima; Entrar; Criar conta; Confirmar e-mail; Recuperar senha (pedir código, depois código e nova senha); aviso "Sem conexão" na abertura e faixa de conexão nas áreas `(auth)` e `(app)`.
+
+#### Como foi testado
+
+- **30 testes automatizados da feature:** 12 de Model e repositório (`tests/auth-model.test.mjs`), 16 de ViewModel (`tests/auth-viewmodel.test.mjs`) e 2 de arquitetura (`tests/architecture.test.mjs`).
+- Repositório Supabase testado com **cliente falso** (parâmetros, tradução de erros, ordem dos eventos da recuperação) e com o **supabase-js real** em memória (restauração da sessão ao reabrir e sessão recusada).
+- ViewModels testadas com o **repositório em memória**: validação, envio duplo, código inválido, reenvio, recuperação com falha e nova tentativa, sessão sem internet e destino da abertura.
+- Exportação dos bundles Android e iOS e build Web a cada PR; CI no GitHub Actions.
+- Componentes conferidos numa prévia com react-native-web, comparada com as capturas do Figma.
+
+#### Limites e próximos passos
+
+- Teste ponta a ponta num aparelho Android e num iPhone, com o Supabase real e leitor de tela: issue #12.
+- Configurar o código nos e-mails do Supabase: issue #31. Excluir a conta, junto com o Eric: issue #47.
+- Comparar telas e estados com o Figma quando as páginas forem publicadas: issues #11 e #35; adequação do iOS: issue #10.
 
 ### 9.2 Catálogo, configurações e notificações — Micael
 
@@ -227,6 +324,6 @@ sequenceDiagram
 
 ## 11. Pendências do relatório
 
-- Completar as seções 9.1 a 9.4 e o diagrama de casos de uso com as features restantes.
+- Completar as seções 9.2 a 9.4 e o diagrama de casos de uso com as features restantes.
 - Atualizar a tabela de requisitos quando #36 e #38 forem concluídas.
 - Revisão final pelo grupo (critério de aceite da issue #48).
