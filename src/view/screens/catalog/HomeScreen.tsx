@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -15,10 +16,12 @@ import type { Modality } from '../../../model/entities/Listing';
 import { modalityLabels } from '../../../model/services/catalogFormat';
 import detalheIpe from '../../../../assets/catalog/detalhe-amarelo-ipe.svg';
 import { useCatalogFeed } from '../../../factories/catalog';
+import { useUnreadCount } from '../../../factories/notifications';
 import { useSessionContext } from '../../../viewmodel/useSession';
 import { BookTile } from '../../components/catalog/BookTile';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
 import { SearchBarButton } from '../../components/catalog/SearchBar';
+import { NotificationBell } from '../../components/notifications/NotificationBell';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { FormMessage } from '../../components/ui/FormMessage';
@@ -49,6 +52,23 @@ export function HomeScreen() {
   const router = useRouter();
   const session = useSessionContext();
   const vm = useCatalogFeed(session.user?.name);
+  const unread = useUnreadCount();
+  const refreshUnread = unread.refresh;
+  const refreshFeed = vm.refresh;
+  // Puxar para atualizar recarrega os livros e o contador de avisos do sino.
+  const refreshAll = useCallback(
+    () => Promise.all([refreshFeed(), refreshUnread()]).then(() => undefined),
+    [refreshFeed, refreshUnread],
+  );
+
+  // Ao voltar de Notificações ou de um anúncio, o número do ícone se atualiza.
+  const firstFocus = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (firstFocus.current) firstFocus.current = false;
+      else void refreshUnread();
+    }, [refreshUnread]),
+  );
 
   const pairs: (typeof vm.preview)[] = [];
   for (let i = 0; i < vm.preview.length; i += 2) pairs.push(vm.preview.slice(i, i + 2));
@@ -60,7 +80,7 @@ export function HomeScreen() {
         refreshControl={
           <RefreshControl
             refreshing={vm.refreshing}
-            onRefresh={vm.refresh}
+            onRefresh={refreshAll}
             tintColor={colors.action}
           />
         }

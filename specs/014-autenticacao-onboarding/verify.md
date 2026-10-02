@@ -80,6 +80,20 @@ Implementado na branch `feature/autenticacao` para Android e iOS: abertura, onbo
 
 **Limitação:** falta reproduzir num aparelho real (fechar o app por completo, reabrir e reiniciar o aparelho), o que fica na issue #12. No Waydroid, a perda dos dados do app ao reiniciar não foi descartada.
 
+## Issue #31: código em vez de link nos e-mails (02/10/2026)
+
+**Configuração do projeto conferida** pelo endpoint público `/auth/v1/settings`, com a chave publicável:
+
+| Configuração                                             | Valor         | ADR 0006 |
+| -------------------------------------------------------- | ------------- | -------- |
+| Login por e-mail                                         | ativo         | ✅       |
+| Cadastro aberto                                          | sim           | ✅       |
+| Confirmação de e-mail obrigatória (`mailer_autoconfirm`) | sim (`false`) | ✅       |
+
+**Modelos de e-mail** preparados em `supabase/templates/` (`confirmar-cadastro.html` e `recuperar-senha.html`, com `{{ .Token }}`), com o passo a passo em `supabase/README.md`.
+
+**Pendente:** aplicar os modelos no painel (exige acesso de administrador ao projeto; a chave publicável não altera modelos de e-mail) e testar o cadastro e a recuperação recebendo o código.
+
 ## Documentos legais
 
 A Política de Privacidade dizia que o site não usava ferramentas de análise de visitas, mas o código já inclui Vercel Web Analytics e Speed Insights (PRs #4 e #5). O texto foi corrigido junto com a descrição do cadastro no aplicativo, conforme a constituição ("descrever o funcionamento efetivo nos documentos legais").
