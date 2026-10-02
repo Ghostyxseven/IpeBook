@@ -5,6 +5,9 @@ import { isCategory } from './categories.ts';
 export type ListingField =
   'title' | 'author' | 'category' | 'condition' | 'modality' | 'priceCents' | 'tradeTerms';
 
+/** O IpêBook atende só Piripiri (ADR 0017): a cidade não é pedida no formulário. */
+export const SERVED_CITY = 'Piripiri';
+
 export type ListingErrors = Partial<Record<ListingField, string>>;
 
 export const conditions: readonly ListingCondition[] = [
@@ -116,7 +119,7 @@ export function normalizeDraft(draft: ListingDraft): ListingDraft {
     priceCents: draft.modality === 'sale' ? draft.priceCents : null,
     tradeTerms: draft.modality === 'trade' ? text(draft.tradeTerms) : null,
     neighborhood: text(draft.neighborhood),
-    city: text(draft.city),
+    city: SERVED_CITY,
     description: text(draft.description)?.slice(0, DESCRIPTION_MAX) ?? null,
   };
 }
@@ -132,7 +135,7 @@ export function emptyDraft(): ListingDraft {
     tradeTerms: null,
     condition: 'bom',
     neighborhood: null,
-    city: null,
+    city: SERVED_CITY,
     description: null,
   };
 }

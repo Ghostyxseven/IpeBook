@@ -17,7 +17,7 @@ export const steps = ['book', 'modality', 'cover', 'review'] as const;
 export type Step = (typeof steps)[number];
 
 /** Campos de texto simples do formulário. */
-export type TextField = 'title' | 'author' | 'tradeTerms' | 'neighborhood' | 'city' | 'description';
+export type TextField = 'title' | 'author' | 'tradeTerms' | 'neighborhood' | 'description';
 
 /**
  * O estado do formulário de anúncio, compartilhado por publicar e editar.
