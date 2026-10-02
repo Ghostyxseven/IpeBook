@@ -33,7 +33,7 @@ Não haverá tabela extra nem painel administrativo no aplicativo. A moderação
   - `Select`: O próprio usuário (auth.uid()).
   - `Update/Delete`: Bloqueados para usuários comuns.
 - `user_blocks`:
-  - `Insert/Select`: O próprio bloqueador (auth.uid() = blocker_id).
+  - Policy `FOR ALL` condicionada ao próprio `blocker_id` (auth.uid() = blocker_id), tanto no `USING` quanto no `WITH CHECK`. Isso permite que o usuário execute SELECT, INSERT e DELETE apenas sobre os seus próprios registros de bloqueio. O DELETE é necessário para viabilizar o desbloqueio de perfis sem a criação de uma nova migration. Não existe risco de acesso indevido, pois a condição `blocker_id = auth.uid()` é aplicada em todas as operações.
 
 ### Arquitetura
 
@@ -46,5 +46,6 @@ A implementação seguirá o MVVM Simplificado (ADR 0002), utilizando:
 
 ## Consequências
 
-- **Positivas**: O catálogo filtra usuários bloqueados diretamente no banco de forma performática. O domínio de transações/negociações (Issue #38) permanece blindado e sem efeitos colaterais de regras implícitas.
+- **Positivas**: O catálogo filtra usuários bloqueados diretamente no banco de forma performática. O domínio de transações/negociações (Issue #38) permanece blindado e sem efeitos colaterais de regras implícitas. A policy `FOR ALL` em `user_blocks` viabiliza o desbloqueio futuro sem nova migration.
 - **Negativas**: Como não há painel admin, a equipe precisará de acesso direto ao Supabase para atuar nas denúncias e o cancelamento de encontros com usuários bloqueados demanda ação manual no app.
+- **Pendência**: A integração do atalho "Sua segurança" na tela de Perfil Público ficará para quando essa tela for desenvolvida no projeto.
