@@ -7,7 +7,7 @@ Fontes obrigatórias:
 1. [`design-tokens.json`](../design-tokens.json) — contrato de implementação.
 2. [`docs/design-system.md`](../docs/design-system.md) — visão geral.
 3. [`docs/design-system/`](../docs/design-system/) — foundations, components, platforms, acessibilidade e governança.
-4. [Figma](https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1) — referência visual.
+4. [Figma](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/Ip%C3%AABook-Mobile?node-id=20-207) — referência visual.
 
 Para cada tela, identifique Android, iOS ou Web. Android segue Material 3; iOS usa padrões nativos e SF Symbols; Web usa grid responsivo, hover/focus e teclado.
 
