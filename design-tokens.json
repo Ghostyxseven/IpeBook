@@ -28,6 +28,19 @@
     "error": { "$type": "color", "$value": "#B3261E" },
     "gold": { "$type": "color", "$value": "#D99719" },
     "highlight": { "$type": "color", "$value": "#F4B942" },
+    "onSurface": { "$type": "color", "$value": "#1D1B18" },
+    "onSurfaceVariant": { "$type": "color", "$value": "#4D4740" },
+    "outlineVariant": { "$type": "color", "$value": "#D3CCC2" },
+    "container": {
+      "lowest": { "$type": "color", "$value": "#FFFFFF" },
+      "low": { "$type": "color", "$value": "#F7F3EC" },
+      "default": { "$type": "color", "$value": "#F2EDE5" },
+      "high": { "$type": "color", "$value": "#ECE6DD" }
+    },
+    "selected": {
+      "background": { "$type": "color", "$value": "#DCE8DE" },
+      "text": { "$type": "color", "$value": "#18291F" }
+    },
     "badge": {
       "sale": {
         "background": { "$type": "color", "$value": "#DCE8DE" },
@@ -219,6 +232,14 @@
         "weight": { "$type": "fontWeight", "$value": 500 },
         "fontSize": { "$type": "dimension", "$value": "14px" },
         "lineHeight": { "$type": "dimension", "$value": "20px" }
+      }
+    },
+    "brand": {
+      "fontFamily": { "$type": "fontFamily", "$value": "Source Serif 4" },
+      "headline": {
+        "weight": { "$type": "fontWeight", "$value": 700 },
+        "fontSize": { "$type": "dimension", "$value": "30px" },
+        "lineHeight": { "$type": "dimension", "$value": "36px" }
       }
     }
   },
