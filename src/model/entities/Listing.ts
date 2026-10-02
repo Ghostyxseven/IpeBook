@@ -3,8 +3,10 @@ export type Modality = 'sale' | 'trade' | 'donation';
 
 export type ListingCondition = 'novo' | 'como_novo' | 'bom' | 'marcas_de_uso';
 
-/** Situações visíveis no catálogo; `concluido` e `arquivado` nunca chegam aqui. */
-export type ListingStatus = 'disponivel' | 'reservado';
+/** Todas as situações aceitas no banco (conforme migration do ADR 0008).
+ * Apenas `disponivel` e `reservado` chegam ao catálogo público; `concluido`
+ * e `arquivado` são usados apenas por gestão e negociação. */
+export type ListingStatus = 'disponivel' | 'reservado' | 'concluido' | 'arquivado';
 
 export type Listing = {
   id: string;
@@ -22,6 +24,7 @@ export type Listing = {
   description: string | null;
   coverUrl: string | null;
   status: ListingStatus;
+  ownerId: string | null;
   ownerFirstName: string | null;
   /** Data ISO 8601. */
   createdAt: string;
