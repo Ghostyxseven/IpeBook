@@ -10,6 +10,23 @@ Migrações do banco do IpêBook (ADR 0006 e ADR 0008).
 
 Com a CLI do Supabase vinculada ao projeto, `supabase db push` aplica as mesmas migrações.
 
+## Modelos de e-mail com código (issue #31)
+
+O app confirma o cadastro e recupera a senha por **código digitado no app**, não por link ([ADR 0006](../docs/adr/0006-autenticacao-supabase.md)). Os modelos padrão do Supabase mandam só um link, que confirma a conta e abre o navegador em `localhost`.
+
+No painel: **Authentication → Emails → Templates** (em versões antigas, Authentication → Email Templates).
+
+| Modelo no painel   | Assunto                                                     | Corpo (copiar o arquivo inteiro)                                         |
+| ------------------ | ----------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **Confirm signup** | `Seu código do IpêBook: {{ .Token }}`                       | [`templates/confirmar-cadastro.html`](templates/confirmar-cadastro.html) |
+| **Reset password** | `Código para criar uma nova senha no IpêBook: {{ .Token }}` | [`templates/recuperar-senha.html`](templates/recuperar-senha.html)       |
+
+Confira também em **Authentication → Sign In / Providers → Email** que **Confirm email** está ligado.
+
+**Teste:** criar uma conta no app com um e-mail seu, confirmar que chega um código e que ele ativa a conta; depois, "Esqueci minha senha" com o mesmo e-mail. Registrar o resultado no `verify.md` da spec 014.
+
+O SMTP padrão do Supabase limita o número de e-mails por hora. Se os testes da equipe esbarrarem nesse limite, configure um SMTP próprio no mesmo painel.
+
 ## Anúncio de teste (só em projeto de desenvolvimento)
 
 O catálogo esconde os anúncios da própria pessoa. Para ver um anúncio no app, crie duas contas de teste e insira o anúncio com o id da conta que **não** vai abrir o app (Authentication → Users):
