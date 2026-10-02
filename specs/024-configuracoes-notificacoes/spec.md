@@ -14,7 +14,7 @@ A tela 35 (`node-id=193-651`) e a seção F (`380-2398`) **não foram inspeciona
 
 1. **Notificações:** lista com os avisos mais recentes primeiro, cada um com título, texto curto, data relativa e marca de "não lida". Tocar abre o destino (por exemplo, o anúncio) e marca como lida. Ação "Marcar todas como lidas". Estado vazio: "Nenhum aviso por enquanto."
 2. **Origem dos avisos:** os eventos vêm da negociação (feature do Antonio, issue #38): pedido recebido, pedido aceito ou recusado, livro reservado e negociação concluída. Sem a negociação não há o que avisar; por isso a tela só ganha conteúdo depois da #38. Até lá, a lista aparece vazia.
-3. **Configurações:** acessadas pelo Perfil (feature do Eric). Itens: ligar ou desligar cada tipo de aviso, ver a versão do aplicativo, abrir os documentos legais (Privacidade e Termos, por endereço da Web) e Sair. Excluir conta é da issue #47.
+3. **Configurações:** acessadas pelo Perfil (feature do Eric); até o Perfil existir, o Início mostra os ícones de Notificações (com contador) e de Configurações, e o Sair que ficava ali passou para Configurações. Itens: ligar ou desligar cada tipo de aviso, ver a versão do aplicativo, abrir os documentos legais (Privacidade e Termos, por endereço da Web; só aparecem com `EXPO_PUBLIC_SITE_URL` definido) e Sair. Excluir conta é da issue #47.
 4. **Entrega:** decidida no [ADR 0011](../../docs/adr/0011-entrega-de-notificacoes.md): lista dentro do aplicativo alimentada pelo Supabase. Notificação push fica fora desta spec.
 
 ## Aceite

@@ -11,6 +11,8 @@ const symbols = {
     android: 'logout',
     web: 'logout',
   },
+  bell: { ios: 'bell', android: 'notifications', web: 'notifications' },
+  settings: { ios: 'gearshape', android: 'settings', web: 'settings' },
   check: { ios: 'checkmark', android: 'check', web: 'check' },
   chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
   error: { ios: 'exclamationmark.circle', android: 'error', web: 'error' },
