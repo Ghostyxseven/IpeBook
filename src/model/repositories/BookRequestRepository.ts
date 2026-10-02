@@ -15,6 +15,9 @@ export interface BookRequestRepository {
   /** Lista solicitações recebidas (onde o usuário atual é dono do anúncio) */
   getRequestsByOwner(ownerId: string): Promise<BookRequest[]>;
 
-  /** Atualiza o status da solicitação (ex: aceitar, recusar, cancelar, concluir) */
-  updateRequestStatus(id: string, newStatus: RequestStatus): Promise<BookRequest>;
+  /**
+   * Muda a situação da solicitação (aceitar, recusar, cancelar, concluir). Quem pode fazer
+   * cada mudança e a situação do anúncio são decididos na mesma operação (ADR 0018).
+   */
+  transitionRequest(id: string, newStatus: RequestStatus): Promise<BookRequest>;
 }

@@ -21,6 +21,10 @@ import {
   requestListLabel,
 } from '../src/model/services/bookRequestFormat.ts';
 import { createMemoryBookRequestRepository } from '../src/model/repositories/memoryBookRequestRepository.ts';
+import {
+  createSupabaseBookRequestRepository,
+  mapSupabaseBookRequestError,
+} from '../src/model/repositories/supabaseBookRequestRepository.ts';
 
 const listing = (extra = {}) => ({
   id: 'l-1',
@@ -218,7 +222,7 @@ test('repositório em memória: cria, lista, atualiza status', async () => {
   assert.equal(ownerListOther.length, 0);
 
   // pending → accepted
-  const accepted = await repo.updateRequestStatus(created.id, 'accepted');
+  const accepted = await repo.transitionRequest(created.id, 'accepted');
   assert.equal(accepted.status, 'accepted');
   const fetched = await repo.getRequestById(created.id);
   assert.equal(fetched.status, 'accepted');
@@ -233,4 +237,86 @@ test('repositório em memória: createRequest sempre cria como pending', async (
     meetingTime: '14:00',
   });
   assert.equal(r.status, 'pending');
+});
+
+test('repositório em memória: aceitar reserva o anúncio e recusa os outros pedidos', async () => {
+  const listingStatus = { 'l-1': 'disponivel' };
+  const repo = createMemoryBookRequestRepository([], { listingStatus });
+  const data = {
+    listingId: 'l-1',
+    publicLocation: 'Praça',
+    meetingDate: '2026-12-12',
+    meetingTime: '10:00',
+  };
+  const first = await repo.createRequest(data);
+  const second = await repo.createRequest(data);
+
+  await repo.transitionRequest(first.id, 'accepted');
+  assert.equal(listingStatus['l-1'], 'reservado');
+  assert.equal((await repo.getRequestById(second.id)).status, 'rejected');
+
+  await repo.transitionRequest(first.id, 'completed');
+  assert.equal(listingStatus['l-1'], 'concluido');
+});
+
+test('repositório em memória: cancelar um pedido aceito devolve o anúncio ao catálogo', async () => {
+  const listingStatus = { 'l-1': 'disponivel' };
+  const repo = createMemoryBookRequestRepository([], { listingStatus });
+  const r = await repo.createRequest({
+    listingId: 'l-1',
+    publicLocation: 'Praça',
+    meetingDate: '2026-12-12',
+    meetingTime: '10:00',
+  });
+  await repo.transitionRequest(r.id, 'accepted');
+  await repo.transitionRequest(r.id, 'canceled');
+  assert.equal(listingStatus['l-1'], 'disponivel');
+});
+
+test('repositório em memória: transição inválida é recusada', async () => {
+  const repo = createMemoryBookRequestRepository([]);
+  const r = await repo.createRequest({
+    listingId: 'l-1',
+    publicLocation: 'Praça',
+    meetingDate: '2026-12-12',
+    meetingTime: '10:00',
+  });
+  await assert.rejects(repo.transitionRequest(r.id, 'completed'), { code: 'invalid_transition' });
+});
+
+test('repositório Supabase: chama a função de transição e traduz os erros do banco', async () => {
+  const calls = [];
+  const row = {
+    id: 'r-1',
+    listing_id: 'l-1',
+    requester_id: 'u-1',
+    public_location: 'Praça',
+    meeting_date: '2026-12-12',
+    meeting_time: '10:00',
+    status: 'accepted',
+    created_at: '2026-10-02T00:00:00Z',
+    updated_at: '2026-10-02T00:00:00Z',
+  };
+  const client = {
+    from() {
+      throw new Error('o app não deve atualizar a tabela diretamente');
+    },
+    rpc(name, args) {
+      calls.push([name, args]);
+      return { select: () => ({ maybeSingle: async () => ({ data: row, error: null }) }) };
+    },
+  };
+  const repo = createSupabaseBookRequestRepository(client);
+  const updated = await repo.transitionRequest('r-1', 'accepted');
+  assert.equal(updated.status, 'accepted');
+  assert.deepEqual(calls, [
+    ['transition_book_request', { request_id: 'r-1', next_status: 'accepted' }],
+  ]);
+
+  assert.equal(mapSupabaseBookRequestError({ code: '42501' }).code, 'forbidden');
+  assert.equal(mapSupabaseBookRequestError({ code: 'P0002' }).code, 'not_found');
+  assert.equal(
+    mapSupabaseBookRequestError({ code: 'P0001', message: 'invalid_transition' }).code,
+    'invalid_transition',
+  );
 });

@@ -1,5 +1,5 @@
 import { CatalogError } from '../entities/CatalogError.ts';
-import type { Listing, ListingStatus } from '../entities/Listing';
+import type { Listing } from '../entities/Listing';
 import { effectiveFilters } from '../services/catalogFilters.ts';
 import type { CatalogCursor, CatalogRepository } from './CatalogRepository';
 
@@ -60,15 +60,6 @@ export function createMemoryCatalogRepository(initial: Listing[] = []) {
       const listing = listings.find((item) => item.id === id);
       if (!listing) throw new CatalogError('not_found');
       return listing;
-    },
-    async updateListingStatus(id, status) {
-      calls.push(`updateStatus:${id}:${status}`);
-      if (delay) await delay;
-      takeError();
-      const index = listings.findIndex((item) => item.id === id);
-      if (index === -1) throw new CatalogError('not_found');
-      listings[index] = { ...listings[index], status: status as ListingStatus };
-      return listings[index];
     },
   };
 
