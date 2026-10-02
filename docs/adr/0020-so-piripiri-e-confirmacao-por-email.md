@@ -1,4 +1,4 @@
-# 0017 — Só Piripiri e confirmação só por e-mail
+# 0020 — Só Piripiri e confirmação só por e-mail
 
 Data: 02/10/2026
 

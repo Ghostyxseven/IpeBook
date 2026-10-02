@@ -39,6 +39,14 @@ select public.create_notification('<id-da-conta-que-abre-o-app>', 'request_recei
 
 Sobre o endereço da página institucional (`EXPO_PUBLIC_SITE_URL` no `.env`), veja `.env.example`. Apague os avisos de teste antes de usar o projeto com pessoas reais.
 
+## Negociação e segurança (ADRs 0018 e 0017, specs 028 e 027)
+
+Aplique, nesta ordem e depois das migrações do catálogo e das notificações:
+
+1. `migrations/20261002125000_book_requests.sql` — tabela `book_requests`.
+2. `migrations/20261002130000_seguranca_denuncias_bloqueios.sql` — `reports`, `user_blocks` e a view `catalog_listings` sem anúncios de quem foi bloqueado.
+3. `migrations/20261002140000_negociacao_transicoes.sql` — a função `transition_book_request`, que é o único jeito de aceitar, recusar, cancelar ou concluir, e os avisos da negociação.
+
 ## Anúncio de teste (só em projeto de desenvolvimento)
 
 O catálogo esconde os anúncios da própria pessoa. Para ver um anúncio no app, crie duas contas de teste e insira o anúncio com o id da conta que **não** vai abrir o app (Authentication → Users):

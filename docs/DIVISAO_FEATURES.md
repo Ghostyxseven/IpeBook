@@ -43,6 +43,8 @@ Para garantir uma entrega paralela e sem conflitos de código, estruturamos o tr
 
 **Feature:** Fluxo de Negociação (Adoção/Troca) e Segurança
 
+> Desde 02/10/2026 esta feature é do **Micael Cardoso Reis**. O Antonio entregou a negociação mínima (#38, PR #84) e a base de segurança (spec 027, ADR 0017); o restante (#39, #40 e #54) continua com o Micael.
+
 - **Objetivo:** O coração transacional do aplicativo (solicitar livro e combinar a entrega), atrelado às funcionalidades de _Trust & Safety_ (confiança e segurança da comunidade).
 - **Fluxos e Telas englobadas:**
   - Motor de solicitação: Enviar pedido, visualizar recebidos e responder.

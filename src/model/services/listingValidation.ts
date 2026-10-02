@@ -5,7 +5,7 @@ import { isCategory } from './categories.ts';
 export type ListingField =
   'title' | 'author' | 'category' | 'condition' | 'modality' | 'priceCents' | 'tradeTerms';
 
-/** O IpêBook atende só Piripiri (ADR 0017): a cidade não é pedida no formulário. */
+/** O IpêBook atende só Piripiri (ADR 0020): a cidade não é pedida no formulário. */
 export const SERVED_CITY = 'Piripiri';
 
 export type ListingErrors = Partial<Record<ListingField, string>>;

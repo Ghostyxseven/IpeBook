@@ -1,4 +1,4 @@
-# ADR 0011: Segurança, Denúncias e Bloqueios
+# ADR 0017: Segurança, Denúncias e Bloqueios
 
 ## Contexto
 

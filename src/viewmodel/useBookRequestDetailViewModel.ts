@@ -13,9 +13,6 @@ import {
   canComplete,
   ensureTransition,
   isOwner,
-  listingStatusOnAccept,
-  listingStatusOnCancel,
-  listingStatusOnComplete,
 } from '../model/services/bookRequestTransitions';
 import type { Listing } from '../model/entities/Listing';
 
@@ -94,44 +91,31 @@ export function useBookRequestDetailViewModel(
   }, [request, listing, userId]);
 
   const act = useCallback(
-    async (
-      nextStatus: BookRequest['status'],
-      { requiresListingUpdate }: { requiresListingUpdate?: boolean | null } = {},
-    ) => {
+    async (nextStatus: BookRequest['status']) => {
       setError(null);
       await run(async () => {
         if (!request || !listing) {
           throw new BookRequestError('not_found');
         }
-        // 1. Valida transição
+        // Confere antes para dar resposta rápida; o banco confere de novo (ADR 0018).
         ensureTransition(request.status, nextStatus);
-        // 2. (opcional) atualiza o anúncio primeiro (pois se falhar, não avançamos a request)
-        let nextListing = listing;
-        if (requiresListingUpdate && listing.id) {
-          let targetStatus: Listing['status'] | null = null;
-          if (nextStatus === 'accepted') targetStatus = listingStatusOnAccept();
-          if (nextStatus === 'completed') targetStatus = listingStatusOnComplete();
-          if (nextStatus === 'canceled') {
-            const maybe = listingStatusOnCancel(request.status, listing.status);
-            if (maybe) targetStatus = maybe;
-          }
-          if (targetStatus) {
-            nextListing = await catalogRepository.updateListingStatus(listing.id, targetStatus);
-          }
-        }
-        // 3. Atualiza o status da solicitação
-        const updated = await bookRequestRepository.updateRequestStatus(request.id, nextStatus);
+        // O repositório muda a solicitação e o anúncio na mesma operação.
+        const updated = await bookRequestRepository.transitionRequest(request.id, nextStatus);
         setRequest(updated);
-        setListing(nextListing);
+        try {
+          setListing(await catalogRepository.getById(listing.id));
+        } catch {
+          // O pedido já mudou; o anúncio é recarregado na próxima abertura da tela.
+        }
       });
     },
     [request, listing, run, catalogRepository, bookRequestRepository],
   );
 
-  const accept = useCallback(() => act('accepted', { requiresListingUpdate: true }), [act]);
+  const accept = useCallback(() => act('accepted'), [act]);
   const reject = useCallback(() => act('rejected'), [act]);
-  const cancel = useCallback(() => act('canceled', { requiresListingUpdate: true }), [act]);
-  const complete = useCallback(() => act('completed', { requiresListingUpdate: true }), [act]);
+  const cancel = useCallback(() => act('canceled'), [act]);
+  const complete = useCallback(() => act('completed'), [act]);
 
   return {
     request,
