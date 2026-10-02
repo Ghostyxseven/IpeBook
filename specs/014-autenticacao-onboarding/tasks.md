@@ -10,5 +10,8 @@
 - [x] Testes de validação, mensagens, mapeamento Supabase e ViewModels.
 - [x] Validar tipos, testes, build Web e bundles nativos; registrar evidências e pendências em `verify.md`.
 - [x] Corrigir o redirecionamento prematuro na recuperação de senha (issue #8).
+- [x] Investigar a sessão que cai ao reiniciar o app (issue #34).
+- [x] Abertura decide o destino por uma ViewModel; nenhuma View importa repositório (issue #32).
+- [x] Tirar `react-native` e `expo-*` do Model; cliente e armazenamento em `src/infra/` (issue #33).
 - [ ] Testar ponta a ponta com um projeto Supabase real em Android e iOS (depende do `.env` da equipe).
 - [ ] Comparar as telas com os quadros do Figma (Android `0:1`, iPhone `33:94`).

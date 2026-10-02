@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -15,15 +16,15 @@ import type { Modality } from '../../../model/entities/Listing';
 import { modalityLabels } from '../../../model/services/catalogFormat';
 import detalheIpe from '../../../../assets/catalog/detalhe-amarelo-ipe.svg';
 import { useCatalogFeed } from '../../../factories/catalog';
+import { useUnreadCount } from '../../../factories/notifications';
 import { useSessionContext } from '../../../viewmodel/useSession';
-import { AppIcon } from '../../components/AppIcon';
 import { BookTile } from '../../components/catalog/BookTile';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
 import { SearchBarButton } from '../../components/catalog/SearchBar';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 import { exploreHref } from './routeParams';
 
 const modalities: Modality[] = ['sale', 'trade', 'donation'];
@@ -50,6 +51,23 @@ export function HomeScreen() {
   const router = useRouter();
   const session = useSessionContext();
   const vm = useCatalogFeed(session.user?.name);
+  const unread = useUnreadCount();
+  const refreshUnread = unread.refresh;
+  const refreshFeed = vm.refresh;
+  // Puxar para atualizar recarrega os livros e o contador de avisos do sino.
+  const refreshAll = useCallback(
+    () => Promise.all([refreshFeed(), refreshUnread()]).then(() => undefined),
+    [refreshFeed, refreshUnread],
+  );
+
+  // Ao voltar de Notificações ou de um anúncio, o número do ícone se atualiza.
+  const firstFocus = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (firstFocus.current) firstFocus.current = false;
+      else void refreshUnread();
+    }, [refreshUnread]),
+  );
 
   const pairs: (typeof vm.preview)[] = [];
   for (let i = 0; i < vm.preview.length; i += 2) pairs.push(vm.preview.slice(i, i + 2));
@@ -61,7 +79,7 @@ export function HomeScreen() {
         refreshControl={
           <RefreshControl
             refreshing={vm.refreshing}
-            onRefresh={vm.refresh}
+            onRefresh={refreshAll}
             tintColor={colors.action}
           />
         }
@@ -73,27 +91,7 @@ export function HomeScreen() {
             </Text>
             <Text style={styles.greeting}>{vm.greeting}</Text>
           </View>
-          {/* Temporário: sair fica aqui até a feature de Perfil existir. */}
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Sair"
-            accessibilityState={{ busy: session.signingOut, disabled: session.signingOut }}
-            disabled={session.signingOut}
-            onPress={session.signOut}
-            style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
-              styles.iconButton,
-              pressed && styles.iconButtonPressed,
-              focused && focusRing,
-            ]}
-          >
-            {session.signingOut ? (
-              <ActivityIndicator color={colors.text} />
-            ) : (
-              <AppIcon name="logout" />
-            )}
-          </Pressable>
         </View>
-        <FormMessage tone="error" message={session.error} />
 
         <SearchBarButton onPress={() => router.push(exploreHref(vm.modality))} />
 
@@ -206,14 +204,6 @@ const styles = StyleSheet.create({
   headerText: { gap: spacing.xxs, flexShrink: 1 },
   brand: { ...typography.titleLarge, color: colors.text },
   greeting: { ...typography.labelMedium, color: colors.secondaryText },
-  iconButton: {
-    width: metrics.touchTarget,
-    height: metrics.touchTarget,
-    borderRadius: radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconButtonPressed: { backgroundColor: colors.pressed },
   chips: { flexDirection: 'row', gap: spacing.xs, paddingRight: spacing.md },
   sectionHeader: {
     flexDirection: 'row',

@@ -4,7 +4,7 @@
  */
 import type { Modality } from '../model/entities/Listing';
 import { createSupabaseCatalogRepository } from '../model/repositories/supabaseCatalogRepository';
-import { supabase } from '../model/repositories/supabaseClient';
+import { supabase } from '../infra/supabaseClient';
 import { useCatalogFeedViewModel } from '../viewmodel/useCatalogFeedViewModel';
 import { useCatalogSearchViewModel } from '../viewmodel/useCatalogSearchViewModel';
 import { useListingDetailViewModel } from '../viewmodel/useListingDetailViewModel';

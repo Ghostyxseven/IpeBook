@@ -11,8 +11,24 @@ const symbols = {
     android: 'logout',
     web: 'logout',
   },
+  swap: { ios: 'arrow.left.arrow.right', android: 'swap_horiz', web: 'swap_horiz' },
+  bookmark: { ios: 'bookmark', android: 'bookmark', web: 'bookmark' },
+  checkCircle: { ios: 'checkmark.circle', android: 'check_circle', web: 'check_circle' },
+  bell: { ios: 'bell', android: 'notifications', web: 'notifications' },
+  settings: { ios: 'gearshape', android: 'settings', web: 'settings' },
   check: { ios: 'checkmark', android: 'check', web: 'check' },
   chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
+  error: { ios: 'exclamationmark.circle', android: 'error', web: 'error' },
+  chevronLeft: { ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' },
+  // Gestão de anúncios e perfil (specs 025 e 026).
+  add: { ios: 'plus', android: 'add', web: 'add' },
+  edit: { ios: 'pencil', android: 'edit', web: 'edit' },
+  archive: { ios: 'archivebox', android: 'archive', web: 'archive' },
+  unarchive: { ios: 'arrow.uturn.up', android: 'unarchive', web: 'unarchive' },
+  delete: { ios: 'trash', android: 'delete', web: 'delete' },
+  photo: { ios: 'photo', android: 'add_photo_alternate', web: 'add_photo_alternate' },
+  person: { ios: 'person', android: 'person', web: 'person' },
+  shelf: { ios: 'books.vertical', android: 'library_books', web: 'library_books' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;

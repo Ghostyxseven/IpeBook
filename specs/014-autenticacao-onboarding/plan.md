@@ -12,12 +12,12 @@ Depende da [spec 013](../013-base-app-nativo/spec.md). Dependências: `@supabase
 - `repositories/AuthRepository.ts`: interface usada pelas ViewModels.
 - `repositories/supabaseAuthRepository.ts`: implementação com cliente injetado; traduz erros.
 - `repositories/memoryAuthRepository.ts`: implementação em memória para testes.
-- `repositories/supabaseClient.ts`, `localStore.ts` / `localStore.web.ts`: cliente e armazenamento da sessão.
+- `src/infra/supabaseClient.ts`, `sessionRefresh.ts`, `localStore.ts` / `localStore.web.ts`: cliente, renovação do token e armazenamento da sessão, fora do Model (ADR 0012, issue #33).
 - `repositories/preferencesRepository.ts`: guarda se o onboarding já foi visto.
 
 ## ViewModels (hooks que recebem o repositório)
 
-`useSession`, `useLoginViewModel`, `useSignUpViewModel`, `useVerifyEmailViewModel`, `usePasswordRecoveryViewModel`, `useOnboardingViewModel`. A navegação é passada pela View como callback, para a ViewModel não depender do roteador. `src/factories/auth.ts` injeta os repositórios reais.
+`useSession`, `useStartViewModel` (abertura; issue #32), `useLoginViewModel`, `useSignUpViewModel`, `useVerifyEmailViewModel`, `usePasswordRecoveryViewModel`, `useOnboardingViewModel`. A navegação é passada pela View como callback, para a ViewModel não depender do roteador. `src/factories/auth.ts` injeta os repositórios reais.
 
 ## Views
 

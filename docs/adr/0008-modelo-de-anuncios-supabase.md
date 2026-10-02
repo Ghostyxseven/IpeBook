@@ -4,7 +4,9 @@ Data: 30/09/2026
 
 ## Status
 
-Proposto. Precisa da concordância do Eric (feature de anúncios, que grava os dados) antes da implementação da [spec 018](../../specs/018-catalogo-descoberta/spec.md).
+Aceito em 02/10/2026 (issue #23). A migração foi aplicada no Supabase da equipe em 30/09/2026, a [spec 018](../../specs/018-catalogo-descoberta/spec.md) lê o modelo e a [spec 025](../../specs/025-anuncios-gestao/spec.md) o grava.
+
+A implementação da gestão de anúncios confirmou que o modelo aguenta a feature: nenhuma coluna faltou. Apareceram quatro lacunas que este ADR não cobria — a ausência de política de `update` no bucket, a capa que fica órfã ao excluir o anúncio, as situações que podem ser editadas e a gravação conjunta dos três campos da modalidade. Todas foram decididas no [ADR 0014](0014-gestao-de-anuncios.md), **sem mudança no schema**.
 
 ## Contexto
 

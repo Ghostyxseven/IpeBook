@@ -12,6 +12,9 @@ export function useSession(repository: AuthRepository) {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<SessionStatus>('loading');
   const [error, setError] = useState<string | null>(null);
+  /** Sessão salva que não pôde ser confirmada (sem internet). Não equivale a ter saído. */
+  const [restoreError, setRestoreError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [signingOut, run] = useAsyncAction();
 
   useEffect(() => {
@@ -19,6 +22,7 @@ export function useSession(repository: AuthRepository) {
     let notified = false;
     const apply = (next: User | null) => {
       if (!active) return;
+      setRestoreError(null);
       setUser(next);
       setStatus(next ? 'signedIn' : 'signedOut');
     };
@@ -29,18 +33,31 @@ export function useSession(repository: AuthRepository) {
     // A leitura inicial só vale se nenhum evento mais recente já tiver chegado.
     repository.getCurrentUser().then(
       (current) => notified || apply(current),
-      () => notified || apply(null),
+      (failure) => {
+        if (notified || !active) return;
+        const { code } = toAuthError(failure);
+        // Sem internet a sessão salva continua no aparelho: aguarda em vez de mandar
+        // para Entrar. O provedor avisa quando conseguir confirmá-la (issue #34).
+        if (code === 'network') setRestoreError(authErrorMessage(code));
+        else apply(null);
+      },
     );
     return () => {
       active = false;
       unsubscribe();
     };
-  }, [repository]);
+  }, [repository, attempt]);
 
   return {
     status,
     user,
     error,
+    restoreError,
+    /** Tenta confirmar de novo a sessão salva. */
+    retryRestore: () => {
+      setRestoreError(null);
+      setAttempt((value) => value + 1);
+    },
     signingOut,
     signOut: () =>
       run(async () => {

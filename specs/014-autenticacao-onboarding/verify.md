@@ -55,6 +55,45 @@ Implementado na branch `feature/autenticacao` para Android e iOS: abertura, onbo
 
 **Limitação:** comportamento validado com cliente simulado. O teste com Supabase real e aparelho fica na issue #12.
 
+## Issue #34: sessão que cai ao reiniciar o app (01/10/2026)
+
+**Investigação** com o supabase-js real (2.117) e armazenamento em memória, simulando um app reaberto:
+
+| Situação ao reabrir                | Supabase                                                  | App antes                                     | App depois                                 |
+| ---------------------------------- | --------------------------------------------------------- | --------------------------------------------- | ------------------------------------------ |
+| Token válido                       | devolve a sessão                                          | Início                                        | Início                                     |
+| Token vencido e sem internet       | mantém a sessão salva e devolve `AuthRetryableFetchError` | **Entrar** (tratava o erro como "sem sessão") | aviso "Sem conexão" com "Tentar novamente" |
+| Token vencido e renovação recusada | apaga a sessão                                            | Entrar                                        | Entrar                                     |
+
+**Conclusão:** o `userChangeGate` da issue #8 não derruba a sessão. A troca de inscrição entre a abertura e a área logada recebe a sessão salva normalmente (teste com supabase-js real). A causa é anterior: `getCurrentUser` ignorava o erro de `getSession`. O token de acesso vale 1 hora; num emulador reiniciado sem rede pronta, a sessão salva era descartada pela tela.
+
+**Correção:**
+
+- `getCurrentUser` rejeita com `AuthError('network')` quando não consegue confirmar a sessão.
+- `useSession` mantém `loading` com `restoreError` e oferece `retryRestore`; outros erros continuam levando para Entrar.
+- `SessionPendingScreen` mostra "Sem conexão" na abertura e na área logada. Quando o provedor confirma a sessão, a pessoa segue para a Início.
+
+**Testes:** 6 novos (86 aprovados).
+
+- `tests/auth-model.test.mjs`: restauração com supabase-js real e troca de inscrições; token vencido sem internet (retorno simulado, porque o supabase-js real leva cerca de 25 s tentando renovar); renovação recusada com supabase-js real.
+- `tests/auth-viewmodel.test.mjs`: aguarda conexão em vez de ir para Entrar; nova tentativa; confirmação tardia do provedor; erro que não é de rede; reabertura com sessão salva.
+
+**Limitação:** falta reproduzir num aparelho real (fechar o app por completo, reabrir e reiniciar o aparelho), o que fica na issue #12. No Waydroid, a perda dos dados do app ao reiniciar não foi descartada.
+
+## Issue #31: código em vez de link nos e-mails (02/10/2026)
+
+**Configuração do projeto conferida** pelo endpoint público `/auth/v1/settings`, com a chave publicável:
+
+| Configuração                                             | Valor         | ADR 0006 |
+| -------------------------------------------------------- | ------------- | -------- |
+| Login por e-mail                                         | ativo         | ✅       |
+| Cadastro aberto                                          | sim           | ✅       |
+| Confirmação de e-mail obrigatória (`mailer_autoconfirm`) | sim (`false`) | ✅       |
+
+**Modelos de e-mail** preparados em `supabase/templates/` (`confirmar-cadastro.html` e `recuperar-senha.html`, com `{{ .Token }}`), com o passo a passo em `supabase/README.md`.
+
+**Pendente:** aplicar os modelos no painel (exige acesso de administrador ao projeto; a chave publicável não altera modelos de e-mail) e testar o cadastro e a recuperação recebendo o código.
+
 ## Documentos legais
 
 A Política de Privacidade dizia que o site não usava ferramentas de análise de visitas, mas o código já inclui Vercel Web Analytics e Speed Insights (PRs #4 e #5). O texto foi corrigido junto com a descrição do cadastro no aplicativo, conforme a constituição ("descrever o funcionamento efetivo nos documentos legais").

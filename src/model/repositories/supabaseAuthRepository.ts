@@ -65,7 +65,10 @@ export function createSupabaseAuthRepository(client: SupabaseAuthClient | null):
   return {
     async getCurrentUser() {
       if (!client || gate.holding) return null;
-      const { data } = await client.auth.getSession();
+      // Com o token vencido e sem internet, o Supabase mantém a sessão salva mas devolve
+      // erro de rede: tratar como "sem sessão" mandava a pessoa para Entrar (issue #34).
+      const { data, error } = await client.auth.getSession();
+      if (error) throw mapSupabaseError(error);
       return data.session ? toUser(data.session.user) : null;
     },
 

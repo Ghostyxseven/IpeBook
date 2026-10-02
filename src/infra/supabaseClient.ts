@@ -1,5 +1,4 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { AppState, Platform } from 'react-native';
 import { localStore } from './localStore';
 
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -18,12 +17,3 @@ export const supabase: SupabaseClient | null =
         },
       })
     : null;
-
-// No celular, só renova o token com o app em primeiro plano (guia do Expo para Supabase).
-// Na Web, o próprio supabase-js acompanha a visibilidade da aba.
-if (supabase && Platform.OS !== 'web') {
-  AppState.addEventListener('change', (state) => {
-    if (state === 'active') supabase.auth.startAutoRefresh();
-    else supabase.auth.stopAutoRefresh();
-  });
-}

@@ -2,8 +2,9 @@
   "$schema": "https://design-tokens.github.io/community-group/format/",
   "$description": "IpêBook — contrato visual sincronizado com as coleções IpêBook / Valores, IpêBook / Interface e IpêBook / Motion no Figma. Medidas em px; cores em sRGB.",
   "source": {
-    "figmaFile": "qSTmNLUhC6PwJlbyUmytbe",
-    "figmaUrl": "https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1",
+    "figmaFile": "cxEisNRzOQR6krv8Ow7HCa",
+    "figmaUrl": "https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/Ip%C3%AABook-Mobile?node-id=20-207",
+    "pagesNote": "Os IDs de páginas abaixo vêm do arquivo anterior (qSTmNLUhC6PwJlbyUmytbe). O arquivo oficial desde 02/10/2026 é o IpêBook Mobile; reconferir cada ID antes de usá-lo.",
     "pages": {
       "android": "0:1",
       "ios": "33:94",
@@ -213,6 +214,11 @@
         "weight": { "$type": "fontWeight", "$value": 500 },
         "fontSize": { "$type": "dimension", "$value": "12px" },
         "lineHeight": { "$type": "dimension", "$value": "16px" }
+      },
+      "labelLarge": {
+        "weight": { "$type": "fontWeight", "$value": 500 },
+        "fontSize": { "$type": "dimension", "$value": "14px" },
+        "lineHeight": { "$type": "dimension", "$value": "20px" }
       }
     }
   },

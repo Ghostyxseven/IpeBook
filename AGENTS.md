@@ -1,15 +1,20 @@
-# Expo HAS CHANGED
+# Regras para agentes — IpêBook
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
+## Expo mudou
+
+Antes de escrever código, leia a documentação da versão exata em uso: https://docs.expo.dev/versions/v57.0.0/ (Expo SDK 57). APIs mudaram entre versões; não confie em exemplos de versões anteriores.
 
 ## Português Obrigatório
+
 - Todos os agentes devem se comunicar e documentar (ADRs, Spec Kit, READMEs) estritamente em Português.
 
 ## Spec Kit
+
 - O desenvolvimento deve seguir o GitHub Spec Kit obrigatoriamente (https://github.com/github/spec-kit).
 - O fluxo orientado por especificações (specify -> plan -> tasks -> implement -> verify) deve ser sempre utilizado.
 
 ## Architecture Decision Records (ADRs)
+
 - Este projeto adota ADRs (https://github.com/architecture-decision-record/architecture-decision-record).
 - Decisões importantes devem ser registradas em `docs/adr/`.
 
@@ -17,10 +22,11 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before 
 
 O contrato visual é composto por:
 
-- [Figma](https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1): decisão visual e bibliotecas.
+- [Figma](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/Ip%C3%AABook-Mobile?node-id=20-207): decisão visual e bibliotecas.
 - [`design-tokens.json`](design-tokens.json): contrato de implementação.
 - [`docs/design-system.md`](docs/design-system.md): visão geral.
 - [`docs/design-system/`](docs/design-system/): foundations, components, platforms, acessibilidade, IA e governança.
+- [`docs/design-system/referencia/`](docs/design-system/referencia/LEIA-ME.md): cópia do design system publicado (voz, tipografia, iOS, Web, movimento, acessibilidade, README de cada componente e `tokens.json`). Todo agente de IA e toda pessoa devem seguir.
 
 Antes de implementar interface, leia essas fontes.
 

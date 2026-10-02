@@ -6,7 +6,12 @@ import { colors, metrics, spacing, typography } from '../theme/nativeTheme';
 import { AppIcon, type AppIconName } from './AppIcon';
 
 /** Ícone de cada aba; as outras features acrescentam as suas aqui. */
-const tabIcons: Record<string, AppIconName> = { inicio: 'home', explorar: 'search' };
+const tabIcons: Record<string, AppIconName> = {
+  inicio: 'home',
+  explorar: 'search',
+  estante: 'shelf',
+  perfil: 'person',
+};
 
 /**
  * Barra de navegação do Material 3 (Figma, "Navegação principal"):
