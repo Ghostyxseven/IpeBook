@@ -6,7 +6,7 @@ import type { BookRequestRepository } from './BookRequestRepository';
 /**
  * Subconjunto do SupabaseClient usado pelo repositório (permite cliente falso nos testes).
  */
-export type SupabaseBookRequestClient = Pick<SupabaseClient, 'from'>;
+export type SupabaseBookRequestClient = Pick<SupabaseClient, 'from' | 'rpc'>;
 
 const TABLE = 'book_requests';
 const COLUMNS =
@@ -35,7 +35,13 @@ export function mapSupabaseBookRequestError(error: unknown): BookRequestError {
   if (error instanceof BookRequestError) return error;
   const { code, message } = (error ?? {}) as { code?: string; message?: string };
   if (code === 'PGRST205' || code === '42P01') return new BookRequestError('not_configured', error);
-  if (code === '22P02' || code === 'PGRST116') return new BookRequestError('not_found', error);
+  if (code === '22P02' || code === 'PGRST116' || code === 'P0002') {
+    return new BookRequestError('not_found', error);
+  }
+  if (code === '42501') return new BookRequestError('forbidden', error);
+  if (code === 'P0001' && /invalid_transition/.test(message ?? '')) {
+    return new BookRequestError('invalid_transition', error);
+  }
   if (code === '23505') return new BookRequestError('already_exists', error);
   if (/fetch|network/i.test(message ?? '')) return new BookRequestError('network', error);
   return new BookRequestError('unknown', error);
@@ -112,7 +118,7 @@ export function createSupabaseBookRequestRepository(
       const db = requireClient();
       void ownerId;
       // IMPORTANTE: A política RLS "Envolvidos leem a própria negociação"
-      // (ver migration 20261002120000) já restringe estritamente o conjunto retornado:
+      // (ver migration 20261002125000) já restringe estritamente o conjunto retornado:
       //   requester_id = auth.uid()  OR  listing_id IN (SELECT id FROM listings WHERE owner_id = auth.uid())
       // Isso significa que o usuário autenticado SÓ consegue ler as linhas onde:
       //   (a) ele é o requerente,  OU  (b) ele é o DONO do anúncio associado.
@@ -130,12 +136,11 @@ export function createSupabaseBookRequestRepository(
       return readMany(result as { data: Row[] | null; error: unknown });
     },
 
-    async updateRequestStatus(id, status) {
+    async transitionRequest(id, status) {
       const db = requireClient();
+      // A função do banco confere o papel, muda a solicitação e o anúncio juntos (ADR 0018).
       const result = await db
-        .from(TABLE)
-        .update({ status })
-        .eq('id', id)
+        .rpc('transition_book_request', { request_id: id, next_status: status })
         .select(COLUMNS)
         .maybeSingle();
       return readOne(result as { data: Row | null; error: unknown });
