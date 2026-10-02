@@ -35,6 +35,11 @@ export const contact = {
   url: 'mailto:ipebook738@gmail.com',
 } as const;
 
+// Responsável pelos dados (controlador), definido pela equipe em 02/10/2026 (issue #25).
+export const controller = {
+  name: 'Micael Cardoso Reis',
+} as const;
+
 export const legalLinks = [
   { id: 'termos', label: 'Termos de Uso', href: '/termos' },
   { id: 'privacidade', label: 'Privacidade', href: '/privacidade' },
@@ -128,7 +133,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quem é responsável e como pedir ajuda?',
         paragraphs: [
-          `O IpêBook é um projeto de faculdade, sem fins lucrativos, conduzido pela equipe do IpêBook, formada por pessoas físicas. O IpêBook não cobra comissão nem recebe o valor das vendas: quando as vendas existirem, serão combinadas diretamente entre os leitores. A identificação individual do controlador dos dados ainda não foi divulgada. Você pode escrever para ${contact.email}, sem prazo de resposta garantido. O Instagram é uma referência social e não substitui o e-mail.`,
+          `O IpêBook é um projeto de faculdade, sem fins lucrativos, conduzido por uma equipe de pessoas físicas. O responsável pelos dados é ${controller.name}. O IpêBook não cobra comissão nem recebe o valor das vendas: quando as vendas existirem, serão combinadas diretamente entre os leitores. Você pode escrever para ${contact.email}, sem prazo de resposta garantido. O Instagram é uma referência social e não substitui o e-mail.`,
           'Texto preliminar revisado em 1 de outubro de 2026. As mudanças serão apresentadas nesta página. Os documentos precisam ser completados e revisados antes de o serviço operar.',
         ],
       },
@@ -210,7 +215,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quem cuida dos dados e como faço um pedido?',
         paragraphs: [
-          `O controlador (quem decide como os dados são usados) é a equipe do IpêBook, formada por pessoas físicas, num projeto de faculdade, sem fins lucrativos. A identificação individual do controlador ainda não foi divulgada. O contato de privacidade é ${contact.email}.`,
+          `O controlador (quem decide como os dados são usados) é ${controller.name}, pessoa física, num projeto de faculdade, sem fins lucrativos, conduzido por uma equipe. O contato de privacidade é ${contact.email}.`,
           `A página Seus direitos e LGPD explica os pedidos previstos na lei. Pedidos podem ser enviados para ${contact.email}; esta apresentação não tem formulário, não emite protocolos e não garante prazo de resposta.`,
           'O Instagram permite acompanhar o projeto, mas não foi definido como canal formal para esses pedidos. Este aviso não é uma certificação de conformidade com a LGPD.',
         ],
@@ -227,7 +232,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: 'Quando este texto foi atualizado?',
         paragraphs: [
           'Última revisão: 1 de outubro de 2026. Este aviso trata da apresentação e da conta do IpêBook nesta versão.',
-          `Ainda faltam a identificação individual do controlador dos dados, o prazo de conservação, a base legal e os detalhes reais da hospedagem do site. O contato de privacidade é ${contact.email}. O texto deverá ser atualizado quando essas informações forem confirmadas.`,
+          `Ainda faltam o prazo de conservação, a base legal e os detalhes reais da hospedagem do site. O contato de privacidade é ${contact.email}. O texto deverá ser atualizado quando essas informações forem confirmadas.`,
         ],
       },
     ],
@@ -274,7 +279,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: '5. Como preparar uma solicitação',
         paragraphs: [
           'Indique qual direito deseja exercer, a situação envolvida e uma forma de receber resposta. Compartilhe somente informações necessárias; não publique documentos, senhas ou dados de terceiros em comentários de redes sociais.',
-          `Pedidos podem ser enviados para ${contact.email}, mas a identificação individual do controlador, que é a equipe do IpêBook (pessoas físicas, em projeto de faculdade sem fins lucrativos), ainda não foi divulgada. O perfil do Instagram não foi definido como canal formal LGPD. Por isso, esta apresentação não possui formulário de solicitação, prazo operacional anunciado ou protocolo de atendimento.`,
+          `Pedidos podem ser enviados para ${contact.email}, e o responsável por atendê-los é ${controller.name}, pessoa física, em projeto de faculdade sem fins lucrativos. O perfil do Instagram não foi definido como canal formal LGPD. Por isso, esta apresentação não possui formulário de solicitação, prazo operacional anunciado ou protocolo de atendimento.`,
           'O exercício dos direitos é gratuito. A identidade do solicitante pode precisar ser verificada de forma proporcional para evitar entrega de dados à pessoa errada. Prazos variam conforme o pedido e a legislação: não existe aqui uma promessa de resposta única para todos os casos.',
         ],
       },
