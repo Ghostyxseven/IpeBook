@@ -13,6 +13,7 @@ import {
   emptyDraft,
   isValid,
   normalizeDraft,
+  SERVED_CITY,
   validateBookStep,
   validateDraft,
   validateModalityStep,
@@ -99,6 +100,13 @@ test('trocar a modalidade zera o campo da anterior — a constraint olha a linha
     tradeTerms: 'Por qualquer um',
   };
   assert.equal(normalizeDraft(wasTrade).tradeTerms, null);
+});
+
+test('todo anúncio fica em Piripiri, qualquer que seja a cidade recebida', () => {
+  assert.equal(SERVED_CITY, 'Piripiri');
+  assert.equal(emptyDraft().city, 'Piripiri');
+  assert.equal(normalizeDraft({ ...sale(), city: null }).city, 'Piripiri');
+  assert.equal(normalizeDraft({ ...sale(), city: 'Teresina' }).city, 'Piripiri');
 });
 
 test('o rascunho normalizado passa na validação completa', () => {
