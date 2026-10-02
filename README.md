@@ -114,7 +114,7 @@ O CI (`.github/workflows/ci.yml`) executa esses passos em cada PR. Veja o [ADR 0
 - [Tokens de design em JSON](design-tokens.json)
 - [Regras para agentes de IA](AGENTS.md)
 - [Instruções do GitHub Copilot](.github/copilot-instructions.md)
-- [Protótipo no Figma](https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1)
+- [Protótipo no Figma](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/Ip%C3%AABook-Mobile?node-id=20-207)
 
 Para implementar uma tela, informe a plataforma e o fluxo; por exemplo: “Implemente Descobrir no Android seguindo AGENTS.md, docs/design-system.md, design-tokens.json e o quadro Android do Figma”.
 
