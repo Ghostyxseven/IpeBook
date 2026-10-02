@@ -24,7 +24,7 @@ test('conteúdo delimita operação e identifica pendências sem contato inventa
   assert.match(JSON.stringify(documents.termos), /Nenhuma versão permite publicar anúncios/);
   assert.match(
     JSON.stringify(documents.privacidade),
-    /controlador.*pessoas físicas.*identificação individual do controlador ainda não foi divulgada/,
+    /controlador.*é Micael Cardoso Reis, pessoa física/,
   );
   assert.match(JSON.stringify(documents.privacidade), /não instala cookies/);
   // A política precisa descrever o que o código realmente usa (constituição).

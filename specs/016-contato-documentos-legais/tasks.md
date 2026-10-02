@@ -5,4 +5,4 @@
 - [x] Exibir o contato no aviso dos documentos e no rodapé.
 - [x] Atualizar a data de revisão e os testes.
 - [ ] Inspecionar visualmente o rodapé e os documentos em celular e desktop (pendente).
-- [ ] Definir a identificação do responsável/controlador (depende do projeto).
+- [x] Definir a identificação do responsável/controlador: Micael Cardoso Reis, pessoa física (02/10/2026, issue #25).
