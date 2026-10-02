@@ -16,31 +16,31 @@
   },
   "color": {
     "background": { "$type": "color", "$value": "#F6F1E8" },
-    "surface": { "$type": "color", "$value": "#FCFAF6" },
+    "surface": { "$type": "color", "$value": "#FCFAF5" },
     "text": { "$type": "color", "$value": "#3C302A" },
     "secondaryText": { "$type": "color", "$value": "#645B55" },
-    "action": { "$type": "color", "$value": "#426B55" },
+    "action": { "$type": "color", "$value": "#2C5E45" },
     "actionDeep": { "$type": "color", "$value": "#2F503D" },
     "soft": { "$type": "color", "$value": "#E7F0EA" },
     "border": { "$type": "color", "$value": "#8F8478" },
     "brown": { "$type": "color", "$value": "#8A5945" },
     "success": { "$type": "color", "$value": "#2F6B4F" },
-    "error": { "$type": "color", "$value": "#B3382C" },
+    "error": { "$type": "color", "$value": "#B3261E" },
     "gold": { "$type": "color", "$value": "#D99719" },
     "highlight": { "$type": "color", "$value": "#F4B942" },
     "badge": {
       "sale": {
-        "background": { "$type": "color", "$value": "#E7F0EA" },
-        "text": { "$type": "color", "$value": "#2F503D" }
+        "background": { "$type": "color", "$value": "#DCE8DE" },
+        "text": { "$type": "color", "$value": "#18291F" }
       },
       "trade": {
-        "background": { "$type": "color", "$value": "#F4B942" },
-        "text": { "$type": "color", "$value": "#3C302A" },
+        "background": { "$type": "color", "$value": "#F8D88A" },
+        "text": { "$type": "color", "$value": "#3A2A10" },
         "chip": { "$type": "color", "$value": "#FBF0D0" }
       },
       "donation": {
-        "background": { "$type": "color", "$value": "#F2E3DA" },
-        "text": { "$type": "color", "$value": "#7A4430" }
+        "background": { "$type": "color", "$value": "#F4DDD3" },
+        "text": { "$type": "color", "$value": "#6E3A28" }
       },
       "reserved": {
         "background": { "$type": "color", "$value": "#F4B942" },
@@ -55,12 +55,12 @@
       "$description": "Fundos das capas ilustrativas usadas quando o anúncio não tem foto (Figma, quadros 02, 03 e 04).",
       "blue": { "$type": "color", "$value": "#253C4F" },
       "brown": { "$type": "color", "$value": "#633E36" },
-      "green": { "$type": "color", "$value": "#33584D" },
+      "green": { "$type": "color", "$value": "#30574A" },
       "text": { "$type": "color", "$value": "#F6F1E8" }
     },
     "state": {
-      "focus": { "$type": "color", "$value": "#426B55" },
-      "error": { "$type": "color", "$value": "#B3382C" },
+      "focus": { "$type": "color", "$value": "#2C5E45" },
+      "error": { "$type": "color", "$value": "#B3261E" },
       "disabledBackground": { "$type": "color", "$value": "#E7F0EA" },
       "disabledText": { "$type": "color", "$value": "#645B55" },
       "hover": { "$type": "color", "$value": "#E7F0EA" },

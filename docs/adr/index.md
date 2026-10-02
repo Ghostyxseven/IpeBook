@@ -15,3 +15,4 @@
 - [0013 - Controles próprios seguindo a biblioteca de componentes do Figma](0013-controles-proprios-seguindo-o-figma.md)
 - [0014 - Gestão dos próprios anúncios](0014-gestao-de-anuncios.md) (proposto, implementado)
 - [0015 - Build e distribuição do aplicativo Android](0015-build-e-distribuicao-android.md) (proposto, sem build gerado)
+- [0016 - Cores do Figma como fonte da verdade](0016-cores-do-figma-como-fonte-da-verdade.md)

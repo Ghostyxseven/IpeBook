@@ -5,7 +5,7 @@ import test from 'node:test';
 const tokens = JSON.parse(readFileSync(new URL('../design-tokens.json', import.meta.url), 'utf8'));
 
 test('design system mantém tokens fundamentais e compatíveis', () => {
-  assert.equal(tokens.color.action.$value, '#426B55');
+  assert.equal(tokens.color.action.$value, '#2C5E45');
   assert.equal(tokens.color.background.$value, '#F6F1E8');
   assert.equal(tokens.platform.web.controlHeight.$value, '48px');
   assert.equal(tokens.spacing['24'].$value, '24px');
@@ -24,9 +24,9 @@ test('design system inclui foundations da versão 1.1', () => {
 });
 
 test('design system cobre estados de produto', () => {
-  assert.equal(tokens.color.badge.sale.text.$value, '#2F503D');
-  assert.equal(tokens.color.badge.trade.text.$value, '#3C302A');
-  assert.equal(tokens.color.badge.donation.text.$value, '#7A4430');
+  assert.equal(tokens.color.badge.sale.text.$value, '#18291F');
+  assert.equal(tokens.color.badge.trade.text.$value, '#3A2A10');
+  assert.equal(tokens.color.badge.donation.text.$value, '#6E3A28');
   assert.equal(tokens.color.badge.reserved.text.$value, '#3C302A');
   assert.equal(tokens.color.badge.completed.text.$value, '#FFFFFF');
 });
