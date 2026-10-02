@@ -1,6 +1,6 @@
 # Tarefas
 
-- [ ] Combinar o ADR 0008 (tabela `listings`, view `catalog_listings`, bucket de capas e RLS) com o Eric e marcar como aceito.
+- [x] Combinar o ADR 0008 (tabela `listings`, view `catalog_listings`, bucket de capas e RLS) com o Eric e marcar como aceito.
 - [x] Criar a migração SQL em `supabase/migrations/` e documentar como aplicá-la (`supabase/README.md`). SQL não validado localmente (sem Postgres nesta máquina).
 - [x] Aplicar a migração no projeto Supabase da equipe (aplicada pelo Micael em 30/09/2026; conferida pela API).
 - [x] Model: entidades, formatação, filtros, categorias e mensagens.
