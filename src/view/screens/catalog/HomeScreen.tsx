@@ -21,7 +21,6 @@ import { useSessionContext } from '../../../viewmodel/useSession';
 import { BookTile } from '../../components/catalog/BookTile';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
 import { SearchBarButton } from '../../components/catalog/SearchBar';
-import { NotificationBell } from '../../components/notifications/NotificationBell';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { FormMessage } from '../../components/ui/FormMessage';
