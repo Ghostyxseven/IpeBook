@@ -10,6 +10,7 @@ const tabIcons: Record<string, AppIconName> = {
   inicio: 'home',
   explorar: 'search',
   estante: 'shelf',
+  conversas: 'chat',
   perfil: 'person',
 };
 

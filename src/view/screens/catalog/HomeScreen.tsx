@@ -14,17 +14,19 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Modality } from '../../../model/entities/Listing';
 import { modalityLabels } from '../../../model/services/catalogFormat';
-import detalheIpe from '../../../../assets/catalog/detalhe-amarelo-ipe.svg';
+import sublinhadoMarca from '../../../../assets/catalog/sublinhado-marca.svg';
 import { useCatalogFeed } from '../../../factories/catalog';
 import { useUnreadCount } from '../../../factories/notifications';
 import { useSessionContext } from '../../../viewmodel/useSession';
+import { AppIcon } from '../../components/AppIcon';
 import { BookTile } from '../../components/catalog/BookTile';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
 import { SearchBarButton } from '../../components/catalog/SearchBar';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
+import { NotificationBell } from '../../components/notifications/NotificationBell';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 import { exploreHref } from './routeParams';
 
 const modalities: Modality[] = ['sale', 'trade', 'donation'];
@@ -36,6 +38,8 @@ const emptyMessages: Record<Modality | 'all', string> = {
   donation: 'Ainda não há livros para doação. Veja as outras modalidades.',
 };
 
+const isIOS = Platform.OS === 'ios';
+
 const focusRing = Platform.select({
   web: {
     outlineColor: colors.focus,
@@ -46,7 +50,10 @@ const focusRing = Platform.select({
   default: {},
 });
 
-/** Início (Figma 02 / Descobrir): busca, modalidades, livros recentes e atalho de doação. */
+/**
+ * Início (Figma 02.01, iOS 83:834 e Android 9:525): sino de avisos, título da marca,
+ * busca, modalidades, carrossel dos livros mais recentes e atalho para doações.
+ */
 export function HomeScreen() {
   const router = useRouter();
   const session = useSessionContext();
@@ -60,7 +67,7 @@ export function HomeScreen() {
     [refreshFeed, refreshUnread],
   );
 
-  // Ao voltar de Notificações ou de um anúncio, o número do ícone se atualiza.
+  // Ao voltar de Notificações ou de um anúncio, o número do sino se atualiza.
   const firstFocus = useRef(true);
   useFocusEffect(
     useCallback(() => {
@@ -68,9 +75,6 @@ export function HomeScreen() {
       else void refreshUnread();
     }, [refreshUnread]),
   );
-
-  const pairs: (typeof vm.preview)[] = [];
-  for (let i = 0; i < vm.preview.length; i += 2) pairs.push(vm.preview.slice(i, i + 2));
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
@@ -84,13 +88,29 @@ export function HomeScreen() {
           />
         }
       >
-        <View style={styles.header}>
-          <View style={styles.headerText}>
-            <Text style={styles.brand} accessibilityRole="header">
-              IpêBook
-            </Text>
-            <Text style={styles.greeting}>{vm.greeting}</Text>
-          </View>
+        <View style={styles.topBar}>
+          <NotificationBell
+            badgeText={unread.badgeText}
+            accessibilityLabel={unread.accessibilityLabel}
+            onPress={() => router.push('/notificacoes')}
+          />
+        </View>
+
+        <View style={styles.hero}>
+          <Text style={styles.headline} accessibilityRole="header">
+            {'Encontre sua\npróxima história.'}
+          </Text>
+          {isIOS && (
+            <Image
+              source={sublinhadoMarca}
+              style={styles.underline}
+              contentFit="contain"
+              accessible={false}
+            />
+          )}
+          <Text style={styles.subtitle}>
+            Compre, troque ou receba livros de quem mora perto de você.
+          </Text>
         </View>
 
         <SearchBarButton onPress={() => router.push(exploreHref(vm.modality))} />
@@ -98,6 +118,7 @@ export function HomeScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          style={styles.bleed}
           contentContainerStyle={styles.chips}
           accessibilityLabel="Modalidades"
         >
@@ -105,7 +126,6 @@ export function HomeScreen() {
             modality="all"
             label="Todos"
             selected={vm.modality === null}
-            showCheck={false}
             onPress={vm.showAll}
           />
           {modalities.map((modality) => (
@@ -121,15 +141,16 @@ export function HomeScreen() {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.section} accessibilityRole="header">
-            Livros recentes
+            Recém-chegados
           </Text>
           {vm.hasMoreThanPreview && (
             <Pressable
               accessibilityRole="link"
               accessibilityLabel="Ver todos os livros"
               onPress={() => router.push(exploreHref(vm.modality))}
-              style={({ focused }: { pressed: boolean; focused?: boolean }) => [
+              style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
                 styles.link,
+                pressed && styles.linkPressed,
                 focused && focusRing,
               ]}
             >
@@ -154,36 +175,39 @@ export function HomeScreen() {
             message={emptyMessages[vm.modality ?? 'all']}
           />
         ) : (
-          <View style={styles.grid}>
-            {pairs.map((pair) => (
-              <View key={pair[0].id} style={styles.row}>
-                {pair.map((listing) => (
-                  <BookTile
-                    key={listing.id}
-                    listing={listing}
-                    onPress={() =>
-                      router.push({ pathname: '/livro/[id]', params: { id: listing.id } })
-                    }
-                  />
-                ))}
-                {pair.length === 1 && <View style={styles.spacer} />}
-              </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.bleed}
+            contentContainerStyle={styles.carousel}
+            accessibilityLabel="Livros recém-chegados"
+          >
+            {vm.preview.map((listing) => (
+              <BookTile
+                key={listing.id}
+                listing={listing}
+                onPress={() => router.push({ pathname: '/livro/[id]', params: { id: listing.id } })}
+              />
             ))}
-          </View>
+          </ScrollView>
         )}
 
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Explorar livros para doação"
+          accessibilityLabel="Doações: livros gratuitos para quem quiser"
           onPress={() => router.push(exploreHref('donation'))}
           style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
-            styles.invite,
-            pressed && styles.invitePressed,
+            styles.donations,
+            pressed && styles.donationsPressed,
             focused && focusRing,
           ]}
         >
-          <Image source={detalheIpe} style={styles.inviteDot} contentFit="contain" />
-          <Text style={styles.inviteText}>Explorar livros para doação</Text>
+          <AppIcon name="bookmark" color={colors.onSurfaceVariant} />
+          <View style={styles.donationsText}>
+            <Text style={styles.donationsTitle}>Doações</Text>
+            <Text style={styles.donationsBody}>Livros gratuitos para quem quiser.</Text>
+          </View>
+          <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -193,44 +217,73 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
   content: {
-    padding: metrics.pagePadding,
-    paddingTop: spacing.md,
-    gap: spacing.md,
+    paddingHorizontal: metrics.pagePadding,
+    paddingBottom: spacing.xl,
+    gap: spacing.sm,
     width: '100%',
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
   },
-  header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  headerText: { gap: spacing.xxs, flexShrink: 1 },
-  brand: { ...typography.titleLarge, color: colors.text },
-  greeting: { ...typography.labelMedium, color: colors.secondaryText },
-  chips: { flexDirection: 'row', gap: spacing.xs, paddingRight: spacing.md },
+  topBar: { flexDirection: 'row', justifyContent: 'flex-end', paddingTop: spacing.xs },
+  hero: { gap: spacing.xs },
+  // Título da marca em serifa (Figma: Source Serif 4 Bold, 30/36 no Android e 36/41 no iOS).
+  headline: {
+    ...typography.brandHeadline,
+    ...(isIOS ? { fontSize: 36, lineHeight: 41 } : null),
+    color: colors.onSurface,
+  },
+  // Sublinhado âmbar sob "próxima história." (Figma iOS 83:834).
+  underline: { width: 260, height: 14, marginTop: -spacing.xs },
+  subtitle: { ...typography.bodyLarge, color: colors.onSurfaceVariant },
+  // Os carrosséis encostam na borda da tela e o conteúdo começa alinhado à página.
+  bleed: { marginHorizontal: -metrics.pagePadding },
+  chips: { flexDirection: 'row', gap: spacing.xs, paddingHorizontal: metrics.pagePadding },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     minHeight: metrics.touchTarget,
   },
-  section: { ...typography.titleLarge, color: colors.text, flexShrink: 1 },
-  link: { minHeight: metrics.touchTarget, minWidth: metrics.touchTarget, justifyContent: 'center' },
-  linkText: { ...typography.labelMedium, color: colors.text },
-  loading: { paddingVertical: spacing.xl },
-  grid: { gap: spacing.md },
-  row: { flexDirection: 'row', gap: spacing.md },
-  spacer: { flex: 1 },
-  invite: {
+  // Figma 02.01: título de seção 22/28 regular (Title Large do Material 3; ver divergências).
+  section: {
+    ...typography.titleLarge,
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '400',
+    color: colors.onSurface,
+    flexShrink: 1,
+  },
+  link: {
     minHeight: metrics.touchTarget,
+    minWidth: metrics.touchTarget,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  linkPressed: { backgroundColor: colors.pressed },
+  linkText: { ...typography.labelLarge, color: colors.action },
+  loading: { paddingVertical: spacing.xl },
+  carousel: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    paddingHorizontal: metrics.pagePadding,
+    // Espaço para a sombra dos cards não ser cortada.
+    paddingVertical: spacing.xxs,
+  },
+  // Item de lista do Material 3 (Figma 02.01): ícone, duas linhas e seta.
+  donations: {
+    minHeight: 64,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.sm,
+    gap: spacing.md,
+    marginHorizontal: -spacing.xs,
+    paddingHorizontal: spacing.xs,
     paddingVertical: spacing.xs,
-    borderRadius: metrics.fieldRadius,
-    borderWidth: metrics.borderThin,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
+    borderRadius: radius.small,
   },
-  invitePressed: { backgroundColor: colors.pressed },
-  inviteDot: { width: 20, height: 20 },
-  inviteText: { ...typography.bodyMedium, fontWeight: '500', color: colors.text, flex: 1 },
+  donationsPressed: { backgroundColor: colors.pressed },
+  donationsText: { flex: 1 },
+  donationsTitle: { ...typography.bodyLarge, color: colors.onSurface },
+  donationsBody: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
 });

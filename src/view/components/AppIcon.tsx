@@ -29,6 +29,9 @@ const symbols = {
   photo: { ios: 'photo', android: 'add_photo_alternate', web: 'add_photo_alternate' },
   person: { ios: 'person', android: 'person', web: 'person' },
   shelf: { ios: 'books.vertical', android: 'library_books', web: 'library_books' },
+  document: { ios: 'doc.text', android: 'description', web: 'description' },
+  info: { ios: 'info.circle', android: 'info', web: 'info' },
+  chat: { ios: 'bubble.left.and.bubble.right', android: 'chat_bubble', web: 'chat_bubble' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;

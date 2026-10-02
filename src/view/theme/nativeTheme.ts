@@ -41,6 +41,16 @@ export const colors = {
   disabledBackground: tokens.color.state.disabledBackground.$value,
   disabledText: tokens.color.state.disabledText.$value,
   pressed: tokens.color.state.pressed.$value,
+  /** Papéis do Material 3 usados pelas telas redesenhadas a partir do Figma oficial. */
+  onSurface: tokens.color.onSurface.$value,
+  onSurfaceVariant: tokens.color.onSurfaceVariant.$value,
+  outlineVariant: tokens.color.outlineVariant.$value,
+  containerLowest: tokens.color.container.lowest.$value,
+  containerLow: tokens.color.container.low.$value,
+  container: tokens.color.container.default.$value,
+  containerHigh: tokens.color.container.high.$value,
+  selected: tokens.color.selected.background.$value,
+  onSelected: tokens.color.selected.text.$value,
 } as const;
 
 const badge = (name: keyof typeof tokens.color.badge) => ({
@@ -106,6 +116,9 @@ export const metrics = {
   formMaxWidth: px(tokens.app.formMaxWidth),
 } as const;
 
+/** Nome com que a fonte da marca é registrada no `useFonts` do layout raiz. */
+export const BRAND_FONT = 'SourceSerif4-Bold';
+
 export const typography = {
   caption: typeStyle(tokens.typography.caption),
   body: typeStyle(tokens.typography.body),
@@ -121,4 +134,13 @@ export const typography = {
   labelMedium: typeStyle(tokens.typography.scale.labelMedium),
   /** Rótulo de botão do Material 3 (Figma `Android/m3-label-lg`). */
   labelLarge: typeStyle(tokens.typography.scale.labelLarge),
+  /**
+   * Título de marca em Source Serif 4 (no máximo um por tela). O arquivo da fonte já é o
+   * negrito, então o peso não é repetido: no Android, peso junto de fonte própria troca a fonte.
+   */
+  brandHeadline: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.headline.fontSize),
+    lineHeight: px(tokens.typography.brand.headline.lineHeight),
+  } satisfies TextStyle,
 } as const;

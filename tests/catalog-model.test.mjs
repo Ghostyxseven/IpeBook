@@ -22,6 +22,8 @@ import {
   detailHeadline,
   detailMeta,
   modalitySummary,
+  cardOverline,
+  cardValue,
   tileValue,
   formatBRL,
   listingAccessibilityLabel,
@@ -131,30 +133,39 @@ test('textos do Figma para lista, Início e detalhe', () => {
   assert.equal(modalitySummary({ modality: 'donation', priceCents: null }), 'Doação · Gratuito');
   assert.equal(tileValue({ modality: 'trade', priceCents: null }), 'Para trocar');
   assert.equal(tileValue(listing), 'R$ 25,00');
-  assert.deepEqual(detailHeadline(listing), { value: 'R$ 25,00', label: 'À VENDA' });
+  assert.equal(cardOverline(listing), 'Venda · R$ 25,00');
+  assert.equal(cardOverline({ modality: 'trade', priceCents: null }), 'Troca');
+  assert.equal(cardOverline({ modality: 'donation', priceCents: null }), 'Doação');
+  assert.equal(
+    cardValue({ modality: 'trade', priceCents: null, tradeTerms: ' Por outro livro ' }),
+    'Por outro livro',
+  );
+  assert.equal(cardValue({ modality: 'trade', priceCents: null, tradeTerms: null }), 'Para trocar');
+  assert.equal(cardValue({ modality: 'donation', priceCents: null, tradeTerms: null }), 'Gratuito');
+  assert.deepEqual(detailHeadline(listing), { value: 'R$ 25,00', label: 'À venda' });
   assert.deepEqual(detailHeadline({ modality: 'trade', priceCents: null }), {
     value: 'Troca',
-    label: 'POR OUTRO LIVRO',
+    label: 'Por outro livro',
   });
   assert.deepEqual(detailHeadline({ modality: 'donation', priceCents: null }), {
     value: 'Gratuito',
-    label: 'DOAÇÃO',
+    label: 'Doação',
   });
-  assert.equal(detailMeta(listing), 'BOM ESTADO · LITERATURA BRASILEIRA');
+  assert.equal(detailMeta(listing), 'Bom estado · Literatura brasileira');
 });
 
 test('título e resumo do Explorar acompanham os filtros', () => {
-  assert.equal(exploreTitle(emptyFilters, false), 'Encontre sua próxima história.');
+  assert.equal(exploreTitle(emptyFilters, false), 'O que vamos ler hoje?');
   assert.equal(exploreTitle({ ...emptyFilters, modalities: ['sale'] }, false), 'Livros à venda.');
   assert.equal(
     exploreTitle({ ...emptyFilters, modalities: ['sale', 'trade'] }, false),
-    'Encontre sua próxima história.',
+    'O que vamos ler hoje?',
   );
   assert.equal(
     exploreTitle({ ...emptyFilters, query: 'astronomia' }, true),
     'Ainda não encontramos.',
   );
-  assert.equal(exploreTitle(emptyFilters, true), 'Encontre sua próxima história.');
+  assert.equal(exploreTitle(emptyFilters, true), 'O que vamos ler hoje?');
   assert.equal(resultSummary(3, emptyFilters), '3 livros · Mais recentes');
   assert.equal(resultSummary(1, { ...emptyFilters, modalities: ['sale'] }), '1 livro · Venda');
   assert.equal(resultSummary(null, emptyFilters), 'Mais recentes');
@@ -179,7 +190,7 @@ test('detalhe decide parágrafos, quem anunciou e notas pelas regras da modalida
   assert.deepEqual(sale.paragraphs, ['Bem conservado.']);
   assert.equal(sale.owner, 'Ana · Centro, Picos');
   assert.match(sale.notes, /^Capa ilustrativa · Publicado em 30 de set\. de 2026$/);
-  assert.deepEqual(sale.headline, { value: 'R$ 25,00', label: 'À VENDA' });
+  assert.deepEqual(sale.headline, { value: 'R$ 25,00', label: 'À venda' });
 
   const trade = listingDetails({
     ...listing,

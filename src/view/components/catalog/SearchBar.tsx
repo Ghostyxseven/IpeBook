@@ -79,15 +79,34 @@ export const SearchBarInput = forwardRef<
 });
 
 const styles = StyleSheet.create({
-  bar: {
-    minHeight: metrics.controlHeight,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xxs,
-    paddingHorizontal: spacing.xxs,
-    borderRadius: radius.full,
-    backgroundColor: colors.background,
-  },
+  // Android: barra de busca do Material 3 (56, fundo tonal). iOS: campo branco de 50 com
+  // contorno e sombra leve (Figma 02.01 do iPhone).
+  bar: Platform.select({
+    ios: {
+      minHeight: 50,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xxs,
+      paddingHorizontal: spacing.xxs,
+      borderRadius: radius.full,
+      borderWidth: metrics.borderThin,
+      borderColor: colors.outlineVariant,
+      backgroundColor: colors.containerLowest,
+      shadowColor: '#000000',
+      shadowOpacity: 0.05,
+      shadowRadius: 8,
+      shadowOffset: { width: 0, height: 2 },
+    },
+    default: {
+      minHeight: metrics.controlHeight,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xxs,
+      paddingHorizontal: spacing.xxs,
+      borderRadius: radius.full,
+      backgroundColor: colors.containerHigh,
+    },
+  }),
   pressed: { backgroundColor: colors.pressed },
   leading: {
     width: metrics.touchTarget,
@@ -102,7 +121,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  placeholder: { ...typography.bodyLarge, color: colors.secondaryText, flex: 1 },
+  placeholder: { ...typography.bodyLarge, color: colors.onSurfaceVariant, flex: 1 },
   input: {
     ...typography.bodyLarge,
     color: colors.text,

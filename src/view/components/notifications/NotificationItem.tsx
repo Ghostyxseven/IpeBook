@@ -5,7 +5,7 @@ import {
   notificationAccessibilityLabel,
   notificationSubtitle,
 } from '../../../model/services/notificationFormat';
-import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 import { AppIcon, type AppIconName } from '../AppIcon';
 
 const focusRing = Platform.select({
@@ -18,7 +18,7 @@ const focusRing = Platform.select({
   default: {},
 });
 
-/** Ícone de cada tipo de aviso à esquerda da linha (Figma 35). */
+/** Ícone de cada tipo de aviso à esquerda da linha (Figma 07.04). */
 const kindIcons: Record<NotificationKind, AppIconName> = {
   request_received: 'swap',
   request_accepted: 'check',
@@ -28,7 +28,7 @@ const kindIcons: Record<NotificationKind, AppIconName> = {
 };
 
 /**
- * Linha de aviso do Figma 35: ícone do tipo, título, "detalhe · hora" e seta à direita.
+ * Linha de aviso do Figma 07.04: ícone do tipo, título, "detalhe · hora" e seta à direita.
  * Aviso não lido tem título em negrito e é anunciado como "Não lida"; a cor nunca é o único sinal.
  */
 export function NotificationItem({
@@ -52,31 +52,34 @@ export function NotificationItem({
       ]}
     >
       <View style={styles.icon}>
-        <AppIcon name={kindIcons[notification.kind]} color={colors.secondaryText} />
+        <AppIcon name={kindIcons[notification.kind]} color={colors.onSurfaceVariant} />
       </View>
       <View style={styles.copy}>
         <Text style={[styles.title, unread && styles.titleUnread]}>{notification.title}</Text>
-        <Text style={styles.subtitle}>{notificationSubtitle(notification)}</Text>
+        <Text style={styles.subtitle} numberOfLines={2}>
+          {notificationSubtitle(notification)}
+        </Text>
       </View>
-      <AppIcon name="chevronRight" color={colors.secondaryText} />
+      <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  // Item de lista do Material 3 com duas linhas (Figma 07.04): 70 de altura e recuo de 16.
   item: {
-    minHeight: metrics.touchTarget + spacing.md,
+    minHeight: 70,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.xs,
-    borderRadius: metrics.fieldRadius,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.small,
   },
   pressed: { backgroundColor: colors.pressed },
-  icon: { width: spacing.xl, alignItems: 'center' },
-  copy: { flex: 1, gap: spacing.xxs },
-  title: { ...typography.bodyLarge, color: colors.text },
+  icon: { width: 24, alignItems: 'center' },
+  copy: { flex: 1 },
+  title: { ...typography.bodyLarge, color: colors.onSurface },
   titleUnread: { fontWeight: '700' },
-  subtitle: { ...typography.bodyMedium, color: colors.secondaryText },
+  subtitle: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
 });

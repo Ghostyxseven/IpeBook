@@ -19,7 +19,7 @@ import { NotificationItem } from '../../components/notifications/NotificationIte
 import { FormMessage } from '../../components/ui/FormMessage';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 
-/** Notificações (Figma 35): avisos agrupados por Hoje e Esta semana; tocar abre o anúncio e marca como lido. */
+/** Notificações (Figma 07.04 e 07.13): avisos agrupados por Hoje e Esta semana; tocar abre o anúncio e marca como lido. */
 export function NotificationsScreen() {
   const router = useRouter();
   const vm = useNotifications();
@@ -122,19 +122,20 @@ export function NotificationsScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
   content: {
-    padding: metrics.pagePadding,
-    gap: spacing.md,
+    paddingHorizontal: metrics.pagePadding - spacing.md,
+    paddingBottom: metrics.pagePadding,
     width: '100%',
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
   },
-  header: { gap: spacing.sm },
+  header: { gap: spacing.sm, alignItems: 'flex-end' },
+  // Rótulo de grupo (Figma 07.04): "Hoje" e "Esta semana" alinhados à margem da página.
   section: {
-    ...typography.bodyLarge,
-    color: colors.secondaryText,
+    ...typography.labelLarge,
+    color: colors.onSurfaceVariant,
     paddingTop: spacing.md,
     paddingBottom: spacing.xs,
-    paddingHorizontal: spacing.xs,
+    paddingHorizontal: spacing.md,
   },
   footer: { paddingVertical: spacing.md, gap: spacing.sm },
 });
