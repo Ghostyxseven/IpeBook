@@ -25,7 +25,15 @@ Confira também em **Authentication → Sign In / Providers → Email** que **Co
 
 **Teste:** criar uma conta no app com um e-mail seu, confirmar que chega um código e que ele ativa a conta; depois, "Esqueci minha senha" com o mesmo e-mail. Registrar o resultado no `verify.md` da spec 014.
 
-O SMTP padrão do Supabase limita o número de e-mails por hora. Se os testes da equipe esbarrarem nesse limite, configure um SMTP próprio no mesmo painel.
+**Antes, configure um SMTP próprio.** No plano gratuito, com o e-mail padrão do Supabase, os modelos não podem ser alterados: o painel e a API recusam com "Email template modification is not available for free tier projects using the default email provider" (verificado em 02/10/2026). Em **Authentication → Emails → SMTP Settings**, ligue **Enable custom SMTP** e preencha os dados de um provedor com plano gratuito, por exemplo:
+
+| Provedor             | Plano gratuito       | Observação                                                      |
+| -------------------- | -------------------- | --------------------------------------------------------------- |
+| Brevo                | 300 e-mails por dia  | Permite remetente verificado por e-mail, sem domínio próprio    |
+| Gmail (senha de app) | cerca de 500 por dia | Exige verificação em duas etapas na conta e uma "senha de app"  |
+| Resend               | 3.000 por mês        | Para enviar a qualquer pessoa, exige domínio próprio verificado |
+
+A senha do SMTP é um segredo: fica só no painel do Supabase, nunca no repositório. O SMTP padrão também limita o número de e-mails por hora.
 
 ## Anúncio de teste (só em projeto de desenvolvimento)
 

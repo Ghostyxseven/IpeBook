@@ -92,7 +92,9 @@ Implementado na branch `feature/autenticacao` para Android e iOS: abertura, onbo
 
 **Modelos de e-mail** preparados em `supabase/templates/` (`confirmar-cadastro.html` e `recuperar-senha.html`, com `{{ .Token }}`), com o passo a passo em `supabase/README.md`.
 
-**Pendente:** aplicar os modelos no painel (exige acesso de administrador ao projeto; a chave publicável não altera modelos de e-mail) e testar o cadastro e a recuperação recebendo o código.
+**Tentativa de aplicar (02/10/2026)** pela API de gerenciamento do Supabase, com token pessoal de membro do projeto: a leitura funcionou (HTTP 200) e mostrou os modelos padrão em inglês, sem `{{ .Token }}`, código de 8 dígitos e validade de 3600 s. A gravação foi recusada (HTTP 400): "Email template modification is not available for free tier projects using the default email provider. Please upgrade your plan or configure a custom SMTP provider."
+
+**Bloqueio:** no plano gratuito, os modelos só podem ser alterados com um SMTP próprio configurado. A equipe precisa escolher um provedor (opções no `supabase/README.md`) e configurá-lo no painel. Depois disso, aplicar os modelos e testar o cadastro e a recuperação recebendo o código. O app já aceita códigos de 6 a 10 dígitos, então o código de 8 dígitos do projeto funciona.
 
 ## Documentos legais
 

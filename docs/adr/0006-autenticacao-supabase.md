@@ -25,7 +25,7 @@ Usar o **Supabase Auth** com `@supabase/supabase-js`, seguindo o guia oficial do
 
 1. Authentication → Providers → Email: manter **Confirm email** ligado.
 2. Authentication → Email Templates → **Confirm signup** e **Reset password**: incluir `{{ .Token }}` no corpo, para o e-mail trazer o código. Sem isso, o e-mail só traz um link.
-3. Opcional: configurar SMTP próprio. O SMTP padrão do Supabase tem limite baixo de envios por hora.
+3. **Obrigatório no plano gratuito:** configurar um SMTP próprio (Authentication → Emails → SMTP Settings). Sem ele, o Supabase não permite alterar os modelos de e-mail ("Email template modification is not available for free tier projects using the default email provider", verificado em 02/10/2026, issue #31) e os e-mails continuam mandando só o link. O SMTP padrão também tem limite baixo de envios por hora.
 
 ## Alternativas
 
