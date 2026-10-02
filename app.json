@@ -20,7 +20,7 @@
     "web": {
       "output": "single"
     },
-    "plugins": ["expo-router", "expo-sqlite"],
+    "plugins": ["expo-router", "expo-sqlite", "expo-font"],
     "scheme": "ipebook"
   }
 }
