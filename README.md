@@ -1,6 +1,6 @@
 # IpeBook 🌳📚
 
-O **IpêBook** é uma projeto de plataforma comunitária para compra, venda, troca e doação de livros. Encontre livros disponíveis perto de você, compartilhe os que já leu e ajude novas histórias a circularem pela comunidade de forma simples e sustentável.
+O **IpêBook** é um projeto de plataforma comunitária para compra, venda, troca e doação de livros. Encontre livros disponíveis perto de você, compartilhe os que já leu e ajude novas histórias a circularem pela comunidade de forma simples e sustentável.
 
 ---
 
@@ -11,11 +11,22 @@ Este aplicativo é construído utilizando as seguintes tecnologias:
 - **React Native** / **Expo**: Framework para desenvolvimento móvel cruzado (iOS, Android e Web).
 - **TypeScript**: Adicionando tipagem estática e maior confiabilidade ao código.
 - **Expo Router**: navegação do app Android e iOS ([ADR 0005](docs/adr/0005-navegacao-expo-router.md)).
-- **Supabase Auth**: contas, confirmação de e-mail e recuperação de senha ([ADR 0006](docs/adr/0006-autenticacao-supabase.md)).
+- **Supabase**: contas com código por e-mail ([ADR 0006](docs/adr/0006-autenticacao-supabase.md)), anúncios em Postgres com RLS e capas no Storage ([ADR 0008](docs/adr/0008-modelo-de-anuncios-supabase.md) e [ADR 0014](docs/adr/0014-gestao-de-anuncios.md)) e notificações dentro do app ([ADR 0011](docs/adr/0011-entrega-de-notificacoes.md)). Migrações em [`supabase/`](supabase/README.md).
+- **EAS Build**: binários Android gerados na nuvem ([ADR 0015](docs/adr/0015-build-e-distribuicao-android.md) e [guia](docs/build-android.md)).
+- **Vercel**: hospedagem da página institucional Web ([ADR 0007](docs/adr/0007-qualidade-automatizada-e-hospedagem.md)).
 
 ## 📍 Estado atual
 
-Existem a **página institucional Web** (livro interativo, estante de exemplos fictícios e documentos legais preliminares) e a **base do aplicativo nativo** com autenticação e onboarding. Catálogo, anúncios e negociação ainda **não foram implementados**; veja a [divisão de features](docs/DIVISAO_FEATURES.md).
+| Área                                                                  | Situação                                                                                                    |
+| --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Página institucional Web                                              | Pronta: livro interativo, estante de exemplos fictícios, documentos legais e modo leitura (specs 001 a 023) |
+| Autenticação e onboarding                                             | Implementada (spec 014)                                                                                     |
+| Catálogo: Início, Explorar, busca, filtros e detalhe                  | Implementado (spec 018)                                                                                     |
+| Anúncios: publicar, editar, arquivar, excluir, Minha estante e Perfil | Implementado (specs 025 e 026)                                                                              |
+| Notificações no app e Configurações                                   | Implementadas (spec 024)                                                                                    |
+| Negociação, encontro, denúncia e bloqueio                             | **Ainda não implementados** (issues #38 e #40)                                                              |
+
+As telas do app ainda não foram validadas em aparelho real (ver os `verify.md` das specs). Responsáveis por feature: [divisão de features](docs/DIVISAO_FEATURES.md).
 
 ---
 
@@ -25,12 +36,13 @@ O projeto adota rigorosamente a arquitetura **MVVM Simplificada**, ensinada na d
 
 A estrutura de pastas (`src/`) divide as responsabilidades em:
 
-- **Model (`model/`)**: Regras de negócio puras, entidades e acesso a dados (APIs, Firebase, etc). **Não conhece React ou UI**.
+- **Model (`model/`)**: Regras de negócio puras, entidades e acesso a dados (repositórios Supabase e em memória). **Não conhece React ou UI**.
   - `entities/`
   - `services/`
   - `repositories/`
 - **ViewModel (`viewmodel/`)**: Conecta o Model à View. Implementados como _Custom Hooks_, gerenciam o estado da tela (dados, erro, loading) e expõem funções, sem possuir elementos visuais (JSX).
 - **View (`app/` e `view/`)**: Telas e componentes visuais. Somente renderiza os dados da ViewModel e aciona suas ações. **Não contém regras de negócio ou chamadas de API**.
+- **Infra (`infra/`)** e **Factories (`factories/`)**: cliente Supabase, armazenamento local e recursos da plataforma ficam em `infra/`; as factories montam repositórios e ViewModels ([ADR 0012](docs/adr/0012-camada-de-infraestrutura.md)). `tests/architecture.test.mjs` garante que o Model não importa React, React Native ou Expo e que a View não importa repositórios.
 
 _(Para mais detalhes, consulte o documento de decisão arquitetural: [ADR 0002](docs/adr/0002-adotar-mvvm-pdm.md))_
 
@@ -40,7 +52,7 @@ _(Para mais detalhes, consulte o documento de decisão arquitetural: [ADR 0002](
 
 O projeto utiliza um conjunto estrito de ferramentas e regras para manter a qualidade e o histórico íntegros.
 
-1.  **GitHub Spec Kit**: O desenvolvimento é orientado a especificações. Antes de implementar qualquer funcionalidade, ela deve ser especificada, planejada e validada.
+1.  **GitHub Spec Kit**: O desenvolvimento é orientado a especificações (`specs/`). Antes de implementar qualquer funcionalidade, ela deve ser especificada, planejada e validada; o resultado da verificação fica no `verify.md` da spec.
 2.  **Architecture Decision Records (ADRs)**: Qualquer decisão de engenharia importante fica registrada na pasta `docs/adr/`.
 3.  **Git e Versionamento**:
     - **Branches**: A branch `main` é sagrada (produção). O desenvolvimento contínuo ocorre na `develop`. Toda nova funcionalidade deve ser feita em uma _feature branch_ (ex: `feature/nova-tela`) a partir da `develop`.
@@ -86,12 +98,16 @@ A entrada `index.js` carrega o Expo Router; as rotas ficam em `src/app/` e só r
 | `/onboarding`                          | Apresentação na primeira abertura                  |
 | `/entrar`, `/criar-conta`              | Entrar e cadastro                                  |
 | `/verificar-email`, `/recuperar-senha` | Códigos enviados por e-mail                        |
-| `/inicio`                              | Área autenticada (provisória)                      |
+| `/inicio`, `/explorar`                 | Abas do catálogo: feed e busca com filtros         |
+| `/estante`, `/perfil`                  | Abas de Minha estante e Perfil                     |
+| `/livro/[id]`                          | Detalhe do livro                                   |
+| `/anunciar`, `/anunciar/[id]`          | Publicar e editar anúncio                          |
+| `/notificacoes`, `/configuracoes`      | Avisos e preferências (sem entrada nas telas hoje) |
 
 - `(auth)`: só sem sessão. `(app)`: só com sessão; **as outras features criam suas rotas aqui**.
-- Componentes base: `src/view/components/ui/` (`Button`, `TextField`, `FormMessage`, `AuthLayout`) e estados em `src/view/components/feedback/` (`LoadingState`, `EmptyState`, `ErrorState`, `OfflineBanner`). Tema: `src/view/theme/nativeTheme.ts`.
-- Injeção de dependências: `src/factories/auth.ts` liga as ViewModels ao Supabase. Nos testes, use `createMemoryAuthRepository`.
-- Especificações: [base do app](specs/013-base-app-nativo/spec.md) e [autenticação](specs/014-autenticacao-onboarding/spec.md).
+- Componentes base: `src/view/components/ui/` (`Button`, `TextField`, `FormMessage`, `AuthLayout`) e estados em `src/view/components/feedback/` (`LoadingState`, `EmptyState`, `ErrorState`, `OfflineBanner`). Componentes de domínio em `components/catalog/` (`BookCard`, `BookTile`, `StatusBadge`, `ModalityChip`, `SearchBar`), `components/listings/` e `components/notifications/`. Tema: `src/view/theme/nativeTheme.ts`.
+- Injeção de dependências: `src/factories/` (`auth`, `catalog`, `listings`, `notifications`) liga as ViewModels ao Supabase. Nos testes, use os repositórios em memória (`memory*Repository`).
+- Especificações: [base do app](specs/013-base-app-nativo/spec.md), [autenticação](specs/014-autenticacao-onboarding/spec.md), [catálogo](specs/018-catalogo-descoberta/spec.md), [notificações e configurações](specs/024-configuracoes-notificacoes/spec.md), [anúncios](specs/025-anuncios-gestao/spec.md) e [perfil](specs/026-perfil-minimo/spec.md).
 
 ## ✅ Verificação
 
@@ -111,6 +127,8 @@ O CI (`.github/workflows/ci.yml`) executa esses passos em cada PR. Veja o [ADR 0
 - [Components e Patterns](docs/design-system/components-patterns.md)
 - [Plataformas e Acessibilidade](docs/design-system/platforms-accessibility.md)
 - [IA e Governança](docs/design-system/ai-governance.md)
+- [Divergências entre tokens e referência](docs/design-system/divergencias.md)
+- [Referência do design system publicado](docs/design-system/referencia/LEIA-ME.md)
 - [Tokens de design em JSON](design-tokens.json)
 - [Regras para agentes de IA](AGENTS.md)
 - [Instruções do GitHub Copilot](.github/copilot-instructions.md)

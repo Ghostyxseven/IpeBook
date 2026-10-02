@@ -1,6 +1,6 @@
-# 3. Estratégia de Git, Branches e Commits
+# 0003 — Estratégia de Git, Branches e Commits
 
-Data: 2026-09-29
+Data: 29/09/2026
 
 ## Status
 

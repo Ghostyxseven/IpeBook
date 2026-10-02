@@ -1,6 +1,8 @@
-# Expo HAS CHANGED
+# Regras para agentes — IpêBook
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
+## Expo mudou
+
+Antes de escrever código, leia a documentação da versão exata em uso: https://docs.expo.dev/versions/v57.0.0/ (Expo SDK 57). APIs mudaram entre versões; não confie em exemplos de versões anteriores.
 
 ## Português Obrigatório
 

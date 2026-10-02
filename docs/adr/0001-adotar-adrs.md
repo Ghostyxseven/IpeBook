@@ -1,6 +1,6 @@
-# 1. Adotar Architecture Decision Records (ADRs)
+# 0001 — Adotar Architecture Decision Records (ADRs)
 
-Data: 2026-09-29
+Data: 29/09/2026
 
 ## Status
 
