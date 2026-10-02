@@ -80,3 +80,81 @@ export function unreadBadgeText(count: number) {
   if (count <= 0) return '';
   return count > 99 ? '99+' : String(count);
 }
+
+const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+export type NotificationGroupKey = 'today' | 'week' | 'earlier';
+
+const groupTitles: Record<NotificationGroupKey, string> = {
+  today: 'Hoje',
+  week: 'Esta semana',
+  earlier: 'Anteriores',
+};
+
+const startOfDay = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+
+/** Dia do aviso em relação a hoje, no fuso do aparelho: 0 é hoje, 1 é ontem. */
+function daysAgo(createdAt: string, now: Date) {
+  const date = new Date(createdAt);
+  if (Number.isNaN(date.getTime())) return null;
+  return Math.round((startOfDay(now) - startOfDay(date)) / DAY);
+}
+
+/** "Hoje" (mesmo dia), "Esta semana" (nos 6 dias anteriores) ou "Anteriores" (Figma 35). */
+export function notificationGroup(createdAt: string, now: Date = new Date()): NotificationGroupKey {
+  const days = daysAgo(createdAt, now);
+  if (days === null) return 'earlier';
+  if (days <= 0) return 'today';
+  return days < 7 ? 'week' : 'earlier';
+}
+
+/**
+ * Hora curta do subtítulo, conforme o grupo (Figma 35): "agora", "35 min" ou "10h" hoje;
+ * "Seg", "Dom" na semana; "30 set." ou "25 dez. 2025" depois.
+ */
+export function notificationTimeLabel(createdAt: string, now: Date = new Date()) {
+  const date = new Date(createdAt);
+  if (Number.isNaN(date.getTime())) return '';
+  const group = notificationGroup(createdAt, now);
+  if (group === 'today') {
+    const elapsed = Math.max(0, now.getTime() - date.getTime());
+    if (elapsed < MINUTE) return 'agora';
+    if (elapsed < HOUR) return `${Math.floor(elapsed / MINUTE)} min`;
+    return `${Math.floor(elapsed / HOUR)}h`;
+  }
+  if (group === 'week') return weekdays[date.getDay()];
+  const day = `${date.getDate()} ${months[date.getMonth()]}`;
+  return date.getFullYear() === now.getFullYear() ? day : `${day} ${date.getFullYear()}`;
+}
+
+/** Subtítulo da linha: "Vidas Secas por Dom Casmurro · 10h"; sem texto, só a hora. */
+export function notificationSubtitle(
+  notification: Pick<AppNotification, 'body' | 'createdAt'>,
+  now: Date = new Date(),
+) {
+  const time = notificationTimeLabel(notification.createdAt, now);
+  const body = notification.body.trim();
+  return [body || null, time || null].filter(Boolean).join(' · ');
+}
+
+export type NotificationSection = {
+  key: NotificationGroupKey;
+  title: string;
+  data: AppNotification[];
+};
+
+/** Agrupa avisos já ordenados do mais novo ao mais antigo, sem criar seções vazias. */
+export function groupNotifications(
+  items: AppNotification[],
+  now: Date = new Date(),
+): NotificationSection[] {
+  const sections: NotificationSection[] = [];
+  for (const item of items) {
+    const key = notificationGroup(item.createdAt, now);
+    const last = sections[sections.length - 1];
+    if (last && last.key === key) last.data.push(item);
+    else sections.push({ key, title: groupTitles[key], data: [item] });
+  }
+  return sections;
+}

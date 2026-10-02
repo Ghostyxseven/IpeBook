@@ -18,23 +18,23 @@ Cobertura dos testes novos:
 - `notifications-model.test.mjs` (14): data relativa (agora, minutos, horas, dias, datas antigas, relógio adiantado, data inválida); rótulo acessível com "Não lida" em palavras; rótulo e texto do contador (singular, plural, "99+"); mensagens de erro; preferências padrão; repositório em memória (ordem, paginação sem repetir, não lidas, marcar uma e todas, preferências, `fail` uma vez); repositório do Supabase com cliente falso (sem configuração não simula dados, ordenação, cursor com aspas escapadas, contagem só das não lidas, atualização só de `read_at`, preferências completadas com "ligado", `upsert` de um tipo por vez, mapeamento de erros).
 - `notifications-viewmodel.test.mjs` (17): paginação sem chamada dupla, vazio, erro com "tentar de novo", atualização que preserva a lista, falha ao carregar mais; marcar como lido imediato, confirmado no servidor, sem chamada repetida e revertido em caso de falha; marcar todas (reversão só do que a ação marcou, toque duplo ignorado); contador (primeiro plano, falha mantém o valor, resposta atrasada descartada, cancelamento da assinatura); configurações (carga, links legais com e sem endereço do site, gravar, reverter, erro de carga, independência entre tipos, Sair).
 
-## Fluxo real com avisos (02/10/2026, Supabase da equipe, conta do Micael)
+## Comparação com o Figma (02/10/2026)
 
-Avisos criados pelo servidor com `create_notification` e apagados ao final; a preferência de teste também foi apagada.
+Feita por uma captura do quadro Android de Notificações enviada pelo Micael, porque a ferramenta de leitura só enxerga as páginas 00 e 05 do arquivo `IpêBook Mobile`. A seção F e o quadro do iPhone não foram vistos.
 
-| Cenário                                                      | Resultado                                                                                                                                             |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Aviso criado pelo servidor aparece na lista do aplicativo    | ok                                                                                                                                                    |
-| Tocar no aviso marca como lido e grava `read_at` no servidor | ok                                                                                                                                                    |
-| Desligar "Pedidos recebidos" grava a preferência no banco    | ok (`request_received = false`, os demais ligados)                                                                                                    |
-| Criar aviso de tipo desligado                                | `create_notification` devolve `null`; nenhuma linha criada                                                                                            |
-| Criar aviso de tipo ligado                                   | criado e visto na lista                                                                                                                               |
-| Contador do sino com o aplicativo aberto                     | não muda sozinho (sem tempo real, ADR 0011); atualiza ao voltar ao Início, ao primeiro plano e, depois deste ajuste, ao puxar o Início para atualizar |
+| Item do quadro                                                 | Situação                                                                                                          |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Barra superior com seta e título "Notificações" à esquerda     | feito (cabeçalho da rota com o título, alinhado à esquerda)                                                       |
+| Grupos "Hoje" e "Esta semana" (e "Anteriores" além de 7 dias)  | feito (`groupNotifications`, testado)                                                                             |
+| Linha plana com ícone do tipo, título, "detalhe · hora" e seta | feito (`NotificationItem`)                                                                                        |
+| Hora curta: "10h" hoje, "Seg" e "Dom" na semana                | feito (`notificationTimeLabel`, testado)                                                                          |
+| Marca de "não lida" e "Marcar todas como lidas"                | **divergência deliberada**: título em negrito e rótulo "Não lida" (acessibilidade); botão de texto acima da lista |
+| Avisos de mensagem, avaliação e livro desejado                 | fora do escopo: dependem das issues #39, #53 e #27                                                                |
+
+Não conferi o resultado no aparelho: só os bundles Android e iOS foram gerados.
 
 ## Não verificado
 
-- **Figma (quadro 35 e seção F):** o nó `193:651` continua "não encontrado" no arquivo anterior (`qSTmNLUhC6PwJlbyUmytbe`) pela ferramenta de leitura do Figma. O arquivo oficial passou a ser o `IpêBook Mobile` (`cxEisNRzOQR6krv8Ow7HCa`) em 02/10/2026, mas a ferramenta só enxerga as páginas 00 e 05, sem as telas Android (mesmo resultado da escrita da spec). A tela segue o design system do repositório e a spec; a comparação visual com o quadro continua pendente.
-- **Migração SQL:** não há PostgreSQL nem projeto Supabase de desenvolvimento neste ambiente. `20261002120000_notificacoes.sql` foi escrita seguindo o padrão da migração do catálogo, mas **não foi executada**; aplicar no projeto da equipe e conferir tabelas, RLS e a função `create_notification`.
 - **Aparelho e leitor de tela:** as telas não foram abertas em Android nem iOS; só os bundles nativos foram gerados. Estados vazio, erro, offline, alvos de 48 × 48 e leitura com TalkBack/VoiceOver seguem pendentes.
 - **Avisos reais:** nenhum gatilho cria avisos até a negociação (#38) existir. Para testar, inserir linhas com `create_notification` pelo SQL Editor (ver `supabase/README.md`).
 
