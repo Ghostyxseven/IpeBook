@@ -5,6 +5,18 @@ import { colors, typography } from '../../view/theme/nativeTheme';
 import { useAppSession } from '../../factories/auth';
 import { SessionContext } from '../../viewmodel/useSession';
 
+/** Cabeçalho das telas de pilha: voltar e o título, sobre a superfície (Figma 04). */
+const stackHeader = (title: string) => ({
+  headerShown: true,
+  title,
+  headerStyle: { backgroundColor: colors.surface },
+  headerTintColor: colors.text,
+  headerTitleStyle: { ...typography.bodyLarge, fontWeight: '500' as const, color: colors.text },
+  contentStyle: { backgroundColor: colors.background },
+  headerShadowVisible: false,
+  headerBackTitle: 'Voltar',
+});
+
 /** Área autenticada: as outras features acrescentam suas rotas nesta pasta. */
 export default function AppLayout() {
   const session = useAppSession();
@@ -17,6 +29,8 @@ export default function AppLayout() {
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
       >
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="anunciar/index" options={stackHeader('Anunciar um livro')} />
+        <Stack.Screen name="anunciar/[id]" options={stackHeader('Editar anúncio')} />
         <Stack.Screen
           name="livro/[id]"
           options={{
