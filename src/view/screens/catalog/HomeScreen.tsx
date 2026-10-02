@@ -55,6 +55,12 @@ export function HomeScreen() {
   const vm = useCatalogFeed(session.user?.name);
   const unread = useUnreadCount();
   const refreshUnread = unread.refresh;
+  const refreshFeed = vm.refresh;
+  // Puxar para atualizar recarrega os livros e o contador de avisos do sino.
+  const refreshAll = useCallback(
+    () => Promise.all([refreshFeed(), refreshUnread()]).then(() => undefined),
+    [refreshFeed, refreshUnread],
+  );
 
   // Ao voltar de Notificações ou de um anúncio, o número do ícone se atualiza.
   const firstFocus = useRef(true);
@@ -75,7 +81,7 @@ export function HomeScreen() {
         refreshControl={
           <RefreshControl
             refreshing={vm.refreshing}
-            onRefresh={vm.refresh}
+            onRefresh={refreshAll}
             tintColor={colors.action}
           />
         }
