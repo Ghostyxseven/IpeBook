@@ -24,6 +24,7 @@ export type Listing = {
   description: string | null;
   coverUrl: string | null;
   status: ListingStatus;
+  ownerId: string | null;
   ownerFirstName: string | null;
   /** Data ISO 8601. */
   createdAt: string;

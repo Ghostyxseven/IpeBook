@@ -11,8 +11,10 @@ export type SupabaseCatalogClient = Pick<SupabaseClient, 'from' | 'storage'>;
 export const CATALOG_VIEW = 'catalog_listings';
 export const COVERS_BUCKET = 'listing-covers';
 
-const columns =
+const viewColumns =
   'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_first_name,created_at';
+const tableColumns =
+  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_id,owner_first_name,created_at';
 
 type Row = {
   id: string;
@@ -28,6 +30,7 @@ type Row = {
   description: string | null;
   cover_path: string | null;
   status: Listing['status'];
+  owner_id?: string | null;
   owner_first_name: string | null;
   created_at: string;
 };
@@ -70,6 +73,7 @@ export function createSupabaseCatalogRepository(
       ? supabase.storage.from(COVERS_BUCKET).getPublicUrl(row.cover_path).data.publicUrl
       : null,
     status: row.status,
+    ownerId: row.owner_id ?? null,
     ownerFirstName: row.owner_first_name,
     createdAt: row.created_at,
   });
@@ -81,7 +85,7 @@ export function createSupabaseCatalogRepository(
       // Conta o total só na primeira página, para o resumo "3 livros · Mais recentes".
       let request = supabase
         .from(CATALOG_VIEW)
-        .select(columns, cursor ? undefined : { count: 'exact' });
+        .select(viewColumns, cursor ? undefined : { count: 'exact' });
       if (query) {
         const pattern = quoted(toLikePattern(query));
         request = request.or(
@@ -113,9 +117,12 @@ export function createSupabaseCatalogRepository(
     },
     async getById(id) {
       const supabase = requireClient();
+      // Usa a tabela direta (não a view) para trazer owner_id e permitir que
+      // o DONO consiga ver seu próprio anúncio (a view filtra o dono para fora).
+      // O RLS "Anúncios visíveis no catálogo ou próprios" cuida da segurança.
       const { data, error } = await supabase
-        .from(CATALOG_VIEW)
-        .select(columns)
+        .from('listings')
+        .select(tableColumns)
         .eq('id', id)
         .maybeSingle();
       if (error) throw mapSupabaseCatalogError(error);
@@ -124,13 +131,11 @@ export function createSupabaseCatalogRepository(
     },
     async updateListingStatus(id, status) {
       const supabase = requireClient();
-      // A view catalog_listings é somente leitura; atualiza direto na tabela.
-      // O RLS garante que só quem pode alterar (política existente) consegue.
       const { data, error } = await supabase
         .from('listings')
         .update({ status: status as ListingStatus })
         .eq('id', id)
-        .select(columns)
+        .select(tableColumns)
         .maybeSingle();
       if (error) throw mapSupabaseCatalogError(error);
       if (!data) throw new CatalogError('not_found');

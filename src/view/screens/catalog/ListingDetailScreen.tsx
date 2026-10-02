@@ -8,6 +8,8 @@ import { StatusBadge } from '../../components/catalog/StatusBadge';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
+import { Button } from '../../components/ui/Button';
+import { useSessionContext } from '../../../viewmodel/useSession';
 import { badgeColors, colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 const labelColor: Record<Modality, string> = {
@@ -21,6 +23,8 @@ export function ListingDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const vm = useListingDetail(String(id ?? ''));
+  const session = useSessionContext();
+  const listingId = String(id ?? '');
 
   if (vm.status === 'loading') {
     return (
@@ -51,6 +55,10 @@ export function ListingDetailScreen() {
 
   const { listing, details } = vm;
   const { headline } = details;
+  const userId = session.user?.id;
+  const isOwner = Boolean(listing.ownerId && userId && listing.ownerId === userId);
+  const isAvailable = listing.status === 'disponivel';
+  const canNegotiate = !isOwner && isAvailable && session.status === 'signedIn';
 
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
@@ -98,6 +106,29 @@ export function ListingDetailScreen() {
           </View>
         ) : null}
         <Text style={styles.notes}>{details.notes}</Text>
+        <View style={styles.actions}>
+          {canNegotiate ? (
+            <Button
+              label="Combinar encontro"
+              onPress={() => router.push(`/livro/${listingId}/combinar`)}
+              accessibilityHint="Abre o formulário para propor local, dia e horário."
+            />
+          ) : null}
+          {isOwner ? (
+            <Button
+              label="Ver solicitações"
+              variant="secondary"
+              onPress={() => router.push('/negociacoes')}
+            />
+          ) : null}
+          {session.status === 'signedOut' && isAvailable ? (
+            <Button
+              label="Entrar para combinar encontro"
+              variant="secondary"
+              onPress={() => router.replace('/entrar')}
+            />
+          ) : null}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -140,4 +171,8 @@ const styles = StyleSheet.create({
   },
   ownerText: { ...typography.bodyMedium, fontWeight: '500', color: colors.secondaryText },
   notes: { ...typography.labelMedium, color: colors.secondaryText },
+  actions: {
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
 });
