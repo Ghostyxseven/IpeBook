@@ -12,7 +12,7 @@ export const LISTINGS_TABLE = 'listings';
 export const COVERS_BUCKET = 'listing-covers';
 
 const columns =
-  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,created_at';
+  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_id,created_at';
 
 type Row = {
   id: string;
@@ -28,6 +28,7 @@ type Row = {
   description: string | null;
   cover_path: string | null;
   status: MyListing['status'];
+  owner_id: string | null;
   created_at: string;
 };
 
@@ -95,6 +96,7 @@ export function createSupabaseListingsRepository(
     neighborhood: row.neighborhood,
     city: row.city,
     description: row.description,
+    ownerId: row.owner_id,
     coverPath: row.cover_path,
     coverUrl: row.cover_path
       ? supabase.storage.from(COVERS_BUCKET).getPublicUrl(row.cover_path).data.publicUrl

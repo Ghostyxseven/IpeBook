@@ -1,5 +1,5 @@
 import { createSupabaseSecurityRepository } from '../model/repositories/supabaseSecurityRepository';
-import { supabase } from '../model/repositories/supabaseClient';
+import { supabase } from '../infra/supabaseClient';
 import { useBlockViewModel } from '../viewmodel/useBlockViewModel';
 import { useReportViewModel } from '../viewmodel/useReportViewModel';
 

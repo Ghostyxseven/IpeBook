@@ -3,7 +3,7 @@
  * As telas usam estes hooks e não conhecem o Supabase.
  */
 import { createSupabaseBookRequestRepository } from '../model/repositories/supabaseBookRequestRepository';
-import { supabase } from '../model/repositories/supabaseClient';
+import { supabase } from '../infra/supabaseClient';
 import { catalogRepository } from './catalog';
 import { useBookRequestDetailViewModel } from '../viewmodel/useBookRequestDetailViewModel';
 import { useBookRequestListViewModel } from '../viewmodel/useBookRequestListViewModel';
