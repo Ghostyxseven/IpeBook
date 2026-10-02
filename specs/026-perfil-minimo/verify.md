@@ -4,12 +4,14 @@ Data: 02/10/2026 · Branch `feature/anuncios-perfil`.
 
 ## Executado
 
-| Verificação             | Resultado                                        |
-| ----------------------- | ------------------------------------------------ |
-| `npm run typecheck`     | sem erros                                        |
-| `npm run lint`          | sem erros                                        |
-| `npm test`              | 150 testes, 150 aprovados (4 novos desta spec)   |
-| `architecture.test.mjs` | View e rotas sem repositórios nem infraestrutura |
+| Verificação                          | Resultado                                        |
+| ------------------------------------ | ------------------------------------------------ |
+| `npm run typecheck`                  | sem erros                                        |
+| `npm run lint`                       | sem erros                                        |
+| `npm test`                           | 150 testes, 150 aprovados (4 novos desta spec)   |
+| `architecture.test.mjs`              | View e rotas sem repositórios nem infraestrutura |
+| `npx expo export --platform android` | bundle gerado (3,7 MB)                           |
+| `npx expo export --platform ios`     | bundle gerado                                    |
 
 - `profile.test.mjs` (4): contagem por situação, perfil sem anúncio convidando em vez de mostrar zeros, a frase que não lista situação inexistente, e concordância de singular e plural.
 - A Minha estante usa `useMyListingsViewModel`, coberto em `listings-viewmodel.test.mjs` (carregar, vazio, arquivar no próprio card, excluir e ação recusada).

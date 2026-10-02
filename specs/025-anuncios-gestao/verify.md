@@ -4,13 +4,15 @@ Data: 02/10/2026 · Branch `feature/anuncios-perfil`.
 
 ## Executado
 
-| Verificação             | Resultado                                           |
-| ----------------------- | --------------------------------------------------- |
-| `npm run typecheck`     | sem erros                                           |
-| `npm run lint`          | sem erros                                           |
-| `npm run format:check`  | sem diferenças                                      |
-| `npm test`              | 150 testes, 150 aprovados (38 novos desta feature)  |
-| `architecture.test.mjs` | Model sem React/Expo; View e rotas sem repositórios |
+| Verificação                          | Resultado                                           |
+| ------------------------------------ | --------------------------------------------------- |
+| `npm run typecheck`                  | sem erros                                           |
+| `npm run lint`                       | sem erros                                           |
+| `npm run format:check`               | sem diferenças                                      |
+| `npm test`                           | 150 testes, 150 aprovados (38 novos desta feature)  |
+| `architecture.test.mjs`              | Model sem React/Expo; View e rotas sem repositórios |
+| `npx expo export --platform android` | bundle gerado (3,7 MB)                              |
+| `npx expo export --platform ios`     | bundle gerado                                       |
 
 Cobertura dos testes novos:
 
