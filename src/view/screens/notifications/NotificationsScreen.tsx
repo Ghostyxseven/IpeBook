@@ -1,7 +1,15 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  SectionList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { groupNotifications } from '../../../model/services/notificationFormat';
 import { useNotifications } from '../../../factories/notifications';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/feedback/EmptyState';
@@ -11,7 +19,7 @@ import { NotificationItem } from '../../components/notifications/NotificationIte
 import { FormMessage } from '../../components/ui/FormMessage';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 
-/** Notificações (Figma 35): avisos mais recentes primeiro; tocar abre o anúncio e marca como lido. */
+/** Notificações (Figma 35): avisos agrupados por Hoje e Esta semana; tocar abre o anúncio e marca como lido. */
 export function NotificationsScreen() {
   const router = useRouter();
   const vm = useNotifications();
@@ -51,11 +59,11 @@ export function NotificationsScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
-      <FlatList
-        data={vm.items}
+      <SectionList
+        sections={groupNotifications(vm.items)}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.content}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        stickySectionHeadersEnabled={false}
         refreshControl={
           <RefreshControl
             refreshing={vm.refreshing}
@@ -67,22 +75,10 @@ export function NotificationsScreen() {
         onEndReachedThreshold={0.4}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Text style={styles.title} accessibilityRole="header">
-              Notificações
-            </Text>
-            {vm.items.length > 0 && (
-              <Text style={styles.summary}>
-                {vm.unreadInList === 0
-                  ? 'Você leu todos os avisos.'
-                  : vm.unreadInList === 1
-                    ? '1 aviso não lido'
-                    : `${vm.unreadInList} avisos não lidos`}
-              </Text>
-            )}
             {vm.unreadInList > 0 && (
               <Button
                 label="Marcar todas como lidas"
-                variant="secondary"
+                variant="text"
                 loading={vm.markingAll}
                 onPress={vm.markAllRead}
               />
@@ -90,6 +86,11 @@ export function NotificationsScreen() {
             <FormMessage tone="error" message={vm.actionError ?? vm.error} />
           </View>
         }
+        renderSectionHeader={({ section }) => (
+          <Text style={styles.section} accessibilityRole="header">
+            {section.title}
+          </Text>
+        )}
         ListEmptyComponent={
           <EmptyState
             title="Nenhum aviso por enquanto"
@@ -127,9 +128,13 @@ const styles = StyleSheet.create({
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
   },
-  header: { gap: spacing.sm, paddingBottom: spacing.sm },
-  title: { ...typography.titleLarge, color: colors.text },
-  summary: { ...typography.labelMedium, color: colors.secondaryText },
-  separator: { height: spacing.xs },
+  header: { gap: spacing.sm },
+  section: {
+    ...typography.bodyLarge,
+    color: colors.secondaryText,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xs,
+    paddingHorizontal: spacing.xs,
+  },
   footer: { paddingVertical: spacing.md, gap: spacing.sm },
 });

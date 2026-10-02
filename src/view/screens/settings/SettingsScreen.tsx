@@ -37,10 +37,6 @@ export function SettingsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title} accessibilityRole="header">
-          Configurações
-        </Text>
-
         {vm.accountEmail && (
           <View style={styles.group} accessibilityLabel="Conta">
             <Text style={styles.account}>{vm.accountName ?? 'Sua conta'}</Text>
@@ -126,7 +122,6 @@ const styles = StyleSheet.create({
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
   },
-  title: { ...typography.titleLarge, color: colors.text },
   section: { ...typography.titleMedium, color: colors.text, marginTop: spacing.sm },
   group: {
     borderRadius: metrics.cardRadius,

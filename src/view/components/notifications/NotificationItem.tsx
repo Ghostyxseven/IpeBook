@@ -1,11 +1,12 @@
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import type { AppNotification } from '../../../model/entities/Notification';
+import type { AppNotification, NotificationKind } from '../../../model/entities/Notification';
 import {
   isUnread,
   notificationAccessibilityLabel,
-  relativeTime,
+  notificationSubtitle,
 } from '../../../model/services/notificationFormat';
-import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { AppIcon, type AppIconName } from '../AppIcon';
 
 const focusRing = Platform.select({
   web: {
@@ -17,7 +18,19 @@ const focusRing = Platform.select({
   default: {},
 });
 
-/** Um aviso: título, texto curto, data relativa e marca de "não lida" (ponto e texto, nunca só cor). */
+/** Ícone de cada tipo de aviso à esquerda da linha (Figma 35). */
+const kindIcons: Record<NotificationKind, AppIconName> = {
+  request_received: 'swap',
+  request_accepted: 'check',
+  request_declined: 'close',
+  listing_reserved: 'bookmark',
+  deal_completed: 'checkCircle',
+};
+
+/**
+ * Linha de aviso do Figma 35: ícone do tipo, título, "detalhe · hora" e seta à direita.
+ * Aviso não lido tem título em negrito e é anunciado como "Não lida"; a cor nunca é o único sinal.
+ */
 export function NotificationItem({
   notification,
   onPress,
@@ -34,46 +47,36 @@ export function NotificationItem({
       onPress={onPress}
       style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
         styles.item,
-        unread && styles.unread,
         pressed && styles.pressed,
         focused && focusRing,
       ]}
     >
-      <View style={[styles.dot, unread ? styles.dotUnread : styles.dotRead]} />
+      <View style={styles.icon}>
+        <AppIcon name={kindIcons[notification.kind]} color={colors.secondaryText} />
+      </View>
       <View style={styles.copy}>
         <Text style={[styles.title, unread && styles.titleUnread]}>{notification.title}</Text>
-        {notification.body.trim() !== '' && <Text style={styles.body}>{notification.body}</Text>}
-        <View style={styles.meta}>
-          <Text style={styles.time}>{relativeTime(notification.createdAt)}</Text>
-          {unread && <Text style={styles.tag}>Não lida</Text>}
-        </View>
+        <Text style={styles.subtitle}>{notificationSubtitle(notification)}</Text>
       </View>
+      <AppIcon name="chevronRight" color={colors.secondaryText} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   item: {
-    minHeight: metrics.touchTarget,
+    minHeight: metrics.touchTarget + spacing.md,
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: metrics.cardRadius,
-    borderWidth: metrics.borderThin,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.xs,
+    borderRadius: metrics.fieldRadius,
   },
-  unread: { backgroundColor: colors.surface, borderColor: colors.action },
   pressed: { backgroundColor: colors.pressed },
-  dot: { width: 10, height: 10, borderRadius: radius.full, marginTop: spacing.xs },
-  dotUnread: { backgroundColor: colors.action },
-  dotRead: { borderWidth: metrics.borderThin, borderColor: colors.border },
+  icon: { width: spacing.xl, alignItems: 'center' },
   copy: { flex: 1, gap: spacing.xxs },
-  title: { ...typography.bodyMedium, color: colors.text },
+  title: { ...typography.bodyLarge, color: colors.text },
   titleUnread: { fontWeight: '700' },
-  body: { ...typography.bodyMedium, color: colors.secondaryText },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  time: { ...typography.labelMedium, color: colors.secondaryText },
-  tag: { ...typography.labelMedium, fontWeight: '700', color: colors.actionDeep },
+  subtitle: { ...typography.bodyMedium, color: colors.secondaryText },
 });

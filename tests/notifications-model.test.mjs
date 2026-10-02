@@ -10,7 +10,11 @@ import {
   mapSupabaseNotificationError,
 } from '../src/model/repositories/supabaseNotificationRepository.ts';
 import {
+  groupNotifications,
   isUnread,
+  notificationGroup,
+  notificationSubtitle,
+  notificationTimeLabel,
   notificationAccessibilityLabel,
   relativeTime,
   unreadBadgeText,
@@ -287,5 +291,66 @@ test('supabase: erros do servidor viram códigos independentes do provedor', asy
     {
       code: 'not_configured',
     },
+  );
+});
+
+// --- Agrupamento e hora curta (Figma 35) ---
+
+// Datas no fuso do aparelho, como o aplicativo calcula "hoje".
+const local = (month, day, hour = 12, minute = 0) => new Date(2026, month - 1, day, hour, minute);
+const NOW = local(10, 2, 12, 0); // sexta-feira, 02/10/2026 12:00
+
+test('grupos: hoje, esta semana e anteriores, pelo dia no fuso do aparelho', () => {
+  assert.equal(notificationGroup(local(10, 2, 0, 5).toISOString(), NOW), 'today');
+  assert.equal(notificationGroup(local(10, 1, 23, 59).toISOString(), NOW), 'week');
+  assert.equal(notificationGroup(local(9, 26, 8).toISOString(), NOW), 'week', '6 dias atrás');
+  assert.equal(notificationGroup(local(9, 25, 8).toISOString(), NOW), 'earlier', '7 dias atrás');
+  assert.equal(notificationGroup(local(10, 3, 8).toISOString(), NOW), 'today', 'relógio adiantado');
+  assert.equal(notificationGroup('data inválida', NOW), 'earlier');
+});
+
+test('hora curta: "agora", minutos e "10h" hoje; dia da semana depois; data nos antigos', () => {
+  assert.equal(notificationTimeLabel(new Date(2026, 9, 2, 11, 59, 40).toISOString(), NOW), 'agora');
+  assert.equal(notificationTimeLabel(local(10, 2, 11, 25).toISOString(), NOW), '35 min');
+  assert.equal(notificationTimeLabel(local(10, 2, 2, 0).toISOString(), NOW), '10h');
+  assert.equal(notificationTimeLabel(local(9, 28, 9).toISOString(), NOW), 'Seg');
+  assert.equal(notificationTimeLabel(local(9, 27, 9).toISOString(), NOW), 'Dom');
+  assert.equal(notificationTimeLabel(local(9, 26, 9).toISOString(), NOW), 'Sáb');
+  assert.equal(notificationTimeLabel(local(9, 1, 9).toISOString(), NOW), '1 set.');
+  assert.equal(notificationTimeLabel(new Date(2025, 11, 25, 9).toISOString(), NOW), '25 dez. 2025');
+  assert.equal(notificationTimeLabel('data inválida', NOW), '');
+});
+
+test('subtítulo junta o texto e a hora com ponto médio; sem texto, só a hora', () => {
+  const at = local(10, 2, 2, 0).toISOString();
+  assert.equal(
+    notificationSubtitle({ body: 'Vidas Secas por Dom Casmurro', createdAt: at }, NOW),
+    'Vidas Secas por Dom Casmurro · 10h',
+  );
+  assert.equal(notificationSubtitle({ body: '  ', createdAt: at }, NOW), '10h');
+});
+
+test('seções: mantêm a ordem, juntam avisos do mesmo grupo e não criam grupos vazios', () => {
+  const at = (month, day, hour) => local(month, day, hour).toISOString();
+  const items = [
+    notification(1, { id: 'a', createdAt: at(10, 2, 9) }),
+    notification(2, { id: 'b', createdAt: at(10, 2, 3) }),
+    notification(3, { id: 'c', createdAt: at(9, 28, 9) }),
+    notification(4, { id: 'd', createdAt: at(8, 1, 9) }),
+  ];
+  const sections = groupNotifications(items, NOW);
+  assert.deepEqual(
+    sections.map((section) => [section.title, section.data.map((item) => item.id)]),
+    [
+      ['Hoje', ['a', 'b']],
+      ['Esta semana', ['c']],
+      ['Anteriores', ['d']],
+    ],
+  );
+  assert.deepEqual(groupNotifications([], NOW), []);
+  assert.deepEqual(
+    groupNotifications([items[2]], NOW).map((section) => section.key),
+    ['week'],
+    'sem avisos de hoje, não há seção "Hoje"',
   );
 });
