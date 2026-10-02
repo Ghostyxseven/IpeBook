@@ -6,32 +6,28 @@ Comparação de `design-tokens.json` (raiz, usado pelo app) com [`referencia/tok
 
 `src/view/theme/nativeTheme.ts` e `src/view/styles/theme.ts` leem `design-tokens.json`. Não há hex fixo fora da pasta de tema em `src/`, então corrigir um valor no JSON basta para o app inteiro.
 
-## Cores com valores diferentes
+## Cores (decidido em 02/10/2026)
 
-| Papel              | `design-tokens.json`                  | `referencia/tokens.json` (claro)   |
-| ------------------ | ------------------------------------- | ---------------------------------- |
-| Ação principal     | `action` `#426B55`                    | `primary` `#2C5E45`                |
-| Superfície         | `surface` `#FCFAF6`                   | `surface` `#FCFAF5`                |
-| Erro               | `error` `#B3382C`                     | `error` `#B3261E`                  |
-| Tag Venda (fundo)  | `badge.sale.background` `#E7F0EA`     | `secondary-container` `#DCE8DE`    |
-| Tag Venda (texto)  | `badge.sale.text` `#2F503D`           | `on-secondary-container` `#18291F` |
-| Tag Troca (fundo)  | `badge.trade.background` `#F4B942`    | `tertiary-container` `#F8D88A`     |
-| Tag Troca (texto)  | `badge.trade.text` `#3C302A`          | `on-tertiary-container` `#3A2A10`  |
-| Tag Doação (fundo) | `badge.donation.background` `#F2E3DA` | `doacao-container` `#F4DDD3`       |
-| Tag Doação (texto) | `badge.donation.text` `#7A4430`       | `on-doacao-container` `#6E3A28`    |
-| Capa verde         | `cover.green` `#33584D`               | `cover-forest` `#30574A`           |
+A referência e o Figma são a fonte da verdade para as cores ([ADR 0016](../adr/0016-cores-do-figma-como-fonte-da-verdade.md)). Os valores abaixo foram copiados para `design-tokens.json`:
 
-Iguais nos dois: `cover.blue`/`cover-navy` `#253C4F` e `cover.brown`/`cover-brown` `#633E36`.
+| Papel              | Antes (`design-tokens.json`)          | Agora (igual à referência e ao Figma) |
+| ------------------ | ------------------------------------- | ------------------------------------- |
+| Ação principal     | `action` `#426B55`                    | `#2C5E45` (`primary`)                 |
+| Superfície         | `surface` `#FCFAF6`                   | `#FCFAF5` (`surface`)                 |
+| Erro               | `error` `#B3382C`                     | `#B3261E` (`error`)                   |
+| Tag Venda (fundo)  | `badge.sale.background` `#E7F0EA`     | `#DCE8DE` (`secondary-container`)     |
+| Tag Venda (texto)  | `badge.sale.text` `#2F503D`           | `#18291F` (`on-secondary-container`)  |
+| Tag Troca (fundo)  | `badge.trade.background` `#F4B942`    | `#F8D88A` (`tertiary-container`)      |
+| Tag Troca (texto)  | `badge.trade.text` `#3C302A`          | `#3A2A10` (`on-tertiary-container`)   |
+| Tag Doação (fundo) | `badge.donation.background` `#F2E3DA` | `#F4DDD3` (`doacao-container`)        |
+| Tag Doação (texto) | `badge.donation.text` `#7A4430`       | `#6E3A28` (`on-doacao-container`)     |
+| Capa verde         | `cover.green` `#33584D`               | `#30574A` (`cover-forest`)            |
 
-## Tipografia
+`state.focus` e `state.error` acompanham `action` e `error`. Os demais tokens de cor (`background`, `text`, `soft`, `border`, `highlight`, Reservado e Concluído) não têm par direto na referência e ficaram como estavam.
 
-| Papel                   | `design-tokens.json` e `foundations.md`  | Referência ([`tipografia.md`](referencia/tipografia.md)) |
-| ----------------------- | ---------------------------------------- | -------------------------------------------------------- |
-| Marca e títulos         | Roboto                                   | Source Serif 4 (600 e 700), no máximo um título por tela |
-| Interface Android e Web | Roboto                                   | Roboto Flex                                              |
-| Interface iOS           | Roboto (o app já usa a fonte do sistema) | SF Pro, fonte do sistema, com Dynamic Type               |
-| Códigos (ISBN)          | não definido                             | Roboto Mono                                              |
-| Escala                  | `typography.scale.*` (seis estilos)      | escala completa do M3, do iOS e da Web (`web-h1` 36 …)   |
+Contraste conferido (WCAG, texto normal pede 4,5:1): branco no botão 7,5:1; verde em superfície 7,2:1; erro em superfície 6,3:1; Venda 12,1:1; Troca 10,0:1; Doação 7,0:1.
+
+Iguais nos dois desde antes: `cover.blue`/`cover-navy` `#253C4F` e `cover.brown`/`cover-brown` `#633E36`.
 
 ## Raios
 
@@ -62,14 +58,14 @@ O arquivo [IpêBook-Mobile](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/
 | -------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------- |
 | Altura do botão                  | 52 px (texto: 48 px)                    | `platform.*.controlHeight` (Android 56, iOS 52, Web 48); o de texto já usa 48 |
 | Raio do campo                    | `radius-md` 12 px                       | `radius.medium` 14 px                                                         |
-| Fundo do campo                   | `surface-container-low` `#F7F3EC`       | `color.surface` `#FCFAF6`                                                     |
+| Fundo do campo                   | `surface-container-low` `#F7F3EC`       | `color.surface` `#FCFAF5`                                                     |
 | Borda do campo e do contornado   | `outline` `#7E776F`                     | `color.border` `#8F8478`                                                      |
-| Cor do botão principal e do erro | `primary` `#2C5E45` e `error` `#B3261E` | ver "Cores com valores diferentes"                                            |
+| Cor do botão principal e do erro | `primary` `#2C5E45` e `error` `#B3261E` | `color.action` e `color.error` (iguais desde 02/10/2026)                      |
 | Rótulo do botão                  | `m3-label-lg` 14/20, peso 500           | `typography.scale.labelLarge` (**adicionado**, mesmo valor)                   |
 
 ## Próximo passo
 
-Decidir, por linha, se vale a raiz ou a referência. Se for a referência, atualizar `design-tokens.json`, conferir contraste (4,5:1 para texto) e checar as telas afetadas no mesmo PR.
+As cores já seguem a referência. Falta decidir raios e espaçamento, por linha, se vale a raiz ou a referência. Se for a referência, atualizar `design-tokens.json`, conferir contraste (4,5:1 para texto) e checar as telas afetadas no mesmo PR.
 
 ## Padrões do app sem quadro no Figma (02/10/2026)
 
