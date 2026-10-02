@@ -18,6 +18,19 @@ Cobertura dos testes novos:
 - `notifications-model.test.mjs` (14): data relativa (agora, minutos, horas, dias, datas antigas, relógio adiantado, data inválida); rótulo acessível com "Não lida" em palavras; rótulo e texto do contador (singular, plural, "99+"); mensagens de erro; preferências padrão; repositório em memória (ordem, paginação sem repetir, não lidas, marcar uma e todas, preferências, `fail` uma vez); repositório do Supabase com cliente falso (sem configuração não simula dados, ordenação, cursor com aspas escapadas, contagem só das não lidas, atualização só de `read_at`, preferências completadas com "ligado", `upsert` de um tipo por vez, mapeamento de erros).
 - `notifications-viewmodel.test.mjs` (17): paginação sem chamada dupla, vazio, erro com "tentar de novo", atualização que preserva a lista, falha ao carregar mais; marcar como lido imediato, confirmado no servidor, sem chamada repetida e revertido em caso de falha; marcar todas (reversão só do que a ação marcou, toque duplo ignorado); contador (primeiro plano, falha mantém o valor, resposta atrasada descartada, cancelamento da assinatura); configurações (carga, links legais com e sem endereço do site, gravar, reverter, erro de carga, independência entre tipos, Sair).
 
+## Fluxo real com avisos (02/10/2026, Supabase da equipe, conta do Micael)
+
+Avisos criados pelo servidor com `create_notification` e apagados ao final; a preferência de teste também foi apagada.
+
+| Cenário                                                      | Resultado                                                                                                                                             |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Aviso criado pelo servidor aparece na lista do aplicativo    | ok                                                                                                                                                    |
+| Tocar no aviso marca como lido e grava `read_at` no servidor | ok                                                                                                                                                    |
+| Desligar "Pedidos recebidos" grava a preferência no banco    | ok (`request_received = false`, os demais ligados)                                                                                                    |
+| Criar aviso de tipo desligado                                | `create_notification` devolve `null`; nenhuma linha criada                                                                                            |
+| Criar aviso de tipo ligado                                   | criado e visto na lista                                                                                                                               |
+| Contador do sino com o aplicativo aberto                     | não muda sozinho (sem tempo real, ADR 0011); atualiza ao voltar ao Início, ao primeiro plano e, depois deste ajuste, ao puxar o Início para atualizar |
+
 ## Não verificado
 
 - **Figma (quadro 35 e seção F):** o nó `193:651` continua "não encontrado" no arquivo `qSTmNLUhC6PwJlbyUmytbe` pela ferramenta de leitura do Figma (mesmo resultado da escrita da spec). A tela segue o design system do repositório e a spec; a comparação visual com o quadro continua pendente.
