@@ -72,7 +72,7 @@ export function ListingDetailScreen() {
         hint: 'Abre o formulário para propor local, dia e horário.',
       }
     : isOwner
-      ? { label: 'Ver solicitações', onPress: () => router.push('/negociacoes') }
+      ? { label: 'Ver solicitações', onPress: () => router.push('/conversas') }
       : session.status === 'signedOut' && isAvailable
         ? { label: 'Entrar para combinar encontro', onPress: () => router.replace('/entrar') }
         : null;

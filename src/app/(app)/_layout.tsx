@@ -32,6 +32,27 @@ export default function AppLayout() {
         <Stack.Screen name="anunciar/index" options={stackHeader('Anunciar um livro')} />
         <Stack.Screen name="anunciar/[id]" options={stackHeader('Editar anúncio')} />
         <Stack.Screen
+          name="negociacoes/index"
+          options={{
+            ...stackHeader('Conversas'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="negociacoes/[id]"
+          options={{
+            ...stackHeader('Negociação'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="livro/[id]/combinar"
+          options={{
+            ...stackHeader('Combinar encontro'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
           name="notificacoes"
           options={{
             ...stackHeader('Notificações'),
