@@ -17,7 +17,7 @@ Os requisitos detalhados ficam nas specs em [`specs/`](../specs). Resumo por fea
 | Autenticação e onboarding (Maria Clara) | RF1 criar conta; RF2 confirmar e-mail por código; RF3 entrar e sair; RF4 recuperar senha; RF5 onboarding na 1ª abertura | [014](../specs/014-autenticacao-onboarding)                                | Implementada; validação em aparelho aberta          |
 | Catálogo (Micael)                       | RF6 ver feed; RF7 buscar e filtrar por modalidade; RF8 ver detalhe do livro                                             | [018](../specs/018-catalogo-descoberta)                                    | Implementada; conferência com anúncios reais aberta |
 | Configurações e notificações (Micael)   | RF9 ver avisos; RF10 ajustar preferências                                                                               | [024](../specs/024-configuracoes-notificacoes)                             | Apenas especificada (extra)                         |
-| Anúncios e perfil (Eric)                | RF11 criar, editar, arquivar e excluir anúncio; RF12 ver "Minhas publicações" e perfil                                  | **A preencher** (issues #36 e #37)                                         | Não implementada                                    |
+| Anúncios e perfil (Eric)                | RF11 criar, editar, arquivar e excluir anúncio; RF12 ver "Minhas publicações" e perfil                                  | [025](../specs/025-anuncios-gestao) e [026](../specs/026-perfil-minimo)    | Implementada; validação em aparelho aberta          |
 | Negociação e segurança (Antonio)        | RF13 pedir o livro; RF14 aceitar ou recusar; RF15 concluir; RF16 denunciar e bloquear                                   | **A preencher** (issues #38 e #40)                                         | Não implementada                                    |
 | Página institucional Web                | Apresentar o projeto, estante de exemplos e documentos legais                                                           | [001](../specs/001-pagina-institucional) a [023](../specs/023-rotas-reais) | Implementada                                        |
 
@@ -316,14 +316,33 @@ Abertura com a marca; onboarding em 3 páginas (o que é o IpêBook, Venda/Troca
 
 ### 9.4 Anúncios e perfil — Eric
 
-**A preencher** após a implementação (issues #36 e #37). Incluir o ciclo de vida do anúncio (`disponivel` → `reservado` → `concluido` / `arquivado`).
+Esta é a feature que cumpre o requisito obrigatório **"dados que o usuário cria, edita e exclui"**: nenhuma outra parte do aplicativo grava dado do usuário.
+
+**Ciclo de vida do anúncio.** Um anúncio nasce `disponivel`. A negociação o leva a `reservado` e depois a `concluido`; quem anunciou pode levá-lo a `arquivado` e trazê-lo de volta. As quatro situações estão na tabela `listings` (ADR 0008), e o catálogo só enxerga `disponivel` e `reservado`.
+
+Uma regra que atravessa a feature inteira: **só anúncio `disponivel` pode ser editado, arquivado ou excluído**. Reservado e concluído são só leitura, porque quem manda neles é a negociação — mexer no preço de um livro já prometido quebraria o combinado com a outra pessoa. A tela diz o motivo em vez de desabilitar botões em silêncio.
+
+**Camadas (MVVM Simplificado).**
+
+| Camada      | Arquivos                                                                                                                                                                    |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Model       | `entities/Listing.ts` (`MyListing`, `ListingDraft`), `entities/ListingError.ts`, `services/listingValidation.ts`, `services/listingFormat.ts`, `services/profileSummary.ts` |
+| Repositório | `ListingsRepository` (porta), `memoryListingsRepository` (testes) e `supabaseListingsRepository` (o único que conhece o Supabase)                                           |
+| ViewModel   | `useListingForm`, `usePublishListingViewModel`, `useEditListingViewModel`, `useMyListingsViewModel`                                                                         |
+| View        | `screens/listings/` (publicar, editar), `screens/profile/` (estante, perfil), `components/listings/`                                                                        |
+
+**Decisões registradas no [ADR 0014](adr/0014-gestao-de-anuncios.md).** Quatro delas têm efeito visível: a foto nasce com nome único porque o bucket não aceita sobrescrita; excluir o anúncio apaga a foto antes da linha, já que o bucket é público; a troca de modalidade grava os três campos juntos, porque as constraints olham a linha inteira; e as situações da gestão ganharam tipo próprio para não mexer no código do catálogo.
+
+**Dinheiro em centavos, `integer`.** `parseBRLToCents` converte sobre os dígitos, nunca multiplicando o número: `19.90 * 100` dá 1989,9999… em ponto flutuante, e um centavo perdido por anúncio vira reclamação.
+
+**O que ainda falta:** conferência em aparelho real e a comparação com o Figma, bloqueada porque os quadros citados nas issues #36 e #37 não existem mais no arquivo, reorganizado em 01/10/2026.
 
 ## 10. Decisões arquiteturais
 
-Índice completo em [`adr/index.md`](adr/index.md). Os ADRs 0008 e 0011 ainda estão **propostos**.
+Índice completo em [`adr/index.md`](adr/index.md). Os ADRs 0008, 0011 e 0014 ainda estão **propostos**.
 
 ## 11. Pendências do relatório
 
 - Completar as seções 9.2 a 9.4 e o diagrama de casos de uso com as features restantes.
-- Atualizar a tabela de requisitos quando #36 e #38 forem concluídas.
+- Atualizar a tabela de requisitos quando #38 for concluída.
 - Revisão final pelo grupo (critério de aceite da issue #48).

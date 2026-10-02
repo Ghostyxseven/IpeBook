@@ -5,23 +5,17 @@ import { colors, typography } from '../../view/theme/nativeTheme';
 import { useAppSession } from '../../factories/auth';
 import { SessionContext } from '../../viewmodel/useSession';
 
-/** Figma 04: voltar e o título no topo, sobre a superfície. O detalhe do livro mostra a marca. */
-const headerFor = (title: string, align: 'left' | 'center' = 'center') => ({
+/** Cabeçalho das telas de pilha: voltar e o título, sobre a superfície (Figma 04). */
+const stackHeader = (title: string) => ({
   headerShown: true,
   title,
-  headerTitleAlign: align,
   headerStyle: { backgroundColor: colors.surface },
   headerTintColor: colors.text,
-  headerTitleStyle:
-    align === 'left'
-      ? { ...typography.titleLarge, color: colors.text }
-      : { ...typography.bodyLarge, fontWeight: '500' as const, color: colors.text },
-  contentStyle: { backgroundColor: colors.surface },
+  headerTitleStyle: { ...typography.bodyLarge, fontWeight: '500' as const, color: colors.text },
+  contentStyle: { backgroundColor: colors.background },
   headerShadowVisible: false,
   headerBackTitle: 'Voltar',
 });
-
-const headerOptions = headerFor('IpêBook');
 
 /** Área autenticada: as outras features acrescentam suas rotas nesta pasta. */
 export default function AppLayout() {
@@ -35,10 +29,22 @@ export default function AppLayout() {
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
       >
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="livro/[id]" options={headerOptions} />
-        {/* Figma 35: seta e título "Notificações" alinhado à esquerda. */}
-        <Stack.Screen name="notificacoes" options={headerFor('Notificações', 'left')} />
-        <Stack.Screen name="configuracoes" options={headerFor('Configurações', 'left')} />
+        <Stack.Screen name="anunciar/index" options={stackHeader('Anunciar um livro')} />
+        <Stack.Screen name="anunciar/[id]" options={stackHeader('Editar anúncio')} />
+        <Stack.Screen
+          name="livro/[id]"
+          options={{
+            headerShown: true,
+            // Figma 04: voltar e a marca no topo, sobre a superfície.
+            title: 'IpêBook',
+            headerStyle: { backgroundColor: colors.surface },
+            headerTintColor: colors.text,
+            headerTitleStyle: { ...typography.bodyLarge, fontWeight: '500', color: colors.text },
+            contentStyle: { backgroundColor: colors.surface },
+            headerShadowVisible: false,
+            headerBackTitle: 'Voltar',
+          }}
+        />
       </Stack>
     </SessionContext.Provider>
   );

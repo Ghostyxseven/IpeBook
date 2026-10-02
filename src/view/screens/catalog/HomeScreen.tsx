@@ -18,7 +18,6 @@ import detalheIpe from '../../../../assets/catalog/detalhe-amarelo-ipe.svg';
 import { useCatalogFeed } from '../../../factories/catalog';
 import { useUnreadCount } from '../../../factories/notifications';
 import { useSessionContext } from '../../../viewmodel/useSession';
-import { AppIcon } from '../../components/AppIcon';
 import { BookTile } from '../../components/catalog/BookTile';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
 import { SearchBarButton } from '../../components/catalog/SearchBar';
@@ -26,7 +25,7 @@ import { NotificationBell } from '../../components/notifications/NotificationBel
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 import { exploreHref } from './routeParams';
 
 const modalities: Modality[] = ['sale', 'trade', 'donation'];
@@ -92,25 +91,6 @@ export function HomeScreen() {
               IpêBook
             </Text>
             <Text style={styles.greeting}>{vm.greeting}</Text>
-          </View>
-          <View style={styles.actions}>
-            <NotificationBell
-              badgeText={unread.badgeText}
-              accessibilityLabel={unread.accessibilityLabel}
-              onPress={() => router.push('/notificacoes')}
-            />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Configurações"
-              onPress={() => router.push('/configuracoes')}
-              style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
-                styles.iconButton,
-                pressed && styles.iconButtonPressed,
-                focused && focusRing,
-              ]}
-            >
-              <AppIcon name="settings" />
-            </Pressable>
           </View>
         </View>
 
@@ -225,15 +205,6 @@ const styles = StyleSheet.create({
   headerText: { gap: spacing.xxs, flexShrink: 1 },
   brand: { ...typography.titleLarge, color: colors.text },
   greeting: { ...typography.labelMedium, color: colors.secondaryText },
-  actions: { flexDirection: 'row', alignItems: 'center' },
-  iconButton: {
-    width: metrics.touchTarget,
-    height: metrics.touchTarget,
-    borderRadius: radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconButtonPressed: { backgroundColor: colors.pressed },
   chips: { flexDirection: 'row', gap: spacing.xs, paddingRight: spacing.md },
   sectionHeader: {
     flexDirection: 'row',
