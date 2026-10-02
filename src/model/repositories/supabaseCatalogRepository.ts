@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { CatalogError } from '../entities/CatalogError.ts';
-import type { Listing } from '../entities/Listing';
+import type { Listing, ListingStatus } from '../entities/Listing';
 import { effectiveFilters, toLikePattern } from '../services/catalogFilters.ts';
 import type { CatalogRepository } from './CatalogRepository';
 
@@ -117,6 +117,20 @@ export function createSupabaseCatalogRepository(
         .from(CATALOG_VIEW)
         .select(columns)
         .eq('id', id)
+        .maybeSingle();
+      if (error) throw mapSupabaseCatalogError(error);
+      if (!data) throw new CatalogError('not_found');
+      return toListing(supabase, data as unknown as Row);
+    },
+    async updateListingStatus(id, status) {
+      const supabase = requireClient();
+      // A view catalog_listings é somente leitura; atualiza direto na tabela.
+      // O RLS garante que só quem pode alterar (política existente) consegue.
+      const { data, error } = await supabase
+        .from('listings')
+        .update({ status: status as ListingStatus })
+        .eq('id', id)
+        .select(columns)
         .maybeSingle();
       if (error) throw mapSupabaseCatalogError(error);
       if (!data) throw new CatalogError('not_found');

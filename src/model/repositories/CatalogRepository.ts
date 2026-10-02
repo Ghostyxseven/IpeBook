@@ -1,4 +1,4 @@
-import type { CatalogFilters, Listing } from '../entities/Listing';
+import type { CatalogFilters, Listing, ListingStatus } from '../entities/Listing';
 
 /** Posição do último item carregado; a próxima página começa logo depois dele. */
 export type CatalogCursor = { createdAt: string; id: string };
@@ -11,7 +11,7 @@ export type CatalogPage = {
 };
 
 /**
- * Contrato de leitura do catálogo usado pelas ViewModels.
+ * Contrato de leitura do catálogo e alteração de situação, usado pelas ViewModels.
  * A busca por texto procura no título, no autor e na categoria.
  * Lista só anúncios disponíveis ou reservados de outras pessoas, dos mais recentes aos mais antigos.
  * Todas as operações rejeitam com `CatalogError` (ver entities/CatalogError.ts).
@@ -24,4 +24,10 @@ export interface CatalogRepository {
   }): Promise<CatalogPage>;
   /** Rejeita com `not_found` quando o anúncio não existe ou saiu do catálogo. */
   getById(id: string): Promise<Listing>;
+  /**
+   * Altera a situação de um anúncio (ex: `disponivel` → `reservado`, `reservado` → `concluido`).
+   * Usado pela negociação. Rejeita com `not_found` quando o anúncio não existe.
+   * Validação de permissão (quem pode alterar) depende do repositório concreto / RLS do banco.
+   */
+  updateListingStatus(id: string, status: ListingStatus): Promise<Listing>;
 }

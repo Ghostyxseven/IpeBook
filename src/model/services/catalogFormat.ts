@@ -16,6 +16,8 @@ export const conditionLabels: Record<ListingCondition, string> = {
 export const statusLabels: Record<ListingStatus, string> = {
   disponivel: 'Disponível',
   reservado: 'Reservado',
+  concluido: 'Concluído',
+  arquivado: 'Arquivado',
 };
 
 /** Formata centavos como "R$ 1.234,50" sem depender do suporte a Intl do motor JS. */
