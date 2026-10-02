@@ -128,6 +128,22 @@ export function ListingDetailScreen() {
               onPress={() => router.replace('/entrar')}
             />
           ) : null}
+          {!isOwner && session.status === 'signedIn' && listing.ownerId ? (
+            <Button
+              label="Sua segurança"
+              variant="secondary"
+              onPress={() =>
+                router.push({
+                  pathname: '/(app)/seguranca',
+                  params: {
+                    listingId: listing.id,
+                    userId: listing.ownerId,
+                    userName: details.owner ?? '',
+                  },
+                })
+              }
+            />
+          ) : null}
         </View>
       </ScrollView>
     </SafeAreaView>
