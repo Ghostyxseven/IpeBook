@@ -1,0 +1,21 @@
+# Tarefas: Segurança (Issue #40)
+
+- [ ] Criar a migration SQL unificada:
+  - [ ] Tabela `user_blocks` com constraints e índices.
+  - [ ] Tabela `reports` com constraints e índices.
+  - [ ] RLS para `user_blocks` (Select/Insert para blocker_id).
+  - [ ] RLS para `reports` (Select/Insert para reporter_id).
+  - [ ] View `catalog_listings` alterada (filtro de bloqueio unilateral mantendo regras originais).
+- [ ] Criar arquivo `src/model/entities/Report.ts` e `UserBlock.ts`.
+- [ ] Criar repositórios `SecurityRepository` (interface, Supabase e Memory).
+- [ ] Injetar o repositório na Factory.
+- [ ] Criar `ReportViewModel` (com gestão de motivos estáticos e chamada de salvar).
+- [ ] Criar `BlockViewModel`.
+- [ ] Desenvolver a tela 1: "Sua segurança" (Menu de opções).
+- [ ] Desenvolver a tela 2: "Fazer denúncia" (Escolha de motivo e input).
+- [ ] Desenvolver a tela 3: "Denúncia recebida" (Feedback visual).
+- [ ] Desenvolver a tela 4: "Bloquear [nome]?" (Confirmação descritiva).
+- [ ] Desenvolver a tela 5: "Perfil bloqueado" (Sucesso e atalho extra).
+- [ ] Adicionar atalho (botão 3 pontos) nas telas de Perfil Público e Detalhes do Anúncio.
+- [ ] Validar que nenhum Request de adoção existente está sendo deletado ou alterado automaticamente.
+- [ ] Validar a filtragem do catálogo com testes (ou manual no Supabase).
