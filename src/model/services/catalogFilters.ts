@@ -48,7 +48,7 @@ const modalityTitles: Record<Modality, string> = {
 export function exploreTitle(filters: CatalogFilters, empty: boolean) {
   if (empty && hasActiveSearch(filters)) return 'Ainda não encontramos.';
   const { modalities } = effectiveFilters(filters);
-  return modalities.length === 1 ? modalityTitles[modalities[0]] : 'Encontre sua próxima história.';
+  return modalities.length === 1 ? modalityTitles[modalities[0]] : 'O que vamos ler hoje?';
 }
 
 /** "3 livros · Mais recentes" ou "1 livro · Venda"; sem total conhecido, só a ordem ou o filtro. */

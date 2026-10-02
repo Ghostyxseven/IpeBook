@@ -94,18 +94,30 @@ export function tileValue(listing: Pick<Listing, 'modality' | 'priceCents'>) {
   return listing.modality === 'trade' ? 'Para trocar' : priceLabel(listing);
 }
 
+/** Sobretítulo do card de livro (Figma 02.01): "Venda · R$ 25,00", "Troca" ou "Doação". */
+/** Valor ao lado da etiqueta no card da lista (Figma 02.02): preço, condição de troca ou "Gratuito". */
+export function cardValue(listing: Pick<Listing, 'modality' | 'priceCents' | 'tradeTerms'>) {
+  if (listing.modality === 'trade') return listing.tradeTerms?.trim() || 'Para trocar';
+  return priceLabel(listing);
+}
+
+export function cardOverline(listing: Pick<Listing, 'modality' | 'priceCents'>) {
+  const price = listing.modality === 'sale' ? priceLabel(listing) : null;
+  return [modalityLabels[listing.modality], price].filter(Boolean).join(' · ');
+}
+
 /** Destaque do detalhe (Figma 04, 13 e 14): valor grande e rótulo da modalidade. */
 export function detailHeadline(listing: Pick<Listing, 'modality' | 'priceCents'>) {
   if (listing.modality === 'sale') {
-    return { value: priceLabel(listing) ?? modalityLabels.sale, label: 'À VENDA' };
+    return { value: priceLabel(listing) ?? modalityLabels.sale, label: 'À venda' };
   }
-  if (listing.modality === 'trade') return { value: 'Troca', label: 'POR OUTRO LIVRO' };
-  return { value: 'Gratuito', label: 'DOAÇÃO' };
+  if (listing.modality === 'trade') return { value: 'Troca', label: 'Por outro livro' };
+  return { value: 'Gratuito', label: 'Doação' };
 }
 
 /** "BOM ESTADO · LITERATURA BRASILEIRA" */
 export function detailMeta(listing: Pick<Listing, 'condition' | 'category'>) {
-  return `${conditionLabels[listing.condition]} · ${listing.category}`.toLocaleUpperCase('pt-BR');
+  return `${conditionLabels[listing.condition]} · ${listing.category}`;
 }
 
 /** Índice estável (0 a `count - 1`) para escolher a cor da capa ilustrativa pelo id. */

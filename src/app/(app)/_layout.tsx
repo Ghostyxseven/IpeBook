@@ -32,11 +32,25 @@ export default function AppLayout() {
         <Stack.Screen name="anunciar/index" options={stackHeader('Anunciar um livro')} />
         <Stack.Screen name="anunciar/[id]" options={stackHeader('Editar anúncio')} />
         <Stack.Screen
+          name="notificacoes"
+          options={{
+            ...stackHeader('Notificações'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="configuracoes"
+          options={{
+            ...stackHeader('Configurações'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
           name="livro/[id]"
           options={{
             headerShown: true,
-            // Figma 04: voltar e a marca no topo, sobre a superfície.
-            title: 'IpêBook',
+            // Figma 03.01: voltar e "Detalhes" no topo, sobre a superfície.
+            title: 'Detalhes',
             headerStyle: { backgroundColor: colors.surface },
             headerTintColor: colors.text,
             headerTitleStyle: { ...typography.bodyLarge, fontWeight: '500', color: colors.text },

@@ -1,28 +1,14 @@
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Modality } from '../../../model/entities/Listing';
-import {
-  badgeColors,
-  colors,
-  metrics,
-  opacity,
-  spacing,
-  typography,
-} from '../../theme/nativeTheme';
+import { colors, metrics, opacity, radius, spacing, typography } from '../../theme/nativeTheme';
 import { AppIcon } from '../AppIcon';
 
-const palette = {
-  all: { background: colors.surface, text: colors.text },
-  sale: badgeColors.sale,
-  trade: { background: badgeColors.tradeChip, text: badgeColors.trade.text },
-  donation: badgeColors.donation,
-} as const;
-
 /**
- * Filter chip do Material 3 com as cores da modalidade (Figma 02), em formato de pílula.
- * Selecionado inverte para fundo de ação e mostra a marca de seleção, sem depender só da cor.
+ * Filtro de modalidade (Figma 02.01). No Android é o filter chip contornado do Material 3:
+ * selecionado ganha fundo tonal e a marca de seleção. No iPhone é a pílula preenchida do iOS,
+ * verde quando selecionada. O estado também é anunciado pelo leitor de tela, não só pela cor.
  */
 export function ModalityChip({
-  modality,
   label,
   selected,
   onPress,
@@ -34,8 +20,14 @@ export function ModalityChip({
   onPress: () => void;
   showCheck?: boolean;
 }) {
-  const tone = palette[modality];
-  const foreground = selected ? colors.surface : tone.text;
+  const ios = Platform.OS === 'ios';
+  const foreground = ios
+    ? selected
+      ? colors.containerLowest
+      : colors.onSurface
+    : selected
+      ? colors.onSelected
+      : colors.onSurfaceVariant;
   return (
     <Pressable
       accessibilityRole="checkbox"
@@ -50,13 +42,21 @@ export function ModalityChip({
       {({ pressed }) => (
         <View
           style={[
-            styles.chip,
-            { backgroundColor: selected ? colors.action : tone.background },
+            ios ? styles.pill : styles.chip,
+            ios
+              ? selected
+                ? styles.pillSelected
+                : styles.pillIdle
+              : selected
+                ? styles.chipSelected
+                : styles.chipIdle,
             pressed && styles.pressed,
           ]}
         >
-          {selected && showCheck && <AppIcon name="check" size={18} color={foreground} />}
-          <Text style={[styles.label, { color: foreground }]}>{label}</Text>
+          {selected && showCheck && !ios && <AppIcon name="check" size={18} color={foreground} />}
+          <Text style={[ios ? styles.pillLabel : styles.label, { color: foreground }]}>
+            {label}
+          </Text>
         </View>
       )}
     </Pressable>
@@ -66,19 +66,35 @@ export function ModalityChip({
 const styles = StyleSheet.create({
   // Alvo de 48 px em volta do chip de 32 px, como as "Áreas de toque" do Figma.
   target: { minHeight: metrics.touchTarget, justifyContent: 'center' },
+  // Android: filter chip contornado do Material 3 (32 de altura, raio pequeno).
   chip: {
     minHeight: spacing.xl,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
     paddingHorizontal: spacing.md,
-    // Pílula: metade da altura (o raio 9999 não é aplicado pelo Android em todas as vistas).
-    borderRadius: spacing.xl / 2,
+    borderRadius: radius.small,
     borderWidth: metrics.borderThin,
-    borderColor: colors.border,
   },
+  chipIdle: { borderColor: colors.border },
+  chipSelected: {
+    paddingLeft: spacing.xs,
+    borderColor: colors.selected,
+    backgroundColor: colors.selected,
+  },
+  label: { ...typography.labelLarge },
+  // iPhone: pílula preenchida (Figma iOS 83:834, 38 de altura e raio 18).
+  pill: {
+    minHeight: 38,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    borderRadius: 19,
+  },
+  pillIdle: { backgroundColor: colors.containerHigh },
+  pillSelected: { backgroundColor: colors.action },
+  pillLabel: { fontSize: 15, lineHeight: 20, fontWeight: '600' },
   pressed: { opacity: opacity.high },
-  label: { ...typography.bodyMedium, fontWeight: '500' },
   focused: Platform.select({
     web: {
       outlineColor: colors.focus,

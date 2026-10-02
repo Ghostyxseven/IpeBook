@@ -18,7 +18,7 @@ import { parseModality } from './routeParams';
 
 const modalities: Modality[] = ['sale', 'trade', 'donation'];
 
-/** Explorar (Figma 03, 12 e 26 a 28): busca, modalidades e lista de livros. */
+/** Explorar (Figma 02.02, iOS 70:1313 e Android 10:2): busca, modalidades e lista de livros. */
 export function ExploreScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ modalidade?: string; atalho?: string }>();
@@ -36,13 +36,25 @@ export function ExploreScreen() {
       <Text style={styles.title} accessibilityRole="header" accessibilityLiveRegion="polite">
         {vm.title}
       </Text>
+      {!vm.searching && (
+        <Text style={styles.subtitle}>
+          Livros novos e seminovos para trocar, comprar ou receber aqui perto.
+        </Text>
+      )}
       <SearchBarInput value={vm.query} onChangeText={vm.setQuery} />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.chips}
+        style={styles.bleed}
         accessibilityLabel="Modalidades"
       >
+        <ModalityChip
+          modality="all"
+          label="Todos"
+          selected={vm.modalities.length === 0}
+          onPress={() => showOnly(null)}
+        />
         {modalities.map((modality) => (
           <ModalityChip
             key={modality}
@@ -114,10 +126,17 @@ export function ExploreScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
-  header: { gap: spacing.xs, paddingBottom: spacing.xxs },
-  title: { ...typography.displayLarge, color: colors.text },
-  chips: { flexDirection: 'row', gap: spacing.xs, paddingRight: spacing.md },
-  summary: { ...typography.labelMedium, color: colors.secondaryText },
+  // O título e a busca ficam na margem da página; os cards da lista, mais perto da borda (Figma).
+  header: {
+    gap: spacing.sm,
+    paddingHorizontal: metrics.pagePadding - spacing.md,
+    paddingBottom: spacing.xxs,
+  },
+  title: { ...typography.brandHeadline, color: colors.onSurface },
+  subtitle: { ...typography.bodyLarge, color: colors.onSurfaceVariant },
+  bleed: { marginHorizontal: -metrics.pagePadding },
+  chips: { flexDirection: 'row', gap: spacing.xs, paddingHorizontal: metrics.pagePadding },
+  summary: { ...typography.labelMedium, color: colors.onSurfaceVariant },
   noResults: { gap: spacing.md },
   noResultsCard: {
     gap: spacing.md,

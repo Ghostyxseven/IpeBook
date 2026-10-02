@@ -149,7 +149,7 @@ test('busca espera a digitação, procura título, autor e categoria e combina m
   );
   assert.equal(hook.vm.items.length, 3);
   assert.equal(hook.vm.searching, false);
-  assert.equal(hook.vm.title, 'Encontre sua próxima história.');
+  assert.equal(hook.vm.title, 'O que vamos ler hoje?');
   assert.equal(hook.vm.summary, '3 livros · Mais recentes');
 
   await act(async () => hook.vm.setQuery('d'));
@@ -233,7 +233,7 @@ test('detalhe carrega, informa anúncio inexistente e permite tentar de novo', a
   const found = await renderHook(() => useListingDetailViewModel(memory.repository, 'id-001'));
   assert.equal(found.vm.status, 'ready');
   assert.equal(found.vm.listing.title, 'Livro 1');
-  assert.deepEqual(found.vm.details.headline, { value: 'Gratuito', label: 'DOAÇÃO' });
+  assert.deepEqual(found.vm.details.headline, { value: 'Gratuito', label: 'Doação' });
   assert.equal(found.vm.details.owner, 'Ana');
 
   const missing = await renderHook(() => useListingDetailViewModel(memory.repository, 'nada'));

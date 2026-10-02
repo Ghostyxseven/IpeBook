@@ -68,9 +68,10 @@ export function CatalogList({
 
 const styles = StyleSheet.create({
   content: {
-    padding: metrics.pagePadding,
+    paddingHorizontal: spacing.md,
     paddingTop: spacing.md,
-    gap: spacing.xs,
+    paddingBottom: metrics.pagePadding,
+    gap: spacing.sm,
     width: '100%',
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
