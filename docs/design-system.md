@@ -1,7 +1,8 @@
 # Design System — IpêBook
 
 **Versão:** 1.1  
-**Fonte visual:** [Figma — IpêBook](https://www.figma.com/design/qSTmNLUhC6PwJlbyUmytbe?node-id=0-1)  
+**Fonte visual:** [Figma — IpêBook](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/Ip%C3%AABook-Mobile?node-id=20-207)  
+**Arquivo oficial desde 02/10/2026** (substitui o anterior, `qSTmNLUhC6PwJlbyUmytbe`). Os IDs de nós citados em specs e documentos antigos pertencem ao arquivo anterior e precisam ser reconferidos no atual.  
 **Contrato de implementação:** [`design-tokens.json`](../design-tokens.json)
 
 O Design System do IpêBook mantém uma identidade única para Android, iOS e Web sem forçar componentes idênticos entre plataformas.

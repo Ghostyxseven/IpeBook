@@ -20,7 +20,7 @@ Cobertura dos testes novos:
 
 ## Não verificado
 
-- **Figma (quadro 35 e seção F):** o nó `193:651` continua "não encontrado" no arquivo `qSTmNLUhC6PwJlbyUmytbe` pela ferramenta de leitura do Figma (mesmo resultado da escrita da spec). A tela segue o design system do repositório e a spec; a comparação visual com o quadro continua pendente.
+- **Figma (quadro 35 e seção F):** o nó `193:651` continua "não encontrado" no arquivo anterior (`qSTmNLUhC6PwJlbyUmytbe`) pela ferramenta de leitura do Figma. O arquivo oficial passou a ser o `IpêBook Mobile` (`cxEisNRzOQR6krv8Ow7HCa`) em 02/10/2026, mas a ferramenta só enxerga as páginas 00 e 05, sem as telas Android (mesmo resultado da escrita da spec). A tela segue o design system do repositório e a spec; a comparação visual com o quadro continua pendente.
 - **Migração SQL:** não há PostgreSQL nem projeto Supabase de desenvolvimento neste ambiente. `20261002120000_notificacoes.sql` foi escrita seguindo o padrão da migração do catálogo, mas **não foi executada**; aplicar no projeto da equipe e conferir tabelas, RLS e a função `create_notification`.
 - **Aparelho e leitor de tela:** as telas não foram abertas em Android nem iOS; só os bundles nativos foram gerados. Estados vazio, erro, offline, alvos de 48 × 48 e leitura com TalkBack/VoiceOver seguem pendentes.
 - **Avisos reais:** nenhum gatilho cria avisos até a negociação (#38) existir. Para testar, inserir linhas com `create_notification` pelo SQL Editor (ver `supabase/README.md`).
