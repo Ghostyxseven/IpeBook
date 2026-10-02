@@ -19,6 +19,13 @@ import {
   meetingTimeLabel,
   meetingSummary,
   requestListLabel,
+  meetingDayLabel,
+  meetingHourLabel,
+  meetingWhen,
+  meetingDayOptions,
+  meetingTimeOptions,
+  requestScreenCopy,
+  confirmCopy,
 } from '../src/model/services/bookRequestFormat.ts';
 import { createMemoryBookRequestRepository } from '../src/model/repositories/memoryBookRequestRepository.ts';
 import {
@@ -319,4 +326,70 @@ test('repositório Supabase: chama a função de transição e traduz os erros d
     mapSupabaseBookRequestError({ code: 'P0001', message: 'invalid_transition' }).code,
     'invalid_transition',
   );
+});
+
+test('dia e horário curtos do Figma 06.04', () => {
+  assert.equal(meetingDayLabel('2026-10-03'), 'Sáb, 03/10');
+  assert.equal(meetingDayLabel('2026-02-30'), null);
+  assert.equal(meetingDayLabel('x'), null);
+  assert.equal(meetingHourLabel('10:00'), '10h');
+  assert.equal(meetingHourLabel('09:30'), '9h30');
+  assert.equal(
+    meetingWhen({ meetingDate: '2026-10-03', meetingTime: '10:00' }),
+    'Sáb, 03/10 · 10h',
+  );
+});
+
+test('chips de dia começam amanhã e de horário ficam no horário comercial', () => {
+  const days = meetingDayOptions(new Date(2026, 9, 2, 22), 3);
+  assert.deepEqual(days, [
+    { value: '2026-10-03', label: 'Sáb, 03/10' },
+    { value: '2026-10-04', label: 'Dom, 04/10' },
+    { value: '2026-10-05', label: 'Seg, 05/10' },
+  ]);
+  const lastOfMonth = meetingDayOptions(new Date(2026, 9, 31), 1);
+  assert.equal(lastOfMonth[0].value, '2026-11-01');
+  assert.ok(meetingTimeOptions.every((time) => /^\d{2}:00$/.test(time)));
+});
+
+test('textos de cada situação da negociação (Figma 06.03 a 06.18)', () => {
+  const when = { meetingDate: '2026-10-03', meetingTime: '10:00' };
+  const owner = { asOwner: true, modality: 'trade', ownerName: 'Ana' };
+  const requester = { asOwner: false, modality: 'sale', ownerName: 'Ana' };
+  assert.equal(
+    requestScreenCopy({ ...when, status: 'pending' }, owner).title,
+    'Alguém quer trocar seu livro',
+  );
+  assert.equal(
+    requestScreenCopy({ ...when, status: 'pending' }, requester).body,
+    'Aguardando a resposta de Ana.',
+  );
+  assert.equal(
+    requestScreenCopy({ ...when, status: 'accepted' }, requester).body,
+    'Sáb, 03/10 · 10h · compra com Ana.',
+  );
+  assert.equal(
+    requestScreenCopy({ ...when, status: 'accepted' }, owner).body,
+    'Sáb, 03/10 · 10h · troca com quem pediu.',
+  );
+  assert.match(
+    requestScreenCopy({ ...when, status: 'pending' }, { ...requester, ownerName: null }).body,
+    /quem anunciou/,
+  );
+  for (const status of ['completed', 'canceled', 'rejected']) {
+    const copy = requestScreenCopy({ ...when, status }, owner);
+    assert.ok(copy.title.length > 0 && copy.body.length > 0, status);
+  }
+  assert.match(
+    requestScreenCopy({ ...when, status: 'rejected' }, owner).body,
+    /continua disponível/,
+  );
+});
+
+test('confirmações antes de recusar, cancelar e concluir', () => {
+  const base = { asOwner: true, ownerName: 'Ana', listingTitle: 'Dom Casmurro' };
+  assert.equal(confirmCopy('reject', base).title, 'Recusar esta proposta?');
+  assert.match(confirmCopy('reject', base).body, /Dom Casmurro continua disponível/);
+  assert.match(confirmCopy('cancel', { ...base, asOwner: false }).body, /^Ana /);
+  assert.equal(confirmCopy('complete', base).confirm, 'Concluir negociação');
 });

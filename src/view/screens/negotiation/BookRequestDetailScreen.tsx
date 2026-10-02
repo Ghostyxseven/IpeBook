@@ -2,24 +2,21 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBookRequestDetail } from '../../../factories/bookRequest';
-import { Button } from '../../components/ui/Button';
+import { confirmCopy, requestScreenCopy } from '../../../model/services/bookRequestFormat';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
-import { StatusBadge } from '../../components/catalog/StatusBadge';
-import { ListingCover } from '../../components/catalog/ListingCover';
-import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
-import {
-  meetingDateLabel,
-  meetingSummary,
-  meetingTimeLabel,
-  requestStatusLabel,
-} from '../../../model/services/bookRequestFormat';
+import { ActionBar } from '../../components/negotiation/ActionBar';
+import { MeetingCard } from '../../components/negotiation/MeetingCard';
+import { OutcomeHero } from '../../components/negotiation/OutcomeHero';
+import { RequestBookRow } from '../../components/negotiation/RequestBookRow';
+import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
+import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 
 /**
- * Detalhe da solicitação (requerente OU dono visualizam este tela com ações
- * (aceitar, recusar, cancelar, confirmar conclusão).
+ * Negociação de um livro (Figma 06.03 a 06.18): a mesma tela mostra a proposta recebida ou
+ * enviada, o encontro combinado, as confirmações e o retorno de cada etapa.
  */
 export function BookRequestDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -33,26 +30,20 @@ export function BookRequestDetailScreen() {
     );
   }
 
-  if (vm.status === 'notFound') {
+  if (vm.status === 'notFound' || vm.status === 'error') {
     return (
       <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
         <View style={styles.content}>
-          <EmptyState
-            title="Solicitação não encontrada"
-            message={vm.error ?? ''}
-            actionLabel="Ver minhas negociações"
-            onAction={() => router.replace('/negociacoes')}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (vm.status === 'error') {
-    return (
-      <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
-        <View style={styles.content}>
-          <ErrorState message={vm.error ?? ''} onRetry={vm.retry} />
+          {vm.status === 'notFound' ? (
+            <EmptyState
+              title="Negociação não encontrada"
+              message={vm.error ?? ''}
+              actionLabel="Ver conversas"
+              onAction={() => router.replace('/conversas')}
+            />
+          ) : (
+            <ErrorState message={vm.error ?? ''} onRetry={vm.retry} />
+          )}
         </View>
       </SafeAreaView>
     );
@@ -61,110 +52,162 @@ export function BookRequestDetailScreen() {
   const { request, listing, capabilities } = vm;
   if (!request || !listing) return null;
 
-  const badgeVariant =
-    request.status === 'accepted'
-      ? 'reserved'
-      : request.status === 'completed'
-        ? 'completed'
-        : request.status === 'pending'
-          ? 'available'
-          : 'archived';
+  const asOwner = capabilities.asOwner;
+  const copy = requestScreenCopy(request, {
+    asOwner,
+    modality: listing.modality,
+    ownerName: listing.ownerFirstName,
+  });
+  const openListing = () => router.push({ pathname: '/livro/[id]', params: { id: listing.id } });
+  const error = vm.error ? <FormMessage tone="error" message={vm.error} /> : null;
 
+  // Figma 06.17, 06.11 e 06.07: confirmação antes de recusar, cancelar ou concluir.
+  if (vm.confirming) {
+    const text = confirmCopy(vm.confirming, {
+      asOwner,
+      ownerName: listing.ownerFirstName,
+      listingTitle: listing.title,
+    });
+    const completing = vm.confirming === 'complete';
+    return (
+      <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <OutcomeHero title={text.title} body={text.body} />
+          {error}
+          <View style={styles.stack}>
+            <Button
+              label={completing ? text.confirm : text.keep}
+              onPress={completing ? vm.confirm : vm.dismissConfirm}
+              loading={completing && vm.busy}
+            />
+            <Button
+              label={completing ? text.keep : text.confirm}
+              variant={completing ? 'text' : 'danger'}
+              onPress={completing ? vm.dismissConfirm : vm.confirm}
+              loading={!completing && vm.busy}
+            />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  // Figma 06.05: logo depois de aceitar, o retorno com o encontro combinado.
+  if (vm.lastAction === 'accepted' && request.status === 'accepted') {
+    return (
+      <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <OutcomeHero
+            icon="check"
+            title="Um encontro, um novo capítulo."
+            body="Seu livro ficou reservado. Quem pediu recebe um aviso no app."
+          />
+          <MeetingCard request={request} />
+          <RequestBookRow listing={listing} onPress={openListing} />
+        </ScrollView>
+        <ActionBar>
+          <Button label="Acompanhar encontro" onPress={vm.clearLastAction} />
+        </ActionBar>
+      </SafeAreaView>
+    );
+  }
+
+  // Figma 06.08, 06.12 e 06.18: a negociação terminou.
+  if (
+    request.status === 'completed' ||
+    request.status === 'canceled' ||
+    request.status === 'rejected'
+  ) {
+    return (
+      <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <OutcomeHero
+            icon={request.status === 'completed' ? 'checkCircle' : undefined}
+            title={copy.title}
+            body={copy.body}
+          />
+          <RequestBookRow listing={listing} onPress={openListing} />
+        </ScrollView>
+        <ActionBar>
+          <Button label="Explorar livros" onPress={() => router.replace('/explorar')} />
+          <Button
+            label="Voltar às conversas"
+            variant="text"
+            onPress={() => router.replace('/conversas')}
+          />
+        </ActionBar>
+      </SafeAreaView>
+    );
+  }
+
+  // Figma 06.06: encontro combinado, à espera da entrega.
+  if (request.status === 'accepted') {
+    return (
+      <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <OutcomeHero title={copy.title} body={copy.body} />
+          <MeetingCard request={request} highlighted />
+          <RequestBookRow listing={listing} onPress={openListing} />
+          <Text style={styles.note}>Confira o estado do livro antes de concluir a negociação.</Text>
+          {error}
+          <View style={styles.stack}>
+            {capabilities.canComplete && (
+              <Button label="Concluir negociação" onPress={() => vm.askConfirm('complete')} />
+            )}
+            {capabilities.canCancel && (
+              <Button
+                label="Cancelar encontro"
+                variant="danger"
+                onPress={() => vm.askConfirm('cancel')}
+              />
+            )}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  // Figma 06.03: proposta pendente (recebida por quem anunciou ou enviada por quem pediu).
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.hero}>
-          <ListingCover listing={listing} variant="tile" />
-          <View style={styles.heroText}>
-            <Text style={styles.bookTitle}>{listing.title}</Text>
-            <Text style={styles.bookAuthor}>{listing.author}</Text>
-            <View style={{ marginTop: spacing.xxs, alignSelf: 'flex-start' }}>
-              <StatusBadge variant={badgeVariant as any} />
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Situação</Text>
-          <Text style={styles.sectionValue}>{requestStatusLabel(request.status)}</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Encontro proposto</Text>
-          <Text style={styles.meetingSummary}>{meetingSummary(request)}</Text>
-          <View style={styles.metaRow}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.metaLabel}>Local</Text>
-              <Text style={styles.metaValue}>{request.publicLocation}</Text>
-            </View>
-          </View>
-          <View style={styles.metaRow}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.metaLabel}>Dia</Text>
-              <Text style={styles.metaValue}>{meetingDateLabel(request.meetingDate)}</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.metaLabel}>Horário</Text>
-              <Text style={styles.metaValue}>{meetingTimeLabel(request.meetingTime)}</Text>
-            </View>
-          </View>
-          <View style={styles.metaRow}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.metaLabel}>
-                {capabilities.asOwner ? 'Requerente' : 'Dono do livro'}
-              </Text>
-              <Text style={styles.metaValue}>
-                {capabilities.asOwner
-                  ? (listing.ownerFirstName ?? '—')
-                  : (listing.ownerFirstName ?? '—')}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {vm.error ? <FormMessage tone="error" message={vm.error} /> : null}
-
-        <View style={styles.actions}>
-          {capabilities.canAccept ? (
-            <Button
-              label="Aceitar proposta"
-              onPress={() => vm.accept()}
-              loading={vm.busy}
-              variant="primary"
-            />
-          ) : null}
-          {capabilities.canReject ? (
+        {asOwner ? (
+          <Text style={styles.title} accessibilityRole="header">
+            {copy.title}
+          </Text>
+        ) : (
+          <OutcomeHero title={copy.title} body={copy.body} />
+        )}
+        <Text style={styles.label}>{asOwner ? 'Você entrega' : 'Você pediu'}</Text>
+        <RequestBookRow listing={listing} onPress={openListing} />
+        <Text style={styles.label}>Encontro proposto</Text>
+        <MeetingCard request={request} />
+        {asOwner && <Text style={styles.note}>{copy.body}</Text>}
+        {error}
+      </ScrollView>
+      {asOwner ? (
+        <ActionBar row>
+          <View style={styles.flex}>
             <Button
               label="Recusar"
-              onPress={() => vm.reject()}
-              loading={vm.busy}
               variant="secondary"
+              onPress={() => vm.askConfirm('reject')}
+              disabled={vm.busy}
             />
-          ) : null}
-          {capabilities.canCancel ? (
-            <Button
-              label="Cancelar solicitação"
-              onPress={() => vm.cancel()}
-              loading={vm.busy}
-              variant="text"
-            />
-          ) : null}
-          {capabilities.canComplete ? (
-            <Button
-              label="Confirmar conclusão"
-              onPress={() => vm.complete()}
-              loading={vm.busy}
-              variant="primary"
-            />
-          ) : null}
-          {!capabilities.canAccept &&
-          !capabilities.canReject &&
-          !capabilities.canCancel &&
-          !capabilities.canComplete ? (
-            <Button label="Voltar" onPress={() => router.back()} variant="secondary" />
-          ) : null}
-        </View>
-      </ScrollView>
+          </View>
+          <View style={styles.flex}>
+            <Button label="Aceitar" onPress={vm.accept} loading={vm.busy} />
+          </View>
+        </ActionBar>
+      ) : capabilities.canCancel ? (
+        <ActionBar>
+          <Button
+            label="Cancelar proposta"
+            variant="danger"
+            onPress={() => vm.askConfirm('cancel')}
+          />
+        </ActionBar>
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -173,46 +216,20 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
   content: {
     padding: metrics.pagePadding,
-    paddingTop: spacing.md,
-    gap: spacing.sm,
+    gap: spacing.md,
     width: '100%',
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
-    paddingBottom: spacing.lg,
   },
-  hero: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
-    borderRadius: radius.extraLarge,
-    backgroundColor: colors.background,
+  title: {
+    ...typography.titleLarge,
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '400',
+    color: colors.onSurface,
   },
-  heroText: { flex: 1, gap: spacing.xxs },
-  bookTitle: { ...typography.titleMedium, fontWeight: '600', color: colors.text },
-  bookAuthor: { ...typography.bodyLarge, color: colors.secondaryText },
-  section: { gap: spacing.xxs },
-  sectionTitle: { ...typography.labelMedium, color: colors.secondaryText },
-  sectionValue: { ...typography.titleMedium, color: colors.text },
-  card: {
-    padding: spacing.md,
-    borderRadius: radius.medium,
-    backgroundColor: colors.surface,
-    borderWidth: metrics.borderThin,
-    borderColor: colors.border,
-    gap: spacing.sm,
-  },
-  cardTitle: { ...typography.titleMedium, fontWeight: '600', color: colors.text },
-  meetingSummary: { ...typography.bodyLarge, color: colors.text },
-  metaRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.xxs,
-  },
-  metaLabel: { ...typography.caption, color: colors.secondaryText },
-  metaValue: { ...typography.bodyMedium, color: colors.text },
-  actions: {
-    gap: spacing.sm,
-    marginTop: spacing.md,
-  },
+  label: { ...typography.labelLarge, color: colors.onSurfaceVariant, marginBottom: -spacing.xs },
+  note: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
+  stack: { gap: spacing.xs },
+  flex: { flex: 1 },
 });

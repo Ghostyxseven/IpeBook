@@ -1,25 +1,47 @@
-import { Link, router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useRef } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { RequestStatus } from '../../../model/entities/BookRequest';
 import { useBookRequestList } from '../../../factories/bookRequest';
+import { meetingWhen, requestListLabel } from '../../../model/services/bookRequestFormat';
+import { AppIcon, type AppIconName } from '../../components/AppIcon';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
-import { StatusBadge } from '../../components/catalog/StatusBadge';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
-import {
-  meetingSummary,
-  requestListLabel,
-  requestStatusLabel,
-} from '../../../model/services/bookRequestFormat';
+
+/** Ícone de cada situação no círculo à esquerda da linha. */
+const statusIcons: Record<RequestStatus, AppIconName> = {
+  pending: 'swap',
+  accepted: 'calendar',
+  completed: 'checkCircle',
+  rejected: 'close',
+  canceled: 'close',
+};
 
 /**
- * Lista de solicitações do usuário logado:
- * - enviadas (onde eu sou requerente)
- * - recebidas (onde eu sou dono do anúncio)
+ * Conversas (Figma 06.01): as negociações em que a pessoa pediu ou recebeu um pedido.
+ * Na aba, a tela mostra o título; aberta pela pilha, o cabeçalho já o mostra.
  */
-export function BookRequestListScreen() {
+export function BookRequestListScreen({ showTitle = true }: { showTitle?: boolean }) {
   const vm = useBookRequestList();
+  const { retry } = vm;
+
+  // Ao voltar de uma negociação, a lista mostra a situação nova.
+  const firstFocus = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (firstFocus.current) firstFocus.current = false;
+      else void retry();
+    }, [retry]),
+  );
+
+  const title = showTitle ? (
+    <Text style={styles.title} accessibilityRole="header">
+      Conversas
+    </Text>
+  ) : null;
 
   if (vm.status === 'loading') {
     return (
@@ -29,26 +51,21 @@ export function BookRequestListScreen() {
     );
   }
 
-  if (vm.status === 'error') {
+  if (vm.status === 'error' || vm.status === 'empty') {
     return (
       <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
         <View style={styles.content}>
-          <ErrorState message={vm.error ?? ''} onRetry={vm.retry} />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (vm.status === 'empty') {
-    return (
-      <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
-        <View style={styles.content}>
-          <EmptyState
-            title="Nenhuma negociação"
-            message="Quando você pedir um livro ou receber uma solicitação, ela aparecerá aqui."
-            actionLabel="Explorar livros"
-            onAction={() => router.replace('/explorar')}
-          />
+          {title}
+          {vm.status === 'error' ? (
+            <ErrorState message={vm.error ?? ''} onRetry={vm.retry} />
+          ) : (
+            <EmptyState
+              title="Nenhuma negociação"
+              message="Quando você pedir um livro ou receber um pedido, a conversa aparece aqui."
+              actionLabel="Explorar livros"
+              onAction={() => router.replace('/explorar')}
+            />
+          )}
         </View>
       </SafeAreaView>
     );
@@ -56,64 +73,48 @@ export function BookRequestListScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title} accessibilityRole="header">
-            Minhas negociações
+      <FlatList
+        data={vm.items}
+        keyExtractor={(item) => item.request.id}
+        contentContainerStyle={styles.content}
+        ListHeaderComponent={title}
+        ListFooterComponent={
+          <Text style={styles.footer}>
+            Combine sempre em lugar público e movimentado. Não compartilhe senhas ou códigos.
           </Text>
-          {vm.counts.pending > 0 ? (
-            <Text style={styles.subtitle}>
-              {`${vm.counts.pending} aguardando`}
-              {vm.counts.accepted > 0 ? ` • ${vm.counts.accepted} combinada(s)` : ''}
-            </Text>
-          ) : vm.counts.accepted > 0 ? (
-            <Text style={styles.subtitle}>{`${vm.counts.accepted} combinada(s)`}</Text>
-          ) : null}
-        </View>
-        <FlatList
-          data={vm.items}
-          keyExtractor={(item) => item.request.id}
-          contentContainerStyle={{ gap: spacing.sm }}
-          ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
-          renderItem={({ item }) => {
-            const { request, listing, asOwner } = item;
-            const variant =
-              request.status === 'accepted'
-                ? 'reserved'
-                : request.status === 'pending'
-                  ? asOwner
-                    ? 'reserved'
-                    : 'available'
-                  : request.status === 'completed'
-                    ? 'completed'
-                    : 'archived';
-            return (
-              <Link href={`/negociacoes/${request.id}`} asChild>
-                <Pressable
-                  style={styles.card}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${listing?.title ?? 'Livro'} — ${requestStatusLabel(request.status)}. ${meetingSummary(request)}`}
-                  accessibilityHint="Abrir detalhes"
-                >
-                  <View style={{ flex: 1, gap: spacing.xxs }}>
-                    <Text style={styles.bookTitle} numberOfLines={1}>
-                      {listing?.title ?? 'Livro indisponível'}
-                    </Text>
-                    <Text style={styles.bookAuthor} numberOfLines={1}>
-                      {listing?.author ?? ''}
-                    </Text>
-                    <Text style={styles.meeting}>{meetingSummary(request)}</Text>
-                  </View>
-                  <View style={styles.side}>
-                    <StatusBadge variant={variant as any} />
-                    <Text style={styles.statusLabel}>{requestListLabel(request, { asOwner })}</Text>
-                  </View>
-                </Pressable>
-              </Link>
-            );
-          }}
-        />
-      </View>
+        }
+        renderItem={({ item }) => {
+          const { request, listing, asOwner } = item;
+          const bookTitle = listing?.title ?? 'Livro indisponível';
+          const status = requestListLabel(request, { asOwner });
+          const when = `${meetingWhen(request)} · ${request.publicLocation}`;
+          return (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`${bookTitle}. ${status}. ${when}`}
+              accessibilityHint="Abre a negociação"
+              onPress={() => router.push(`/negociacoes/${request.id}`)}
+              style={({ pressed }) => [styles.item, pressed && styles.pressed]}
+            >
+              <View style={styles.avatar}>
+                <AppIcon name={statusIcons[request.status]} color={colors.onSelected} />
+              </View>
+              <View style={styles.text}>
+                <Text style={styles.itemTitle} numberOfLines={1}>
+                  {bookTitle}
+                </Text>
+                <Text style={styles.itemBody} numberOfLines={1}>
+                  {status}
+                </Text>
+                <Text style={styles.itemMeta} numberOfLines={1}>
+                  {when}
+                </Text>
+              </View>
+              <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+            </Pressable>
+          );
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -121,29 +122,42 @@ export function BookRequestListScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
   content: {
-    flex: 1,
     padding: metrics.pagePadding,
-    gap: spacing.sm,
+    gap: spacing.xs,
     width: '100%',
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
   },
-  header: { gap: spacing.xxs, paddingTop: spacing.sm },
-  title: { ...typography.titleLarge, color: colors.text },
-  subtitle: { ...typography.labelMedium, color: colors.secondaryText },
-  card: {
+  title: {
+    ...typography.titleLarge,
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '400',
+    color: colors.onSurface,
+    marginBottom: spacing.xs,
+  },
+  // Item de lista com três linhas (Figma 06.01): círculo, nome, mensagem e livro em verde.
+  item: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: radius.extraLarge,
-    backgroundColor: colors.background,
-    borderWidth: metrics.borderThin,
-    borderColor: colors.border,
-    minHeight: metrics.touchTarget,
+    gap: spacing.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xs,
+    marginHorizontal: -spacing.xs,
+    borderRadius: radius.small,
   },
-  bookTitle: { ...typography.titleMedium, fontWeight: '600', color: colors.text },
-  bookAuthor: { ...typography.bodyMedium, color: colors.secondaryText },
-  meeting: { ...typography.bodyMedium, color: colors.text },
-  side: { alignItems: 'flex-end', gap: spacing.xxs },
-  statusLabel: { ...typography.caption, color: colors.secondaryText },
+  pressed: { backgroundColor: colors.pressed },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.full,
+    backgroundColor: colors.selected,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: { flex: 1 },
+  itemTitle: { ...typography.bodyLarge, color: colors.onSurface },
+  itemBody: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
+  itemMeta: { ...typography.labelMedium, color: colors.action },
+  footer: { ...typography.bodyMedium, color: colors.onSurfaceVariant, marginTop: spacing.md },
 });

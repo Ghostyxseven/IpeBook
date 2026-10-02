@@ -30,6 +30,8 @@ const symbols = {
   person: { ios: 'person', android: 'person', web: 'person' },
   shelf: { ios: 'books.vertical', android: 'library_books', web: 'library_books' },
   document: { ios: 'doc.text', android: 'description', web: 'description' },
+  calendar: { ios: 'calendar', android: 'calendar_today', web: 'calendar_today' },
+  place: { ios: 'mappin.and.ellipse', android: 'location_on', web: 'location_on' },
   info: { ios: 'info.circle', android: 'info', web: 'info' },
   chat: { ios: 'bubble.left.and.bubble.right', android: 'chat_bubble', web: 'chat_bubble' },
 } as const;
