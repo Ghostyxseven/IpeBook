@@ -34,3 +34,48 @@ export type CatalogFilters = {
 };
 
 export const emptyFilters: CatalogFilters = { query: '', modalities: [], category: null };
+
+// ── Anúncios de quem publicou (spec 025) ────────────────────────────────────
+
+/**
+ * As quatro situações que o banco aceita (ADR 0008).
+ *
+ * Existe separado do `ListingStatus` de propósito: aquele descreve o que CHEGA
+ * ao catálogo, e só duas situações chegam. Alargá-lo obrigaria `statusLabels`
+ * em `catalogFormat.ts` a crescer junto — arquivo da feature de catálogo, que
+ * não tem nada a ver com esta mudança.
+ */
+export type MyListingStatus = ListingStatus | 'concluido' | 'arquivado';
+
+/**
+ * O anúncio visto por quem o publicou.
+ *
+ * Difere do `Listing` do catálogo em três pontos: não traz `ownerFirstName`
+ * (quem vê é o dono), carrega a situação completa, e guarda o `coverPath` —
+ * o caminho no bucket, sem o qual não há como apagar a foto depois.
+ */
+export type MyListing = Omit<Listing, 'status' | 'ownerFirstName'> & {
+  status: MyListingStatus;
+  coverPath: string | null;
+};
+
+/** O que o formulário produz, antes de virar linha. */
+export type ListingDraft = {
+  title: string;
+  author: string;
+  category: string;
+  modality: Modality;
+  /** Em centavos. Só na venda; `null` nas outras — o banco recusa o contrário. */
+  priceCents: number | null;
+  /** Só na troca. */
+  tradeTerms: string | null;
+  condition: ListingCondition;
+  neighborhood: string | null;
+  city: string | null;
+  description: string | null;
+};
+
+/** Situações em que o anúncio ainda é do dono para mexer. */
+export function isEditable(status: MyListingStatus): boolean {
+  return status === 'disponivel';
+}
