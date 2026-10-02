@@ -60,3 +60,14 @@ O arquivo [IpêBook-Mobile](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/
 ## Próximo passo
 
 Decidir, por linha, se vale a raiz ou a referência. Se for a referência, atualizar `design-tokens.json`, conferir contraste (4,5:1 para texto) e checar as telas afetadas no mesmo PR.
+
+## Padrões do app sem quadro no Figma (02/10/2026)
+
+Itens criados pela spec [024](../../specs/024-configuracoes-notificacoes/spec.md) que não têm quadro no arquivo `IpêBook Mobile` visto até agora. Cada um usa só tokens e componentes existentes; precisam de uma decisão de design antes de virarem padrão.
+
+| Item                                                            | Situação                                                                                                                                                                                                      |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sino de Notificações com contador no topo do Início             | Sem quadro. Contador em `radius.full`, fundo `color.error`, texto `labelMedium`, 16 px de altura mínima (`spacing.md`). O rótulo acessível diz "3 avisos não lidos". Provisório até o Perfil existir (#37).   |
+| Engrenagem de Configurações no topo do Início                   | Sem quadro. Provisória: o acesso definitivo é pelo Perfil (#37).                                                                                                                                              |
+| Tela de Configurações (chaves por tipo de aviso, versão e Sair) | Sem quadro visto (seção F do Figma não foi acessada). Usa a chave nativa (`Switch`) e o botão `danger`.                                                                                                       |
+| Barra superior das telas de Notificações e Configurações        | A referência [`TopAppBar`](referencia/components/TopAppBar/README.md) tem 64 px e título `m3-title-lg`. O app usa o cabeçalho padrão do Expo Router com o título à esquerda; a altura ainda não foi igualada. |
