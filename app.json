@@ -34,6 +34,13 @@
         }
       ]
     ],
-    "scheme": "ipebook"
+    "scheme": "ipebook",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7593e188-168b-4282-87b9-74afae861981"
+      }
+    },
+    "owner": "usermicael"
   }
 }
