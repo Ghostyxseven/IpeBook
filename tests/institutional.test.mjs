@@ -54,6 +54,13 @@ test('segurança resolve por endereço e os documentos distinguem demonstração
   assert.match(JSON.stringify(documents.privacidade), /Não envia a consulta/);
   assert.match(JSON.stringify(documents.privacidade), /não incorporamos/);
   assert.match(JSON.stringify(documents.privacidade), /registros.*finalidades.*bases legais/);
+  assert.match(JSON.stringify(documents.privacidade), /primeiro nome de quem anunciou/);
+  assert.match(JSON.stringify(documents.privacidade), /bairro, cidade/);
+  assert.match(
+    JSON.stringify(documents.termos),
+    /catálogo de livros anunciados por outras pessoas/,
+  );
+  assert.doesNotMatch(JSON.stringify(documents), /área inicial em construção/);
   for (const doc of Object.values(documents)) {
     assert.ok(doc.summary.length >= 3);
     assert.ok(doc.sources.length > 0);

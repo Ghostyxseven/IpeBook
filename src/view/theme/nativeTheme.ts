@@ -119,4 +119,6 @@ export const typography = {
   bodyLarge: typeStyle(tokens.typography.scale.bodyLarge),
   bodyMedium: typeStyle(tokens.typography.scale.bodyMedium),
   labelMedium: typeStyle(tokens.typography.scale.labelMedium),
+  /** Rótulo de botão do Material 3 (Figma `Android/m3-label-lg`). */
+  labelLarge: typeStyle(tokens.typography.scale.labelLarge),
 } as const;

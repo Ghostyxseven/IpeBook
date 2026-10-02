@@ -23,6 +23,7 @@ export function createMemoryAuthRepository({
   const gate = createUserChangeGate();
   let current: User | null = null;
   let recoveringEmail: string | null = null;
+  let restoreFailure: AuthError | null = null;
   const calls: string[] = [];
 
   /** Mudança de sessão no "provedor", como o onAuthStateChange do Supabase. */
@@ -34,6 +35,7 @@ export function createMemoryAuthRepository({
 
   const repository: AuthRepository = {
     async getCurrentUser() {
+      if (restoreFailure) throw restoreFailure;
       return gate.holding ? null : current;
     },
     onUserChange(listener) {
@@ -104,6 +106,18 @@ export function createMemoryAuthRepository({
     /** Cria uma conta já confirmada para cenários de teste. */
     addAccount(user: User, password: string) {
       accounts.set(user.email, { user, password });
+    },
+    /** Simula reabrir o app com uma sessão salva. */
+    restoreSession(user: User) {
+      current = user;
+    },
+    /** Simula falha ao confirmar a sessão salva (ex.: token vencido e sem internet). */
+    failRestore(error: AuthError | null) {
+      restoreFailure = error;
+    },
+    /** Simula o provedor confirmando a sessão depois (ex.: internet voltou). */
+    emitProviderUser(user: User | null) {
+      setCurrent(user);
     },
     passwordOf(email: string) {
       return accounts.get(email)?.password;
