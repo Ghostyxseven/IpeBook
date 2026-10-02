@@ -8,3 +8,4 @@
 - [x] Telas de Notificações e Configurações e rotas finas; ícone com contador.
 - [x] Verificar tipos, lint, formatação, testes e bundles nativos; registrar no `verify.md`.
 - [ ] Conferir no aparelho (Android e iOS) estados vazio, erro, offline e leitura por leitor de tela.
+- [x] Ajustar Notificações e Configurações aos quadros 07.04 e 07.05 do Figma: itens de lista do Material 3, rótulos de seção e cabeçalho com voltar.

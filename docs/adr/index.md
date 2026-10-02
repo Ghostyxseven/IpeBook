@@ -18,3 +18,4 @@
 - [0016 - Cores do Figma como fonte da verdade](0016-cores-do-figma-como-fonte-da-verdade.md)
 - [0017 - Segurança, denúncias e bloqueios](0017-seguranca-denuncias-bloqueios.md) (numerado como 0011 até 02/10/2026)
 - [0018 - Transições da negociação no banco](0018-transicoes-da-negociacao-no-banco.md) (proposto, implementado)
+- [0019 - Serifa da marca e superfícies do Figma nas telas do catálogo](0019-serifa-da-marca-e-superficies-do-figma.md) (proposto, implementado)

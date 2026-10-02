@@ -20,3 +20,6 @@
 - [ ] Conferir Book Card, grade do Início e Detalhe com anúncios reais contra os quadros 02, 03 e 04.
 - [x] Revisão do MVVM (01/10/2026): regras do detalhe, linha de apoio dos cards e saudação movidas para o Model (`listingDetails`, `listingMeta`, `greeting`); alternância dos chips do Início virou ação da ViewModel (`toggleModality`, `showAll`).
 - [ ] Conferir no aparelho a saudação e a alternância dos chips depois da revisão do MVVM (sessão caiu no Waydroid; precisa de login).
+- [x] Refazer Início, Explorar e Detalhe pelos quadros finais do Figma (02.01, 02.02 e 03.01, iOS e Android): título da marca em serifa, carrossel "Recém-chegados", card da lista, capa ilustrativa com motivos e barra de ação fixa no Detalhe (ADR 0019).
+- [x] Aba Conversas na navegação principal, com as negociações.
+- [ ] Conferir no aparelho (Android e iOS) o Início, o Explorar e o Detalhe novos, incluindo a fonte da marca carregada.

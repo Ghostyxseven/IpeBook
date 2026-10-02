@@ -39,7 +39,7 @@ Conta de teste da própria pessoa, migração `20260930120000_catalogo_anuncios.
 | Início: marca, saudação, sair, barra de busca M3, chips coloridos, "Livros recentes" e atalho de doação | conforme quadro 02                              |
 | Chip selecionado inverte a cor e mostra a marca de seleção; vazio muda conforme a modalidade            | ok                                              |
 | Chips quebravam em duas linhas com a fonte do aparelho                                                  | corrigido com rolagem horizontal                |
-| Explorar: título "Encontre sua próxima história.", barra de busca e chips                               | conforme quadro 03                              |
+| Explorar: título "O que vamos ler hoje?" (Figma 02.02), barra de busca e chips                          | conforme quadro 03                              |
 | Busca "astronomia" sem resultado: "Ainda não encontramos." e "Explorar todos os livros"                 | conforme quadro 12                              |
 | Barra de navegação M3 com ícones `expo-symbols`                                                         | ok; o indicador saía retangular e foi corrigido |
 | `npm test` (60), `npm run typecheck`, bundle Android (Metro) e `expo export --platform ios`             | ok                                              |
