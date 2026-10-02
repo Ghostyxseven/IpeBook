@@ -4,7 +4,7 @@ Data: 01/10/2026
 
 ## Status
 
-Proposto. Precisa da concordância do Antonio (a negociação gera os eventos) e do Eric (o acesso fica no Perfil). Spec: [024](../../specs/024-configuracoes-notificacoes/spec.md).
+Proposto, já implementado: a migração `supabase/migrations/20261002120000_notificacoes.sql` e as telas da [spec 024](../../specs/024-configuracoes-notificacoes/spec.md) estão na `develop`. Para passar a aceito, falta a concordância do Antonio (a negociação gera os eventos) e do Eric (o acesso fica no Perfil).
 
 ## Contexto
 

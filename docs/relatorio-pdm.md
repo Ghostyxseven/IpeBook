@@ -1,6 +1,6 @@
 # Relatório de PDM — IpêBook
 
-> **Rascunho** (issue #48). A estrutura, os diagramas e as seções do Catálogo e da Autenticação partem do que já existe no repositório. As seções marcadas com **A preencher** são de cada pessoa da equipe e dependem de features ainda não implementadas. Atualizado em 01/10/2026.
+> **Rascunho** (issue #48). A estrutura, os diagramas e as seções do Catálogo e da Autenticação partem do que já existe no repositório. As seções marcadas com **A preencher** são de cada pessoa da equipe e dependem de features ainda não implementadas. Atualizado em 02/10/2026.
 
 **Equipe:** Maria Clara Almeida Martins, Micael Cardoso Reis, Antonio Carlos Gomes e Eric Vinícius dos Santos Oliveira.
 
@@ -16,7 +16,7 @@ Os requisitos detalhados ficam nas specs em [`specs/`](../specs). Resumo por fea
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------- |
 | Autenticação e onboarding (Maria Clara) | RF1 criar conta; RF2 confirmar e-mail por código; RF3 entrar e sair; RF4 recuperar senha; RF5 onboarding na 1ª abertura | [014](../specs/014-autenticacao-onboarding)                                | Implementada; validação em aparelho aberta          |
 | Catálogo (Micael)                       | RF6 ver feed; RF7 buscar e filtrar por modalidade; RF8 ver detalhe do livro                                             | [018](../specs/018-catalogo-descoberta)                                    | Implementada; conferência com anúncios reais aberta |
-| Configurações e notificações (Micael)   | RF9 ver avisos; RF10 ajustar preferências                                                                               | [024](../specs/024-configuracoes-notificacoes)                             | Apenas especificada (extra)                         |
+| Configurações e notificações (Micael)   | RF9 ver avisos; RF10 ajustar preferências                                                                               | [024](../specs/024-configuracoes-notificacoes)                             | Implementada (extra); validação em aparelho aberta  |
 | Anúncios e perfil (Eric)                | RF11 criar, editar, arquivar e excluir anúncio; RF12 ver "Minhas publicações" e perfil                                  | [025](../specs/025-anuncios-gestao) e [026](../specs/026-perfil-minimo)    | Implementada; validação em aparelho aberta          |
 | Negociação e segurança (Antonio)        | RF13 pedir o livro; RF14 aceitar ou recusar; RF15 concluir; RF16 denunciar e bloquear                                   | **A preencher** (issues #38 e #40)                                         | Não implementada                                    |
 | Página institucional Web                | Apresentar o projeto, estante de exemplos e documentos legais                                                           | [001](../specs/001-pagina-institucional) a [023](../specs/023-rotas-reais) | Implementada                                        |
@@ -73,8 +73,12 @@ flowchart TD
   C --> G["recuperar-senha"] --> D
   C --> D
   D <--> H["(tabs)/explorar"]
+  D <--> J["(tabs)/estante"]
+  D <--> K["(tabs)/perfil"]
   D --> I["(app)/livro/[id]"]
   H --> I
+  J --> L["(app)/anunciar e anunciar/[id]"]
+  M["(app)/notificacoes e (app)/configuracoes<br/>(rotas prontas, sem entrada nas telas hoje)"]
 ```
 
 ## 4. Casos de uso
@@ -90,12 +94,12 @@ flowchart LR
     UC4["Buscar e filtrar livros"]
     UC5["Ver detalhe do livro"]
     UC0["Ler a página institucional e os documentos legais"]
+    UC6["Publicar e gerenciar anúncios"]
+    UC9["Ver notificações e configurações"]
   end
   subgraph Planejados
-    UC6["Publicar e gerenciar anúncios"]
     UC7["Pedir, aceitar, recusar e concluir"]
     UC8["Denunciar e bloquear"]
-    UC9["Ver notificações e configurações"]
   end
   V --> UC0
   V --> UC1
@@ -103,19 +107,21 @@ flowchart LR
   P --> UC3
   P --> UC4
   P --> UC5
-  P -.-> UC6
+  P --> UC6
+  P --> UC9
   P -.-> UC7
   P -.-> UC8
-  P -.-> UC9
 ```
 
 ## 5. Modelo de dados (Supabase)
 
-Definido no [ADR 0008](adr/0008-modelo-de-anuncios-supabase.md) e na migração `supabase/migrations/20260930120000_catalogo_anuncios.sql`.
+Definido no [ADR 0008](adr/0008-modelo-de-anuncios-supabase.md) e no [ADR 0011](adr/0011-entrega-de-notificacoes.md), com as migrações `supabase/migrations/20260930120000_catalogo_anuncios.sql` e `20261002120000_notificacoes.sql`.
 
 ```mermaid
 erDiagram
   AUTH_USERS ||--o{ LISTINGS : "anuncia (owner_id)"
+  AUTH_USERS ||--o{ NOTIFICATIONS : "recebe"
+  AUTH_USERS ||--o| NOTIFICATION_PREFERENCES : "ajusta"
   LISTINGS {
     uuid id PK
     uuid owner_id FK
@@ -135,6 +141,8 @@ erDiagram
     timestamptz updated_at
   }
 ```
+
+As tabelas `notifications` e `notification_preferences` (colunas na migração) têm RLS: cada pessoa lê e altera só as suas, e os avisos são criados apenas pela função `create_notification`, chamada por gatilhos do banco.
 
 O catálogo lê somente a view `catalog_listings` (anúncios `disponivel` ou `reservado` de outras pessoas, com o primeiro nome de quem anunciou). A RLS permite que cada pessoa leia anúncios visíveis e crie, altere e exclua só os próprios.
 
@@ -229,24 +237,24 @@ flowchart TD
 
 ## 7. Padrões de projeto
 
-| Padrão                      | Onde está                                                                      | Para que serve                                                                            |
-| --------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| MVVM Simplificado           | `src/model`, `src/viewmodel`, `src/view`, `src/app`                            | Separar regra de negócio, estado de tela e interface                                      |
-| Repository                  | `AuthRepository`, `CatalogRepository` e suas implementações Supabase e memória | Esconder o acesso a dados e trocar a fonte nos testes                                     |
-| Factory                     | `src/factories/auth.ts` e `catalog.ts`                                         | Montar as dependências reais e entregar hooks prontos às telas                            |
-| Injeção de dependência      | ViewModels recebem o repositório por parâmetro                                 | Testar sem rede nem Supabase                                                              |
-| Adapter / tradução de erros | `supabaseAuthRepository`, `supabaseCatalogRepository`                          | Converter erros do Supabase em códigos do domínio e mensagens em português                |
-| Funções puras no Model      | `catalogFormat`, `catalogFilters`, `userFormat`, `authValidation`              | Regras testáveis sem React                                                                |
-| Observer com portão         | `userChangeGate` e `onUserChange`                                              | Avisar as ViewModels sobre entrada e saída, retendo avisos durante a recuperação de senha |
-| Camada de infraestrutura    | `src/infra/` (ADR 0012)                                                        | Isolar SDKs e recursos da plataforma do Model                                             |
+| Padrão                      | Onde está                                                                                                                     | Para que serve                                                                            |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| MVVM Simplificado           | `src/model`, `src/viewmodel`, `src/view`, `src/app`                                                                           | Separar regra de negócio, estado de tela e interface                                      |
+| Repository                  | `AuthRepository`, `CatalogRepository`, `ListingsRepository` e `NotificationRepository`, com implementações Supabase e memória | Esconder o acesso a dados e trocar a fonte nos testes                                     |
+| Factory                     | `src/factories/` (`auth`, `catalog`, `listings`, `notifications`, `readingMode`)                                              | Montar as dependências reais e entregar hooks prontos às telas                            |
+| Injeção de dependência      | ViewModels recebem o repositório por parâmetro                                                                                | Testar sem rede nem Supabase                                                              |
+| Adapter / tradução de erros | `supabaseAuthRepository`, `supabaseCatalogRepository`, `supabaseListingsRepository`, `supabaseNotificationRepository`         | Converter erros do Supabase em códigos do domínio e mensagens em português                |
+| Funções puras no Model      | `catalogFormat`, `catalogFilters`, `userFormat`, `authValidation`, `listingValidation`, `listingFormat`, `notificationFormat` | Regras testáveis sem React                                                                |
+| Observer com portão         | `userChangeGate` e `onUserChange`                                                                                             | Avisar as ViewModels sobre entrada e saída, retendo avisos durante a recuperação de senha |
+| Camada de infraestrutura    | `src/infra/` (ADR 0012)                                                                                                       | Isolar SDKs e recursos da plataforma do Model                                             |
 
 ## 8. Qualidade e testes
 
 - `npm run verify`: tipos (`tsc` estrito), lint, formatação (Prettier) e testes.
-- 89 testes automatizados em `tests/` (Model, ViewModels, repositórios com cliente falso e supabase-js real, rotas, design system e arquitetura) em 01/10/2026.
+- 185 testes automatizados em `tests/` (Model, ViewModels, repositórios com cliente falso e supabase-js real, rotas, design system e arquitetura) em 02/10/2026.
 - `tests/architecture.test.mjs` impede que o Model importe React, React Native ou Expo e que Views importem repositórios.
 - CI no GitHub Actions; hooks de commit com Husky, commitlint e lint-staged.
-- Limites conhecidos: a validação em aparelho real, com anúncios de outra conta, ainda está pendente (issues #28 e #44).
+- Limites conhecidos: nenhuma tela do app foi validada em aparelho real ainda (issues #12, #28 e #44); os `verify.md` das specs 013, 014, 024, 025 e 026 registram o que falta.
 
 ## 9. Seções individuais
 
@@ -339,7 +347,7 @@ Uma regra que atravessa a feature inteira: **só anúncio `disponivel` pode ser 
 
 ## 10. Decisões arquiteturais
 
-Índice completo em [`adr/index.md`](adr/index.md). Os ADRs 0008, 0011 e 0014 ainda estão **propostos**.
+Índice completo em [`adr/index.md`](adr/index.md). O ADR 0008 foi aceito em 02/10/2026. Os ADRs 0011 e 0014 já estão implementados e aguardam a concordância da equipe; o 0015 aguarda o primeiro build.
 
 ## 11. Pendências do relatório
 

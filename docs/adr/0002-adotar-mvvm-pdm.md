@@ -1,6 +1,6 @@
-# 2. Adotar MVVM Simplificado (Padrão PDM)
+# 0002 — Adotar MVVM Simplificado (Padrão PDM)
 
-Data: 2026-09-29
+Data: 29/09/2026
 
 ## Status
 
@@ -13,6 +13,7 @@ Precisamos de uma arquitetura limpa e bem definida para o desenvolvimento do Ipe
 ## Decisão
 
 Adotaremos o **MVVM Simplificado (Padrão PDM)**, o qual separa rigorosamente a aplicação em três camadas distintas:
+
 1. **Model**: Entidades puras, serviços com regras de negócio e repositórios (acesso a dados). Não conhece React nem UI.
 2. **ViewModel**: Implementada como Custom Hooks (ex: `useLoginViewModel.ts`). Gerencia o estado da tela, conecta a View ao Model e expõe ações (`handleLogin`, etc), mas não contém JSX ou componentes visuais.
 3. **View**: Telas e componentes (arquivos `.tsx`). Importa a ViewModel para exibir dados e reagir a estados (loading, erro, etc) sem conter regras de negócio diretamente.

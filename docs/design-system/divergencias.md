@@ -23,6 +23,16 @@ Comparação de `design-tokens.json` (raiz, usado pelo app) com [`referencia/tok
 
 Iguais nos dois: `cover.blue`/`cover-navy` `#253C4F` e `cover.brown`/`cover-brown` `#633E36`.
 
+## Tipografia
+
+| Papel                   | `design-tokens.json` e `foundations.md`  | Referência ([`tipografia.md`](referencia/tipografia.md)) |
+| ----------------------- | ---------------------------------------- | -------------------------------------------------------- |
+| Marca e títulos         | Roboto                                   | Source Serif 4 (600 e 700), no máximo um título por tela |
+| Interface Android e Web | Roboto                                   | Roboto Flex                                              |
+| Interface iOS           | Roboto (o app já usa a fonte do sistema) | SF Pro, fonte do sistema, com Dynamic Type               |
+| Códigos (ISBN)          | não definido                             | Roboto Mono                                              |
+| Escala                  | `typography.scale.*` (seis estilos)      | escala completa do M3, do iOS e da Web (`web-h1` 36 …)   |
+
 ## Raios
 
 | Uso          | `design-tokens.json` | Referência                             |

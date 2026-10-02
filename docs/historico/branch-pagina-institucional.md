@@ -1,5 +1,7 @@
 # 🌳 Histórico e Documentação da Branch
 
+> Registro histórico da branch `feature/pagina-institucional-pr`, mantido como foi escrito. Para o estado atual, veja o [README](../../README.md) e as specs 001 a 023. O efeito de vidro citado abaixo é específico da apresentação; o [design system](../design-system.md) desaconselha glow e sombras pesadas nas telas do app.
+
 **Branch:** `feature/pagina-institucional-pr`
 
 ## 🎯 Visão Geral

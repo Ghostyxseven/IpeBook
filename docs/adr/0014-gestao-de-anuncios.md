@@ -4,7 +4,7 @@ Data: 02/10/2026
 
 ## Status
 
-Proposto. Implementado nas specs [025](../../specs/025-anuncios-gestao/spec.md) e [026](../../specs/026-perfil-minimo/spec.md) (issues #36 e #37), aguardando a revisão da equipe.
+Proposto, já implementado nas specs [025](../../specs/025-anuncios-gestao/spec.md) e [026](../../specs/026-perfil-minimo/spec.md) (issues #36 e #37), que estão na `develop`. Para passar a aceito, falta a revisão da equipe.
 
 ## Contexto
 
