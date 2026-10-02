@@ -48,7 +48,7 @@ export function createMemoryListingsRepository(initial: MyListing[] = []) {
 
   const fromDraft = (
     draft: ListingDraft,
-  ): Omit<MyListing, 'id' | 'coverPath' | 'coverUrl' | 'status' | 'createdAt'> => {
+  ): Omit<MyListing, 'id' | 'coverPath' | 'coverUrl' | 'status' | 'createdAt' | 'ownerId'> => {
     const clean = normalizeDraft(draft);
     if (!isValid(validateDraft(clean))) throw new ListingError('invalid');
     return {
@@ -88,6 +88,7 @@ export function createMemoryListingsRepository(initial: MyListing[] = []) {
       const listing: MyListing = {
         ...fromDraft(draft),
         id: `listing-${++sequence}`,
+        ownerId: 'owner',
         status: 'disponivel',
         coverPath: path,
         coverUrl: path ? `memory://${path}` : null,
