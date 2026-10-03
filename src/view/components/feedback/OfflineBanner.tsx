@@ -1,55 +1,72 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useConnectivity } from '../../../viewmodel/useConnectivity';
-import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { AppIcon } from '../AppIcon';
+import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
-/** Aviso global exibido quando o aparelho perde a conexão. */
+/**
+ * Aviso global de falta de conexão, conforme o Figma IpêBook (10.02 · Sem conexão):
+ * - Android e Web: cartão escuro (`inverseSurface`) com ícone de erro;
+ * - iOS: faixa amarela (`highlight`) com ícone de informação.
+ * Mantém "Tentar novamente" no próprio aviso, porque ele aparece também sobre formulários.
+ */
+const ios = Platform.OS === 'ios';
+
 export function OfflineBanner() {
   const { offline, checking, retry } = useConnectivity();
   const insets = useSafeAreaInsets();
   if (!offline) return null;
+  const foreground = ios ? colors.onSurface : colors.inverseOnSurface;
   return (
-    <View
-      accessibilityRole="alert"
-      accessibilityLiveRegion="polite"
-      style={[styles.banner, { paddingTop: insets.top + spacing.xs }]}
-    >
-      <View style={styles.copy}>
-        <Text style={styles.title}>Você está sem conexão</Text>
-        <Text style={styles.text}>
-          O que você digitou continua aqui. Confira a internet e tente de novo.
-        </Text>
-      </View>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Verificar conexão novamente"
-        accessibilityState={{ busy: checking }}
-        onPress={retry}
-        style={styles.action}
+    <View style={[styles.wrapper, { paddingTop: insets.top + spacing.xs }]}>
+      <View
+        accessibilityRole="alert"
+        accessibilityLiveRegion="polite"
+        style={[styles.banner, ios ? styles.bannerIos : styles.bannerMaterial]}
       >
-        <Text style={styles.actionText}>{checking ? 'Verificando…' : 'Tentar novamente'}</Text>
-      </Pressable>
+        <AppIcon
+          name={ios ? 'info' : 'error'}
+          size={spacing.lg}
+          color={ios ? colors.onSurface : colors.error}
+        />
+        <Text style={[styles.text, { color: foreground }]}>
+          Você está sem conexão. O que você digitou continua aqui.
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Verificar conexão novamente"
+          accessibilityState={{ busy: checking }}
+          onPress={retry}
+          style={styles.action}
+        >
+          <Text style={[styles.actionText, { color: ios ? colors.actionDeep : colors.highlight }]}>
+            {checking ? 'Verificando…' : 'Tentar novamente'}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: { paddingHorizontal: metrics.pagePadding, backgroundColor: colors.background },
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingHorizontal: metrics.pagePadding,
-    paddingBottom: spacing.xs,
-    backgroundColor: colors.text,
+    paddingLeft: spacing.md,
+    paddingRight: spacing.xs,
+    minHeight: metrics.touchTarget,
+    borderRadius: radius.medium,
   },
-  copy: { flex: 1, gap: spacing.xxs },
-  title: { ...typography.action, color: colors.surface },
-  text: { ...typography.caption, color: colors.surface },
+  bannerMaterial: { backgroundColor: colors.inverseSurface },
+  bannerIos: { backgroundColor: colors.highlight },
+  text: { ...typography.bodyMedium, flex: 1, paddingVertical: spacing.sm },
   action: {
     minHeight: metrics.touchTarget,
     minWidth: metrics.touchTarget,
     justifyContent: 'center',
     paddingHorizontal: spacing.xs,
   },
-  actionText: { ...typography.action, color: colors.highlight },
+  actionText: { ...typography.labelLarge },
 });

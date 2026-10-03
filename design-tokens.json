@@ -28,6 +28,9 @@
     "error": { "$type": "color", "$value": "#B3261E" },
     "gold": { "$type": "color", "$value": "#D99719" },
     "highlight": { "$type": "color", "$value": "#F4B942" },
+    "errorContainer": { "$type": "color", "$value": "#F9DEDC" },
+    "inverseSurface": { "$type": "color", "$value": "#322F2B" },
+    "inverseOnSurface": { "$type": "color", "$value": "#F5EFE8" },
     "onSurface": { "$type": "color", "$value": "#1D1B18" },
     "onSurfaceVariant": { "$type": "color", "$value": "#4D4740" },
     "outlineVariant": { "$type": "color", "$value": "#D3CCC2" },
@@ -240,6 +243,11 @@
         "weight": { "$type": "fontWeight", "$value": 700 },
         "fontSize": { "$type": "dimension", "$value": "30px" },
         "lineHeight": { "$type": "dimension", "$value": "36px" }
+      },
+      "title": {
+        "weight": { "$type": "fontWeight", "$value": 700 },
+        "fontSize": { "$type": "dimension", "$value": "24px" },
+        "lineHeight": { "$type": "dimension", "$value": "29px" }
       }
     }
   },
