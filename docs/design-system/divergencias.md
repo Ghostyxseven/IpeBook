@@ -74,6 +74,20 @@ Decidido no [ADR 0019](../adr/0019-serifa-da-marca-e-superficies-do-figma.md): S
 | Seletor de bairro, distâncias | No topo e nos cards           | Fora: o app não conhece a localização da pessoa         |
 | Favoritar e compartilhar      | Nos cards e no Detalhe        | Fora: o recurso não existe                              |
 
+## Anunciar livro (03/10/2026)
+
+Refeito pelos quadros Android 04.01, 04.04, 04.05 e 04.07. O que ficou diferente do Figma, e por quê:
+
+| Item                                           | Situação                                                                                                                               |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| "Ler ISBN com a câmera" (04.01 a 04.03)        | O app não lê ISBN; título e autor são digitados. A linha e o "ou" não aparecem.                                                        |
+| Até 3 fotos: Lombada e Páginas (04.04)         | O anúncio guarda uma foto só; a etapa mostra a capa e o botão para escolher. Os botões dizem "Usar esta foto" ou "Continuar sem foto". |
+| "Salvar rascunho" (04.05)                      | O app não salva rascunho; fica só "Publicar anúncio".                                                                                  |
+| Opções de Conservação e Categoria (04.05)      | O Figma mostra exemplos; o app usa as quatro conservações e as oito categorias que o banco aceita.                                     |
+| Revise o anúncio (04.06)                       | Não há etapa de revisão; a publicação sai da etapa 3, como no 04.05.                                                                   |
+| Coração na prévia do anúncio publicado (04.07) | O app não tem favoritos; não aparece. A segunda linha mostra o autor.                                                                  |
+| Doação na etapa 1 (04.01)                      | Na doação, a nota da etapa 1 avisa que é gratuita, porque não há campo de preço.                                                       |
+
 ## Próximo passo
 
 As cores já seguem a referência. Falta decidir raios e espaçamento, por linha, se vale a raiz ou a referência. Se for a referência, atualizar `design-tokens.json`, conferir contraste (4,5:1 para texto) e checar as telas afetadas no mesmo PR.
@@ -102,17 +116,3 @@ Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e p
 | Telas 05.07 e 05.08 (depois de excluir ou recusar) | Não existem; a lista se atualiza no lugar.                                                                                                                                |
 | Folha de opções ao tocar em um livro               | Sem quadro. Segue a folha inferior do M3: `container.low`, cantos `radius.extraLarge`, itens de 56 px. O véu usa preto a 32% (o valor do M3), porque não há token de véu. |
 | Subtítulo de Concluídos                            | O Figma diz "trocas e doações"; o app diz "vendas, trocas e doações", porque venda também conclui.                                                                        |
-
-## Anunciar livro (03/10/2026)
-
-Refeito pelos quadros Android 04.01, 04.04, 04.05 e 04.07. O que ficou diferente do Figma, e por quê:
-
-| Item                                           | Situação                                                                                                                               |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| "Ler ISBN com a câmera" (04.01 a 04.03)        | O app não lê ISBN; título e autor são digitados. A linha e o "ou" não aparecem.                                                        |
-| Até 3 fotos: Lombada e Páginas (04.04)         | O anúncio guarda uma foto só; a etapa mostra a capa e o botão para escolher. Os botões dizem "Usar esta foto" ou "Continuar sem foto". |
-| "Salvar rascunho" (04.05)                      | O app não salva rascunho; fica só "Publicar anúncio".                                                                                  |
-| Opções de Conservação e Categoria (04.05)      | O Figma mostra exemplos; o app usa as quatro conservações e as oito categorias que o banco aceita.                                     |
-| Revise o anúncio (04.06)                       | Não há etapa de revisão; a publicação sai da etapa 3, como no 04.05.                                                                   |
-| Coração na prévia do anúncio publicado (04.07) | O app não tem favoritos; não aparece. A segunda linha mostra o autor.                                                                  |
-| Doação na etapa 1 (04.01)                      | Na doação, a nota da etapa 1 avisa que é gratuita, porque não há campo de preço.                                                       |
