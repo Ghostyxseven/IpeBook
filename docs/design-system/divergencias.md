@@ -103,6 +103,19 @@ Itens criados pela spec [024](../../specs/024-configuracoes-notificacoes/spec.md
 | Tela de Configurações (chaves por tipo de aviso, versão e Sair) | Sem quadro visto (seção F do Figma não foi acessada). Usa a chave nativa (`Switch`) e o botão `danger`.                                                                                                                 |
 | Barra superior das telas de Notificações e Configurações        | A referência [`TopAppBar`](referencia/components/TopAppBar/README.md) tem 64 px e título `m3-title-lg`. O app usa o cabeçalho padrão do Expo Router com o título à esquerda; a altura ainda não foi igualada.           |
 
+## Denunciar e bloquear (03/10/2026)
+
+Refeito pelos quadros Android 09.02, 09.03, 09.04 e 07.10 a 07.12. O que ficou diferente do Figma, e por quê:
+
+| Item                                                                   | Situação                                                                                                  |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Diálogo de bloqueio sobre o Perfil público (09.02)                     | O app não tem perfil público; o diálogo abre no detalhe do livro e na denúncia enviada.                   |
+| "Ela não poderá enviar mensagens nem propostas" (09.02, 07.10 e 07.11) | O banco só esconde os anúncios da pessoa bloqueada no catálogo de quem bloqueou; os textos dizem só isso. |
+| "A equipe analisa em até 24 horas" (09.03)                             | Não há prazo combinado de moderação; o texto diz que cada relato é analisado.                             |
+| Linha da pessoa com seta (07.10)                                       | Sem perfil público para abrir; a linha não tem seta.                                                      |
+| "Voltar à segurança" (07.12)                                           | A lista abre por Configurações; o botão diz "Voltar às configurações".                                    |
+| Tela "Segurança e verificação" (07.06)                                 | É da feature de Perfil; a entrada fica em Configurações, em "Pessoas bloqueadas".                         |
+
 ## Minha estante (03/10/2026)
 
 Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e por quê:

@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   notificationKindDescriptions,
@@ -34,6 +35,7 @@ const focusRing = Platform.select({
  * legais e Sair. Excluir conta é da issue #47.
  */
 export function SettingsScreen() {
+  const router = useRouter();
   const vm = useSettings();
 
   return (
@@ -93,6 +95,23 @@ export function SettingsScreen() {
             </View>
           </View>
         )}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Pessoas bloqueadas"
+          onPress={() => router.push('/(app)/seguranca')}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.listItem,
+            pressed && styles.pressed,
+            focused && focusRing,
+          ]}
+        >
+          <AppIcon name="close" size={20} color={colors.onSurfaceVariant} />
+          <View style={styles.rowCopy}>
+            <Text style={styles.rowTitle}>Pessoas bloqueadas</Text>
+            <Text style={styles.rowBody}>Veja quem você bloqueou e desbloqueie.</Text>
+          </View>
+          <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+        </Pressable>
         {vm.legalLinks.map((link) => (
           <Pressable
             key={link.url}
