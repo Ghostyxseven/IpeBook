@@ -1,3 +1,4 @@
+import { LocationError, type GeoAddress, type LocationErrorCode } from '../entities/Location.ts';
 import type { ProfileErrorCode } from '../entities/Profile.ts';
 
 export const SERVICE_CITY = { name: 'Piripiri', label: 'Piripiri, PI' } as const;
@@ -28,4 +29,34 @@ const messages: Record<ProfileErrorCode, string> = {
 
 export function profileErrorMessage(code: ProfileErrorCode) {
   return messages[code];
+}
+
+const plain = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+
+/**
+ * Bairro a partir do endereço aproximado. Fora de Piripiri ou sem bairro, rejeita para a pessoa
+ * escolher manualmente (Figma 11.02, "Escolher bairro").
+ */
+export function neighborhoodFromAddress(address: GeoAddress): string {
+  if (!address.city || plain(address.city) !== plain(SERVICE_CITY.name))
+    throw new LocationError('outside_city');
+  const district = address.district ? normalizeNeighborhood(address.district) : '';
+  if (validateNeighborhood(district)) throw new LocationError('not_found');
+  return district;
+}
+
+const locationMessages: Record<LocationErrorCode, string> = {
+  denied: 'Sem a permissão de localização, escolha seu bairro manualmente.',
+  unavailable: 'Não conseguimos obter sua localização. Confira se ela está ligada e tente de novo.',
+  outside_city: 'Sua localização fica fora de Piripiri. Escolha seu bairro manualmente.',
+  not_found: 'Não encontramos o bairro desta localização. Escolha seu bairro manualmente.',
+};
+
+export function locationErrorMessage(code: LocationErrorCode) {
+  return locationMessages[code];
 }

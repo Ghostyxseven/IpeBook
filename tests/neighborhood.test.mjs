@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
+import { LocationError } from '../src/model/entities/Location.ts';
 import { ProfileError } from '../src/model/entities/Profile.ts';
 import { createMemoryProfileRepository } from '../src/model/repositories/memoryProfileRepository.ts';
 import {
@@ -11,9 +12,11 @@ import {
 } from '../src/model/repositories/supabaseProfileRepository.ts';
 import {
   SUGGESTED_NEIGHBORHOODS,
+  neighborhoodFromAddress,
   normalizeNeighborhood,
   validateNeighborhood,
 } from '../src/model/services/neighborhood.ts';
+import { useLocateNeighborhoodViewModel } from '../src/viewmodel/useLocateNeighborhoodViewModel.ts';
 import { useNeighborhoodViewModel } from '../src/viewmodel/useNeighborhoodViewModel.ts';
 
 const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost/' });
@@ -116,5 +119,61 @@ test('Escolher bairro: carrega o bairro salvo, mostra erro de carga e de gravaç
   memory.fail(null);
   await act(async () => hook.vm.retry());
   assert.equal(hook.vm.status, 'ready');
+  await hook.unmount();
+});
+
+test('localização: bairro só de endereços em Piripiri (11.02)', () => {
+  assert.equal(
+    neighborhoodFromAddress({ city: 'Piripiri', district: ' Fonte  dos Matos ' }),
+    'Fonte dos Matos',
+  );
+  assert.equal(neighborhoodFromAddress({ city: 'PIRIPIRÍ', district: 'Centro' }), 'Centro');
+  assert.throws(() => neighborhoodFromAddress({ city: 'Teresina', district: 'Centro' }), {
+    code: 'outside_city',
+  });
+  assert.throws(() => neighborhoodFromAddress({ city: null, district: 'Centro' }), {
+    code: 'outside_city',
+  });
+  assert.throws(() => neighborhoodFromAddress({ city: 'Piripiri', district: null }), {
+    code: 'not_found',
+  });
+});
+
+test('Permitir localização: preenche o bairro ou explica por que não deu', async () => {
+  let answer = Promise.reject(new LocationError('denied'));
+  answer.catch(() => {});
+  const locator = { currentAddress: () => answer };
+  const found = [];
+  const hook = await renderHook(() =>
+    useLocateNeighborhoodViewModel(locator, { onFound: (name) => found.push(name) }),
+  );
+  await act(async () => hook.vm.locate());
+  assert.match(hook.vm.error, /permissão/);
+
+  answer = Promise.resolve({ city: 'Teresina', district: 'Centro' });
+  await act(async () => hook.vm.locate());
+  assert.match(hook.vm.error, /fora de Piripiri/);
+
+  answer = Promise.reject(new Error('GPS desligado'));
+  answer.catch(() => {});
+  await act(async () => hook.vm.locate());
+  assert.match(hook.vm.error, /obter sua localização/);
+
+  answer = Promise.resolve({ city: 'Piripiri', district: 'Bairro Piauí' });
+  await act(async () => hook.vm.locate());
+  assert.equal(hook.vm.error, undefined);
+  assert.deepEqual(found, ['Bairro Piauí']);
+  await hook.unmount();
+});
+
+test('Escolher bairro: o bairro achado pela localização preenche o campo', async () => {
+  const memory = createMemoryProfileRepository({ neighborhood: 'Centro' });
+  const hook = await renderHook(() =>
+    useNeighborhoodViewModel(memory.repository, { onSaved: () => {}, prefill: 'Morro da Saudade' }),
+  );
+  assert.equal(hook.vm.value, 'Morro da Saudade');
+  assert.equal(memory.current().neighborhood, 'Centro', 'só grava ao salvar');
+  await act(async () => hook.vm.save());
+  assert.equal(memory.current().neighborhood, 'Morro da Saudade');
   await hook.unmount();
 });

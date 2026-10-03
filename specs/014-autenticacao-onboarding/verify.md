@@ -163,3 +163,11 @@ A equipe decidiu seguir o Figma nos itens abaixo. Cada item foi feito num commit
    - **Escolher bairro (`/escolher-bairro`):** cidade desabilitada e campo Bairro; abre por Configurações › Conta › Seu bairro.
 
    **Divergências:** o texto de apoio "Mais anúncios agora" do Centro saiu, porque é uma afirmação sem fonte (regra 8 do AGENTS.md). Os testes estão em `tests/neighborhood.test.mjs`. A migration precisa ser aplicada no Supabase do grupo.
+
+7. **Permitir localização** (11.02): rota `/permitir-localizacao`, aberta por "Usar localização" em Escolher bairro.
+   - **"Usar minha localização":** pede a permissão só com o app aberto, lê a posição aproximada (`Accuracy.Balanced`, cerca de 100 m), converte em endereço e volta para Escolher bairro com o campo Bairro preenchido. O bairro só é gravado quando a pessoa toca em "Salvar localização".
+   - **Organização:** o `expo-location` fica só em `src/infra/deviceLocator.ts`, atrás do contrato `DeviceLocator` do Model. A regra que extrai o bairro e confere se a cidade é Piripiri é pura (`neighborhoodFromAddress`) e testada.
+   - **Mensagens próprias:** permissão negada, localização indisponível, fora de Piripiri e bairro não encontrado, todas oferecendo "Escolher bairro".
+   - **Configuração:** `app.json` ganhou o plugin com o texto da permissão no iOS, sem localização em segundo plano.
+
+   **Pendências:** a posição não é guardada nem enviada, mas a Política de Privacidade precisa citar o uso da localização aproximada (issue #49). Testar num aparelho real (issue #12), porque o endereço depende do serviço de geocodificação do sistema.

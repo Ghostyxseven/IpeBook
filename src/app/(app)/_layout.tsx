@@ -83,6 +83,13 @@ export default function AppLayout() {
           }}
         />
         <Stack.Screen
+          name="permitir-localizacao"
+          options={{
+            ...stackHeader('Permitir localização'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
           name="alterar-senha"
           options={{
             ...stackHeader('Alterar senha'),

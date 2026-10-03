@@ -22,7 +22,14 @@ const isSuggested = (name: string): name is (typeof SUGGESTED_NEIGHBORHOODS)[num
  */
 export function useNeighborhoodViewModel(
   repository: ProfileRepository,
-  { onSaved }: { onSaved: () => void },
+  {
+    onSaved,
+    prefill,
+  }: {
+    onSaved: () => void;
+    /** Bairro achado pela localização (11.02): substitui o salvo até a pessoa gravar. */
+    prefill?: string;
+  },
 ) {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [loadError, setLoadError] = useState<string | undefined>();
@@ -35,7 +42,7 @@ export function useNeighborhoodViewModel(
     setStatus('loading');
     try {
       const profile = await repository.getProfile();
-      const current = profile.neighborhood ?? '';
+      const current = prefill || profile.neighborhood || '';
       setText(current);
       setChoice(current ? (isSuggested(current) ? current : 'other') : null);
       setStatus('ready');
@@ -43,7 +50,7 @@ export function useNeighborhoodViewModel(
       setLoadError(profileErrorMessage(toProfileError(failure).code));
       setStatus('error');
     }
-  }, [repository]);
+  }, [repository, prefill]);
 
   useEffect(() => {
     void load();
