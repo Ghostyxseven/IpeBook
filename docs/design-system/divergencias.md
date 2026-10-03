@@ -88,3 +88,17 @@ Itens criados pela spec [024](../../specs/024-configuracoes-notificacoes/spec.md
 | Engrenagem de Configurações no topo do Início                   | Sem quadro. Provisória: o acesso definitivo é pelo Perfil (#37).                                                                                                                                                        |
 | Tela de Configurações (chaves por tipo de aviso, versão e Sair) | Sem quadro visto (seção F do Figma não foi acessada). Usa a chave nativa (`Switch`) e o botão `danger`.                                                                                                                 |
 | Barra superior das telas de Notificações e Configurações        | A referência [`TopAppBar`](referencia/components/TopAppBar/README.md) tem 64 px e título `m3-title-lg`. O app usa o cabeçalho padrão do Expo Router com o título à esquerda; a altura ainda não foi igualada.           |
+
+## Minha estante (03/10/2026)
+
+Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e por quê:
+
+| Item                                               | Situação                                                                                                                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Rascunhos" no fim da lista (05.01)                | O app não salva rascunho de anúncio; a linha não aparece.                                                                                                                 |
+| Menu de três pontos na barra superior (05.01)      | Sem ações para ele no app; não aparece.                                                                                                                                   |
+| "Como funciona" na estante vazia (05.02)           | O app não tem essa página; fica só "Anunciar livro".                                                                                                                      |
+| Nome de quem fez a proposta (05.03)                | O banco não expõe o nome de quem pediu; a linha diz "Nova solicitação de encontro" ou a situação.                                                                         |
+| Telas 05.07 e 05.08 (depois de excluir ou recusar) | Não existem; a lista se atualiza no lugar.                                                                                                                                |
+| Folha de opções ao tocar em um livro               | Sem quadro. Segue a folha inferior do M3: `container.low`, cantos `radius.extraLarge`, itens de 56 px. O véu usa preto a 32% (o valor do M3), porque não há token de véu. |
+| Subtítulo de Concluídos                            | O Figma diz "trocas e doações"; o app diz "vendas, trocas e doações", porque venda também conclui.                                                                        |

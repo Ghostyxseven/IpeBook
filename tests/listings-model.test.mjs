@@ -276,3 +276,55 @@ test('base64ToArrayBuffer devolve os bytes da imagem, com ou sem prefixo data:',
     jpegHeader,
   );
 });
+
+test('a estante separa os anúncios que circulam dos concluídos', async () => {
+  const { shelfSections } = await import('../src/model/services/listingFormat.ts');
+  const item = (id, status) => ({ id, status });
+  const { active, done } = shelfSections([
+    item('a', 'disponivel'),
+    item('b', 'reservado'),
+    item('c', 'concluido'),
+    item('d', 'arquivado'),
+  ]);
+  assert.deepEqual(
+    active.map((listing) => listing.id),
+    ['a', 'b', 'd'],
+  );
+  assert.deepEqual(
+    done.map((listing) => listing.id),
+    ['c'],
+  );
+});
+
+test('a linha da estante segue o Figma 05.01 com dados reais do anúncio', async () => {
+  const { publishedAgo, shelfSupportingText } =
+    await import('../src/model/services/listingFormat.ts');
+  const now = new Date(2026, 9, 3, 10);
+  assert.equal(publishedAgo(new Date(2026, 9, 3, 8).toISOString(), now), 'publicado hoje');
+  assert.equal(publishedAgo(new Date(2026, 9, 2, 23).toISOString(), now), 'publicado ontem');
+  assert.equal(publishedAgo(new Date(2026, 9, 1, 9).toISOString(), now), 'publicado há 2 dias');
+  const base = {
+    modality: 'sale',
+    priceCents: 2500,
+    neighborhood: 'Centro',
+    createdAt: new Date(2026, 9, 1, 9).toISOString(),
+  };
+  assert.equal(
+    shelfSupportingText({ ...base, status: 'disponivel' }, now),
+    'R$ 25,00 · Centro · publicado há 2 dias · Venda',
+  );
+  assert.equal(
+    shelfSupportingText(
+      { ...base, modality: 'trade', priceCents: null, neighborhood: null, status: 'reservado' },
+      now,
+    ),
+    'publicado há 2 dias · Troca · Reservado',
+  );
+  assert.equal(
+    shelfSupportingText(
+      { ...base, modality: 'donation', priceCents: null, status: 'concluido' },
+      now,
+    ),
+    'Centro · Doação · Concluído',
+  );
+});
