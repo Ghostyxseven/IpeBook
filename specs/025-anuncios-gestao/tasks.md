@@ -13,3 +13,4 @@
 - [x] ADR 0014 com as decisões 1 a 4 do plano.
 - [ ] Conferir no aparelho (Android e iPhone) e registrar no `verify.md`.
 - [ ] Comparar com os quadros do Figma — **bloqueado**: os `node-id` da issue #36 não existem mais no arquivo (reorganizado em 01/10/2026). Precisa dos links novos.
+- [x] Corrigir a foto que subia vazia no aparelho (03/10/2026): o arquivo chegava ao bucket com 14 bytes porque `fetch(uri).arrayBuffer()` não lê arquivo local no React Native. O `CoverPicker` agora pede `base64` ao seletor e converte com `base64ToArrayBuffer`.

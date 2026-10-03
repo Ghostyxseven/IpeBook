@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { base64ToArrayBuffer } from '../../../model/services/coverBytes';
 import type { PickedCover } from '../../../viewmodel/usePublishListingViewModel';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 import { AppIcon } from '../AppIcon';
@@ -48,12 +49,15 @@ export function CoverPicker({
         mediaTypes: ['images'],
         quality: 0.8,
         allowsEditing: true,
+        base64: true,
       });
       const asset = result.canceled ? null : result.assets[0];
       if (!asset) return;
 
-      const response = await fetch(asset.uri);
-      const bytes = await response.arrayBuffer();
+      // No aparelho, `fetch` do arquivo local não traz a imagem; o base64 traz.
+      const bytes = asset.base64
+        ? base64ToArrayBuffer(asset.base64)
+        : await (await fetch(asset.uri)).arrayBuffer();
       if (bytes.byteLength > MAX_BYTES) {
         setError('Esta foto é muito grande. Escolha uma de até 5 MB.');
         return;
