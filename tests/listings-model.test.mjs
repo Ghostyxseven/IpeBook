@@ -265,3 +265,14 @@ test('a estante vem dos mais recentes aos mais antigos', async () => {
     ['b', 'a'],
   );
 });
+
+test('base64ToArrayBuffer devolve os bytes da imagem, com ou sem prefixo data:', async () => {
+  const { base64ToArrayBuffer } = await import('../src/model/services/coverBytes.ts');
+  const jpegHeader = [0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10];
+  const base64 = Buffer.from(jpegHeader).toString('base64');
+  assert.deepEqual([...new Uint8Array(base64ToArrayBuffer(base64))], jpegHeader);
+  assert.deepEqual(
+    [...new Uint8Array(base64ToArrayBuffer(`data:image/jpeg;base64,${base64}`))],
+    jpegHeader,
+  );
+});
