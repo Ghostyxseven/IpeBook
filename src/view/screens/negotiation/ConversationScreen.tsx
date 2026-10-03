@@ -27,11 +27,19 @@ const REFRESH_MS = 10_000;
 
 /** Conversa com quem está do outro lado da negociação (Figma 06.02, 06.10 e 06.16). */
 export function ConversationScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, draft } = useLocalSearchParams<{ id: string; draft?: string }>();
   const requestId = String(id ?? '');
   const vm = useConversation(requestId);
   const list = useRef<FlatList>(null);
-  const { refresh } = vm;
+  const { refresh, setDraft } = vm;
+
+  // Vindo do "Não comparecimento" (Figma 06.15), o relato já chega no campo para revisar.
+  const prefilled = useRef(false);
+  useEffect(() => {
+    if (prefilled.current || vm.status !== 'ready' || !draft) return;
+    prefilled.current = true;
+    setDraft(draft);
+  }, [vm.status, draft, setDraft]);
 
   // Enquanto a tela está aberta, as respostas chegam sozinhas.
   useFocusEffect(

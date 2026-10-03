@@ -12,6 +12,9 @@ export interface BookRequest {
 
   status: RequestStatus;
 
+  /** Na troca, o anúncio de quem pediu oferecido em troca (Figma 03.05, ADR 0022). */
+  offeredListingId?: string | null;
+
   /** Data ISO 8601 (mesmo padrão de Listing.createdAt). */
   createdAt: string;
   /** Data ISO 8601 (mesmo padrão de Listing.createdAt). */

@@ -2,18 +2,18 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BookRequest } from '../model/entities/BookRequest';
 import type { BookRequestRepository } from '../model/repositories/BookRequestRepository';
 import { toBookRequestError } from '../model/entities/BookRequestError.ts';
-import { bookRequestErrorMessage } from '../model/services/bookRequestMessages';
-import { useAsyncAction } from './useAsyncAction';
-import { useSessionContext } from './useSession';
+import { bookRequestErrorMessage } from '../model/services/bookRequestMessages.ts';
+import { useAsyncAction } from './useAsyncAction.ts';
+import { useSessionContext } from './useSession.ts';
 import type { CatalogRepository } from '../model/repositories/CatalogRepository';
-import { toCatalogError } from '../model/entities/CatalogError';
-import { catalogErrorMessage } from '../model/services/catalogMessages';
+import { toCatalogError } from '../model/entities/CatalogError.ts';
+import { catalogErrorMessage } from '../model/services/catalogMessages.ts';
 import {
   canCancel,
   canComplete,
   ensureTransition,
   isOwner,
-} from '../model/services/bookRequestTransitions';
+} from '../model/services/bookRequestTransitions.ts';
 import type { Listing } from '../model/entities/Listing';
 import type { ConfirmKind } from '../model/services/bookRequestFormat';
 
@@ -28,6 +28,10 @@ export function useBookRequestDetailViewModel(
   const [busy, run] = useAsyncAction();
   const [request, setRequest] = useState<BookRequest | null>(null);
   const [listing, setListing] = useState<Listing | null>(null);
+  /** Na troca, o livro que quem pediu ofereceu (Figma 03.05). */
+  const [offeredListing, setOfferedListing] = useState<Listing | null>(null);
+  /** Primeiro nome de quem pediu, para quem anunciou ver com quem combina. */
+  const [requesterName, setRequesterName] = useState<string | null>(null);
   const [status, setStatus] = useState<DetailStatus>('loading');
   const [error, setError] = useState<string | null>(null);
   const reqId = useRef(0);
@@ -43,9 +47,18 @@ export function useBookRequestDetailViewModel(
     try {
       const br = await bookRequestRepository.getRequestById(requestId);
       const list = await catalogRepository.getById(br.listingId);
+      // Livro oferecido e nome de quem pediu são extras: sem eles a negociação ainda abre.
+      const [offered, name] = await Promise.all([
+        br.offeredListingId
+          ? catalogRepository.getById(br.offeredListingId).catch(() => null)
+          : Promise.resolve(null),
+        bookRequestRepository.personFirstName(br.requesterId).catch(() => null),
+      ]);
       if (current !== reqId.current) return;
       setRequest(br);
       setListing(list);
+      setOfferedListing(offered);
+      setRequesterName(name);
       setStatus('ready');
     } catch (failure) {
       if (current !== reqId.current) return;
@@ -60,6 +73,7 @@ export function useBookRequestDetailViewModel(
       }
       setRequest(null);
       setListing(null);
+      setOfferedListing(null);
     }
   }, [bookRequestRepository, catalogRepository, requestId]);
 
@@ -151,9 +165,19 @@ export function useBookRequestDetailViewModel(
   const cancel = useCallback(() => act('canceled'), [act]);
   const complete = useCallback(() => act('completed'), [act]);
 
+  const asOwner = capabilities.asOwner;
+  /** Quem está do outro lado: usado em "Pedir ajuda" e nos textos (Figma 06.15). */
+  const other = {
+    id: asOwner ? (request?.requesterId ?? null) : (listing?.ownerId ?? null),
+    name: asOwner ? requesterName : (listing?.ownerFirstName ?? null),
+  };
+
   return {
     request,
     listing,
+    offeredListing,
+    requesterName,
+    other,
     status,
     error,
     busy,

@@ -9,15 +9,20 @@ import { ListingCover } from '../catalog/ListingCover';
 export function RequestBookRow({
   listing,
   onPress,
+  showModality = true,
 }: {
   listing: Pick<Listing, 'id' | 'title' | 'author' | 'coverUrl' | 'condition' | 'modality'>;
   onPress: () => void;
+  /** O livro oferecido na troca não mostra a modalidade do próprio anúncio. */
+  showModality?: boolean;
 }) {
   const details = [
     listing.author,
     conditionLabels[listing.condition],
-    modalityLabels[listing.modality],
-  ].join(' · ');
+    showModality ? modalityLabels[listing.modality] : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
   return (
     <Pressable
       accessibilityRole="button"
