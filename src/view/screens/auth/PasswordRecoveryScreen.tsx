@@ -1,11 +1,12 @@
 import { useRef } from 'react';
-import type { TextInput } from 'react-native';
+import { StyleSheet, Text, type TextInput } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePasswordRecovery } from '../../../factories/auth';
 import { AuthLayout } from '../../components/ui/AuthLayout';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TextField } from '../../components/ui/TextField';
+import { colors, typography } from '../../theme/nativeTheme';
 
 export function PasswordRecoveryScreen() {
   const router = useRouter();
@@ -17,14 +18,19 @@ export function PasswordRecoveryScreen() {
   if (vm.step === 'request') {
     return (
       <AuthLayout
-        title="Recuperar senha"
-        description="Informe o e-mail da sua conta. Vamos enviar um código para você criar uma nova senha."
+        brand
+        title="Recupere seu"
+        highlight="acesso."
+        description="Digite seu e-mail para receber o código de redefinição de senha."
         footer={
-          <Button
-            label="Voltar para Entrar"
-            variant="text"
-            onPress={() => router.replace('/entrar')}
-          />
+          <>
+            <Button
+              label="Voltar ao login"
+              variant="secondary"
+              onPress={() => router.replace('/entrar')}
+            />
+            <Text style={styles.note}>Se você lembrar sua senha, faça login normalmente.</Text>
+          </>
         }
       >
         <FormMessage tone="error" message={vm.errors.form} />
@@ -48,8 +54,9 @@ export function PasswordRecoveryScreen() {
 
   return (
     <AuthLayout
-      title="Crie uma nova senha"
-      footer={<Button label="Usar outro e-mail" variant="text" onPress={vm.changeEmail} />}
+      title="Um novo começo."
+      description="Digite o código que enviamos e escolha uma senha com pelo menos 8 caracteres."
+      footer={<Button label="Corrigir e-mail" variant="text" onPress={vm.changeEmail} />}
     >
       <FormMessage tone="success" message={vm.notice} />
       <FormMessage tone="error" message={vm.errors.form} />
@@ -70,7 +77,7 @@ export function PasswordRecoveryScreen() {
         ref={passwordRef}
         label="Nova senha"
         password
-        hint="Pelo menos 8 caracteres, com letras e números."
+        hint="Use letras e números, e uma senha que você não usa em outro lugar."
         value={vm.values.password}
         onChangeText={(value) => vm.setField('password', value)}
         error={vm.errors.password}
@@ -94,11 +101,7 @@ export function PasswordRecoveryScreen() {
         returnKeyType="go"
         onSubmitEditing={vm.resetPassword}
       />
-      <Button
-        label="Salvar nova senha e entrar"
-        onPress={vm.resetPassword}
-        loading={vm.submitting}
-      />
+      <Button label="Salvar nova senha" onPress={vm.resetPassword} loading={vm.submitting} />
       <Button
         label={vm.resendSeconds > 0 ? `Reenviar código em ${vm.resendSeconds}s` : 'Reenviar código'}
         variant="secondary"
@@ -109,3 +112,7 @@ export function PasswordRecoveryScreen() {
     </AuthLayout>
   );
 }
+
+const styles = StyleSheet.create({
+  note: { ...typography.bodyMedium, color: colors.onSurfaceVariant, textAlign: 'center' },
+});

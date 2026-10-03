@@ -28,6 +28,9 @@
     "error": { "$type": "color", "$value": "#B3261E" },
     "gold": { "$type": "color", "$value": "#D99719" },
     "highlight": { "$type": "color", "$value": "#F4B942" },
+    "brandBrown": { "$type": "color", "$value": "#58331F" },
+    "brandAmber": { "$type": "color", "$value": "#F2BC45" },
+    "tertiaryContainer": { "$type": "color", "$value": "#F8D88A" },
     "errorContainer": { "$type": "color", "$value": "#F9DEDC" },
     "inverseSurface": { "$type": "color", "$value": "#322F2B" },
     "inverseOnSurface": { "$type": "color", "$value": "#F5EFE8" },
@@ -243,6 +246,16 @@
         "weight": { "$type": "fontWeight", "$value": 700 },
         "fontSize": { "$type": "dimension", "$value": "30px" },
         "lineHeight": { "$type": "dimension", "$value": "36px" }
+      },
+      "display": {
+        "weight": { "$type": "fontWeight", "$value": 700 },
+        "fontSize": { "$type": "dimension", "$value": "36px" },
+        "lineHeight": { "$type": "dimension", "$value": "41px" }
+      },
+      "wordmark": {
+        "weight": { "$type": "fontWeight", "$value": 700 },
+        "fontSize": { "$type": "dimension", "$value": "28px" },
+        "lineHeight": { "$type": "dimension", "$value": "31px" }
       },
       "title": {
         "weight": { "$type": "fontWeight", "$value": 700 },

@@ -51,6 +51,10 @@ export const colors = {
   containerHigh: tokens.color.container.high.$value,
   selected: tokens.color.selected.background.$value,
   onSelected: tokens.color.selected.text.$value,
+  /** Marca nas telas de acesso (Figma, seção 01): logotipo, traço e destaque do título. */
+  brandBrown: tokens.color.brandBrown.$value,
+  brandAmber: tokens.color.brandAmber.$value,
+  tertiaryContainer: tokens.color.tertiaryContainer.$value,
   /** Estados do sistema (Figma, seção 10): fundo do ícone de erro e aviso escuro. */
   errorContainer: tokens.color.errorContainer.$value,
   inverseSurface: tokens.color.inverseSurface.$value,
@@ -146,6 +150,18 @@ export const typography = {
     fontFamily: BRAND_FONT,
     fontSize: px(tokens.typography.brand.headline.fontSize),
     lineHeight: px(tokens.typography.brand.headline.lineHeight),
+  } satisfies TextStyle,
+  /** Título grande das telas de acesso (Figma `Marca/brand-display-md`, 36/41). */
+  brandDisplay: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.display.fontSize),
+    lineHeight: px(tokens.typography.brand.display.lineHeight),
+  } satisfies TextStyle,
+  /** Logotipo tipográfico (Figma `brand-wordmark`, 28/31). */
+  brandWordmark: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.wordmark.fontSize),
+    lineHeight: px(tokens.typography.brand.wordmark.lineHeight),
   } satisfies TextStyle,
   /** Título de marca menor (Figma `Marca/brand-title`), usado nos estados vazios. */
   brandTitle: {

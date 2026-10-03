@@ -18,15 +18,20 @@ export function SignUpScreen() {
   });
   return (
     <AuthLayout
-      title="Criar conta"
-      description="Com uma conta, você vai poder anunciar, pedir e combinar livros com outros leitores."
+      brand
+      title="Crie sua conta"
+      description="Anuncie, troque, venda ou doe livros perto de você."
       footer={
-        <Button label="Já tenho conta" variant="text" onPress={() => router.replace('/entrar')} />
+        <Button
+          label="Já tenho conta"
+          variant="secondary"
+          onPress={() => router.replace('/entrar')}
+        />
       }
     >
       <FormMessage tone="error" message={vm.errors.form} />
       <TextField
-        label="Nome"
+        label="Nome completo"
         value={vm.values.name}
         onChangeText={(value) => vm.setField('name', value)}
         error={vm.errors.name}
