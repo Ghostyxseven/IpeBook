@@ -25,6 +25,11 @@ export function validateEmail(email: string) {
   return undefined;
 }
 
+/** Alterar senha (Figma 07.18): a senha atual só precisa estar preenchida. */
+export function validateCurrentPassword(password: string) {
+  return password ? undefined : 'Informe sua senha atual.';
+}
+
 /** No login só exigimos preenchimento: a regra de força vale para senhas novas. */
 export function validateLoginPassword(password: string) {
   return password ? undefined : 'Informe sua senha.';
@@ -39,6 +44,13 @@ export function validateNewPassword(password: string) {
   )
     return `Use pelo menos ${PASSWORD_MIN_LENGTH} caracteres, com letras e números.`;
   return undefined;
+}
+
+/** O cadastro só segue com os Termos de Uso e a Política de Privacidade aceitos. */
+export function validateTermsAccepted(accepted: boolean) {
+  return accepted
+    ? undefined
+    : 'Para criar a conta, aceite os termos de uso e a política de privacidade.';
 }
 
 export function validatePasswordConfirmation(password: string, confirmation: string) {

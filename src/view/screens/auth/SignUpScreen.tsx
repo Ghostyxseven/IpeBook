@@ -1,24 +1,24 @@
 import { useRef } from 'react';
-import { StyleSheet, Text, type TextInput } from 'react-native';
+import type { TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSignUp } from '../../../factories/auth';
 import { AuthLayout } from '../../components/ui/AuthLayout';
 import { Button } from '../../components/ui/Button';
+import { Checkbox } from '../../components/ui/Checkbox';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TextField } from '../../components/ui/TextField';
-import { colors, typography } from '../../theme/nativeTheme';
 
 export function SignUpScreen() {
   const router = useRouter();
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
-  const confirmationRef = useRef<TextInput>(null);
   const vm = useSignUp({
     onSignedUp: (email) => router.replace({ pathname: '/verificar-email', params: { email } }),
   });
   return (
     <AuthLayout
       brand
+      titleSize="headline"
       title="Crie sua conta"
       description="Anuncie, troque, venda ou doe livros perto de você."
       footer={
@@ -68,32 +68,17 @@ export function SignUpScreen() {
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
-        returnKeyType="next"
-        onSubmitEditing={() => confirmationRef.current?.focus()}
-        submitBehavior="submit"
-      />
-      <TextField
-        ref={confirmationRef}
-        label="Confirmar senha"
-        password
-        value={vm.values.confirmation}
-        onChangeText={(value) => vm.setField('confirmation', value)}
-        error={vm.errors.confirmation}
-        autoCapitalize="none"
-        autoComplete="new-password"
-        textContentType="newPassword"
         returnKeyType="go"
         onSubmitEditing={vm.submit}
       />
-      <Text style={styles.legal}>
-        Ao criar a conta, seu nome e e-mail são usados para identificar você no IpêBook, como
-        descrito na Política de Privacidade.
-      </Text>
+      <Checkbox
+        label="Aceito os termos de uso"
+        supportingText="e a política de privacidade."
+        checked={vm.acceptedTerms}
+        onToggle={vm.toggleTerms}
+        error={vm.errors.terms}
+      />
       <Button label="Criar conta" onPress={vm.submit} loading={vm.submitting} />
     </AuthLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  legal: { ...typography.caption, color: colors.secondaryText },
-});

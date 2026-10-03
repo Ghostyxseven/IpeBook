@@ -3,6 +3,7 @@ import { OfflineBanner } from '../../view/components/feedback/OfflineBanner';
 import { SessionPendingScreen } from '../../view/screens/SessionPendingScreen';
 import { colors, typography } from '../../view/theme/nativeTheme';
 import { useAppSession } from '../../factories/auth';
+import { afterSignOut } from '../../viewmodel/afterSignOut';
 import { SessionContext } from '../../viewmodel/useSession';
 
 /** Cabeçalho das telas de pilha: voltar e o título, sobre a superfície (Figma 04). */
@@ -21,7 +22,12 @@ const stackHeader = (title: string) => ({
 export default function AppLayout() {
   const session = useAppSession();
   if (session.status === 'loading') return <SessionPendingScreen session={session} />;
-  if (session.status === 'signedOut') return <Redirect href="/entrar" />;
+  if (session.status === 'signedOut') {
+    // Alterar senha → "Esqueci a senha atual": a recuperação abre com o e-mail da conta.
+    const email = afterSignOut.recoveryEmail();
+    if (email) return <Redirect href={{ pathname: '/recuperar-senha', params: { email } }} />;
+    return <Redirect href="/entrar" />;
+  }
   return (
     <SessionContext.Provider value={session}>
       <OfflineBanner />
@@ -29,6 +35,9 @@ export default function AppLayout() {
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
       >
         <Stack.Screen name="(tabs)" />
+        {/* Sucesso do acesso (Figma 01.09 e 01.13): a própria tela tem a barra com voltar. */}
+        <Stack.Screen name="senha-atualizada" options={{ title: 'Senha atualizada' }} />
+        <Stack.Screen name="email-confirmado" options={{ title: 'E-mail confirmado' }} />
         <Stack.Screen name="anunciar/index" options={stackHeader('Anunciar um livro')} />
         <Stack.Screen name="anunciar/[id]" options={stackHeader('Editar anúncio')} />
         <Stack.Screen
@@ -56,6 +65,34 @@ export default function AppLayout() {
           name="notificacoes"
           options={{
             ...stackHeader('Notificações'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="seu-bairro"
+          options={{
+            ...stackHeader('Seu bairro'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="escolher-bairro"
+          options={{
+            ...stackHeader('Escolher bairro'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="permitir-localizacao"
+          options={{
+            ...stackHeader('Permitir localização'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="alterar-senha"
+          options={{
+            ...stackHeader('Alterar senha'),
             contentStyle: { backgroundColor: colors.surface },
           }}
         />

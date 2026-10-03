@@ -298,7 +298,7 @@ flowchart TD
 
 #### Telas
 
-Abertura com a marca; onboarding em 3 páginas (o que é o IpêBook, Venda/Troca/Doação, combinar com cuidado), com Pular, Voltar e Próxima; Entrar; Criar conta; Confirmar e-mail; Recuperar senha (pedir código, depois código e nova senha); aviso "Sem conexão" na abertura e faixa de conexão nas áreas `(auth)` e `(app)`.
+Abertura com a marca; boas-vindas numa tela só (marca, cidade, ilustração e Venda/Troca/Doação), com Começar e Já tenho conta; Entrar; Criar conta; Confirmar e-mail; Recuperar senha (pedir código, depois código e nova senha); aviso "Sem conexão" na abertura e faixa de conexão nas áreas `(auth)` e `(app)`.
 
 #### Como foi testado
 

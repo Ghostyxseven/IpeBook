@@ -151,6 +151,12 @@ export const typography = {
     fontSize: px(tokens.typography.brand.headline.fontSize),
     lineHeight: px(tokens.typography.brand.headline.lineHeight),
   } satisfies TextStyle,
+  /** Título da tela de boas-vindas (Figma `Marca/brand-large-title`, 34/41). */
+  brandLargeTitle: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.largeTitle.fontSize),
+    lineHeight: px(tokens.typography.brand.largeTitle.lineHeight),
+  } satisfies TextStyle,
   /** Título grande das telas de acesso (Figma `Marca/brand-display-md`, 36/41). */
   brandDisplay: {
     fontFamily: BRAND_FONT,

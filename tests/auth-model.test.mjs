@@ -17,7 +17,7 @@ import {
   mapSupabaseError,
 } from '../src/model/repositories/supabaseAuthRepository.ts';
 import { createPreferencesRepository } from '../src/model/repositories/preferencesRepository.ts';
-import { onboardingPages } from '../src/model/services/onboarding.ts';
+import { welcome } from '../src/model/services/onboarding.ts';
 
 test('validações aceitam dados corretos e explicam o que corrigir', () => {
   assert.equal(validateEmail(' Leitora@Email.com '), undefined);
@@ -111,7 +111,12 @@ test('repositório Supabase envia os parâmetros certos e converte o usuário', 
     name: 'Ana Leitora',
     emailVerified: true,
   });
-  await repository.signUp('Ana Leitora', 'ana@email.com', 'livros2026');
+  await repository.signUp(
+    'Ana Leitora',
+    'ana@email.com',
+    'livros2026',
+    new Date('2026-10-03T12:00:00Z'),
+  );
   await repository.verifySignUp('ana@email.com', '123456');
   await repository.resendSignUpCode('ana@email.com');
   await repository.resetPassword('ana@email.com', '654321', 'novaSenha1');
@@ -121,7 +126,7 @@ test('repositório Supabase envia os parâmetros certos e converte o usuário', 
       {
         email: 'ana@email.com',
         password: 'livros2026',
-        options: { data: { name: 'Ana Leitora' } },
+        options: { data: { name: 'Ana Leitora', terms_accepted_at: '2026-10-03T12:00:00.000Z' } },
       },
     ],
     ['verifyOtp', { email: 'ana@email.com', token: '123456', type: 'signup' }],
@@ -157,7 +162,7 @@ test('sem configuração do Supabase o app não simula autenticação', async ()
   assert.equal(await repository.getCurrentUser(), null);
   assert.equal(typeof repository.onUserChange(() => {}), 'function');
   await assert.rejects(repository.signIn('a@b.com', 'x'), { code: 'not_configured' });
-  await assert.rejects(repository.signUp('Ana', 'a@b.com', 'livros2026'), {
+  await assert.rejects(repository.signUp('Ana', 'a@b.com', 'livros2026', new Date()), {
     code: 'not_configured',
   });
 });
@@ -182,11 +187,9 @@ test('preferências guardam o onboarding e toleram armazenamento indisponível',
   assert.equal(createPreferencesRepository(null).hasSeenOnboarding(), false);
 });
 
-test('onboarding apresenta as três modalidades sem prometer recursos inexistentes', () => {
-  assert.equal(onboardingPages.length, 3);
-  const text = JSON.stringify(onboardingPages);
-  for (const word of ['venda', 'troca', 'doação'])
-    assert.match(text.toLowerCase(), new RegExp(word));
+test('boas-vindas apresenta as três modalidades sem prometer recursos inexistentes', () => {
+  assert.deepEqual([...welcome.modalities], ['Venda', 'Troca', 'Doação']);
+  const text = JSON.stringify(welcome);
   assert.doesNotMatch(text, /garantid|100%|verificad/i);
 });
 
@@ -373,4 +376,26 @@ test('token vencido e sem internet não equivale a sair: sessão continua salva 
   } finally {
     console.error = silence;
   }
+});
+
+test('Supabase: alterar senha confere a senha atual antes de gravar a nova (07.18 e 07.19)', async () => {
+  const errado = fakeClient({
+    signInWithPassword: () =>
+      Promise.resolve({
+        data: { user: null },
+        error: { code: 'invalid_credentials', status: 400 },
+      }),
+  });
+  await assert.rejects(
+    createSupabaseAuthRepository(errado.client).changePassword('errada1', 'novaLeitura1'),
+    { code: 'wrong_current_password' },
+  );
+  assert.ok(!errado.calls.some((call) => call[0] === 'updateUser'), 'não grava sem conferir');
+
+  const certo = fakeClient();
+  await createSupabaseAuthRepository(certo.client).changePassword('livros2026', 'novaLeitura1');
+  assert.deepEqual(certo.calls, [
+    ['signIn', { email: 'ana@email.com', password: 'livros2026' }],
+    ['updateUser', { password: 'novaLeitura1' }],
+  ]);
 });

@@ -9,7 +9,7 @@ Permitir que a pessoa conheça o IpêBook na primeira abertura, crie uma conta, 
 ## Fluxos
 
 1. **Abertura (splash):** enquanto a sessão carrega, mostra a marca e um indicador de carregamento com rótulo acessível.
-2. **Onboarding:** três páginas curtas (o que é, as modalidades Venda, Troca e Doação, encontro seguro), com Pular, Voltar e Próxima. Aparece só na primeira abertura do celular.
+2. **Boas-vindas:** uma tela só (Figma 01.01) com a marca, a cidade, o título "Uma boa história merece continuar.", a ilustração, as modalidades Venda, Troca e Doação e as ações Começar (Criar conta) e Já tenho conta (Entrar). Aparece só na primeira abertura do celular.
 3. **Entrar:** e-mail e senha, mostrar/ocultar senha, "Esqueci minha senha" e "Criar conta". Se o e-mail ainda não foi confirmado, envia um novo código e abre a verificação.
 4. **Criar conta:** nome, e-mail, senha e confirmação. Depois de enviar, abre a verificação com o e-mail preenchido.
 5. **Verificar e-mail:** código numérico recebido por e-mail, "Reenviar código" com espera de 60 segundos. Ao confirmar, a pessoa entra.

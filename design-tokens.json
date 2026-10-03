@@ -247,6 +247,11 @@
         "fontSize": { "$type": "dimension", "$value": "30px" },
         "lineHeight": { "$type": "dimension", "$value": "36px" }
       },
+      "largeTitle": {
+        "weight": { "$type": "fontWeight", "$value": 700 },
+        "fontSize": { "$type": "dimension", "$value": "34px" },
+        "lineHeight": { "$type": "dimension", "$value": "41px" }
+      },
       "display": {
         "weight": { "$type": "fontWeight", "$value": 700 },
         "fontSize": { "$type": "dimension", "$value": "36px" },
