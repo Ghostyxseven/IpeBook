@@ -5,6 +5,10 @@
 import { createSupabaseBookRequestRepository } from '../model/repositories/supabaseBookRequestRepository';
 import { supabase } from '../infra/supabaseClient';
 import { catalogRepository } from './catalog';
+import { createSupabaseMessageRepository } from '../model/repositories/supabaseMessageRepository';
+
+/** A mesma conversa da spec 029; criada aqui para a lista não depender de `messages.ts`. */
+const messageRepository = createSupabaseMessageRepository(supabase);
 import { useBookRequestDetailViewModel } from '../viewmodel/useBookRequestDetailViewModel';
 import { useBookRequestListViewModel } from '../viewmodel/useBookRequestListViewModel';
 import { useCreateBookRequestViewModel } from '../viewmodel/useCreateBookRequestViewModel';
@@ -18,4 +22,4 @@ export const useBookRequestDetail = (id: string) =>
   useBookRequestDetailViewModel(catalogRepository, bookRequestRepository, id);
 
 export const useBookRequestList = () =>
-  useBookRequestListViewModel(bookRequestRepository, catalogRepository);
+  useBookRequestListViewModel(bookRequestRepository, catalogRepository, messageRepository);

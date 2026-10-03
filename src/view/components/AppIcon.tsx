@@ -19,6 +19,7 @@ const symbols = {
   check: { ios: 'checkmark', android: 'check', web: 'check' },
   chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
   error: { ios: 'exclamationmark.circle', android: 'error', web: 'error' },
+  send: { ios: 'paperplane', android: 'send', web: 'send' },
   chevronLeft: { ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' },
   // Gestão de anúncios e perfil (specs 025 e 026).
   add: { ios: 'plus', android: 'add', web: 'add' },
