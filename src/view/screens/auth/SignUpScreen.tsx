@@ -12,13 +12,13 @@ export function SignUpScreen() {
   const router = useRouter();
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
-  const confirmationRef = useRef<TextInput>(null);
   const vm = useSignUp({
     onSignedUp: (email) => router.replace({ pathname: '/verificar-email', params: { email } }),
   });
   return (
     <AuthLayout
       brand
+      titleSize="headline"
       title="Crie sua conta"
       description="Anuncie, troque, venda ou doe livros perto de você."
       footer={
@@ -65,20 +65,6 @@ export function SignUpScreen() {
         value={vm.values.password}
         onChangeText={(value) => vm.setField('password', value)}
         error={vm.errors.password}
-        autoCapitalize="none"
-        autoComplete="new-password"
-        textContentType="newPassword"
-        returnKeyType="next"
-        onSubmitEditing={() => confirmationRef.current?.focus()}
-        submitBehavior="submit"
-      />
-      <TextField
-        ref={confirmationRef}
-        label="Confirmar senha"
-        password
-        value={vm.values.confirmation}
-        onChangeText={(value) => vm.setField('confirmation', value)}
-        error={vm.errors.confirmation}
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"

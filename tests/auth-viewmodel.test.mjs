@@ -123,19 +123,17 @@ test('criar conta valida todos os campos e segue para a verificação', async ()
     useSignUpViewModel(memory.repository, { onSignedUp: (email) => (createdFor = email) }),
   );
   await act(async () => hook.vm.setField('password', 'curta'));
-  await act(async () => hook.vm.setField('confirmation', 'outra'));
   await act(async () => hook.vm.submit());
   assert.match(hook.vm.errors.name, /Informe/);
   assert.match(hook.vm.errors.email, /Informe/);
   assert.match(hook.vm.errors.password, /8 caracteres/);
-  assert.match(hook.vm.errors.confirmation, /não são iguais/);
+  assert.equal('confirmation' in hook.vm.values, false, 'cadastro sem confirmação de senha');
   assert.equal(createdFor, null);
 
   for (const [field, value] of [
     ['name', ' Ana Leitora '],
     ['email', 'Ana@Email.com'],
     ['password', 'livros2026'],
-    ['confirmation', 'livros2026'],
   ])
     await act(async () => hook.vm.setField(field, value));
   await act(async () => hook.vm.submit());

@@ -14,6 +14,7 @@ export function AuthLayout({
   highlight,
   description,
   brand = false,
+  titleSize = 'display',
   children,
   footer,
 }: {
@@ -23,6 +24,8 @@ export function AuthLayout({
   description?: string;
   /** Mostra o logotipo acima do título, como nas telas de entrada do Figma. */
   brand?: boolean;
+  /** 'headline' (30/36) no cadastro, como no Figma 01.03; 'display' (36/41) nas demais. */
+  titleSize?: 'display' | 'headline';
   children: ReactNode;
   footer?: ReactNode;
 }) {
@@ -37,7 +40,11 @@ export function AuthLayout({
           <View style={styles.content}>
             {brand && <Wordmark />}
             <View style={styles.header}>
-              <Text style={styles.title} accessibilityRole="header" accessibilityLabel={fullTitle}>
+              <Text
+                style={[styles.title, titleSize === 'headline' && typography.brandHeadline]}
+                accessibilityRole="header"
+                accessibilityLabel={fullTitle}
+              >
                 {title}
                 {highlight ? (
                   <>

@@ -8,12 +8,12 @@ import {
   validateEmail,
   validateName,
   validateNewPassword,
-  validatePasswordConfirmation,
   type FieldErrors,
 } from '../model/services/authValidation.ts';
 import { useAsyncAction } from './useAsyncAction.ts';
 
-type Field = 'name' | 'email' | 'password' | 'confirmation';
+// Sem confirmação de senha, como no Figma 01.03: o campo Senha tem o botão Mostrar.
+type Field = 'name' | 'email' | 'password';
 
 export function useSignUpViewModel(
   repository: AuthRepository,
@@ -23,7 +23,6 @@ export function useSignUpViewModel(
     name: '',
     email: '',
     password: '',
-    confirmation: '',
   });
   const [errors, setErrors] = useState<FieldErrors<Field>>({});
   const [submitting, run] = useAsyncAction();
@@ -42,7 +41,6 @@ export function useSignUpViewModel(
           name: validateName(values.name),
           email: validateEmail(values.email),
           password: validateNewPassword(values.password),
-          confirmation: validatePasswordConfirmation(values.password, values.confirmation),
         };
         setErrors(next);
         if (hasErrors(next)) return;
