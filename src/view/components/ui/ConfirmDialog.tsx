@@ -16,6 +16,7 @@ export function ConfirmDialog({
   onCancel,
   busy = false,
   error,
+  destructive = false,
 }: {
   visible: boolean;
   title: string;
@@ -25,6 +26,8 @@ export function ConfirmDialog({
   onCancel: () => void;
   busy?: boolean;
   error?: string | null;
+  /** Ação que apaga algo (Figma 07.09, "Excluir"): o botão de confirmar fica vermelho. */
+  destructive?: boolean;
 }) {
   const reducedMotion = useReducedMotion();
   return (
@@ -56,7 +59,12 @@ export function ConfirmDialog({
           ) : null}
           <View style={styles.actions}>
             <Button label="Cancelar" variant="text" onPress={onCancel} disabled={busy} />
-            <Button label={confirmLabel} variant="text" onPress={onConfirm} loading={busy} />
+            <Button
+              label={confirmLabel}
+              variant={destructive ? 'danger' : 'text'}
+              onPress={onConfirm}
+              loading={busy}
+            />
           </View>
         </View>
       </View>

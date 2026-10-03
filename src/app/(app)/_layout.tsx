@@ -24,6 +24,7 @@ export default function AppLayout() {
   if (session.status === 'loading') return <SessionPendingScreen session={session} />;
   if (session.status === 'signedOut') {
     // Alterar senha → "Esqueci a senha atual": a recuperação abre com o e-mail da conta.
+    if (afterSignOut.accountDeleted()) return <Redirect href="/conta-excluida" />;
     const email = afterSignOut.recoveryEmail();
     if (email) return <Redirect href={{ pathname: '/recuperar-senha', params: { email } }} />;
     return <Redirect href="/entrar" />;
@@ -86,6 +87,13 @@ export default function AppLayout() {
           name="permitir-localizacao"
           options={{
             ...stackHeader('Permitir localização'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="privacidade-dados"
+          options={{
+            ...stackHeader('Privacidade e dados'),
             contentStyle: { backgroundColor: colors.surface },
           }}
         />
