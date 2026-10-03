@@ -78,6 +78,19 @@ Decidido no [ADR 0019](../adr/0019-serifa-da-marca-e-superficies-do-figma.md): S
 
 As cores já seguem a referência. Falta decidir raios e espaçamento, por linha, se vale a raiz ou a referência. Se for a referência, atualizar `design-tokens.json`, conferir contraste (4,5:1 para texto) e checar as telas afetadas no mesmo PR.
 
+## Negociação completa (03/10/2026)
+
+Feito pelos quadros Android 03.05, 06.13, 06.14 e 06.15. O que ficou diferente do Figma, e por quê:
+
+| Item                                                    | Situação                                                                                        |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| "Na sua estante" como origem do livro oferecido (03.05) | Só anúncios publicados e disponíveis entram; o app não tem estante de livros fora dos anúncios. |
+| "Oferecer outro livro" (03.05)                          | Abre Anunciar livro; depois de publicar, o livro aparece na lista.                              |
+| Campos de data e horário no reagendamento (06.13)       | Usa os chips de dia e horário do Combinar encontro (06.04), que já evitam data inválida.        |
+| "Nova sugestão enviada. Aguarde a confirmação" (06.14)  | O novo horário vale na hora, sem confirmação; o título diz "Novo horário combinado."            |
+| Aviso do reagendamento                                  | Não existe: o tipo de aviso não está no banco.                                                  |
+| Contraproposta (06.19 e 06.20)                          | Ainda não feita.                                                                                |
+
 ## Conversa (03/10/2026)
 
 Feito pelos quadros Android 06.01, 06.02, 06.09, 06.10 e 06.16. O que ficou diferente do Figma, e por quê:

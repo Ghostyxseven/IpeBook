@@ -108,7 +108,7 @@ const wantVerbs: Record<Modality, string> = {
 
 /**
  * Título e texto de cada situação da negociação (Figma 06.03 a 06.18).
- * `otherName` é o primeiro nome de quem anunciou, quando quem vê é quem pediu.
+ * `ownerName` é o primeiro nome de quem anunciou; `requesterName`, o de quem pediu.
  */
 export function requestScreenCopy(
   request: Pick<BookRequest, 'status' | 'meetingDate' | 'meetingTime'>,
@@ -116,15 +116,22 @@ export function requestScreenCopy(
     asOwner,
     modality,
     ownerName,
-  }: { asOwner: boolean; modality: Modality; ownerName?: string | null },
+    requesterName,
+  }: {
+    asOwner: boolean;
+    modality: Modality;
+    ownerName?: string | null;
+    requesterName?: string | null;
+  },
 ): { title: string; body: string } {
   const owner = ownerName?.trim() || 'quem anunciou';
-  const other = asOwner ? 'quem pediu' : owner;
+  const requester = requesterName?.trim() || null;
+  const other = asOwner ? (requester ?? 'quem pediu') : owner;
   switch (request.status) {
     case 'pending':
       return asOwner
         ? {
-            title: `Alguém quer ${wantVerbs[modality]} seu livro`,
+            title: `${requester ?? 'Alguém'} quer ${wantVerbs[modality]} seu livro`,
             body: 'Ao aceitar, seu anúncio fica Reservado e vocês combinam o encontro.',
           }
         : { title: 'Proposta enviada.', body: `Aguardando a resposta de ${owner}.` };
@@ -166,15 +173,22 @@ export function confirmCopy(
   {
     asOwner,
     ownerName,
+    requesterName,
     listingTitle,
-  }: { asOwner: boolean; ownerName?: string | null; listingTitle: string },
+  }: {
+    asOwner: boolean;
+    ownerName?: string | null;
+    requesterName?: string | null;
+    listingTitle: string;
+  },
 ) {
-  const other = asOwner ? 'Quem pediu' : ownerName?.trim() || 'Quem anunciou';
+  const requester = requesterName?.trim() || 'Quem pediu';
+  const other = asOwner ? requester : ownerName?.trim() || 'Quem anunciou';
   switch (kind) {
     case 'reject':
       return {
         title: 'Recusar esta proposta?',
-        body: `Quem pediu será avisado de que a proposta não foi aceita. Seu ${listingTitle} continua disponível para outras propostas.`,
+        body: `${requester} recebe um aviso de que a proposta não foi aceita. Seu ${listingTitle} continua disponível para outras propostas.`,
         keep: 'Voltar à proposta',
         confirm: 'Recusar proposta',
       };
@@ -193,4 +207,23 @@ export function confirmCopy(
         confirm: 'Concluir negociação',
       };
   }
+}
+
+/**
+ * Rótulo do livro oferecido na troca (Figma 03.05 e 06.03): quem anunciou "recebe" o livro
+ * oferecido; quem pediu "oferece".
+ */
+export function offeredLabel({ asOwner }: { asOwner: boolean }): string {
+  return asOwner ? 'Você recebe em troca' : 'Você oferece';
+}
+
+/** Retorno do reagendamento (Figma 06.14): "Seg, 05/10 · 15h · Praça da Matriz". */
+export function rescheduledCopy(
+  request: Pick<BookRequest, 'publicLocation' | 'meetingDate' | 'meetingTime'>,
+  otherName: string,
+): { title: string; body: string } {
+  return {
+    title: 'Novo horário combinado.',
+    body: `${meetingWhen(request)} · ${request.publicLocation}. ${otherName} vê o novo horário na negociação.`,
+  };
 }

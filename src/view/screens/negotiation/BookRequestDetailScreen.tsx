@@ -2,7 +2,11 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBookRequestDetail } from '../../../factories/bookRequest';
-import { confirmCopy, requestScreenCopy } from '../../../model/services/bookRequestFormat';
+import {
+  confirmCopy,
+  offeredLabel,
+  requestScreenCopy,
+} from '../../../model/services/bookRequestFormat';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
@@ -57,9 +61,22 @@ export function BookRequestDetailScreen() {
     asOwner,
     modality: listing.modality,
     ownerName: listing.ownerFirstName,
+    requesterName: vm.requesterName,
   });
   const openListing = () => router.push({ pathname: '/livro/[id]', params: { id: listing.id } });
   const error = vm.error ? <FormMessage tone="error" message={vm.error} /> : null;
+  const offered = vm.offeredListing;
+  // Na troca, o livro oferecido aparece junto do pedido (Figma 03.05 e 06.03).
+  const offeredRow = offered ? (
+    <>
+      <Text style={styles.label}>{offeredLabel({ asOwner })}</Text>
+      <RequestBookRow
+        listing={offered}
+        showModality={false}
+        onPress={() => router.push({ pathname: '/livro/[id]', params: { id: offered.id } })}
+      />
+    </>
+  ) : null;
   // Spec 029: a conversa vive dentro da negociação e fica aberta enquanto ela está em andamento.
   const chat = (
     <Button
@@ -74,6 +91,7 @@ export function BookRequestDetailScreen() {
     const text = confirmCopy(vm.confirming, {
       asOwner,
       ownerName: listing.ownerFirstName,
+      requesterName: vm.requesterName,
       listingTitle: listing.title,
     });
     const completing = vm.confirming === 'complete';
@@ -108,7 +126,7 @@ export function BookRequestDetailScreen() {
           <OutcomeHero
             icon="check"
             title="Um encontro, um novo capítulo."
-            body="Seu livro ficou reservado. Quem pediu recebe um aviso no app."
+            body={`Seu livro ficou reservado. ${vm.requesterName ?? 'Quem pediu'} recebe um aviso no app.`}
           />
           <MeetingCard request={request} />
           <RequestBookRow listing={listing} onPress={openListing} />
@@ -156,10 +174,16 @@ export function BookRequestDetailScreen() {
           <OutcomeHero title={copy.title} body={copy.body} />
           <MeetingCard request={request} highlighted />
           <RequestBookRow listing={listing} onPress={openListing} />
+          {offeredRow}
           <Text style={styles.note}>Confira o estado do livro antes de concluir a negociação.</Text>
           {error}
           <View style={styles.stack}>
             {chat}
+            <Button
+              label="Reagendar encontro"
+              variant="secondary"
+              onPress={() => router.push(`/negociacoes/${request.id}/reagendar`)}
+            />
             {capabilities.canComplete && (
               <Button label="Concluir negociação" onPress={() => vm.askConfirm('complete')} />
             )}
@@ -170,6 +194,11 @@ export function BookRequestDetailScreen() {
                 onPress={() => vm.askConfirm('cancel')}
               />
             )}
+            <Button
+              label="O encontro não aconteceu?"
+              variant="text"
+              onPress={() => router.push(`/negociacoes/${request.id}/nao-compareceu`)}
+            />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -189,6 +218,7 @@ export function BookRequestDetailScreen() {
         )}
         <Text style={styles.label}>{asOwner ? 'Você entrega' : 'Você pediu'}</Text>
         <RequestBookRow listing={listing} onPress={openListing} />
+        {offeredRow}
         <Text style={styles.label}>Encontro proposto</Text>
         <MeetingCard request={request} />
         {asOwner && <Text style={styles.note}>{copy.body}</Text>}

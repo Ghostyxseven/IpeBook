@@ -18,10 +18,12 @@
 
 ## Etapa 3 — negociação completa (#54)
 
-- [ ] Ponto de encontro com as telas próprias de cada modalidade (Figma 05, 15, 16 e 42).
-- [ ] Propostas de troca e de retirada (Figma 17 e 18).
-- [ ] Avaliar a troca ao concluir (Figma 62).
+- [x] Propor troca: escolher um livro seu para oferecer (Figma 03.05), com a migração `20261003130000_negociacao_completa.sql` e o ADR 0022.
+- [x] Reagendar encontro (Figma 06.13 e 06.14) e Não comparecimento (06.15).
+- [ ] Contraproposta (Figma 06.19 e 06.20).
+- [ ] Avaliar a troca ao concluir (o Figma atual não tem o quadro; 07.03 só lista avaliações recebidas).
 - [x] Telas da negociação conforme o Figma (06.01, 06.03 a 06.08, 06.11, 06.12, 06.17 e 06.18): Conversas, proposta recebida e enviada, combinar encontro com chips de dia e horário, encontro combinado, confirmações e retorno de cada etapa.
 - [x] Falha ao aceitar, recusar, cancelar ou concluir aparece na tela (antes virava uma promessa rejeitada sem mensagem).
-- [ ] Mostrar o nome de quem pediu para quem anunciou (o banco ainda não expõe esse nome; hoje a tela diz "quem pediu").
+- [x] Mostrar o nome de quem pediu para quem anunciou (função `listing_owner_first_name`).
+- [ ] Aplicar a migração `20261003130000_negociacao_completa.sql` no Supabase (precisa do ok do responsável).
 - [ ] Conferir no aparelho os dois lados da negociação com duas contas.

@@ -25,6 +25,10 @@ export function createMemoryBookRequestRepository(
     listingOwner?: Record<string, string | undefined>;
     /** Situação atual de cada anúncio, alterada pelas transições como faz o banco. */
     listingStatus?: Record<string, ListingStatus>;
+    /** Quem está usando o app; vira o `requesterId` dos pedidos criados. */
+    currentUserId?: string;
+    /** Primeiros nomes que `personFirstName` devolve. */
+    names?: Record<string, string>;
   },
 ): BookRequestRepository & { snapshot(): BookRequest[] } {
   const items: BookRequest[] = [...seed];
@@ -46,12 +50,13 @@ export function createMemoryBookRequestRepository(
       return [...items];
     },
 
-    async createRequest({ listingId, publicLocation, meetingDate, meetingTime }) {
+    async createRequest({ listingId, publicLocation, meetingDate, meetingTime, offeredListingId }) {
       const now = nowIso();
       const created: BookRequest = {
         id: uid(),
         listingId,
-        requesterId: 'requester-user',
+        requesterId: options?.currentUserId ?? 'requester-user',
+        offeredListingId: offeredListingId ?? null,
         publicLocation,
         meetingDate,
         meetingTime,
@@ -91,6 +96,7 @@ export function createMemoryBookRequestRepository(
 
       // Mesmas regras da função `transition_book_request` (ADR 0018).
       const listingId = current.listingId;
+      const offered = current.offeredListingId ?? null;
       if (status === 'accepted') {
         listingStatus[listingId] = listingStatusOnAccept();
         items.forEach((item, i) => {
@@ -98,13 +104,38 @@ export function createMemoryBookRequestRepository(
             items[i] = { ...item, status: 'rejected', updatedAt: now };
           }
         });
+        if (offered) listingStatus[offered] = listingStatusOnAccept();
       } else if (status === 'completed') {
         listingStatus[listingId] = listingStatusOnComplete();
+        if (offered) listingStatus[offered] = listingStatusOnComplete();
       } else if (status === 'canceled') {
-        const next = listingStatusOnCancel(current.status, listingStatus[listingId] ?? null);
-        if (next) listingStatus[listingId] = next;
+        for (const target of [listingId, offered]) {
+          if (!target) continue;
+          const next = listingStatusOnCancel(current.status, listingStatus[target] ?? null);
+          if (next) listingStatus[target] = next;
+        }
       }
       return items[index];
+    },
+
+    async reschedule(id, { publicLocation, meetingDate, meetingTime }) {
+      const index = findIndex(id);
+      if (index < 0) throw new BookRequestError('not_found');
+      const current = items[index];
+      // Igual à função `reschedule_book_request`: só o encontro já combinado muda.
+      if (current.status !== 'accepted') throw new BookRequestError('invalid_transition');
+      items[index] = {
+        ...current,
+        publicLocation: publicLocation.trim(),
+        meetingDate,
+        meetingTime,
+        updatedAt: nowIso(),
+      };
+      return items[index];
+    },
+
+    async personFirstName(userId) {
+      return options?.names?.[userId] ?? null;
     },
   };
 }
