@@ -60,6 +60,14 @@ export function BookRequestDetailScreen() {
   });
   const openListing = () => router.push({ pathname: '/livro/[id]', params: { id: listing.id } });
   const error = vm.error ? <FormMessage tone="error" message={vm.error} /> : null;
+  // Spec 029: a conversa vive dentro da negociação e fica aberta enquanto ela está em andamento.
+  const chat = (
+    <Button
+      label="Abrir conversa"
+      variant="secondary"
+      onPress={() => router.push(`/negociacoes/${request.id}/conversa`)}
+    />
+  );
 
   // Figma 06.17, 06.11 e 06.07: confirmação antes de recusar, cancelar ou concluir.
   if (vm.confirming) {
@@ -151,6 +159,7 @@ export function BookRequestDetailScreen() {
           <Text style={styles.note}>Confira o estado do livro antes de concluir a negociação.</Text>
           {error}
           <View style={styles.stack}>
+            {chat}
             {capabilities.canComplete && (
               <Button label="Concluir negociação" onPress={() => vm.askConfirm('complete')} />
             )}
@@ -183,6 +192,7 @@ export function BookRequestDetailScreen() {
         <Text style={styles.label}>Encontro proposto</Text>
         <MeetingCard request={request} />
         {asOwner && <Text style={styles.note}>{copy.body}</Text>}
+        {chat}
         {error}
       </ScrollView>
       {asOwner ? (

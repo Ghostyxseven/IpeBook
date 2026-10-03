@@ -20,3 +20,4 @@
 - [0018 - Transições da negociação no banco](0018-transicoes-da-negociacao-no-banco.md) (proposto, implementado)
 - [0019 - Serifa da marca e superfícies do Figma nas telas do catálogo](0019-serifa-da-marca-e-superficies-do-figma.md) (proposto, implementado)
 - [0020 - Só Piripiri e confirmação só por e-mail](0020-so-piripiri-e-confirmacao-por-email.md) (numerado como 0017 até 02/10/2026; 0019 ficou com a serifa da marca)
+- [0021 - Mensagens guardadas por negociação](0021-mensagens-por-negociacao.md)
