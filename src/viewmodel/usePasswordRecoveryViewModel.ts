@@ -12,6 +12,7 @@ import {
   validatePasswordConfirmation,
   type FieldErrors,
 } from '../model/services/authValidation.ts';
+import { afterSignIn } from './afterSignIn.ts';
 import { useAsyncAction } from './useAsyncAction.ts';
 import { useResendCooldown } from './useResendCooldown.ts';
 
@@ -98,9 +99,11 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
         };
         setErrors(next);
         if (hasErrors(next)) return;
+        afterSignIn.mark('passwordUpdated');
         try {
           await repository.resetPassword(address, normalizeCode(values.code), values.password);
         } catch (failure) {
+          afterSignIn.clear();
           const { code } = toAuthError(failure);
           const message = authErrorMessage(code);
           if (code === 'invalid_code') setErrors({ code: message });

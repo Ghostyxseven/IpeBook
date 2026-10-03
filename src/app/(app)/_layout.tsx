@@ -29,6 +29,9 @@ export default function AppLayout() {
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
       >
         <Stack.Screen name="(tabs)" />
+        {/* Sucesso do acesso (Figma 01.09 e 01.13): a própria tela tem a barra com voltar. */}
+        <Stack.Screen name="senha-atualizada" options={{ title: 'Senha atualizada' }} />
+        <Stack.Screen name="email-confirmado" options={{ title: 'E-mail confirmado' }} />
         <Stack.Screen name="anunciar/index" options={stackHeader('Anunciar um livro')} />
         <Stack.Screen name="anunciar/[id]" options={stackHeader('Editar anúncio')} />
         <Stack.Screen

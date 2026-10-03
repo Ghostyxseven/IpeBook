@@ -12,6 +12,7 @@ import { usePasswordRecoveryViewModel } from '../src/viewmodel/usePasswordRecove
 import { useOnboardingViewModel } from '../src/viewmodel/useOnboardingViewModel.ts';
 import { startRoute, useSession } from '../src/viewmodel/useSession.ts';
 import { useStartViewModel } from '../src/viewmodel/useStartViewModel.ts';
+import { afterSignIn } from '../src/viewmodel/afterSignIn.ts';
 
 const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost/' });
 globalThis.window = dom.window;
@@ -163,12 +164,15 @@ test('verificar e-mail confirma com o código, trata código errado e controla o
   await act(async () => hook.vm.setCode('111111'));
   await act(async () => hook.vm.verify());
   assert.match(hook.vm.error, /inválido ou expirado/);
+  assert.equal(afterSignIn.peek(), null, 'código errado não marca a tela de sucesso');
 
   const session = await renderHook(() => useSession(memory.repository));
   await act(async () => hook.vm.setCode('123 456'));
   await act(async () => hook.vm.verify());
   assert.equal(hook.vm.error, undefined);
   assert.equal(session.vm.status, 'signedIn');
+  assert.equal(afterSignIn.peek(), 'emailConfirmed', 'a entrada mostra E-mail confirmado (01.13)');
+  afterSignIn.clear();
   await hook.unmount();
   await session.unmount();
 
@@ -204,12 +208,15 @@ test('recuperar senha não revela contas e valida a nova senha antes do código'
   await act(async () => hook.vm.resetPassword());
   assert.match(hook.vm.errors.code, /inválido ou expirado/);
   assert.ok(!memory.calls.includes('updatePassword'), 'código inválido não grava a senha');
+  assert.equal(afterSignIn.peek(), null);
 
   await act(async () => hook.vm.setField('code', '654321'));
   await act(async () => hook.vm.resetPassword());
   assert.equal(hook.vm.errors.code, undefined);
   assert.equal(memory.passwordOf('ana@email.com'), 'novaLeitura1');
   assert.equal((await memory.repository.getCurrentUser()).email, 'ana@email.com');
+  assert.equal(afterSignIn.peek(), 'passwordUpdated', 'a entrada mostra Senha atualizada (01.09)');
+  afterSignIn.clear();
 
   await act(async () => hook.vm.changeEmail());
   assert.equal(hook.vm.step, 'request');

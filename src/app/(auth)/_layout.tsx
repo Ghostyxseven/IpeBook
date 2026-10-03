@@ -2,12 +2,22 @@ import { Redirect, Stack } from 'expo-router';
 import { OfflineBanner } from '../../view/components/feedback/OfflineBanner';
 import { colors, typography } from '../../view/theme/nativeTheme';
 import { useAppSession } from '../../factories/auth';
+import { afterSignIn, type AfterSignIn } from '../../viewmodel/afterSignIn';
 import { SessionContext } from '../../viewmodel/useSession';
+
+/** Telas de sucesso que aparecem logo depois de confirmar o código (Figma 01.09 e 01.13). */
+const successRoutes = {
+  emailConfirmed: '/email-confirmado',
+  passwordUpdated: '/senha-atualizada',
+} as const satisfies Record<AfterSignIn, string>;
 
 /** Telas de entrada: quem já tem sessão vai direto para a Início. */
 export default function AuthLayout() {
   const session = useAppSession();
-  if (session.status === 'signedIn') return <Redirect href="/inicio" />;
+  if (session.status === 'signedIn') {
+    const outcome = afterSignIn.peek();
+    return <Redirect href={outcome ? successRoutes[outcome] : '/inicio'} />;
+  }
   return (
     <SessionContext.Provider value={session}>
       <OfflineBanner />
