@@ -61,38 +61,70 @@ async function fillBook(screen) {
 test('o formulário abre limpo: nenhum erro antes de tentar avançar', async () => {
   const memory = createMemoryListingsRepository();
   const screen = await renderHook(() => usePublishListingViewModel(memory.repository));
-  assert.deepEqual(screen.vm.errorsOf('book'), {});
-  assert.equal(screen.vm.step, 'book');
+  assert.deepEqual(screen.vm.stepErrors('livro'), {});
+  assert.equal(screen.vm.step, 'livro');
+  assert.equal(screen.vm.stepCount, 3);
   await screen.unmount();
 });
 
-test('tentar avançar com o livro incompleto acende os erros e segura o passo', async () => {
+test('tentar avançar com o livro incompleto acende os erros e segura a etapa', async () => {
   const memory = createMemoryListingsRepository();
   const screen = await renderHook(() => usePublishListingViewModel(memory.repository));
   await act(async () => screen.vm.next());
-  assert.equal(screen.vm.step, 'book');
-  assert.ok(screen.vm.errorsOf('book').title);
-  assert.ok(screen.vm.errorsOf('book').author);
+  assert.equal(screen.vm.step, 'livro');
+  assert.ok(screen.vm.stepErrors('livro').title);
+  assert.ok(screen.vm.stepErrors('livro').author);
+  // A categoria é da etapa de detalhes: o erro dela não aparece na primeira.
+  assert.equal(screen.vm.stepErrors('livro').category, undefined);
   await screen.unmount();
 });
 
-test('com o livro preenchido o passo avança', async () => {
-  const memory = createMemoryListingsRepository();
-  const screen = await renderHook(() => usePublishListingViewModel(memory.repository));
-  await fillBook(screen);
-  await act(async () => screen.vm.next());
-  assert.equal(screen.vm.step, 'modality');
-  await screen.unmount();
-});
-
-test('venda sem preço não passa da modalidade', async () => {
+test('venda sem preço não passa da primeira etapa', async () => {
   const memory = createMemoryListingsRepository();
   const screen = await renderHook(() => usePublishListingViewModel(memory.repository));
   await fillBook(screen);
   await act(async () => screen.vm.next());
+  assert.equal(screen.vm.step, 'livro');
+  assert.ok(screen.vm.stepErrors('livro').priceCents);
+  await screen.unmount();
+});
+
+test('com título, autor e preço a etapa avança para fotos e depois detalhes', async () => {
+  const memory = createMemoryListingsRepository();
+  const screen = await renderHook(() => usePublishListingViewModel(memory.repository));
+  await fillBook(screen);
+  await act(async () => screen.vm.setPriceInput('25'));
   await act(async () => screen.vm.next());
-  assert.equal(screen.vm.step, 'modality');
-  assert.ok(screen.vm.errorsOf('modality').priceCents);
+  assert.equal(screen.vm.step, 'fotos');
+  await act(async () => screen.vm.next());
+  assert.equal(screen.vm.step, 'detalhes');
+  assert.equal(screen.vm.isLast, true);
+  await act(async () => screen.vm.back());
+  assert.equal(screen.vm.step, 'fotos');
+  await screen.unmount();
+});
+
+test('doação avança sem preço', async () => {
+  const memory = createMemoryListingsRepository();
+  const screen = await renderHook(() => usePublishListingViewModel(memory.repository));
+  await fillBook(screen);
+  await act(async () => screen.vm.setModality('donation'));
+  await act(async () => screen.vm.next());
+  assert.equal(screen.vm.step, 'fotos');
+  await screen.unmount();
+});
+
+test('publicar sem categoria mostra o erro na etapa de detalhes', async () => {
+  const memory = createMemoryListingsRepository();
+  const screen = await renderHook(() => usePublishListingViewModel(memory.repository));
+  await act(async () => {
+    screen.vm.setText('title', 'Dom Casmurro');
+    screen.vm.setText('author', 'Machado de Assis');
+    screen.vm.setPriceInput('25');
+  });
+  await act(async () => screen.vm.submit());
+  assert.ok(screen.vm.stepErrors('detalhes').category);
+  assert.equal(memory.calls.length, 0);
   await screen.unmount();
 });
 

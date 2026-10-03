@@ -34,6 +34,14 @@ const symbols = {
   place: { ios: 'mappin.and.ellipse', android: 'location_on', web: 'location_on' },
   info: { ios: 'info.circle', android: 'info', web: 'info' },
   chat: { ios: 'bubble.left.and.bubble.right', android: 'chat_bubble', web: 'chat_bubble' },
+  tune: { ios: 'slider.horizontal.3', android: 'tune', web: 'tune' },
+  back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
+  radioOn: {
+    ios: 'largecircle.fill.circle',
+    android: 'radio_button_checked',
+    web: 'radio_button_checked',
+  },
+  radioOff: { ios: 'circle', android: 'radio_button_unchecked', web: 'radio_button_unchecked' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;
