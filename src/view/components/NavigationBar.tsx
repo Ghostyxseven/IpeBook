@@ -9,7 +9,7 @@ import { AppIcon, type AppIconName } from './AppIcon';
 const tabIcons: Record<string, AppIconName> = {
   inicio: 'home',
   explorar: 'search',
-  estante: 'shelf',
+  estante: 'bookmark',
   conversas: 'chat',
   perfil: 'person',
 };

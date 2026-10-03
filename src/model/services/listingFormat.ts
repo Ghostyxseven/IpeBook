@@ -1,5 +1,5 @@
-import type { ListingDraft, MyListingStatus } from '../entities/Listing';
-import { formatBRL } from './catalogFormat.ts';
+import type { ListingDraft, MyListing, MyListingStatus } from '../entities/Listing';
+import { formatBRL, modalityLabels } from './catalogFormat.ts';
 
 /**
  * Reais digitados → centavos inteiros.
@@ -63,4 +63,49 @@ export function lockedReason(status: MyListingStatus): string | null {
     return 'Alguém já pediu este livro. Conclua ou cancele a negociação para poder editar.';
   if (status === 'concluido') return 'Este anúncio já foi concluído e fica como histórico.';
   return null;
+}
+
+// ── Minha estante (Figma 05.01 a 05.06) ─────────────────────────────────────
+
+/**
+ * As duas abas da estante que saem dos próprios anúncios: os que ainda circulam
+ * (disponíveis, reservados e arquivados) e os concluídos, que ficam como histórico.
+ * A aba Propostas vem das negociações, não daqui.
+ */
+export function shelfSections(listings: MyListing[]): {
+  active: MyListing[];
+  done: MyListing[];
+} {
+  return {
+    active: listings.filter((listing) => listing.status !== 'concluido'),
+    done: listings.filter((listing) => listing.status === 'concluido'),
+  };
+}
+
+const DAY = 24 * 60 * 60 * 1000;
+
+/** "publicado hoje", "publicado ontem" ou "publicado há 3 dias", contados pela data local. */
+export function publishedAgo(createdAt: string, now: Date): string {
+  const created = new Date(createdAt);
+  if (Number.isNaN(created.getTime())) return '';
+  const startOf = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  const days = Math.max(0, Math.round((startOf(now) - startOf(created)) / DAY));
+  if (days === 0) return 'publicado hoje';
+  if (days === 1) return 'publicado ontem';
+  return `publicado há ${days} dias`;
+}
+
+/**
+ * Linha de apoio de um livro na estante (Figma 05.01: "R$ 25,00 · Centro · publicado há 2 dias · Venda").
+ * Disponível termina na modalidade; nas outras situações, a situação é o que importa.
+ */
+export function shelfSupportingText(listing: MyListing, now: Date): string {
+  const value = listing.modality === 'sale' ? modalityHighlight(listing) : '';
+  const ending =
+    listing.status === 'disponivel'
+      ? modalityLabels[listing.modality]
+      : `${modalityLabels[listing.modality]} · ${myStatusLabels[listing.status]}`;
+  const when = listing.status === 'concluido' ? '' : publishedAgo(listing.createdAt, now);
+  return [value, listing.neighborhood?.trim() ?? '', when, ending].filter(Boolean).join(' · ');
 }

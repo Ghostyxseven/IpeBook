@@ -7,4 +7,4 @@
 - [x] Mover o botão Sair do topo do Início para o Perfil.
 - [x] Testes do resumo e da estante.
 - [ ] Conferir no aparelho (Android e iPhone) e registrar no `verify.md`.
-- [ ] Comparar com os quadros do Figma — **bloqueado** pelos mesmos links quebrados da spec 025.
+- [x] Comparar a Minha estante com os quadros do Figma Android 05.01 a 05.06 (03/10/2026): barra superior, abas Anúncios, Propostas e Concluídos, linhas com capa, folha de opções ao tocar, botão flutuante "Anunciar livro" e estados vazios. Divergências em `docs/design-system/divergencias.md`.
