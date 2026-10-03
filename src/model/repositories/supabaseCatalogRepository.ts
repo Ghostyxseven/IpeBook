@@ -4,8 +4,8 @@ import type { Listing } from '../entities/Listing';
 import { effectiveFilters, toLikePattern } from '../services/catalogFilters.ts';
 import type { CatalogRepository } from './CatalogRepository';
 
-/** Só `from` e `storage` são usados; facilita testar com um cliente falso. */
-export type SupabaseCatalogClient = Pick<SupabaseClient, 'from' | 'storage'>;
+/** Só `from`, `rpc` e `storage` são usados; facilita testar com um cliente falso. */
+export type SupabaseCatalogClient = Pick<SupabaseClient, 'from' | 'rpc' | 'storage'>;
 
 /** View de leitura do ADR 0008: já filtra situação e exclui os anúncios da própria pessoa. */
 export const CATALOG_VIEW = 'catalog_listings';
@@ -13,8 +13,9 @@ export const COVERS_BUCKET = 'listing-covers';
 
 const viewColumns =
   'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_first_name,created_at';
+/** A tabela não tem `owner_first_name` (só a view tem); o nome vem de `listing_owner_first_name`. */
 const tableColumns =
-  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_id,owner_first_name,created_at';
+  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_id,created_at';
 
 type Row = {
   id: string;
@@ -31,7 +32,7 @@ type Row = {
   cover_path: string | null;
   status: Listing['status'];
   owner_id?: string | null;
-  owner_first_name: string | null;
+  owner_first_name?: string | null;
   created_at: string;
 };
 
@@ -74,7 +75,7 @@ export function createSupabaseCatalogRepository(
       : null,
     status: row.status,
     ownerId: row.owner_id ?? null,
-    ownerFirstName: row.owner_first_name,
+    ownerFirstName: row.owner_first_name ?? null,
     createdAt: row.created_at,
   });
 
@@ -127,7 +128,15 @@ export function createSupabaseCatalogRepository(
         .maybeSingle();
       if (error) throw mapSupabaseCatalogError(error);
       if (!data) throw new CatalogError('not_found');
-      return toListing(supabase, data as unknown as Row);
+      const row = data as unknown as Row;
+      // Sem o nome a tela ainda funciona ("quem anunciou"); por isso a falha aqui não derruba o detalhe.
+      const owner = row.owner_id
+        ? await supabase.rpc('listing_owner_first_name', { owner: row.owner_id })
+        : null;
+      return toListing(supabase, {
+        ...row,
+        owner_first_name: owner && !owner.error ? ((owner.data as string | null) ?? null) : null,
+      });
     },
   };
 }

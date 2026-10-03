@@ -52,6 +52,10 @@ function fakeClient(result) {
   return {
     calls,
     client: {
+      rpc: (fn, args) => {
+        calls.push(['rpc', fn, args]);
+        return Promise.resolve({ data: 'Ana', error: null });
+      },
       from: (table) => {
         calls.push(['from', table]);
         return builder;
@@ -138,7 +142,8 @@ test('detalhe distingue anúncio inexistente de falha de rede', async () => {
   const missing = createSupabaseCatalogRepository(fakeClient({ data: null, error: null }).client);
   await assert.rejects(missing.getById('x'), { code: 'not_found' });
   const found = createSupabaseCatalogRepository(
-    fakeClient({ data: row('a', '2026-09-28T10:00:00Z'), error: null }).client,
+    fakeClient({ data: row('a', '2026-09-28T10:00:00Z', { owner_id: 'u-ana' }), error: null })
+      .client,
   );
   assert.equal((await found.getById('a')).ownerFirstName, 'Ana');
   const offline = createSupabaseCatalogRepository(
@@ -160,4 +165,20 @@ test('erros do PostgREST viram códigos do domínio', () => {
     'migração ainda não aplicada',
   );
   assert.equal(mapSupabaseCatalogError({ code: '42501', message: 'denied' }).code, 'unknown');
+});
+
+test('detalhe lê só colunas que existem na tabela e busca o nome do dono pela função', async () => {
+  const fake = fakeClient({
+    data: row('a', '2026-09-28T10:00:00Z', { owner_id: 'u-ana', owner_first_name: undefined }),
+    error: null,
+  });
+  const listing = await createSupabaseCatalogRepository(fake.client).getById('a');
+  const select = fake.calls.find(([method]) => method === 'select');
+  assert.ok(!select[1].includes('owner_first_name'), 'a tabela listings não tem essa coluna');
+  assert.deepEqual(
+    fake.calls.find(([method]) => method === 'rpc'),
+    ['rpc', 'listing_owner_first_name', { owner: 'u-ana' }],
+  );
+  assert.equal(listing.ownerFirstName, 'Ana');
+  assert.equal(listing.ownerId, 'u-ana');
 });
