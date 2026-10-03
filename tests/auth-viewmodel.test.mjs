@@ -390,23 +390,23 @@ test('abertura: ViewModel decide o destino pela sessão e pelo onboarding (#32)'
   await semRede.unmount();
 });
 
-test('onboarding avança, volta e marca como visto ao concluir ou pular', async () => {
+test('boas-vindas marca a apresentação como vista ao começar ou entrar', async () => {
   let seen = false;
-  let finished = 0;
+  const went = [];
   const preferences = { hasSeenOnboarding: () => seen, markOnboardingSeen: () => (seen = true) };
   const hook = await renderHook(() =>
-    useOnboardingViewModel(preferences, { onFinish: () => (finished += 1) }),
+    useOnboardingViewModel(preferences, {
+      onStart: () => went.push('criar-conta'),
+      onSignIn: () => went.push('entrar'),
+    }),
   );
-  assert.equal(hook.vm.isFirst, true);
-  await act(async () => hook.vm.next());
-  await act(async () => hook.vm.back());
-  assert.equal(hook.vm.index, 0);
-  await act(async () => hook.vm.next());
-  await act(async () => hook.vm.next());
-  assert.equal(hook.vm.isLast, true);
-  await act(async () => hook.vm.next());
+  assert.equal(hook.vm.content.title, 'Uma boa história');
+  await act(async () => hook.vm.start());
   assert.equal(seen, true);
-  assert.equal(finished, 1);
+  seen = false;
+  await act(async () => hook.vm.signIn());
+  assert.equal(seen, true);
+  assert.deepEqual(went, ['criar-conta', 'entrar']);
   await hook.unmount();
 });
 

@@ -17,7 +17,7 @@ import {
   mapSupabaseError,
 } from '../src/model/repositories/supabaseAuthRepository.ts';
 import { createPreferencesRepository } from '../src/model/repositories/preferencesRepository.ts';
-import { onboardingPages } from '../src/model/services/onboarding.ts';
+import { welcome } from '../src/model/services/onboarding.ts';
 
 test('validações aceitam dados corretos e explicam o que corrigir', () => {
   assert.equal(validateEmail(' Leitora@Email.com '), undefined);
@@ -182,11 +182,9 @@ test('preferências guardam o onboarding e toleram armazenamento indisponível',
   assert.equal(createPreferencesRepository(null).hasSeenOnboarding(), false);
 });
 
-test('onboarding apresenta as três modalidades sem prometer recursos inexistentes', () => {
-  assert.equal(onboardingPages.length, 3);
-  const text = JSON.stringify(onboardingPages);
-  for (const word of ['venda', 'troca', 'doação'])
-    assert.match(text.toLowerCase(), new RegExp(word));
+test('boas-vindas apresenta as três modalidades sem prometer recursos inexistentes', () => {
+  assert.deepEqual([...welcome.modalities], ['Venda', 'Troca', 'Doação']);
+  const text = JSON.stringify(welcome);
   assert.doesNotMatch(text, /garantid|100%|verificad/i);
 });
 

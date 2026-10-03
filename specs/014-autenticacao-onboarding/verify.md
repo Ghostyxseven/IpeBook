@@ -138,3 +138,9 @@ A Política de Privacidade dizia que o site não usava ferramentas de análise d
 8. 01.09 Senha atualizada e 01.13 E-mail confirmado: o app entra direto na Início após o sucesso.
 
 **Validação:** `npm run typecheck`, `npm test` (209 aprovados), eslint e prettier sem erros e exportação nativa (Android e iOS).
+
+## Divergências do Figma aplicadas (03/10/2026)
+
+A equipe decidiu seguir o Figma nos itens abaixo. Cada item foi feito num commit próprio.
+
+1. **Boas-vindas numa tela só** (01.01): `OnboardingScreen` com logotipo sem traço, selo "Piripiri · Piauí", título `brandLargeTitle` (34/41, novo token `typography.brand.largeTitle`) com destaque, ilustração exportada do Figma (`assets/images/boas-vindas-classicos.png`), modalidades e as ações Começar (Criar conta) e Já tenho conta (Entrar). As três páginas, Pular, Voltar e Próxima saíram. A página "Combine com cuidado" saiu junto: o pedido de encontro já pede um local público e a página institucional mantém os conselhos de segurança. "Explorar livros sem entrar" não foi incluído, porque a área logada exige sessão.
