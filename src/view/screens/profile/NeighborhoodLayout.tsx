@@ -54,7 +54,6 @@ export function NeighborhoodLayout({
 export const neighborhoodStyles = StyleSheet.create({
   note: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
   actions: { gap: spacing.xs },
-  group: { marginHorizontal: -spacing.md },
 });
 
 const styles = StyleSheet.create({

@@ -34,6 +34,11 @@
     "errorContainer": { "$type": "color", "$value": "#F9DEDC" },
     "inverseSurface": { "$type": "color", "$value": "#322F2B" },
     "inverseOnSurface": { "$type": "color", "$value": "#F5EFE8" },
+    "ios": {
+      "cell": { "$type": "color", "$value": "#F7F3EC" },
+      "secondaryLabel": { "$type": "color", "$value": "#6B645C" },
+      "separator": { "$type": "color", "$value": "#3C322829" }
+    },
     "onSurface": { "$type": "color", "$value": "#1D1B18" },
     "onSurfaceVariant": { "$type": "color", "$value": "#4D4740" },
     "outlineVariant": { "$type": "color", "$value": "#D3CCC2" },
@@ -162,10 +167,10 @@
       "pagePadding": { "$type": "dimension", "$value": "24px" }
     },
     "ios": {
-      "fieldRadius": { "$type": "dimension", "$value": "20px" },
+      "fieldRadius": { "$type": "dimension", "$value": "12px" },
       "cardRadius": { "$type": "dimension", "$value": "22px" },
       "navigationRadius": { "$type": "dimension", "$value": "28px" },
-      "controlHeight": { "$type": "dimension", "$value": "52px" },
+      "controlHeight": { "$type": "dimension", "$value": "50px" },
       "pagePadding": { "$type": "dimension", "$value": "24px" }
     },
     "web": {
@@ -238,6 +243,23 @@
         "weight": { "$type": "fontWeight", "$value": 500 },
         "fontSize": { "$type": "dimension", "$value": "14px" },
         "lineHeight": { "$type": "dimension", "$value": "20px" }
+      }
+    },
+    "ios": {
+      "body": {
+        "weight": { "$type": "fontWeight", "$value": 400 },
+        "fontSize": { "$type": "dimension", "$value": "17px" },
+        "lineHeight": { "$type": "dimension", "$value": "22px" }
+      },
+      "subheadline": {
+        "weight": { "$type": "fontWeight", "$value": 400 },
+        "fontSize": { "$type": "dimension", "$value": "15px" },
+        "lineHeight": { "$type": "dimension", "$value": "20px" }
+      },
+      "footnote": {
+        "weight": { "$type": "fontWeight", "$value": 400 },
+        "fontSize": { "$type": "dimension", "$value": "13px" },
+        "lineHeight": { "$type": "dimension", "$value": "18px" }
       }
     },
     "brand": {

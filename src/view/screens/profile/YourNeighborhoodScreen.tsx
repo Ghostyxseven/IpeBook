@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { useNeighborhood } from '../../../factories/profile';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { RadioListItem } from '../../components/ui/RadioListItem';
+import { RadioGroup, RadioListItem } from '../../components/ui/RadioListItem';
 import { TextField } from '../../components/ui/TextField';
 import { NeighborhoodLayout, neighborhoodStyles as s } from './NeighborhoodLayout';
 
@@ -19,7 +19,7 @@ export function YourNeighborhoodScreen() {
       loadError={vm.loadError}
       onRetry={vm.retry}
     >
-      <View style={s.group} accessibilityRole="radiogroup" accessibilityLabel="Seu bairro">
+      <RadioGroup label="Seu bairro" header="Bairros em Piripiri">
         {vm.suggestions.map((name) => (
           <RadioListItem
             key={name}
@@ -34,7 +34,7 @@ export function YourNeighborhoodScreen() {
           selected={vm.choice === 'other'}
           onPress={() => vm.choose('other')}
         />
-      </View>
+      </RadioGroup>
       {vm.choice === 'other' ? (
         <TextField
           label="Nome do bairro"
