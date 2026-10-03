@@ -20,3 +20,13 @@
 - [ ] Adicionar atalho na tela de Perfil Público — **pendente: tela de Perfil Público ainda não existe no projeto (dependência futura)**.
 - [x] Validar que nenhum Request de adoção existente está sendo deletado ou alterado automaticamente.
 - [x] Validar a filtragem do catálogo com testes (ou manual no Supabase).
+
+## Telas pelo Figma (03/10/2026, issue #40)
+
+- [x] Denunciar anúncio (09.03): motivos em rádio, detalhes opcionais e "Enviar denúncia" na barra inferior. Sem anúncio, a mesma tela vira "Denunciar pessoa", com motivos de pessoa.
+- [x] Denúncia enviada (09.04): "Recebemos sua denúncia.", "Voltar ao livro" e "Bloquear [nome]".
+- [x] Bloquear (09.02): diálogo do M3 aberto pelo detalhe do livro e pela denúncia enviada. Substitui as telas "Sua segurança", "Bloquear [nome]?" e "Perfil bloqueado".
+- [x] Pessoas bloqueadas (07.10), desbloquear (07.11) e lista vazia (07.12), abertas por Configurações.
+- [x] Repositório: `listBlocked`, `unblockUser` e bloqueio repetido tratado como sucesso; erros em português (`SecurityError`).
+- [x] Testes em `tests/security.test.mjs`.
+- [ ] Conferir no aparelho com duas contas.
