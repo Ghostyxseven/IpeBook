@@ -103,9 +103,23 @@ test('filtros contam modalidades sem repetição e categoria', () => {
     query: '',
     modalities: ['sale', 'trade'],
     category: 'Quadrinhos',
+    goodCondition: false,
   });
   assert.equal(activeFilterCount(filters), 3);
+  assert.equal(activeFilterCount({ ...filters, goodCondition: true }), 4);
   assert.equal(activeFilterCount(emptyFilters), 0);
+});
+
+test('o resumo do Explorar com filtro junta modalidade, categoria e estado (Figma 02.04)', () => {
+  assert.equal(
+    resultSummary(1, {
+      ...emptyFilters,
+      modalities: ['sale'],
+      category: 'Literatura brasileira',
+      goodCondition: true,
+    }),
+    '1 livro · Venda · Literatura brasileira · Bom estado',
+  );
 });
 
 test('alternar modalidade adiciona e remove', () => {
