@@ -51,6 +51,24 @@ A primeira execução de cada série inclui aquecimento do navegador. A decisão
 
 **Pendente:** validar pressionado, foco do teclado, TalkBack e texto ampliado num aparelho Android (issue #12). O iOS não mudou (issue #10).
 
+## Issue #35: estados do sistema × Figma (03/10/2026)
+
+**Referência:** Figma IpêBook, página "06 · Android / Material 3" (`0:1`), seção "10 · Estados do sistema" (`206:3641`): 10.01 Explorar carregando (`28:779`), 10.02 Sem conexão (`28:901`) e 10.03 Erro ao carregar (`28:997`); iPhone na seção `206:6941`. Estado vazio: 02.14 Favoritos · vazio (`254:4129`). As páginas de telas não aparecem na lista de páginas do arquivo, mas abrem pelo `node-id`.
+
+| Componente                 | Figma                                                                                                            | Antes                                                     | Depois                                                               |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------------------------- |
+| `LoadingState`             | indicador e "Carregando livros…"                                                                                 | igual                                                     | sem mudança                                                          |
+| `ErrorState` (erro)        | centralizado; círculo de 96 px em `error-container` com ícone; título 24/32; texto 16/24; botão em largura total | cartão com faixa vermelha à esquerda, alinhado à esquerda | igual ao Figma, com `tone="error"`                                   |
+| `ErrorState` (sem conexão) | círculo neutro, título de marca 30/36, "Tentar novamente" e "Ver favoritos"                                      | sem variante                                              | `tone="offline"` e `secondaryAction`; usado na abertura sem internet |
+| `OfflineBanner`            | Android: cartão `inverse-surface` com ícone de erro; iOS: faixa amarela com ícone de informação                  | faixa escura de ponta a ponta, sem ícone                  | cartão por plataforma, com ícone                                     |
+| `EmptyState`               | sem cartão; título de marca 24/29; botão preenchido                                                              | cartão com título 24/32 e botão contornado                | igual ao Figma                                                       |
+
+**Tokens adicionados:** `color.errorContainer` (#F9DEDC), `color.inverseSurface` (#322F2B), `color.inverseOnSurface` (#F5EFE8) e `typography.brand.title` (24/29), todos com o mesmo valor da referência e do Figma.
+
+**Divergências mantidas:** título do erro com peso 500 (`titleLarge`), em vez de 400; o `OfflineBanner` mantém "Tentar novamente", que o quadro não tem, porque o aviso também cobre formulários; o carregamento do iPhone (10.01) usa esqueleto, que fica com o catálogo; não há quadro equivalente ao antigo 43 "Estante sem conexão".
+
+**Evidência:** prévia temporária com react-native-web no Chrome (visual do Android), comparada com as capturas do Figma. Os componentes são usados também pelo catálogo, pelos anúncios, pela negociação e pelos avisos; os testes dessas telas continuam aprovados (209).
+
 ## Divergências e limitações
 
 - **Não testado em aparelho ou emulador**: esta máquina não tem Android SDK nem simulador iOS. As telas foram renderizadas com react-native-web durante a avaliação da Web e conferidas em captura (390 × 844 e 1440 × 900). O teste no Expo Go fica pendente.
