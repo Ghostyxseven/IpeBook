@@ -171,3 +171,11 @@ A equipe decidiu seguir o Figma nos itens abaixo. Cada item foi feito num commit
    - **Configuração:** `app.json` ganhou o plugin com o texto da permissão no iOS, sem localização em segundo plano.
 
    **Pendências:** a posição não é guardada nem enviada, mas a Política de Privacidade precisa citar o uso da localização aproximada (issue #49). Testar num aparelho real (issue #12), porque o endereço depende do serviço de geocodificação do sistema.
+
+8. **Excluir conta** (07.09 e 07.17, issue #47, [ADR 0023](../../docs/adr/0023-excluir-conta-pelo-app.md)):
+   - **Telas e entradas:** Configurações ganhou "Privacidade e dados" e "Excluir conta" em vermelho. A tela Privacidade e dados tem os cartões do que fica visível, "Editar informações" (bairro) e "Excluir conta", com o diálogo "Excluir sua conta?" e o botão "Excluir" vermelho (opção `destructive` do `ConfirmDialog`). Depois da exclusão, aparece Conta excluída (`/conta-excluida`) com "Voltar ao início".
+   - **Banco e repositório:** `supabaseAccountRepository` remove as capas da pasta da pessoa, chama `delete_own_account()` (migration `20261003150000_excluir_conta.sql`) e sai da sessão no aparelho.
+   - **Política de Privacidade:** passou a descrever a exclusão pelo app.
+   - **Testes:** `tests/account.test.mjs`.
+
+   **Divergências de texto:** os cartões citam só o que o app guarda (sem telefone nem avaliações), e "Editar informações" edita o bairro, porque o app não muda o nome. **Pendente:** aplicar a migration e testar com uma conta descartável.

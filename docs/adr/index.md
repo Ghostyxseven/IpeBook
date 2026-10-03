@@ -22,3 +22,4 @@
 - [0020 - Só Piripiri e confirmação só por e-mail](0020-so-piripiri-e-confirmacao-por-email.md) (numerado como 0017 até 02/10/2026; 0019 ficou com a serifa da marca)
 - [0021 - Mensagens guardadas por negociação](0021-mensagens-por-negociacao.md)
 - [0022 - Livro oferecido na troca e reagendamento no banco](0022-troca-e-reagendamento-no-banco.md)
+- [0023 - Excluir a própria conta pelo app](0023-excluir-conta-pelo-app.md) (proposto, implementado)

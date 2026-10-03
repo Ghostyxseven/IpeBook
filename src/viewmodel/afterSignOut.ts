@@ -4,6 +4,8 @@
  * acaba, então o destino é marcado antes de sair; a recuperação limpa a marca ao abrir.
  */
 let recoveryEmail: string | null = null;
+/** Conta excluída (Figma 07.17): depois de sair, mostra a confirmação em vez de Entrar. */
+let accountDeleted = false;
 
 export const afterSignOut = {
   markRecovery(email: string) {
@@ -12,7 +14,15 @@ export const afterSignOut = {
   recoveryEmail(): string | null {
     return recoveryEmail;
   },
+  markAccountDeleted() {
+    recoveryEmail = null;
+    accountDeleted = true;
+  },
+  accountDeleted(): boolean {
+    return accountDeleted;
+  },
   clear() {
     recoveryEmail = null;
+    accountDeleted = false;
   },
 };

@@ -41,6 +41,11 @@ export default function AuthLayout() {
         <Stack.Screen name="criar-conta" options={{ title: 'Criar conta' }} />
         <Stack.Screen name="verificar-email" options={{ title: 'Confirmar e-mail' }} />
         <Stack.Screen name="recuperar-senha" options={{ title: 'Recuperar senha' }} />
+        {/* Figma 07.17: a própria tela tem a barra com voltar. */}
+        <Stack.Screen
+          name="conta-excluida"
+          options={{ headerShown: false, title: 'Conta excluída' }}
+        />
       </Stack>
     </SessionContext.Provider>
   );
