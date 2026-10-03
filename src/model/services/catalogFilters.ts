@@ -1,4 +1,4 @@
-import type { CatalogFilters, Modality } from '../entities/Listing';
+import type { CatalogFilters, ListingCondition, Modality } from '../entities/Listing';
 import { modalityLabels } from './catalogFormat.ts';
 
 export const MIN_QUERY_LENGTH = 2;
@@ -15,12 +15,18 @@ export function effectiveFilters(filters: CatalogFilters): CatalogFilters {
     query: normalizeQuery(filters.query),
     modalities: [...new Set(filters.modalities)],
     category: filters.category,
+    goodCondition: Boolean(filters.goodCondition),
   };
 }
 
+/** O que conta como "bom estado" no filtro (Figma 02.03). */
+export const GOOD_CONDITIONS: ListingCondition[] = ['novo', 'como_novo', 'bom'];
+
 export function activeFilterCount(filters: CatalogFilters) {
   const effective = effectiveFilters(filters);
-  return effective.modalities.length + (effective.category ? 1 : 0);
+  return (
+    effective.modalities.length + (effective.category ? 1 : 0) + (effective.goodCondition ? 1 : 0)
+  );
 }
 
 export function hasActiveSearch(filters: CatalogFilters) {
@@ -53,10 +59,13 @@ export function exploreTitle(filters: CatalogFilters, empty: boolean) {
 
 /** "3 livros · Mais recentes" ou "1 livro · Venda"; sem total conhecido, só a ordem ou o filtro. */
 export function resultSummary(total: number | null, filters: CatalogFilters) {
-  const { modalities } = effectiveFilters(filters);
-  const scope = modalities.length
-    ? modalities.map((modality) => modalityLabels[modality]).join(', ')
-    : 'Mais recentes';
+  const { modalities, category, goodCondition } = effectiveFilters(filters);
+  const parts = [
+    modalities.map((modality) => modalityLabels[modality]).join(', '),
+    category ?? '',
+    goodCondition ? 'Bom estado' : '',
+  ].filter(Boolean);
+  const scope = parts.length ? parts.join(' · ') : 'Mais recentes';
   if (total == null) return scope;
   return `${total} ${total === 1 ? 'livro' : 'livros'} · ${scope}`;
 }

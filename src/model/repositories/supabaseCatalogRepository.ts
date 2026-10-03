@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { CatalogError } from '../entities/CatalogError.ts';
 import type { Listing } from '../entities/Listing';
-import { effectiveFilters, toLikePattern } from '../services/catalogFilters.ts';
+import { GOOD_CONDITIONS, effectiveFilters, toLikePattern } from '../services/catalogFilters.ts';
 import type { CatalogRepository } from './CatalogRepository';
 
 /** Só `from`, `rpc` e `storage` são usados; facilita testar com um cliente falso. */
@@ -82,7 +82,7 @@ export function createSupabaseCatalogRepository(
   return {
     async list({ filters, cursor, limit }) {
       const supabase = requireClient();
-      const { query, modalities, category } = effectiveFilters(filters);
+      const { query, modalities, category, goodCondition } = effectiveFilters(filters);
       // Conta o total só na primeira página, para o resumo "3 livros · Mais recentes".
       let request = supabase
         .from(CATALOG_VIEW)
@@ -95,6 +95,7 @@ export function createSupabaseCatalogRepository(
       }
       if (modalities.length) request = request.in('modality', modalities);
       if (category) request = request.eq('category', category);
+      if (goodCondition) request = request.in('condition', GOOD_CONDITIONS);
       if (cursor) {
         const at = quoted(cursor.createdAt);
         request = request.or(

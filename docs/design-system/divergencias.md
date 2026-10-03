@@ -102,3 +102,15 @@ Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e p
 | Telas 05.07 e 05.08 (depois de excluir ou recusar) | Não existem; a lista se atualiza no lugar.                                                                                                                                |
 | Folha de opções ao tocar em um livro               | Sem quadro. Segue a folha inferior do M3: `container.low`, cantos `radius.extraLarge`, itens de 56 px. O véu usa preto a 32% (o valor do M3), porque não há token de véu. |
 | Subtítulo de Concluídos                            | O Figma diz "trocas e doações"; o app diz "vendas, trocas e doações", porque venda também conclui.                                                                        |
+
+## Explorar e Filtrar livros (03/10/2026)
+
+Refeitos pelos quadros Android 02.02 a 02.04. Diferenças que ficaram:
+
+| Item                                           | Situação                                                                                           |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Seletor de bairro ("Centro") no topo (02.02)   | O app não guarda o bairro de quem usa e atende só Piripiri (ADR 0020); fica só o botão de filtros. |
+| Coração de favoritos nos cards (02.02 e 02.04) | O app não tem favoritos.                                                                           |
+| Categorias dos chips                           | O Figma mostra "Ficção", "Não ficção" e "Infantil"; o app usa as categorias fixas do ADR 0008.     |
+| "Mais recentes" em verde no resumo (02.04)     | A lista só tem essa ordem; o resumo diz a ordem ou os filtros, sem botão.                          |
+| Lista compacta com filtro (02.04)              | O app mantém os cards do 02.02 também com filtro.                                                  |

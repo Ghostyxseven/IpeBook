@@ -24,6 +24,8 @@ export function useCatalogSearchViewModel(
   const [modalities, setModalities] = useState<Modality[]>(
     initialModality ? [initialModality] : [],
   );
+  const [category, setCategory] = useState<string | null>(null);
+  const [goodCondition, setGoodCondition] = useState(false);
 
   useEffect(() => {
     const next = normalizeQuery(query);
@@ -33,8 +35,8 @@ export function useCatalogSearchViewModel(
   }, [query, appliedQuery, debounceMs]);
 
   const filters = useMemo<CatalogFilters>(
-    () => ({ query: appliedQuery, modalities, category: null }),
-    [appliedQuery, modalities],
+    () => ({ query: appliedQuery, modalities, category, goodCondition }),
+    [appliedQuery, modalities, category, goodCondition],
   );
   const pages = useCatalogPages(repository, filters);
   const empty = pages.status === 'ready' && pages.items.length === 0;
@@ -59,10 +61,32 @@ export function useCatalogSearchViewModel(
     searching: hasActiveSearch(filters),
     title: exploreTitle(filters, empty),
     summary: resultSummary(pages.total, filters),
+    category,
+    goodCondition,
+    /** Chip de categoria do Figma 02.02; tocar de novo na mesma volta para "Todos". */
+    selectCategory: (next: string | null) =>
+      setCategory((current) => (current === next ? null : next)),
+    /** "Mostrar livros" da tela Filtrar livros (Figma 02.03). */
+    applyFilters: (next: Pick<CatalogFilters, 'modalities' | 'category' | 'goodCondition'>) => {
+      setModalities(next.modalities);
+      setCategory(next.category);
+      setGoodCondition(Boolean(next.goodCondition));
+    },
+    /** Quantos livros o filtro em edição mostraria, para o botão "Mostrar N livros". */
+    countFor: async (draft: Pick<CatalogFilters, 'modalities' | 'category' | 'goodCondition'>) => {
+      const page = await repository.list({
+        filters: { query: appliedQuery, ...draft },
+        cursor: null,
+        limit: 1,
+      });
+      return page.total;
+    },
     clear: () => {
       setQuery('');
       setAppliedQuery('');
       setModalities([]);
+      setCategory(null);
+      setGoodCondition(false);
     },
   };
 }
