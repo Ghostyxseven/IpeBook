@@ -97,6 +97,23 @@ export function SettingsScreen() {
         )}
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel="Alterar senha"
+          onPress={() => router.push('/alterar-senha')}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.listItem,
+            pressed && styles.pressed,
+            focused && focusRing,
+          ]}
+        >
+          <AppIcon name="lock" size={20} color={colors.onSurfaceVariant} />
+          <View style={styles.rowCopy}>
+            <Text style={styles.rowTitle}>Alterar senha</Text>
+            <Text style={styles.rowBody}>Confirme a senha atual e escolha outra.</Text>
+          </View>
+          <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
           accessibilityLabel="Pessoas bloqueadas"
           onPress={() => router.push('/(app)/seguranca')}
           style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [

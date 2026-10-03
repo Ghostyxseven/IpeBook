@@ -377,3 +377,25 @@ test('token vencido e sem internet não equivale a sair: sessão continua salva 
     console.error = silence;
   }
 });
+
+test('Supabase: alterar senha confere a senha atual antes de gravar a nova (07.18 e 07.19)', async () => {
+  const errado = fakeClient({
+    signInWithPassword: () =>
+      Promise.resolve({
+        data: { user: null },
+        error: { code: 'invalid_credentials', status: 400 },
+      }),
+  });
+  await assert.rejects(
+    createSupabaseAuthRepository(errado.client).changePassword('errada1', 'novaLeitura1'),
+    { code: 'wrong_current_password' },
+  );
+  assert.ok(!errado.calls.some((call) => call[0] === 'updateUser'), 'não grava sem conferir');
+
+  const certo = fakeClient();
+  await createSupabaseAuthRepository(certo.client).changePassword('livros2026', 'novaLeitura1');
+  assert.deepEqual(certo.calls, [
+    ['signIn', { email: 'ana@email.com', password: 'livros2026' }],
+    ['updateUser', { password: 'novaLeitura1' }],
+  ]);
+});

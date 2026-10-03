@@ -25,6 +25,11 @@ export function validateEmail(email: string) {
   return undefined;
 }
 
+/** Alterar senha (Figma 07.18): a senha atual só precisa estar preenchida. */
+export function validateCurrentPassword(password: string) {
+  return password ? undefined : 'Informe sua senha atual.';
+}
+
 /** No login só exigimos preenchimento: a regra de força vale para senhas novas. */
 export function validateLoginPassword(password: string) {
   return password ? undefined : 'Informe sua senha.';

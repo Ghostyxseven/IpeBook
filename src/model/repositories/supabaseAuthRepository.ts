@@ -137,6 +137,22 @@ export function createSupabaseAuthRepository(client: SupabaseAuthClient | null):
       gate.release(data.user ? toUser(data.user) : null);
     },
 
+    async changePassword(currentPassword, newPassword) {
+      const { data } = await run(() => auth().getSession());
+      const email = data.session?.user.email;
+      if (!email) throw new AuthError('unknown');
+      // O Supabase não confere a senha atual no updateUser: entrar de novo com ela confirma
+      // que é a pessoa dona da conta. A sessão continua a mesma.
+      try {
+        await run(() => auth().signInWithPassword({ email, password: currentPassword }));
+      } catch (error) {
+        if (error instanceof AuthError && error.code === 'invalid_credentials')
+          throw new AuthError('wrong_current_password', error);
+        throw error;
+      }
+      await run(() => auth().updateUser({ password: newPassword }));
+    },
+
     async cancelPasswordRecovery() {
       if (!gate.holding) return;
       recoveringEmail = null;

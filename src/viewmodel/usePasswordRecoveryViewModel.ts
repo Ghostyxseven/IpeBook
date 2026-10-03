@@ -13,6 +13,7 @@ import {
   type FieldErrors,
 } from '../model/services/authValidation.ts';
 import { afterSignIn } from './afterSignIn.ts';
+import { afterSignOut } from './afterSignOut.ts';
 import { useAsyncAction } from './useAsyncAction.ts';
 import { useResendCooldown } from './useResendCooldown.ts';
 
@@ -36,10 +37,11 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
 
   // Sair da tela com o código confirmado e a senha não gravada encerra a sessão de
   // recuperação, para ninguém ficar autenticado sem ter trocado a senha (issue #8).
-  useEffect(
-    () => () => void repository.cancelPasswordRecovery().catch(() => undefined),
-    [repository],
-  );
+  useEffect(() => {
+    // Veio de Alterar senha: a marca já cumpriu o papel de abrir esta tela.
+    afterSignOut.clear();
+    return () => void repository.cancelPasswordRecovery().catch(() => undefined);
+  }, [repository]);
 
   // A resposta é a mesma com ou sem conta, para não revelar quem está cadastrado.
   const sentNotice = () =>

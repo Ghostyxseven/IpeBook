@@ -43,6 +43,7 @@ const symbols = {
     web: 'radio_button_checked',
   },
   radioOff: { ios: 'circle', android: 'radio_button_unchecked', web: 'radio_button_unchecked' },
+  lock: { ios: 'lock', android: 'lock', web: 'lock' },
   checkboxOn: { ios: 'checkmark.square.fill', android: 'check_box', web: 'check_box' },
   checkboxOff: {
     ios: 'square',

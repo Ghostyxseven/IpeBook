@@ -6,6 +6,7 @@ export type AuthErrorCode =
   | 'weak_password'
   | 'invalid_code'
   | 'same_password'
+  | 'wrong_current_password'
   | 'rate_limited'
   | 'network'
   | 'not_configured'

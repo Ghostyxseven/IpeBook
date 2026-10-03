@@ -13,6 +13,8 @@ import { useOnboardingViewModel } from '../src/viewmodel/useOnboardingViewModel.
 import { startRoute, useSession } from '../src/viewmodel/useSession.ts';
 import { useStartViewModel } from '../src/viewmodel/useStartViewModel.ts';
 import { afterSignIn } from '../src/viewmodel/afterSignIn.ts';
+import { afterSignOut } from '../src/viewmodel/afterSignOut.ts';
+import { useChangePasswordViewModel } from '../src/viewmodel/useChangePasswordViewModel.ts';
 
 const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost/' });
 globalThis.window = dom.window;
@@ -434,3 +436,62 @@ test('abertura escolhe o destino conforme sessão e onboarding', () => {
 });
 
 test.after(() => dom.window.close());
+
+test('alterar senha passa pelos estados do Figma (07.18 a 07.21)', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.addAccount(ana, 'livros2026');
+  memory.restoreSession(ana);
+  const hook = await renderHook(() =>
+    useChangePasswordViewModel(memory.repository, { email: ana.email }),
+  );
+  assert.equal(hook.vm.state, 'form');
+  await act(async () => hook.vm.submit());
+  assert.match(hook.vm.errors.current, /senha atual/);
+  assert.equal(hook.vm.state, 'form');
+
+  await act(async () => hook.vm.setField('current', 'livros2026'));
+  await act(async () => hook.vm.setField('password', 'curta'));
+  await act(async () => hook.vm.setField('confirmation', 'outra'));
+  await act(async () => hook.vm.submit());
+  assert.equal(hook.vm.state, 'invalidNew', '07.21');
+  assert.match(hook.vm.errors.password, /8 caracteres/);
+  assert.match(hook.vm.errors.confirmation, /não são iguais/);
+  assert.ok(
+    !memory.calls.includes('changePassword'),
+    'não chama o provedor com a senha nova inválida',
+  );
+
+  await act(async () => hook.vm.setField('current', 'errada99'));
+  await act(async () => hook.vm.setField('password', 'novaLeitura1'));
+  await act(async () => hook.vm.setField('confirmation', 'novaLeitura1'));
+  await act(async () => hook.vm.submit());
+  assert.equal(hook.vm.state, 'wrongCurrent', '07.19');
+  assert.match(hook.vm.errors.current, /não confere/);
+  assert.equal(hook.vm.values.current, '', 'limpa a senha atual errada');
+
+  await act(async () => hook.vm.setField('current', 'livros2026'));
+  await act(async () => hook.vm.submit());
+  assert.equal(hook.vm.state, 'done', '07.20');
+  assert.equal(memory.passwordOf(ana.email), 'novaLeitura1');
+  await hook.unmount();
+});
+
+test('alterar senha: esqueci a senha atual sai da conta e abre a recuperação com o e-mail', async () => {
+  const memory = createMemoryAuthRepository();
+  memory.addAccount(ana, 'livros2026');
+  memory.restoreSession(ana);
+  const hook = await renderHook(() =>
+    useChangePasswordViewModel(memory.repository, { email: ana.email }),
+  );
+  await act(async () => hook.vm.recoverAccess());
+  assert.equal(await memory.repository.getCurrentUser(), null);
+  assert.equal(afterSignOut.recoveryEmail(), ana.email);
+
+  const recovery = await renderHook(() =>
+    usePasswordRecoveryViewModel(memory.repository, ana.email),
+  );
+  assert.equal(afterSignOut.recoveryEmail(), null, 'a recuperação limpa a marca ao abrir');
+  assert.equal(recovery.vm.values.email, ana.email);
+  await recovery.unmount();
+  await hook.unmount();
+});

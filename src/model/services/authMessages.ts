@@ -8,6 +8,7 @@ const messages: Record<AuthErrorCode, string> = {
   weak_password: 'Escolha uma senha mais forte, com letras e números.',
   invalid_code: 'Código inválido ou expirado. Confira o e-mail ou peça um novo código.',
   same_password: 'A nova senha precisa ser diferente da anterior.',
+  wrong_current_password: 'A senha atual não confere.',
   rate_limited: 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente de novo.',
   network: 'Não conseguimos falar com o servidor. Confira sua internet e tente de novo.',
   not_configured: 'A autenticação ainda não foi configurada neste ambiente.',

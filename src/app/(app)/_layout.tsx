@@ -3,6 +3,7 @@ import { OfflineBanner } from '../../view/components/feedback/OfflineBanner';
 import { SessionPendingScreen } from '../../view/screens/SessionPendingScreen';
 import { colors, typography } from '../../view/theme/nativeTheme';
 import { useAppSession } from '../../factories/auth';
+import { afterSignOut } from '../../viewmodel/afterSignOut';
 import { SessionContext } from '../../viewmodel/useSession';
 
 /** Cabeçalho das telas de pilha: voltar e o título, sobre a superfície (Figma 04). */
@@ -21,7 +22,12 @@ const stackHeader = (title: string) => ({
 export default function AppLayout() {
   const session = useAppSession();
   if (session.status === 'loading') return <SessionPendingScreen session={session} />;
-  if (session.status === 'signedOut') return <Redirect href="/entrar" />;
+  if (session.status === 'signedOut') {
+    // Alterar senha → "Esqueci a senha atual": a recuperação abre com o e-mail da conta.
+    const email = afterSignOut.recoveryEmail();
+    if (email) return <Redirect href={{ pathname: '/recuperar-senha', params: { email } }} />;
+    return <Redirect href="/entrar" />;
+  }
   return (
     <SessionContext.Provider value={session}>
       <OfflineBanner />
@@ -59,6 +65,13 @@ export default function AppLayout() {
           name="notificacoes"
           options={{
             ...stackHeader('Notificações'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="alterar-senha"
+          options={{
+            ...stackHeader('Alterar senha'),
             contentStyle: { backgroundColor: colors.surface },
           }}
         />

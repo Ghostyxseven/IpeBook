@@ -88,6 +88,14 @@ export function createMemoryAuthRepository({
       recoveringEmail = null;
       gate.release(account!.user);
     },
+    async changePassword(currentPassword, newPassword) {
+      calls.push('changePassword');
+      const account = current ? find(current.email) : undefined;
+      if (!account) throw new AuthError('unknown');
+      if (account.password !== currentPassword) throw new AuthError('wrong_current_password');
+      if (newPassword === currentPassword) throw new AuthError('same_password');
+      account.password = newPassword;
+    },
     async cancelPasswordRecovery() {
       if (!gate.holding) return;
       calls.push('cancelPasswordRecovery');
