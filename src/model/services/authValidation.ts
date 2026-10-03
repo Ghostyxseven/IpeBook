@@ -41,6 +41,13 @@ export function validateNewPassword(password: string) {
   return undefined;
 }
 
+/** O cadastro só segue com os Termos de Uso e a Política de Privacidade aceitos. */
+export function validateTermsAccepted(accepted: boolean) {
+  return accepted
+    ? undefined
+    : 'Para criar a conta, aceite os termos de uso e a política de privacidade.';
+}
+
 export function validatePasswordConfirmation(password: string, confirmation: string) {
   if (!confirmation) return 'Repita a senha.';
   return password === confirmation ? undefined : 'As senhas não são iguais.';

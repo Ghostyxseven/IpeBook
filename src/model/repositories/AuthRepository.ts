@@ -13,8 +13,11 @@ export interface AuthRepository {
   /** Avisa a cada entrada ou saída. Retorna a função para cancelar a inscrição. */
   onUserChange(listener: (user: User | null) => void): () => void;
   signIn(email: string, password: string): Promise<User>;
-  /** Cria a conta e envia o código de confirmação por e-mail. */
-  signUp(name: string, email: string, password: string): Promise<void>;
+  /**
+   * Cria a conta e envia o código de confirmação por e-mail. `termsAcceptedAt` registra quando
+   * a pessoa aceitou os Termos de Uso e a Política de Privacidade (Figma 01.03).
+   */
+  signUp(name: string, email: string, password: string, termsAcceptedAt: Date): Promise<void>;
   /** Confirma o e-mail com o código e inicia a sessão. */
   verifySignUp(email: string, code: string): Promise<User>;
   resendSignUpCode(email: string): Promise<void>;

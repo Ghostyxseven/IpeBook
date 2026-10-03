@@ -1,12 +1,12 @@
 import { useRef } from 'react';
-import { StyleSheet, Text, type TextInput } from 'react-native';
+import type { TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSignUp } from '../../../factories/auth';
 import { AuthLayout } from '../../components/ui/AuthLayout';
 import { Button } from '../../components/ui/Button';
+import { Checkbox } from '../../components/ui/Checkbox';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TextField } from '../../components/ui/TextField';
-import { colors, typography } from '../../theme/nativeTheme';
 
 export function SignUpScreen() {
   const router = useRouter();
@@ -71,15 +71,14 @@ export function SignUpScreen() {
         returnKeyType="go"
         onSubmitEditing={vm.submit}
       />
-      <Text style={styles.legal}>
-        Ao criar a conta, seu nome e e-mail são usados para identificar você no IpêBook, como
-        descrito na Política de Privacidade.
-      </Text>
+      <Checkbox
+        label="Aceito os termos de uso"
+        supportingText="e a política de privacidade."
+        checked={vm.acceptedTerms}
+        onToggle={vm.toggleTerms}
+        error={vm.errors.terms}
+      />
       <Button label="Criar conta" onPress={vm.submit} loading={vm.submitting} />
     </AuthLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  legal: { ...typography.caption, color: colors.secondaryText },
-});

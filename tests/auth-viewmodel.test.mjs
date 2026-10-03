@@ -120,10 +120,14 @@ test('criar conta valida todos os campos e segue para a verificação', async ()
   const memory = createMemoryAuthRepository();
   let createdFor = null;
   const hook = await renderHook(() =>
-    useSignUpViewModel(memory.repository, { onSignedUp: (email) => (createdFor = email) }),
+    useSignUpViewModel(memory.repository, {
+      onSignedUp: (email) => (createdFor = email),
+      now: () => new Date('2026-10-03T12:00:00Z'),
+    }),
   );
   await act(async () => hook.vm.setField('password', 'curta'));
   await act(async () => hook.vm.submit());
+  assert.match(hook.vm.errors.terms, /aceite os termos/, 'sem o aceite a conta não é criada');
   assert.match(hook.vm.errors.name, /Informe/);
   assert.match(hook.vm.errors.email, /Informe/);
   assert.match(hook.vm.errors.password, /8 caracteres/);
@@ -137,13 +141,20 @@ test('criar conta valida todos os campos e segue para a verificação', async ()
   ])
     await act(async () => hook.vm.setField(field, value));
   await act(async () => hook.vm.submit());
+  assert.equal(createdFor, null, 'campos certos, mas termos ainda não aceitos');
+
+  await act(async () => hook.vm.toggleTerms());
+  assert.equal(hook.vm.acceptedTerms, true);
+  assert.equal(hook.vm.errors.terms, undefined);
+  await act(async () => hook.vm.submit());
   assert.equal(createdFor, 'ana@email.com');
+  assert.deepEqual(memory.termsAcceptedAt('ana@email.com'), new Date('2026-10-03T12:00:00Z'));
   await hook.unmount();
 });
 
 test('verificar e-mail confirma com o código, trata código errado e controla o reenvio', async () => {
   const memory = createMemoryAuthRepository({ code: '123456' });
-  await memory.repository.signUp('Ana', 'ana@email.com', 'livros2026');
+  await memory.repository.signUp('Ana', 'ana@email.com', 'livros2026', new Date());
   const hook = await renderHook(() => useVerifyEmailViewModel(memory.repository, 'ana@email.com'));
   assert.equal(hook.vm.resendSeconds, 60, 'o código acabou de ser enviado');
   await act(async () => hook.vm.resend());

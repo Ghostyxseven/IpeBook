@@ -3,7 +3,7 @@ import type { User } from '../entities/User';
 import type { AuthRepository } from './AuthRepository';
 import { createUserChangeGate } from './userChangeGate.ts';
 
-type Account = { user: User; password: string };
+type Account = { user: User; password: string; termsAcceptedAt?: Date };
 
 /**
  * Implementação em memória para testes das ViewModels.
@@ -49,12 +49,13 @@ export function createMemoryAuthRepository({
       setCurrent(account.user);
       return account.user;
     },
-    async signUp(name, email, password) {
+    async signUp(name, email, password, termsAcceptedAt) {
       calls.push('signUp');
       if (find(email)) return; // Mesmo comportamento do Supabase: não revela contas existentes.
       accounts.set(email, {
         user: { id: `u${accounts.size + 1}`, name, email, emailVerified: false },
         password,
+        termsAcceptedAt,
       });
     },
     async verifySignUp(email, token) {
@@ -121,6 +122,10 @@ export function createMemoryAuthRepository({
     },
     passwordOf(email: string) {
       return accounts.get(email)?.password;
+    },
+    /** Data do aceite dos termos gravada no cadastro. */
+    termsAcceptedAt(email: string) {
+      return accounts.get(email)?.termsAcceptedAt;
     },
   };
 }

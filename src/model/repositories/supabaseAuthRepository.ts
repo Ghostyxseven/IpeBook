@@ -97,10 +97,12 @@ export function createSupabaseAuthRepository(client: SupabaseAuthClient | null):
       return toUser(data.user!);
     },
 
-    async signUp(name, email, password) {
+    async signUp(name, email, password, termsAcceptedAt) {
       // Com "Confirm email" ligado, um e-mail já cadastrado recebe um usuário ofuscado,
       // sem erro: o app segue para a verificação sem revelar se a conta existe.
-      await run(() => auth().signUp({ email, password, options: { data: { name } } }));
+      // A data do aceite fica nos metadados da conta (auth.users.raw_user_meta_data).
+      const data = { name, terms_accepted_at: termsAcceptedAt.toISOString() };
+      await run(() => auth().signUp({ email, password, options: { data } }));
     },
 
     async verifySignUp(email, code) {

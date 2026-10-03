@@ -111,7 +111,12 @@ test('repositório Supabase envia os parâmetros certos e converte o usuário', 
     name: 'Ana Leitora',
     emailVerified: true,
   });
-  await repository.signUp('Ana Leitora', 'ana@email.com', 'livros2026');
+  await repository.signUp(
+    'Ana Leitora',
+    'ana@email.com',
+    'livros2026',
+    new Date('2026-10-03T12:00:00Z'),
+  );
   await repository.verifySignUp('ana@email.com', '123456');
   await repository.resendSignUpCode('ana@email.com');
   await repository.resetPassword('ana@email.com', '654321', 'novaSenha1');
@@ -121,7 +126,7 @@ test('repositório Supabase envia os parâmetros certos e converte o usuário', 
       {
         email: 'ana@email.com',
         password: 'livros2026',
-        options: { data: { name: 'Ana Leitora' } },
+        options: { data: { name: 'Ana Leitora', terms_accepted_at: '2026-10-03T12:00:00.000Z' } },
       },
     ],
     ['verifyOtp', { email: 'ana@email.com', token: '123456', type: 'signup' }],
@@ -157,7 +162,7 @@ test('sem configuração do Supabase o app não simula autenticação', async ()
   assert.equal(await repository.getCurrentUser(), null);
   assert.equal(typeof repository.onUserChange(() => {}), 'function');
   await assert.rejects(repository.signIn('a@b.com', 'x'), { code: 'not_configured' });
-  await assert.rejects(repository.signUp('Ana', 'a@b.com', 'livros2026'), {
+  await assert.rejects(repository.signUp('Ana', 'a@b.com', 'livros2026', new Date()), {
     code: 'not_configured',
   });
 });
