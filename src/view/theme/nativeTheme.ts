@@ -59,6 +59,10 @@ export const colors = {
   errorContainer: tokens.color.errorContainer.$value,
   inverseSurface: tokens.color.inverseSurface.$value,
   inverseOnSurface: tokens.color.inverseOnSurface.$value,
+  /** iOS (Figma 07 · iPhone): célula agrupada, rótulo secundário e separador. */
+  iosCell: tokens.color.ios.cell.$value,
+  iosSecondaryLabel: tokens.color.ios.secondaryLabel.$value,
+  iosSeparator: tokens.color.ios.separator.$value,
 } as const;
 
 const badge = (name: keyof typeof tokens.color.badge) => ({
@@ -142,6 +146,10 @@ export const typography = {
   labelMedium: typeStyle(tokens.typography.scale.labelMedium),
   /** Rótulo de botão do Material 3 (Figma `Android/m3-label-lg`). */
   labelLarge: typeStyle(tokens.typography.scale.labelLarge),
+  /** Estilos do iOS no Figma (`iOS/ios-body`, `ios-subheadline`, `ios-footnote`), na fonte do sistema. */
+  iosBody: typeStyle(tokens.typography.ios.body),
+  iosSubheadline: typeStyle(tokens.typography.ios.subheadline),
+  iosFootnote: typeStyle(tokens.typography.ios.footnote),
   /**
    * Título de marca em Source Serif 4 (no máximo um por tela). O arquivo da fonte já é o
    * negrito, então o peso não é repetido: no Android, peso junto de fonte própria troca a fonte.

@@ -79,3 +79,18 @@ A primeira execução de cada série inclui aquecimento do navegador. A decisão
 - O roteiro `scripts/verificar-gesto-livro.mjs` falha na linha 90 tanto nesta branch quanto na `develop` no Chrome 154 headless (a emulação de toque não inicia a virada). Não é regressão desta branch.
 - **Controles de sistema**: a versão 1.1 do design system (PR #6, integrada por rebase) recomenda que Button e Text Field venham das bibliotecas de cada plataforma (Material 3 no Android, componentes nativos no iOS). `Button` e `TextField` desta spec são próprios, construídos só com React Native e com os tokens. Adotar uma biblioteca de componentes, como React Native Paper, é uma decisão para a equipe registrar em ADR; a troca fica isolada nesses dois componentes.
 - Após o rebase sobre o PR #6, o tema nativo passou a ler os tokens estruturados (`$value`) e a usar `accessibility.touchTarget`, `accessibility.focusWidth`, `accessibility.focusOffset`, `border.thin` e `border.strong` em vez de números fixos.
+
+## Issue #10: componentes do iPhone nas telas de acesso (03/10/2026)
+
+**Fonte:** Figma, página 07 · iPhone, seção 01 · Acesso (`206:6868`), quadros 01.03, 01.10 e 01.17 e variáveis `cor/ios-cell`, `cor/ios-secondary-label`, `cor/ios-separator` e `iOS/ios-*`. Decisão no [ADR 0024](../../docs/adr/0024-componentes-ios-da-autenticacao.md).
+
+| Componente      | Antes no iPhone                    | Agora (Figma iOS)                                         |
+| --------------- | ---------------------------------- | --------------------------------------------------------- |
+| `TextField`     | rótulo em negrito, caixa com borda | rótulo `ios-footnote` acima, célula `ios.cell`, raio 12   |
+| `Button`        | raio 20, rótulo em negrito         | cápsula de 50 px, rótulo `ios-body`; secundário sem borda |
+| `Checkbox`      | caixa de seleção do Material       | linha agrupada com ícone e `Switch` (UISwitch)            |
+| `RadioListItem` | rádio do Material                  | lista agrupada com cabeçalho, separador e `checkmark`     |
+
+**Evidência:** prévia Web com os ramos do iOS forçados de propósito (cópia temporária com `Platform.OS` fixo e os tokens do iOS, desfeita depois) das telas Entrar, Criar conta e Seu bairro, comparada com os quadros do iPhone. O `expo export --platform ios` gerou o pacote sem erro.
+
+**Não verificado (precisa de iPhone ou simulador, issue #12):** VoiceOver (ordem de leitura e anúncio da chave e da marca de seleção), texto ampliado, teclado aberto, preenchimento automático de senha e código de uso único, e largura em iPad. A #10 continua aberta até essa validação.
