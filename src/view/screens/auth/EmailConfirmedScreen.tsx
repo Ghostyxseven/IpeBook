@@ -9,7 +9,8 @@ export function EmailConfirmedScreen() {
       barTitle="Confirmar e-mail"
       title="Sua história pode continuar."
       description="Seu e-mail foi confirmado. Agora você pode anunciar livros e conversar com a comunidade."
-      primary={{ label: 'Explorar livros', onPress: () => router.replace('/explorar') }}
+      // Antes de explorar, a pessoa escolhe o bairro (Figma 01.17).
+      primary={{ label: 'Explorar livros', onPress: () => router.replace('/seu-bairro') }}
       secondary={{
         label: 'Anunciar meu primeiro livro',
         onPress: () => router.replace('/anunciar'),

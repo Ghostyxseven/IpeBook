@@ -97,6 +97,23 @@ export function SettingsScreen() {
         )}
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel="Seu bairro"
+          onPress={() => router.push('/escolher-bairro')}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.listItem,
+            pressed && styles.pressed,
+            focused && focusRing,
+          ]}
+        >
+          <AppIcon name="place" size={20} color={colors.onSurfaceVariant} />
+          <View style={styles.rowCopy}>
+            <Text style={styles.rowTitle}>Seu bairro</Text>
+            <Text style={styles.rowBody}>Onde você quer encontrar livros em Piripiri.</Text>
+          </View>
+          <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
           accessibilityLabel="Alterar senha"
           onPress={() => router.push('/alterar-senha')}
           style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [

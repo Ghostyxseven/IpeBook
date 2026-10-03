@@ -69,6 +69,20 @@ export default function AppLayout() {
           }}
         />
         <Stack.Screen
+          name="seu-bairro"
+          options={{
+            ...stackHeader('Seu bairro'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="escolher-bairro"
+          options={{
+            ...stackHeader('Escolher bairro'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
           name="alterar-senha"
           options={{
             ...stackHeader('Alterar senha'),

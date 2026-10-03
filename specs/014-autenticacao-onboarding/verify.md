@@ -154,3 +154,12 @@ A equipe decidiu seguir o Figma nos itens abaixo. Cada item foi feito num commit
    - senha alterada (07.20), com "Voltar à segurança" e "Voltar às configurações".
 
    O repositório ganhou `changePassword`: no Supabase, ele confere a senha atual entrando de novo com ela (`signInWithPassword`) e só então grava a nova (`updateUser`). O erro novo `wrong_current_password` mostra "A senha atual não confere.". "Esqueci a senha atual" e "Recuperar acesso" saem da conta e abrem a recuperação já com o e-mail (`afterSignOut`, usado pelo layout da área logada). **Divergência:** o quadro 07.05 não tem a entrada "Alterar senha"; ela foi posta em Conta, junto de Pessoas bloqueadas. A nota cita "letras e números", que é a regra real do app.
+
+6. **Seu bairro e Escolher bairro** (01.17 e 11.01):
+   - **Banco:** migration `20261003140000_perfil_bairro.sql` cria `profiles` (bairro, cidade fixa em Piripiri, RLS só da própria pessoa, o app grava só `neighborhood`).
+   - **Model:** `ProfileRepository` (Supabase e memória), `Profile`/`ProfileError` e `neighborhood.ts`, com os bairros sugeridos do Figma e a validação.
+   - **ViewModel:** `useNeighborhoodViewModel`, compartilhada pelas duas telas.
+   - **Seu bairro (`/seu-bairro`):** lista com rádio (`RadioListItem`) e "Outro bairro…" com campo de texto; abre a partir de "Explorar livros" no E-mail confirmado e, ao salvar, segue para Explorar.
+   - **Escolher bairro (`/escolher-bairro`):** cidade desabilitada e campo Bairro; abre por Configurações › Conta › Seu bairro.
+
+   **Divergências:** o texto de apoio "Mais anúncios agora" do Centro saiu, porque é uma afirmação sem fonte (regra 8 do AGENTS.md). Os testes estão em `tests/neighborhood.test.mjs`. A migration precisa ser aplicada no Supabase do grupo.
