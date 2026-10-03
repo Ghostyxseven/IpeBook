@@ -1,57 +1,89 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { MyListing } from '../model/entities/Listing';
 import { toListingError } from '../model/entities/ListingError.ts';
 import { listingErrorMessage } from '../model/services/listingMessages.ts';
 import type { CoverFile, ListingsRepository } from '../model/repositories/ListingsRepository';
 import { useAsyncAction } from './useAsyncAction.ts';
-import { steps, useListingForm, type Step } from './useListingForm.ts';
+import {
+  validateBookStep,
+  validateModalityStep,
+  type ListingErrors,
+} from '../model/services/listingValidation.ts';
+import { useListingForm } from './useListingForm.ts';
+
+/**
+ * As etapas do Anunciar livro no Figma (04.01, 04.04 e 04.05). Ficam aqui, e não no
+ * formulário compartilhado, porque a edição continua com os passos dela.
+ */
+export const publishSteps = ['livro', 'fotos', 'detalhes'] as const;
+export type PublishStep = (typeof publishSteps)[number];
+
+/** Campos que cada etapa mostra; o erro de um campo só aparece na etapa dele. */
+const fieldsOf: Record<PublishStep, readonly (keyof ListingErrors)[]> = {
+  livro: ['title', 'author', 'modality', 'priceCents', 'tradeTerms'],
+  fotos: [],
+  detalhes: ['category', 'condition'],
+};
 
 /** A foto escolhida: os bytes que vão subir e o endereço local só para mostrar. */
 export type PickedCover = { file: CoverFile; previewUri: string };
 
 /**
- * Publicar anúncio (spec 025), no pattern do design system:
- * dados do livro → modalidade → foto → revisar → publicar.
+ * Publicar anúncio (spec 025) como no Figma: livro e modalidade → fotos → detalhes → publicar.
  *
- * Um passo só avança com os campos dele válidos, e tentar avançar é o que
- * acende os erros — antes disso o formulário fica limpo.
+ * Uma etapa só avança com os campos dela válidos, e tentar avançar é o que
+ * acende os erros: antes disso o formulário fica limpo.
  */
 export function usePublishListingViewModel(repository: ListingsRepository) {
   const form = useListingForm();
   const [index, setIndex] = useState(0);
+  const [tried, setTried] = useState<Partial<Record<PublishStep, boolean>>>({});
   const [cover, setCover] = useState<PickedCover | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [published, setPublished] = useState<MyListing | null>(null);
   const [submitting, run] = useAsyncAction();
 
-  const step = steps[index] as Step;
+  const step = publishSteps[index] as PublishStep;
+  const { draft } = form;
+
+  // A validação é a mesma da edição; aqui só é reagrupada pelas etapas do Figma.
+  const allErrors = useMemo<ListingErrors>(
+    () => ({ ...validateBookStep(draft), ...validateModalityStep(draft) }),
+    [draft],
+  );
+
+  const rawErrorsOf = useCallback(
+    (target: PublishStep): ListingErrors =>
+      Object.fromEntries(
+        Object.entries(allErrors).filter(([field]) =>
+          fieldsOf[target].includes(field as keyof ListingErrors),
+        ),
+      ),
+    [allErrors],
+  );
+
+  const stepErrors = useCallback(
+    (target: PublishStep): ListingErrors => (tried[target] ? rawErrorsOf(target) : {}),
+    [tried, rawErrorsOf],
+  );
 
   const next = useCallback(() => {
-    form.markTouched(step);
-    if (!form.stepIsValid(step)) return false;
-    setIndex((current) => Math.min(current + 1, steps.length - 1));
+    setTried((previous) => ({ ...previous, [step]: true }));
+    if (Object.keys(rawErrorsOf(step)).length > 0) return false;
+    setIndex((current) => Math.min(current + 1, publishSteps.length - 1));
     return true;
-  }, [form, step]);
+  }, [step, rawErrorsOf]);
 
   const back = useCallback(() => {
     setError(null);
     setIndex((current) => Math.max(current - 1, 0));
   }, []);
 
-  /** Voltar para corrigir a partir da revisão, sem perder o que já foi digitado. */
-  const goTo = useCallback((target: Step) => {
-    setError(null);
-    setIndex(steps.indexOf(target));
-  }, []);
-
   const submit = useCallback(
     () =>
       run(async () => {
         setError(null);
-        // Marca os dois passos de dados: se algo escapou, o erro precisa estar
-        // visível quando a pessoa voltar para corrigir.
-        form.markTouched('book');
-        form.markTouched('modality');
+        setTried({ livro: true, detalhes: true });
         if (!form.complete()) {
           setError(listingErrorMessage('invalid'));
           return;
@@ -69,12 +101,12 @@ export function usePublishListingViewModel(repository: ListingsRepository) {
     ...form,
     step,
     stepNumber: index + 1,
-    stepCount: steps.length,
+    stepCount: publishSteps.length,
     isFirst: index === 0,
-    isLast: index === steps.length - 1,
+    isLast: index === publishSteps.length - 1,
+    stepErrors,
     next,
     back,
-    goTo,
     cover,
     pickCover: setCover,
     clearCover: () => setCover(null),
