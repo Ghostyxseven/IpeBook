@@ -12,12 +12,46 @@ import { Button } from '../ui/Button';
 const MAX_BYTES = 5 * 1024 * 1024;
 
 /**
- * A foto do exemplar — opcional (spec 025, passo 3).
+ * Abre as fotos do aparelho e devolve a foto pronta para subir, ou a mensagem do problema.
+ * `null` quando a pessoa desiste. Usada pelo `CoverPicker` e pelas etapas do Anunciar livro.
  *
  * Converte para bytes aqui, na View, porque é só aqui que existe uma `uri` de
  * arquivo: o Model não conhece React Native (ADR 0012) e receber `ArrayBuffer`
  * o mantém assim.
  */
+export async function pickCoverImage(): Promise<PickedCover | { error: string } | null> {
+  try {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) return { error: 'Precisamos da sua permissão para abrir as fotos.' };
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.8,
+      allowsEditing: true,
+      base64: true,
+    });
+    const asset = result.canceled ? null : result.assets[0];
+    if (!asset) return null;
+
+    // No aparelho, `fetch` do arquivo local não traz a imagem; o base64 traz.
+    const bytes = asset.base64
+      ? base64ToArrayBuffer(asset.base64)
+      : await (await fetch(asset.uri)).arrayBuffer();
+    if (bytes.byteLength > MAX_BYTES)
+      return { error: 'Esta foto é muito grande. Escolha uma de até 5 MB.' };
+    return {
+      previewUri: asset.uri,
+      file: {
+        filename: asset.fileName ?? 'capa.jpg',
+        mimeType: asset.mimeType ?? 'image/jpeg',
+        bytes,
+      },
+    };
+  } catch {
+    return { error: 'Não conseguimos abrir essa foto. Tente outra.' };
+  }
+}
+
+/** A foto do exemplar — opcional (spec 025, passo 3). */
 export function CoverPicker({
   picked,
   currentUrl,
@@ -39,42 +73,11 @@ export function CoverPicker({
   const choose = async () => {
     setError(null);
     setBusy(true);
-    try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permission.granted) {
-        setError('Precisamos da sua permissão para abrir as fotos.');
-        return;
-      }
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        quality: 0.8,
-        allowsEditing: true,
-        base64: true,
-      });
-      const asset = result.canceled ? null : result.assets[0];
-      if (!asset) return;
-
-      // No aparelho, `fetch` do arquivo local não traz a imagem; o base64 traz.
-      const bytes = asset.base64
-        ? base64ToArrayBuffer(asset.base64)
-        : await (await fetch(asset.uri)).arrayBuffer();
-      if (bytes.byteLength > MAX_BYTES) {
-        setError('Esta foto é muito grande. Escolha uma de até 5 MB.');
-        return;
-      }
-      onPick({
-        previewUri: asset.uri,
-        file: {
-          filename: asset.fileName ?? 'capa.jpg',
-          mimeType: asset.mimeType ?? 'image/jpeg',
-          bytes,
-        },
-      });
-    } catch {
-      setError('Não conseguimos abrir essa foto. Tente outra.');
-    } finally {
-      setBusy(false);
-    }
+    const result = await pickCoverImage();
+    setBusy(false);
+    if (!result) return;
+    if ('error' in result) setError(result.error);
+    else onPick(result);
   };
 
   return (

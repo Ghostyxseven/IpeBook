@@ -19,6 +19,7 @@ const symbols = {
   check: { ios: 'checkmark', android: 'check', web: 'check' },
   chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
   error: { ios: 'exclamationmark.circle', android: 'error', web: 'error' },
+  send: { ios: 'paperplane', android: 'send', web: 'send' },
   chevronLeft: { ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' },
   // Gestão de anúncios e perfil (specs 025 e 026).
   add: { ios: 'plus', android: 'add', web: 'add' },
@@ -34,6 +35,14 @@ const symbols = {
   place: { ios: 'mappin.and.ellipse', android: 'location_on', web: 'location_on' },
   info: { ios: 'info.circle', android: 'info', web: 'info' },
   chat: { ios: 'bubble.left.and.bubble.right', android: 'chat_bubble', web: 'chat_bubble' },
+  tune: { ios: 'slider.horizontal.3', android: 'tune', web: 'tune' },
+  back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
+  radioOn: {
+    ios: 'largecircle.fill.circle',
+    android: 'radio_button_checked',
+    web: 'radio_button_checked',
+  },
+  radioOff: { ios: 'circle', android: 'radio_button_unchecked', web: 'radio_button_unchecked' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;

@@ -7,10 +7,16 @@ import motivoIpe from '../../../../assets/catalog/capa-motivo-ipe.svg';
 import motivoOndas from '../../../../assets/catalog/capa-motivo-ondas.svg';
 import { BRAND_FONT, coverColors } from '../../theme/nativeTheme';
 
-type Variant = 'shelf' | 'row' | 'tile' | 'detail';
+type Variant = 'shelf' | 'row' | 'tile' | 'detail' | 'publish';
 
 /** Largura da capa em cada uso; a altura segue a proporção 96 × 136 do Figma. */
-const widths: Record<Variant, number> = { shelf: 56, row: 68, tile: 92, detail: 120 };
+const widths: Record<Variant, number> = {
+  shelf: 56,
+  row: 68,
+  tile: 92,
+  detail: 120,
+  publish: 176,
+};
 
 /** Motivo de cada cor de capa, na mesma ordem de `coverColors.backgrounds` (Figma, "Capa ilustrativa"). */
 const motifs = [motivoEstrelas, motivoOndas, motivoIpe];

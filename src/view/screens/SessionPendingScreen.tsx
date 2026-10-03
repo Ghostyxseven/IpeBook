@@ -15,7 +15,7 @@ export function SessionPendingScreen({ session }: { session: Session }) {
     <SafeAreaView style={styles.safe}>
       <View style={styles.content}>
         <ErrorState
-          title="Sem conexão"
+          tone="offline"
           message={`Sua sessão continua salva neste aparelho. ${session.restoreError}`}
           onRetry={session.retryRestore}
         />

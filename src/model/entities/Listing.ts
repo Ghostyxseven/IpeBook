@@ -34,9 +34,16 @@ export type CatalogFilters = {
   query: string;
   modalities: Modality[];
   category: string | null;
+  /** "Somente bom estado" do Figma 02.03: novo, como novo ou bom. */
+  goodCondition?: boolean;
 };
 
-export const emptyFilters: CatalogFilters = { query: '', modalities: [], category: null };
+export const emptyFilters: CatalogFilters = {
+  query: '',
+  modalities: [],
+  category: null,
+  goodCondition: false,
+};
 
 // ── Anúncios de quem publicou (spec 025) ────────────────────────────────────
 

@@ -31,6 +31,9 @@
     "brandBrown": { "$type": "color", "$value": "#58331F" },
     "brandAmber": { "$type": "color", "$value": "#F2BC45" },
     "tertiaryContainer": { "$type": "color", "$value": "#F8D88A" },
+    "errorContainer": { "$type": "color", "$value": "#F9DEDC" },
+    "inverseSurface": { "$type": "color", "$value": "#322F2B" },
+    "inverseOnSurface": { "$type": "color", "$value": "#F5EFE8" },
     "onSurface": { "$type": "color", "$value": "#1D1B18" },
     "onSurfaceVariant": { "$type": "color", "$value": "#4D4740" },
     "outlineVariant": { "$type": "color", "$value": "#D3CCC2" },
@@ -253,6 +256,11 @@
         "weight": { "$type": "fontWeight", "$value": 700 },
         "fontSize": { "$type": "dimension", "$value": "28px" },
         "lineHeight": { "$type": "dimension", "$value": "31px" }
+      },
+      "title": {
+        "weight": { "$type": "fontWeight", "$value": 700 },
+        "fontSize": { "$type": "dimension", "$value": "24px" },
+        "lineHeight": { "$type": "dimension", "$value": "29px" }
       }
     }
   },

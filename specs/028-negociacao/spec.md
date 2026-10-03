@@ -13,6 +13,9 @@ Registrar o fluxo de negociação que já está na `develop` e fechar as lacunas
 3. **Cancelar:** quem pediu cancela um pedido pendente; depois de aceito, qualquer um dos dois cancela, e o livro volta a ficar disponível.
 4. **Concluir (Figma 61):** quem anunciou confirma a entrega e o anúncio sai do catálogo como Concluído.
 5. **Acompanhar:** a lista "Negociações" mostra os pedidos enviados e recebidos.
+6. **Propor troca (Figma 03.05):** no livro de troca, quem pede escolhe um livro seu, publicado e disponível, antes de combinar o encontro. Aceitar reserva os dois livros; concluir conclui os dois.
+7. **Reagendar (Figma 06.13 e 06.14):** com o encontro combinado, qualquer um dos dois muda local, dia e horário.
+8. **Não comparecimento (Figma 06.15):** a pessoa conta o que houve e escolhe abrir a conversa (com o relato no campo), reagendar ou pedir ajuda (denúncia da spec 027).
 
 ## Aceite
 
@@ -27,6 +30,6 @@ Registrar o fluxo de negociação que já está na `develop` e fechar as lacunas
 
 ## Fora do escopo desta etapa
 
-- Ponto de encontro com telas próprias, propostas de troca e de retirada e avaliação (#54).
+- Contraproposta (Figma 06.19 e 06.20) e avaliação da troca (#54).
 - Conversa e mensagens (#39).
 - Aviso de cancelamento: `notifications.kind` ainda não tem esse tipo.

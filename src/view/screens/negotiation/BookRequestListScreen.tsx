@@ -4,7 +4,8 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RequestStatus } from '../../../model/entities/BookRequest';
 import { useBookRequestList } from '../../../factories/bookRequest';
-import { meetingWhen, requestListLabel } from '../../../model/services/bookRequestFormat';
+import { requestListLabel } from '../../../model/services/bookRequestFormat';
+import { conversationWhen, initials } from '../../../model/services/messageFormat';
 import { AppIcon, type AppIconName } from '../../components/AppIcon';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
@@ -21,7 +22,8 @@ const statusIcons: Record<RequestStatus, AppIconName> = {
 };
 
 /**
- * Conversas (Figma 06.01): as negociações em que a pessoa pediu ou recebeu um pedido.
+ * Conversas (Figma 06.01): uma linha por negociação, com quem está do outro lado, a última
+ * mensagem e o livro. Tocar abre a conversa (spec 029); dela se chega à negociação.
  * Na aba, a tela mostra o título; aberta pela pilha, o cabeçalho já o mostra.
  */
 export function BookRequestListScreen({ showTitle = true }: { showTitle?: boolean }) {
@@ -80,37 +82,46 @@ export function BookRequestListScreen({ showTitle = true }: { showTitle?: boolea
         ListHeaderComponent={title}
         ListFooterComponent={
           <Text style={styles.footer}>
-            Combine sempre em lugar público e movimentado. Não compartilhe senhas ou códigos.
+            Combine sempre pelo chat do IpêBook. Não compartilhe senhas ou códigos.
           </Text>
         }
         renderItem={({ item }) => {
-          const { request, listing, asOwner } = item;
+          const { request, listing, asOwner, otherName, lastMessage } = item;
           const bookTitle = listing?.title ?? 'Livro indisponível';
           const status = requestListLabel(request, { asOwner });
-          const when = `${meetingWhen(request)} · ${request.publicLocation}`;
+          const name = otherName ?? (asOwner ? 'Quem pediu' : 'Quem anunciou');
+          // Sem mensagem ainda, a linha mostra a situação da negociação no lugar dela.
+          const body = lastMessage?.body ?? status;
+          const when = conversationWhen(lastMessage?.createdAt ?? request.createdAt, new Date());
           return (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={`${bookTitle}. ${status}. ${when}`}
-              accessibilityHint="Abre a negociação"
-              onPress={() => router.push(`/negociacoes/${request.id}`)}
+              accessibilityLabel={`${name}, ${when}. ${body}. Sobre ${bookTitle}. ${status}`}
+              accessibilityHint="Abre a conversa"
+              onPress={() => router.push(`/negociacoes/${request.id}/conversa`)}
               style={({ pressed }) => [styles.item, pressed && styles.pressed]}
             >
               <View style={styles.avatar}>
-                <AppIcon name={statusIcons[request.status]} color={colors.onSelected} />
+                {otherName ? (
+                  <Text style={styles.initials}>{initials(otherName)}</Text>
+                ) : (
+                  <AppIcon name={statusIcons[request.status]} color={colors.onSelected} />
+                )}
               </View>
               <View style={styles.text}>
-                <Text style={styles.itemTitle} numberOfLines={1}>
-                  {bookTitle}
-                </Text>
+                <View style={styles.top}>
+                  <Text style={styles.itemTitle} numberOfLines={1}>
+                    {name}
+                  </Text>
+                  <Text style={styles.time}>{when}</Text>
+                </View>
                 <Text style={styles.itemBody} numberOfLines={1}>
-                  {status}
+                  {body}
                 </Text>
                 <Text style={styles.itemMeta} numberOfLines={1}>
-                  {when}
+                  {`Sobre ${bookTitle}`}
                 </Text>
               </View>
-              <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
             </Pressable>
           );
         }}
@@ -156,7 +167,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: { flex: 1 },
-  itemTitle: { ...typography.bodyLarge, color: colors.onSurface },
+  top: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.xs },
+  itemTitle: { ...typography.bodyLarge, color: colors.onSurface, flex: 1 },
+  time: { ...typography.labelMedium, color: colors.onSurfaceVariant },
+  initials: { ...typography.titleMedium, color: colors.onSelected },
   itemBody: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
   itemMeta: { ...typography.labelMedium, color: colors.action },
   footer: { ...typography.bodyMedium, color: colors.onSurfaceVariant, marginTop: spacing.md },

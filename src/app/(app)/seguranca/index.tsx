@@ -1,1 +1,1 @@
-export { default } from '../../../view/screens/security/SecurityMenuScreen';
+export { default } from '../../../view/screens/security/BlockedPeopleScreen';

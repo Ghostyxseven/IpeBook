@@ -1,7 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { colors, spacing, typography } from '../../theme/nativeTheme';
 import { Button } from '../ui/Button';
 
+/**
+ * Estado vazio conforme o Figma IpêBook (ex.: 02.14 · Favoritos · vazio): título de marca,
+ * explicação do que fazer e a ação principal que leva a pessoa adiante, sem cartão.
+ */
 export function EmptyState({
   title,
   message,
@@ -19,21 +23,13 @@ export function EmptyState({
         {title}
       </Text>
       <Text style={styles.text}>{message}</Text>
-      {actionLabel && onAction && (
-        <Button label={actionLabel} variant="secondary" onPress={onAction} />
-      )}
+      {actionLabel && onAction && <Button label={actionLabel} onPress={onAction} />}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'stretch',
-    gap: spacing.sm,
-    padding: spacing.lg,
-    borderRadius: metrics.cardRadius,
-    backgroundColor: colors.surface,
-  },
-  title: { ...typography.section, color: colors.text },
-  text: { ...typography.body, color: colors.secondaryText },
+  container: { alignItems: 'stretch', gap: spacing.md, paddingVertical: spacing.lg },
+  title: { ...typography.brandTitle, color: colors.onSurface },
+  text: { ...typography.bodyLarge, color: colors.onSurfaceVariant },
 });

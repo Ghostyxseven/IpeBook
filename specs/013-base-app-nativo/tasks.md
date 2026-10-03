@@ -10,4 +10,5 @@
 - [x] Medir o impacto do roteador na Web e registrar a decisão (ADR 0005).
 - [x] Validar tipos, testes, build Web, bundles nativos e apresentação institucional; registrar em `verify.md`.
 - [x] Ajustar `Button` e `TextField` ao Material 3 do Figma no Android (issue #9, ADR 0013).
+- [x] Comparar os estados do sistema com a seção "10 · Estados do sistema" do Figma (issue #35).
 - [ ] Validar os componentes num aparelho Android e adequar o iOS (issues #10 e #12).

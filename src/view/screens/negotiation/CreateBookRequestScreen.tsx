@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,10 +9,13 @@ import {
   meetingTimeOptions,
 } from '../../../model/services/bookRequestFormat';
 import { useSessionContext } from '../../../viewmodel/useSession';
+import { AppIcon } from '../../components/AppIcon';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
+import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { ActionBar } from '../../components/negotiation/ActionBar';
+import { OfferPicker } from '../../components/negotiation/OfferPicker';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TextField } from '../../components/ui/TextField';
@@ -21,6 +24,7 @@ import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 /**
  * Combinar encontro (Figma 06.04): onde, dia e horário. Os dias e horários são chips, como no
  * Figma; o local é escrito pela pessoa, porque o app ainda não tem lista de pontos públicos.
+ * Na troca, o primeiro passo é Propor troca (Figma 03.05): escolher o livro oferecido.
  */
 export function CreateBookRequestScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -53,13 +57,81 @@ export function CreateBookRequestScreen() {
     );
   }
 
+  if (vm.step === 'offer') {
+    const ownerName = vm.listing?.ownerFirstName?.trim() || 'Quem anunciou';
+    return (
+      <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+        <Stack.Screen options={{ title: 'Propor troca' }} />
+        {vm.offerStatus === 'loading' ? (
+          <LoadingState message="Carregando seus livros…" />
+        ) : vm.offerStatus === 'error' ? (
+          <View style={styles.content}>
+            <ErrorState
+              message="Não conseguimos carregar seus livros. Confira sua conexão."
+              onRetry={vm.retryOffer}
+            />
+          </View>
+        ) : vm.offerOptions.length === 0 ? (
+          <View style={styles.content}>
+            <EmptyState
+              title="Você ainda não tem livro para oferecer"
+              message="Para propor uma troca, publique primeiro o livro que você quer oferecer."
+              actionLabel="Anunciar um livro"
+              onAction={() => router.push('/anunciar')}
+            />
+          </View>
+        ) : (
+          <>
+            <ScrollView contentContainerStyle={styles.content}>
+              {vm.listing ? (
+                <OfferPicker
+                  wanted={vm.listing}
+                  ownerName={ownerName}
+                  options={vm.offerOptions}
+                  selectedId={vm.offeredListingId}
+                  onSelect={vm.chooseOffer}
+                />
+              ) : null}
+              <Button
+                label="Oferecer outro livro"
+                variant="text"
+                accessibilityHint="Abre o formulário para anunciar um livro"
+                onPress={() => router.push('/anunciar')}
+              />
+              <View style={styles.note}>
+                <AppIcon name="info" size={18} color={colors.onSurfaceVariant} />
+                <Text style={styles.noteText}>
+                  {`A proposta só vira encontro quando ${ownerName} aceitar.`}
+                </Text>
+              </View>
+            </ScrollView>
+            <ActionBar>
+              <Button
+                label="Escolher local e horário"
+                onPress={vm.continueToMeeting}
+                disabled={!vm.offeredListing}
+              />
+            </ActionBar>
+          </>
+        )}
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+      <Stack.Screen options={{ title: 'Combinar encontro' }} />
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          {vm.offeredListing ? (
+            <View style={styles.offer}>
+              <Text style={styles.noteText}>{`Você oferece ${vm.offeredListing.title}`}</Text>
+              <Button label="Trocar livro" variant="text" onPress={vm.backToOffer} />
+            </View>
+          ) : null}
           <Text style={styles.section} accessibilityRole="header">
             Onde
           </Text>
@@ -138,4 +210,7 @@ const styles = StyleSheet.create({
   bleed: { marginHorizontal: -metrics.pagePadding, flexGrow: 0 },
   chips: { flexDirection: 'row', gap: spacing.xs, paddingHorizontal: metrics.pagePadding },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', columnGap: spacing.xs },
+  note: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xs },
+  noteText: { ...typography.bodyMedium, color: colors.onSurfaceVariant, flex: 1 },
+  offer: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
 });

@@ -55,6 +55,10 @@ export const colors = {
   brandBrown: tokens.color.brandBrown.$value,
   brandAmber: tokens.color.brandAmber.$value,
   tertiaryContainer: tokens.color.tertiaryContainer.$value,
+  /** Estados do sistema (Figma, seção 10): fundo do ícone de erro e aviso escuro. */
+  errorContainer: tokens.color.errorContainer.$value,
+  inverseSurface: tokens.color.inverseSurface.$value,
+  inverseOnSurface: tokens.color.inverseOnSurface.$value,
 } as const;
 
 const badge = (name: keyof typeof tokens.color.badge) => ({
@@ -158,5 +162,11 @@ export const typography = {
     fontFamily: BRAND_FONT,
     fontSize: px(tokens.typography.brand.wordmark.fontSize),
     lineHeight: px(tokens.typography.brand.wordmark.lineHeight),
+  } satisfies TextStyle,
+  /** Título de marca menor (Figma `Marca/brand-title`), usado nos estados vazios. */
+  brandTitle: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.title.fontSize),
+    lineHeight: px(tokens.typography.brand.title.lineHeight),
   } satisfies TextStyle,
 } as const;

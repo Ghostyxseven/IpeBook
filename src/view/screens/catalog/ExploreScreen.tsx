@@ -1,11 +1,14 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Modality } from '../../../model/entities/Listing';
 import { modalityLabels } from '../../../model/services/catalogFormat';
+import { categories } from '../../../model/services/categories';
 import { useCatalogSearch } from '../../../factories/catalog';
+import { AppIcon } from '../../components/AppIcon';
 import { CatalogList } from '../../components/catalog/CatalogList';
+import { FilterModal } from '../../components/catalog/FilterModal';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
 import { SearchBarInput } from '../../components/catalog/SearchBar';
 import { EmptyState } from '../../components/feedback/EmptyState';
@@ -31,15 +34,33 @@ export function ExploreScreen() {
     if (params.atalho) showOnly(shortcut);
   }, [params.atalho, shortcut, showOnly]);
 
+  const [filtering, setFiltering] = useState(false);
+  const filterCount = vm.modalities.length + (vm.category ? 1 : 0) + (vm.goodCondition ? 1 : 0);
+
   const header = (
     <View style={styles.header}>
-      <Text style={styles.title} accessibilityRole="header" accessibilityLiveRegion="polite">
-        {vm.title}
-      </Text>
+      {/* Figma 02.02: ação de filtros à direita; o seletor de bairro não existe no app (ADR 0020). */}
+      <View style={styles.topRow}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={
+            filterCount ? `Filtrar livros, ${filterCount} filtros ativos` : 'Filtrar livros'
+          }
+          onPress={() => setFiltering(true)}
+          style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
+        >
+          <AppIcon name="tune" color={colors.onSurfaceVariant} />
+        </Pressable>
+      </View>
       {!vm.searching && (
-        <Text style={styles.subtitle}>
-          Livros novos e seminovos para trocar, comprar ou receber aqui perto.
-        </Text>
+        <>
+          <Text style={styles.title} accessibilityRole="header" accessibilityLiveRegion="polite">
+            {vm.title}
+          </Text>
+          <Text style={styles.subtitle}>
+            Livros novos e seminovos para trocar, comprar ou receber aqui perto.
+          </Text>
+        </>
       )}
       <SearchBarInput value={vm.query} onChangeText={vm.setQuery} />
       <ScrollView
@@ -47,25 +68,73 @@ export function ExploreScreen() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.chips}
         style={styles.bleed}
-        accessibilityLabel="Modalidades"
+        accessibilityLabel={vm.searching ? 'Modalidades' : 'Categorias'}
       >
-        <ModalityChip
-          modality="all"
-          label="Todos"
-          selected={vm.modalities.length === 0}
-          onPress={() => showOnly(null)}
-        />
-        {modalities.map((modality) => (
-          <ModalityChip
-            key={modality}
-            modality={modality}
-            label={modalityLabels[modality]}
-            selected={vm.modalities.includes(modality)}
-            onPress={() => vm.toggleModality(modality)}
-          />
-        ))}
+        {vm.searching ? (
+          <>
+            {/* Figma 02.04: com filtro, a linha troca para modalidades e os filtros removíveis. */}
+            <ModalityChip
+              modality="all"
+              label="Todos"
+              selected={vm.modalities.length === 0}
+              onPress={() => showOnly(null)}
+            />
+            {modalities.map((modality) => (
+              <ModalityChip
+                key={modality}
+                modality={modality}
+                label={modalityLabels[modality]}
+                selected={vm.modalities.includes(modality)}
+                onPress={() => vm.toggleModality(modality)}
+              />
+            ))}
+            {vm.category ? (
+              <ModalityChip
+                modality="all"
+                label={vm.category}
+                selected
+                removable
+                onPress={() => vm.selectCategory(null)}
+              />
+            ) : null}
+            {vm.goodCondition ? (
+              <ModalityChip
+                modality="all"
+                label="Bom estado"
+                selected
+                removable
+                onPress={() =>
+                  vm.applyFilters({
+                    modalities: vm.modalities,
+                    category: vm.category,
+                    goodCondition: false,
+                  })
+                }
+              />
+            ) : null}
+          </>
+        ) : (
+          <>
+            {/* Figma 02.02: sem filtro, os chips são as categorias. */}
+            <ModalityChip
+              modality="all"
+              label="Todos"
+              selected={vm.category === null}
+              onPress={() => vm.selectCategory(null)}
+            />
+            {categories.map((category) => (
+              <ModalityChip
+                key={category}
+                modality="all"
+                label={category}
+                selected={vm.category === category}
+                onPress={() => vm.selectCategory(category)}
+              />
+            ))}
+          </>
+        )}
       </ScrollView>
-      {vm.status === 'ready' && vm.items.length > 0 && (
+      {vm.searching && vm.status === 'ready' && vm.items.length > 0 && (
         <Text style={styles.summary} accessibilityLiveRegion="polite">
           {vm.summary}
         </Text>
@@ -107,7 +176,7 @@ export function ExploreScreen() {
             <View style={styles.footer}>
               <Button
                 label={vm.activeFilterCount > 1 ? 'Limpar filtros' : 'Limpar filtro'}
-                variant="secondary"
+                variant="text"
                 onPress={vm.clear}
               />
             </View>
@@ -119,6 +188,20 @@ export function ExploreScreen() {
         onRefresh={vm.refresh}
         onEndReached={vm.loadMore}
         onOpen={(id) => router.push({ pathname: '/livro/[id]', params: { id } })}
+      />
+      <FilterModal
+        visible={filtering}
+        initial={{
+          modalities: vm.modalities,
+          category: vm.category,
+          goodCondition: vm.goodCondition,
+        }}
+        countFor={vm.countFor}
+        onClose={() => setFiltering(false)}
+        onApply={(draft) => {
+          vm.applyFilters(draft);
+          setFiltering(false);
+        }}
       />
     </SafeAreaView>
   );
@@ -134,6 +217,15 @@ const styles = StyleSheet.create({
   },
   title: { ...typography.brandHeadline, color: colors.onSurface },
   subtitle: { ...typography.bodyLarge, color: colors.onSurfaceVariant },
+  topRow: { flexDirection: 'row', justifyContent: 'flex-end', marginRight: -spacing.sm },
+  iconButton: {
+    width: metrics.touchTarget,
+    height: metrics.touchTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: metrics.touchTarget / 2,
+  },
+  pressed: { backgroundColor: colors.pressed },
   bleed: { marginHorizontal: -metrics.pagePadding },
   chips: { flexDirection: 'row', gap: spacing.xs, paddingHorizontal: metrics.pagePadding },
   summary: { ...typography.labelMedium, color: colors.onSurfaceVariant },

@@ -13,12 +13,15 @@ export function ModalityChip({
   selected,
   onPress,
   showCheck = true,
+  removable = false,
 }: {
   modality: Modality | 'all';
   label: string;
   selected: boolean;
   onPress: () => void;
   showCheck?: boolean;
+  /** Chip de entrada com "×" (Figma 02.04): tocar remove o filtro. */
+  removable?: boolean;
 }) {
   const ios = Platform.OS === 'ios';
   const foreground = ios
@@ -30,9 +33,9 @@ export function ModalityChip({
       : colors.onSurfaceVariant;
   return (
     <Pressable
-      accessibilityRole="checkbox"
-      accessibilityLabel={label}
-      accessibilityState={{ checked: selected }}
+      accessibilityRole={removable ? 'button' : 'checkbox'}
+      accessibilityLabel={removable ? `Remover filtro ${label}` : label}
+      accessibilityState={removable ? undefined : { checked: selected }}
       onPress={onPress}
       style={({ focused }: { pressed: boolean; focused?: boolean }) => [
         styles.target,
@@ -53,10 +56,13 @@ export function ModalityChip({
             pressed && styles.pressed,
           ]}
         >
-          {selected && showCheck && !ios && <AppIcon name="check" size={18} color={foreground} />}
+          {selected && showCheck && !removable && !ios && (
+            <AppIcon name="check" size={18} color={foreground} />
+          )}
           <Text style={[ios ? styles.pillLabel : styles.label, { color: foreground }]}>
             {label}
           </Text>
+          {removable && <AppIcon name="close" size={18} color={foreground} />}
         </View>
       )}
     </Pressable>
@@ -88,6 +94,7 @@ const styles = StyleSheet.create({
     minHeight: 38,
     flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.xxs,
     paddingHorizontal: spacing.md,
     borderRadius: 19,
   },

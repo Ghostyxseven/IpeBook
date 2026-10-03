@@ -74,9 +74,49 @@ Decidido no [ADR 0019](../adr/0019-serifa-da-marca-e-superficies-do-figma.md): S
 | Seletor de bairro, distâncias | No topo e nos cards           | Fora: o app não conhece a localização da pessoa         |
 | Favoritar e compartilhar      | Nos cards e no Detalhe        | Fora: o recurso não existe                              |
 
+## Anunciar livro (03/10/2026)
+
+Refeito pelos quadros Android 04.01, 04.04, 04.05 e 04.07. O que ficou diferente do Figma, e por quê:
+
+| Item                                           | Situação                                                                                                                               |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| "Ler ISBN com a câmera" (04.01 a 04.03)        | O app não lê ISBN; título e autor são digitados. A linha e o "ou" não aparecem.                                                        |
+| Até 3 fotos: Lombada e Páginas (04.04)         | O anúncio guarda uma foto só; a etapa mostra a capa e o botão para escolher. Os botões dizem "Usar esta foto" ou "Continuar sem foto". |
+| "Salvar rascunho" (04.05)                      | O app não salva rascunho; fica só "Publicar anúncio".                                                                                  |
+| Opções de Conservação e Categoria (04.05)      | O Figma mostra exemplos; o app usa as quatro conservações e as oito categorias que o banco aceita.                                     |
+| Revise o anúncio (04.06)                       | Não há etapa de revisão; a publicação sai da etapa 3, como no 04.05.                                                                   |
+| Coração na prévia do anúncio publicado (04.07) | O app não tem favoritos; não aparece. A segunda linha mostra o autor.                                                                  |
+| Doação na etapa 1 (04.01)                      | Na doação, a nota da etapa 1 avisa que é gratuita, porque não há campo de preço.                                                       |
+
 ## Próximo passo
 
 As cores já seguem a referência. Falta decidir raios e espaçamento, por linha, se vale a raiz ou a referência. Se for a referência, atualizar `design-tokens.json`, conferir contraste (4,5:1 para texto) e checar as telas afetadas no mesmo PR.
+
+## Negociação completa (03/10/2026)
+
+Feito pelos quadros Android 03.05, 06.13, 06.14 e 06.15. O que ficou diferente do Figma, e por quê:
+
+| Item                                                    | Situação                                                                                        |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| "Na sua estante" como origem do livro oferecido (03.05) | Só anúncios publicados e disponíveis entram; o app não tem estante de livros fora dos anúncios. |
+| "Oferecer outro livro" (03.05)                          | Abre Anunciar livro; depois de publicar, o livro aparece na lista.                              |
+| Campos de data e horário no reagendamento (06.13)       | Usa os chips de dia e horário do Combinar encontro (06.04), que já evitam data inválida.        |
+| "Nova sugestão enviada. Aguarde a confirmação" (06.14)  | O novo horário vale na hora, sem confirmação; o título diz "Novo horário combinado."            |
+| Aviso do reagendamento                                  | Não existe: o tipo de aviso não está no banco.                                                  |
+| Contraproposta (06.19 e 06.20)                          | Ainda não feita.                                                                                |
+
+## Conversa (03/10/2026)
+
+Feito pelos quadros Android 06.01, 06.02, 06.09, 06.10 e 06.16. O que ficou diferente do Figma, e por quê:
+
+| Item                                                             | Situação                                                                                         |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Mensagem chegando na hora                                        | Sem Realtime nesta etapa; a conversa aberta busca mensagens a cada 10 segundos.                  |
+| Tela própria de "Mensagem não enviada" (06.10)                   | O aviso aparece acima do campo e o texto continua nele para tentar de novo.                      |
+| Aviso de mensagem nova em Notificações                           | Não existe ainda; fica para depois do Realtime.                                                  |
+| Chip de modalidade e botão "Combinar" no cartão do livro (06.02) | O cartão usa o Status Badge e o botão "Negociação", que abre o pedido com local, data e horário. |
+| Foto de perfil no avatar (06.01)                                 | O app não tem foto de perfil; o avatar mostra as iniciais.                                       |
+| Negociação encerrada                                             | Sem quadro; a conversa fica só para leitura, com um aviso no lugar do campo.                     |
 
 ## Padrões do app sem quadro no Figma (02/10/2026)
 
@@ -88,6 +128,19 @@ Itens criados pela spec [024](../../specs/024-configuracoes-notificacoes/spec.md
 | Engrenagem de Configurações no topo do Início                   | Sem quadro. Provisória: o acesso definitivo é pelo Perfil (#37).                                                                                                                                                        |
 | Tela de Configurações (chaves por tipo de aviso, versão e Sair) | Sem quadro visto (seção F do Figma não foi acessada). Usa a chave nativa (`Switch`) e o botão `danger`.                                                                                                                 |
 | Barra superior das telas de Notificações e Configurações        | A referência [`TopAppBar`](referencia/components/TopAppBar/README.md) tem 64 px e título `m3-title-lg`. O app usa o cabeçalho padrão do Expo Router com o título à esquerda; a altura ainda não foi igualada.           |
+
+## Denunciar e bloquear (03/10/2026)
+
+Refeito pelos quadros Android 09.02, 09.03, 09.04 e 07.10 a 07.12. O que ficou diferente do Figma, e por quê:
+
+| Item                                                                   | Situação                                                                                                  |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Diálogo de bloqueio sobre o Perfil público (09.02)                     | O app não tem perfil público; o diálogo abre no detalhe do livro e na denúncia enviada.                   |
+| "Ela não poderá enviar mensagens nem propostas" (09.02, 07.10 e 07.11) | O banco só esconde os anúncios da pessoa bloqueada no catálogo de quem bloqueou; os textos dizem só isso. |
+| "A equipe analisa em até 24 horas" (09.03)                             | Não há prazo combinado de moderação; o texto diz que cada relato é analisado.                             |
+| Linha da pessoa com seta (07.10)                                       | Sem perfil público para abrir; a linha não tem seta.                                                      |
+| "Voltar à segurança" (07.12)                                           | A lista abre por Configurações; o botão diz "Voltar às configurações".                                    |
+| Tela "Segurança e verificação" (07.06)                                 | É da feature de Perfil; a entrada fica em Configurações, em "Pessoas bloqueadas".                         |
 
 ## Minha estante (03/10/2026)
 
@@ -102,3 +155,15 @@ Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e p
 | Telas 05.07 e 05.08 (depois de excluir ou recusar) | Não existem; a lista se atualiza no lugar.                                                                                                                                |
 | Folha de opções ao tocar em um livro               | Sem quadro. Segue a folha inferior do M3: `container.low`, cantos `radius.extraLarge`, itens de 56 px. O véu usa preto a 32% (o valor do M3), porque não há token de véu. |
 | Subtítulo de Concluídos                            | O Figma diz "trocas e doações"; o app diz "vendas, trocas e doações", porque venda também conclui.                                                                        |
+
+## Explorar e Filtrar livros (03/10/2026)
+
+Refeitos pelos quadros Android 02.02 a 02.04. Diferenças que ficaram:
+
+| Item                                           | Situação                                                                                           |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Seletor de bairro ("Centro") no topo (02.02)   | O app não guarda o bairro de quem usa e atende só Piripiri (ADR 0020); fica só o botão de filtros. |
+| Coração de favoritos nos cards (02.02 e 02.04) | O app não tem favoritos.                                                                           |
+| Categorias dos chips                           | O Figma mostra "Ficção", "Não ficção" e "Infantil"; o app usa as categorias fixas do ADR 0008.     |
+| "Mais recentes" em verde no resumo (02.04)     | A lista só tem essa ordem; o resumo diz a ordem ou os filtros, sem botão.                          |
+| Lista compacta com filtro (02.04)              | O app mantém os cards do 02.02 também com filtro.                                                  |

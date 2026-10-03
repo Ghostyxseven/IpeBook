@@ -10,12 +10,13 @@ export type SupabaseBookRequestClient = Pick<SupabaseClient, 'from' | 'rpc'>;
 
 const TABLE = 'book_requests';
 const COLUMNS =
-  'id,listing_id,requester_id,public_location,meeting_date,meeting_time,status,created_at,updated_at';
+  'id,listing_id,requester_id,offered_listing_id,public_location,meeting_date,meeting_time,status,created_at,updated_at';
 
 type Row = {
   id: string;
   listing_id: string;
   requester_id: string;
+  offered_listing_id?: string | null;
   public_location: string;
   meeting_date: string;
   meeting_time: string;
@@ -51,6 +52,7 @@ const toBookRequest = (row: Row): BookRequest => ({
   id: row.id,
   listingId: row.listing_id,
   requesterId: row.requester_id,
+  offeredListingId: row.offered_listing_id ?? null,
   publicLocation: row.public_location,
   meetingDate: row.meeting_date,
   meetingTime: row.meeting_time,
@@ -82,7 +84,7 @@ export function createSupabaseBookRequestRepository(
   };
 
   return {
-    async createRequest({ listingId, publicLocation, meetingDate, meetingTime }) {
+    async createRequest({ listingId, publicLocation, meetingDate, meetingTime, offeredListingId }) {
       const db = requireClient();
       const result = await db
         .from(TABLE)
@@ -91,6 +93,7 @@ export function createSupabaseBookRequestRepository(
           public_location: publicLocation,
           meeting_date: meetingDate,
           meeting_time: meetingTime,
+          ...(offeredListingId ? { offered_listing_id: offeredListingId } : {}),
         })
         .select(COLUMNS)
         .maybeSingle();
@@ -144,6 +147,27 @@ export function createSupabaseBookRequestRepository(
         .select(COLUMNS)
         .maybeSingle();
       return readOne(result as { data: Row | null; error: unknown });
+    },
+
+    async reschedule(id, { publicLocation, meetingDate, meetingTime }) {
+      const db = requireClient();
+      const result = await db
+        .rpc('reschedule_book_request', {
+          request_id: id,
+          new_location: publicLocation,
+          new_date: meetingDate,
+          new_time: meetingTime,
+        })
+        .select(COLUMNS)
+        .maybeSingle();
+      return readOne(result as { data: Row | null; error: unknown });
+    },
+
+    async personFirstName(userId) {
+      const db = requireClient();
+      // A mesma função que dá o nome de quem anunciou serve para quem pediu.
+      const { data, error } = await db.rpc('listing_owner_first_name', { owner: userId });
+      return !error && typeof data === 'string' && data.trim() ? data : null;
     },
   };
 }
