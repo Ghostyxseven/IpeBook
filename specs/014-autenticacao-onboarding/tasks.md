@@ -14,4 +14,5 @@
 - [x] Abertura decide o destino por uma ViewModel; nenhuma View importa repositório (issue #32).
 - [x] Tirar `react-native` e `expo-*` do Model; cliente e armazenamento em `src/infra/` (issue #33).
 - [ ] Testar ponta a ponta com um projeto Supabase real em Android e iOS (depende do `.env` da equipe).
-- [ ] Comparar as telas com os quadros do Figma (Android `0:1`, iPhone `33:94`).
+- [x] Comparar as telas com os quadros do Figma Android (seção `206:3560`) e aplicar o padrão de acesso (issue #11).
+- [ ] Comparar as telas com os quadros do iPhone (seção `206:6868`, issue #10).

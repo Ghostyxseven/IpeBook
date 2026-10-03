@@ -97,3 +97,44 @@ Implementado na branch `feature/autenticacao` para Android e iOS: abertura, onbo
 ## Documentos legais
 
 A Política de Privacidade dizia que o site não usava ferramentas de análise de visitas, mas o código já inclui Vercel Web Analytics e Speed Insights (PRs #4 e #5). O texto foi corrigido junto com a descrição do cadastro no aplicativo, conforme a constituição ("descrever o funcionamento efetivo nos documentos legais").
+
+## Issue #11: telas de acesso comparadas com o Figma (03/10/2026)
+
+**Fonte:** arquivo IpêBook (`cxEisNRzOQR6krv8Ow7HCa`), página 06 · Android, seção 01 · Acesso (`206:3560`), com os quadros 01.01 a 01.17. As telas do iPhone (seção `206:6868`) ficam para a issue #10. As referências antigas (`qSTmNLUhC6PwJlbyUmytbe`, `0:1` e `33:94`) foram substituídas.
+
+**Padrão visual corrigido em todas as telas de acesso** (`AuthLayout`):
+
+| Item            | App antes                         | Figma e app depois                                                |
+| --------------- | --------------------------------- | ----------------------------------------------------------------- |
+| Marca           | não aparecia                      | logotipo "IpêBook" marrom com traço âmbar (`Wordmark`)            |
+| Título          | `brandHeadline` 30/36             | `brandDisplay` 36/41 em Source Serif 4 Bold                       |
+| Destaque        | não existia                       | trecho final com marca-texto `tertiaryContainer` (ex.: "acesso.") |
+| Descrição       | texto secundário pequeno          | `bodyLarge` em `onSurfaceVariant`                                 |
+| Alinhamento     | conteúdo centralizado na vertical | conteúdo alinhado ao topo, fundo `surface`                        |
+| Ações de rodapé | links soltos                      | botão contornado em largura total e nota de apoio centralizada    |
+
+**Comparação por tela:**
+
+| Tela do app         | Quadro                                | Resultado                                                                                    |
+| ------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Entrar              | 01.10 Entrar com e-mail, 01.02 Entrar | título "Sua próxima leitura começa aqui.", campos, "Esqueci minha senha" e "Criar uma conta" |
+| Criar conta         | 01.03 Criar conta                     | "Crie sua conta", "Nome completo", "Já tenho conta" contornado                               |
+| Recuperar senha     | 01.04 Recuperar acesso                | "Recupere seu acesso." com destaque, "Voltar ao login" e nota                                |
+| Nova senha          | 01.06 Nova senha                      | "Um novo começo.", dica de senha e "Salvar nova senha"                                       |
+| Confirmar e-mail    | 01.05 Confira seu e-mail, 01.12       | "Confirme seu e-mail.", "Corrigir e-mail" e nota sobre a caixa de spam                       |
+| Erros de formulário | 01.07, 01.11, 01.14, 01.16            | já cobertos por `FormMessage` e pelas mensagens do Model; textos mantidos                    |
+
+**Evidência:** prévia Web das telas Recuperar senha e Entrar, exportada com `expo export` e comparada com a captura do quadro 01.04. A prévia não carrega a Source Serif; o app carrega a fonte no layout raiz.
+
+**Divergências funcionais mantidas para decisão da equipe** (não foram implementadas porque mudam regra de negócio ou contrariam ADR):
+
+1. O Figma usa **link** por e-mail ("Enviar link", 01.08 Link expirado). O app usa **código** (ADR 0006); os textos dizem "código".
+2. "Continuar com Google" (01.01 e 01.02): não há provedor social configurado nem ADR.
+3. Caixa de aceite dos Termos no cadastro (01.03): exige decidir como registrar o aceite.
+4. "Explorar livros sem entrar" (01.01): as rotas da área logada exigem sessão.
+5. 01.17 Seu bairro: depende do perfil e da localização (outra feature).
+6. Boas-vindas numa tela só (01.01), contra o onboarding de 3 páginas do app.
+7. Cadastro sem confirmação de senha no Figma; o app mantém o campo para evitar erro de digitação.
+8. 01.09 Senha atualizada e 01.13 E-mail confirmado: o app entra direto na Início após o sucesso.
+
+**Validação:** `npm run typecheck`, `npm test` (209 aprovados), eslint e prettier sem erros e exportação nativa (Android e iOS).
