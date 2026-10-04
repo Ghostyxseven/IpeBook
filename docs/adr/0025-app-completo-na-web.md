@@ -15,7 +15,7 @@ Pelo [ADR 0005](0005-navegacao-expo-router.md), a Web mostra só a apresentaçã
 - O mesmo projeto exporta dois pacotes Web. `npm run build:web` (`scripts/build-web.mjs`) gera a apresentação em `dist/` e o app em `dist/app/`.
 - `index.web.js` escolhe a entrada por `EXPO_PUBLIC_WEB_APP`, fixada no build. Sem ela, o pacote da apresentação continua igual (o ramo do roteador sai na minificação). Com `1`, carrega `expo-router/entry`.
 - `app.config.js` define `experiments.baseUrl = '/app'` só no build do app.
-- `vercel.json` reescreve `/app/:path*` para `/app/index.html`. Os demais caminhos inexistentes continuam respondendo 404, como pede a [spec 011](../../specs/011-auditoria-web/spec.md).
+- `vercel.json` reescreve `/app/:path*` para `/app` (o `index.html` do app). Os demais caminhos inexistentes continuam respondendo 404, como pede a [spec 011](../../specs/011-auditoria-web/spec.md).
 - A CSP passa a aceitar `https://*.supabase.co` e `wss://*.supabase.co` em `connect-src`, e `blob:` e `https://*.supabase.co` em `img-src` (capas e foto escolhida). A `Permissions-Policy` libera a localização para o próprio site (bairro aproximado).
 
 ## Alternativas
