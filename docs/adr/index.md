@@ -24,3 +24,4 @@
 - [0022 - Livro oferecido na troca e reagendamento no banco](0022-troca-e-reagendamento-no-banco.md)
 - [0023 - Excluir a própria conta pelo app](0023-excluir-conta-pelo-app.md) (proposto, implementado)
 - [0024 - Componentes do iPhone nas telas de acesso](0024-componentes-ios-da-autenticacao.md) (proposto, falta iPhone real)
+- [0025 - App completo na Web, em /app](0025-app-completo-na-web.md) (proposto, falta configurar a Vercel)
