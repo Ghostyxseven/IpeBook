@@ -78,7 +78,10 @@ export function ListingDetailScreen() {
     : isOwner
       ? { label: 'Ver solicitações', onPress: () => router.push('/conversas') }
       : session.status === 'signedOut' && isAvailable
-        ? { label: 'Entrar para combinar encontro', onPress: () => router.replace('/entrar') }
+        ? {
+            label: `Entrar para ${detailActionLabel(listing.modality).toLocaleLowerCase('pt-BR')}`,
+            onPress: () => router.replace('/entrar'),
+          }
         : null;
 
   return (
