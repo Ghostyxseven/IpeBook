@@ -14,6 +14,7 @@ export function ModalityChip({
   onPress,
   showCheck = true,
   removable = false,
+  exclusive = false,
 }: {
   modality: Modality | 'all';
   label: string;
@@ -22,6 +23,11 @@ export function ModalityChip({
   showCheck?: boolean;
   /** Chip de entrada com "×" (Figma 02.04): tocar remove o filtro. */
   removable?: boolean;
+  /**
+   * Escolha de uma opção só, como os locais do encontro. Anuncia "radio" em vez de
+   * "checkbox", para o leitor de tela não sugerir seleção múltipla.
+   */
+  exclusive?: boolean;
 }) {
   const ios = Platform.OS === 'ios';
   const foreground = ios
@@ -33,7 +39,7 @@ export function ModalityChip({
       : colors.onSurfaceVariant;
   return (
     <Pressable
-      accessibilityRole={removable ? 'button' : 'checkbox'}
+      accessibilityRole={removable ? 'button' : exclusive ? 'radio' : 'checkbox'}
       accessibilityLabel={removable ? `Remover filtro ${label}` : label}
       accessibilityState={removable ? undefined : { checked: selected }}
       onPress={onPress}

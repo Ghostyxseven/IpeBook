@@ -18,6 +18,8 @@ import { colors, metrics, radius, spacing, typography } from '../../theme/native
 const ios = Platform.OS === 'ios';
 const THUMB = 28;
 const TRACK = 6;
+/** Abaixo disso o gesto conta como toque, não como arrasto. */
+const TAP_SLOP = 3;
 
 /** O fim da faixa não é um teto: é "sem teto". Assim o padrão do filtro fica à direita. */
 function toCents(position: number): number | null {
@@ -62,7 +64,9 @@ export function PriceSlider({
     latest.current.onChange(toCents(next));
   };
 
-  // O ponto onde o dedo encostou; o arrasto anda a partir dele, sem depender do alvo.
+  // Onde o dedo encostou. O valor NÃO muda aqui: só ao arrastar, ou ao soltar sem ter
+  // arrastado (toque simples). Assim, rolar a tela com o dedo passando pelo controle não
+  // mexe no preço — o ScrollView assume o gesto e o responder é terminado sem aplicar nada.
   const startX = useRef(0);
   const pan = useRef(
     PanResponder.create({
@@ -70,9 +74,12 @@ export function PriceSlider({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (event) => {
         startX.current = event.nativeEvent.locationX;
-        moveTo(startX.current);
       },
       onPanResponderMove: (_event, gesture) => moveTo(startX.current + gesture.dx),
+      onPanResponderRelease: (_event, gesture) => {
+        // Toque sem arrasto: pula para o ponto tocado.
+        if (Math.abs(gesture.dx) < TAP_SLOP) moveTo(startX.current);
+      },
     }),
   ).current;
 
@@ -103,7 +110,7 @@ export function PriceSlider({
   return (
     <View style={styles.wrapper}>
       <View style={styles.values}>
-        <Text style={styles.floor}>{formatBRL(0)}</Text>
+        <Text style={styles.floor}>{formatBRL(PRICE_STEP_CENTS)}</Text>
         <Text style={styles.current}>{label}</Text>
       </View>
       <View
@@ -125,7 +132,7 @@ export function PriceSlider({
         {...keyboard}
         {...pan.panHandlers}
       >
-        <View style={styles.track}>
+        <View style={styles.track} pointerEvents="none">
           <View style={[styles.fill, { width: `${ratio * 100}%` }]} />
           <View
             style={[
