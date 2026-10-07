@@ -156,6 +156,17 @@ Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e p
 | Folha de opções ao tocar em um livro               | Sem quadro. Segue a folha inferior do M3: `container.low`, cantos `radius.extraLarge`, itens de 56 px. O véu usa preto a 32% (o valor do M3), porque não há token de véu. |
 | Subtítulo de Concluídos                            | O Figma diz "trocas e doações"; o app diz "vendas, trocas e doações", porque venda também conclui.                                                                        |
 
+## Selo da troca no detalhe (07/10/2026)
+
+No detalhe do livro (03.01 a 03.03) o selo mostrava "Por outro livro" e o valor grande mostrava
+"Troca" — o contrário do componente Tag do Figma, que é a "etiqueta de modalidade e status", e do
+que os cards do catálogo já faziam. Corrigido: o selo diz sempre a modalidade escrita (Venda,
+Troca, Doação) e o valor grande diz o valor ("R$ 25,00", "Por outro livro", "Gratuito"). O selo da
+venda passou de "À venda" para "Venda", pelo mesmo motivo.
+
+O quadro Android 03.02 desenha esse selo em verde; a cor certa é a amarela de Troca
+(`tertiary-container`), que o app já usava. O Figma precisa ser corrigido.
+
 ## Filtrar livros nas duas plataformas (07/10/2026)
 
 O quadro Android 02.03 (`149:2803`) e o do iPhone 02.03 (`192:2819`) ofereciam filtros diferentes: o

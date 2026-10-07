@@ -191,10 +191,11 @@ test('textos do Figma para lista, Início e detalhe', () => {
   );
   assert.equal(cardValue({ modality: 'trade', priceCents: null, tradeTerms: null }), 'Para trocar');
   assert.equal(cardValue({ modality: 'donation', priceCents: null, tradeTerms: null }), 'Gratuito');
-  assert.deepEqual(detailHeadline(listing), { value: 'R$ 25,00', label: 'À venda' });
+  // O selo do detalhe é sempre a modalidade escrita, como o componente Tag do Figma.
+  assert.deepEqual(detailHeadline(listing), { value: 'R$ 25,00', label: 'Venda' });
   assert.deepEqual(detailHeadline({ modality: 'trade', priceCents: null }), {
-    value: 'Troca',
-    label: 'Por outro livro',
+    value: 'Por outro livro',
+    label: 'Troca',
   });
   assert.deepEqual(detailHeadline({ modality: 'donation', priceCents: null }), {
     value: 'Gratuito',
@@ -239,7 +240,7 @@ test('detalhe decide parágrafos, quem anunciou e notas pelas regras da modalida
   assert.deepEqual(sale.paragraphs, ['Bem conservado.']);
   assert.equal(sale.owner, 'Ana · Centro, Picos');
   assert.match(sale.notes, /^Capa ilustrativa · Publicado em 30 de set\. de 2026$/);
-  assert.deepEqual(sale.headline, { value: 'R$ 25,00', label: 'À venda' });
+  assert.deepEqual(sale.headline, { value: 'R$ 25,00', label: 'Venda' });
 
   const trade = listingDetails({
     ...listing,
