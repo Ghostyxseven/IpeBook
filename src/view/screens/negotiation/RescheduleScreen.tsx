@@ -16,9 +16,9 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { ActionBar } from '../../components/negotiation/ActionBar';
 import { MeetingCard } from '../../components/negotiation/MeetingCard';
 import { OutcomeHero } from '../../components/negotiation/OutcomeHero';
+import { PlacePicker } from '../../components/negotiation/PlacePicker';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { TextField } from '../../components/ui/TextField';
 import { TopAppBar } from '../../components/ui/TopAppBar';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 
@@ -80,13 +80,7 @@ export function RescheduleScreen() {
           <Text style={styles.body}>
             {`Escolha um novo dia e horário. ${other} vê a mudança na negociação.`}
           </Text>
-          <TextField
-            label="Local"
-            value={vm.publicLocation}
-            onChangeText={vm.setPublicLocation}
-            autoCorrect={false}
-            hint="Prefira lugares movimentados, como praças e bibliotecas."
-          />
+          <PlacePicker label="Local" value={vm.publicLocation} onChange={vm.setPublicLocation} />
 
           <Text style={styles.section} accessibilityRole="header">
             Dia

@@ -24,6 +24,8 @@ import {
   meetingWhen,
   meetingDayOptions,
   meetingTimeOptions,
+  meetingPlaceSuggestions,
+  isSuggestedPlace,
   requestScreenCopy,
   confirmCopy,
 } from '../src/model/services/bookRequestFormat.ts';
@@ -392,4 +394,12 @@ test('confirmações antes de recusar, cancelar e concluir', () => {
   assert.match(confirmCopy('reject', base).body, /Dom Casmurro continua disponível/);
   assert.match(confirmCopy('cancel', { ...base, asOwner: false }).body, /^Ana /);
   assert.equal(confirmCopy('complete', base).confirm, 'Concluir negociação');
+});
+
+test('o "Onde" sugere lugares públicos e reconhece o local escrito (Figma 06.04)', () => {
+  assert.ok(meetingPlaceSuggestions.length >= 2, 'o quadro mostra ao menos dois atalhos');
+  assert.ok(isSuggestedPlace(meetingPlaceSuggestions[0]));
+  assert.ok(isSuggestedPlace(` ${meetingPlaceSuggestions[0]} `), 'espaços não mudam a escolha');
+  assert.equal(isSuggestedPlace('Escola do bairro'), false);
+  assert.equal(isSuggestedPlace(''), false);
 });

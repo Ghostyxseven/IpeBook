@@ -15,15 +15,15 @@ import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { ActionBar } from '../../components/negotiation/ActionBar';
+import { PlacePicker } from '../../components/negotiation/PlacePicker';
 import { OfferPicker } from '../../components/negotiation/OfferPicker';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { TextField } from '../../components/ui/TextField';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 
 /**
  * Combinar encontro (Figma 06.04): onde, dia e horário. Os dias e horários são chips, como no
- * Figma; o local é escrito pela pessoa, porque o app ainda não tem lista de pontos públicos.
+ * Figma; o "Onde" oferece atalhos de lugar público e aceita outro local escrito (06.04).
  * Na troca, o primeiro passo é Propor troca (Figma 03.05): escolher o livro oferecido.
  */
 export function CreateBookRequestScreen() {
@@ -135,14 +135,7 @@ export function CreateBookRequestScreen() {
           <Text style={styles.section} accessibilityRole="header">
             Onde
           </Text>
-          <TextField
-            label="Local público"
-            placeholder="Ex.: Praça da Matriz, Biblioteca Municipal"
-            autoCorrect={false}
-            value={vm.publicLocation}
-            onChangeText={vm.setPublicLocation}
-            hint="Prefira lugares movimentados, como praças e bibliotecas."
-          />
+          <PlacePicker value={vm.publicLocation} onChange={vm.setPublicLocation} />
 
           <Text style={styles.section} accessibilityRole="header">
             Dia
