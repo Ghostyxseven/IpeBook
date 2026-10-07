@@ -20,7 +20,7 @@ Mostrar um aplicativo que funciona de ponta a ponta, instalado no aparelho, com 
 
 Executar no celular, com o app instalado pela loja (teste fechado, issue #46). Usar contas e anúncios de demonstração identificados como tais.
 
-1. **Abertura e onboarding** (Maria Clara): primeira abertura, três páginas, Pular.
+1. **Abertura e onboarding** (Maria Clara): primeira abertura, tela de boas-vindas, Começar e Já tenho conta.
 2. **Criar conta e entrar** (Maria Clara): cadastro, código por e-mail, entrar, recuperar senha. Mostrar uma mensagem de erro em português.
 3. **Descobrir um livro** (Micael): Início com saudação e chips de modalidade, Explorar com busca, filtros e rolagem, Detalhe do livro. Mostrar vazio, erro e sem conexão.
 4. **Publicar um anúncio** (Eric): criar, editar e arquivar (specs 025 e 026, implementadas; falta validar em aparelho).

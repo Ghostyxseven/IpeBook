@@ -7,6 +7,7 @@ import { bindSessionRefreshToAppState } from '../infra/sessionRefresh';
 import { supabase } from '../infra/supabaseClient';
 import { createPreferencesRepository } from '../model/repositories/preferencesRepository';
 import { createSupabaseAuthRepository } from '../model/repositories/supabaseAuthRepository';
+import { useChangePasswordViewModel } from '../viewmodel/useChangePasswordViewModel';
 import { useLoginViewModel } from '../viewmodel/useLoginViewModel';
 import { useOnboardingViewModel } from '../viewmodel/useOnboardingViewModel';
 import { usePasswordRecoveryViewModel } from '../viewmodel/usePasswordRecoveryViewModel';
@@ -29,5 +30,7 @@ export const useSignUp = (options: Parameters<typeof useSignUpViewModel>[1]) =>
 export const useVerifyEmail = (email: string) => useVerifyEmailViewModel(authRepository, email);
 export const usePasswordRecovery = (initialEmail?: string) =>
   usePasswordRecoveryViewModel(authRepository, initialEmail);
+export const useChangePassword = (options: Parameters<typeof useChangePasswordViewModel>[1]) =>
+  useChangePasswordViewModel(authRepository, options);
 export const useOnboarding = (options: Parameters<typeof useOnboardingViewModel>[1]) =>
   useOnboardingViewModel(preferencesRepository, options);

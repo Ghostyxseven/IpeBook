@@ -1,10 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { locationLabel } from '../../../model/services/catalogFormat';
+import { detailActionLabel, locationLabel } from '../../../model/services/catalogFormat';
+import { blockLabel } from '../../../model/services/securityFormat';
 import { useListingDetail } from '../../../factories/catalog';
 import { AppIcon } from '../../components/AppIcon';
 import { ListingCover } from '../../components/catalog/ListingCover';
+import { BlockUserDialog } from '../../components/security/BlockUserDialog';
 import { StatusBadge } from '../../components/catalog/StatusBadge';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
@@ -20,6 +23,7 @@ export function ListingDetailScreen() {
   const vm = useListingDetail(String(id ?? ''));
   const session = useSessionContext();
   const listingId = String(id ?? '');
+  const [blocking, setBlocking] = useState(false);
 
   if (vm.status === 'loading') {
     return (
@@ -56,18 +60,18 @@ export function ListingDetailScreen() {
   const canNegotiate = !isOwner && isAvailable && session.status === 'signedIn';
 
   const place = locationLabel(listing);
-  const openSafety = () =>
+  const openReport = () =>
     router.push({
-      pathname: '/(app)/seguranca',
+      pathname: '/(app)/seguranca/report',
       params: {
         listingId: listing.id,
         userId: listing.ownerId ?? '',
-        userName: details.owner ?? '',
+        userName: listing.ownerFirstName ?? '',
       },
     });
   const primary = canNegotiate
     ? {
-        label: 'Combinar encontro',
+        label: detailActionLabel(listing.modality),
         onPress: () => router.push(`/livro/${listingId}/combinar`),
         hint: 'Abre o formulário para propor local, dia e horário.',
       }
@@ -116,32 +120,80 @@ export function ListingDetailScreen() {
           </Text>
         ))}
         {listing.ownerFirstName ? (
-          <View
-            style={styles.listItem}
-            accessible
-            accessibilityLabel={`Anunciado por ${details.owner}`}
-          >
-            <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
-            <View style={styles.listText}>
-              <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
-              {place && <Text style={styles.listBody}>{place}</Text>}
+          // Spec 031: o nome de quem anunciou abre o perfil daquela pessoa. Sem
+          // `ownerId` não há perfil para abrir — fica a informação, como antes.
+          listing.ownerId && !isOwner ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Ver o perfil de ${listing.ownerFirstName}`}
+              accessibilityHint="Mostra avaliações e histórico na comunidade."
+              onPress={() =>
+                router.push({
+                  pathname: '/pessoa/[id]',
+                  params: { id: listing.ownerId as string, livro: listing.id },
+                })
+              }
+              style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
+            >
+              <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
+              <View style={styles.listText}>
+                <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
+                {place && <Text style={styles.listBody}>{place}</Text>}
+              </View>
+              <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+            </Pressable>
+          ) : (
+            <View
+              style={styles.listItem}
+              accessible
+              accessibilityLabel={`Anunciado por ${details.owner}`}
+            >
+              <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
+              <View style={styles.listText}>
+                <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
+                {place && <Text style={styles.listBody}>{place}</Text>}
+              </View>
             </View>
-          </View>
+          )
         ) : null}
         {!isOwner && session.status === 'signedIn' && listing.ownerId ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Sua segurança: denunciar ou bloquear"
-            onPress={openSafety}
-            style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
-          >
-            <AppIcon name="error" size={20} color={colors.onSurfaceVariant} />
-            <View style={styles.listText}>
-              <Text style={styles.listTitle}>Sua segurança</Text>
-              <Text style={styles.listBody}>Denunciar ou bloquear quem anunciou.</Text>
-            </View>
-            <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
-          </Pressable>
+          <>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Denunciar anúncio"
+              onPress={openReport}
+              style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
+            >
+              <AppIcon name="error" size={20} color={colors.onSurfaceVariant} />
+              <View style={styles.listText}>
+                <Text style={styles.listTitle}>Denunciar anúncio</Text>
+                <Text style={styles.listBody}>Golpe, descrição falsa ou conteúdo ofensivo.</Text>
+              </View>
+              <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={blockLabel(listing.ownerFirstName)}
+              onPress={() => setBlocking(true)}
+              style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
+            >
+              <AppIcon name="close" size={20} color={colors.onSurfaceVariant} />
+              <View style={styles.listText}>
+                <Text style={styles.listTitle}>{blockLabel(listing.ownerFirstName)}</Text>
+                <Text style={styles.listBody}>Os anúncios dessa pessoa somem para você.</Text>
+              </View>
+            </Pressable>
+            <BlockUserDialog
+              visible={blocking}
+              userId={listing.ownerId}
+              firstName={listing.ownerFirstName}
+              onCancel={() => setBlocking(false)}
+              onBlocked={() => {
+                setBlocking(false);
+                router.back();
+              }}
+            />
+          </>
         ) : null}
         <View style={styles.note}>
           <AppIcon name="info" size={18} color={colors.onSurfaceVariant} />

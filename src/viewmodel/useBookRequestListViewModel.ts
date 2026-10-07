@@ -8,19 +8,15 @@ import type { CatalogRepository } from '../model/repositories/CatalogRepository'
 import { toCatalogError } from '../model/entities/CatalogError';
 import { catalogErrorMessage } from '../model/services/catalogMessages';
 import { isOwner } from '../model/services/bookRequestTransitions';
-import type { Listing } from '../model/entities/Listing';
+import type { MessageRepository } from '../model/repositories/MessageRepository';
+import { describeConversations, type Entry } from './describeConversations.ts';
 
 export type ListStatus = 'loading' | 'ready' | 'empty' | 'error';
-
-type Entry = {
-  request: BookRequest;
-  asOwner: boolean;
-  listing: Listing | null;
-};
 
 export function useBookRequestListViewModel(
   bookRequestRepository: BookRequestRepository,
   catalogRepository: CatalogRepository,
+  messageRepository?: MessageRepository,
 ) {
   const session = useSessionContext();
   const userId = session.user?.id ?? '';
@@ -65,6 +61,9 @@ export function useBookRequestListViewModel(
           entries.push({ request, listing: null, asOwner: false });
         }
       }
+      if (messageRepository && entries.length > 0) {
+        await describeConversations(messageRepository, entries, userId);
+      }
       if (token !== currentId.current) return;
       setItems(entries);
       setStatus(entries.length === 0 ? 'empty' : 'ready');
@@ -79,7 +78,7 @@ export function useBookRequestListViewModel(
       }
       setStatus('error');
     }
-  }, [bookRequestRepository, catalogRepository, userId]);
+  }, [bookRequestRepository, catalogRepository, messageRepository, userId]);
 
   useEffect(() => {
     void load();

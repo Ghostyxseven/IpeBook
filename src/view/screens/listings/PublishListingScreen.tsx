@@ -1,192 +1,568 @@
-import { useRouter } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Stack, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePublishListing } from '../../../factories/listings';
-import { conditionLabels, modalityLabels } from '../../../model/services/catalogFormat';
-import { modalityHighlight } from '../../../model/services/listingFormat';
-import { CoverPicker } from '../../components/listings/CoverPicker';
-import { BookFields, ModalityFields } from '../../components/listings/ListingFields';
-import { ListingStepper } from '../../components/listings/ListingStepper';
+import type { MyListing } from '../../../model/entities/Listing';
+import {
+  conditionLabels,
+  modalityLabels,
+  modalitySummary,
+} from '../../../model/services/catalogFormat';
+import { categories } from '../../../model/services/categories';
+import { conditions, modalities } from '../../../model/services/listingValidation';
+import type { PublishStep } from '../../../viewmodel/usePublishListingViewModel';
+import { AppIcon } from '../../components/AppIcon';
+import { ListingCover } from '../../components/catalog/ListingCover';
+import { ChoiceChips } from '../../components/listings/ChoiceChips';
+import { pickCoverImage } from '../../components/listings/CoverPicker';
+import { SegmentedButtons } from '../../components/listings/SegmentedButtons';
+import { ActionBar } from '../../components/negotiation/ActionBar';
+import { ScanIsbnScreen } from './ScanIsbnScreen';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { TextField } from '../../components/ui/TextField';
+import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
-const titles = {
-  book: 'Sobre o livro',
-  modality: 'Como você quer anunciar',
-  cover: 'Uma foto do exemplar',
-  review: 'Confira antes de publicar',
-} as const;
+/** Título da barra e nome da etapa, como nos quadros 04.01, 04.04 e 04.05. */
+const stepTitles: Record<PublishStep, { title: string; name: string }> = {
+  livro: { title: 'Anunciar livro', name: 'Livro' },
+  fotos: { title: 'Fotos do livro', name: 'Fotos' },
+  detalhes: { title: 'Detalhes do livro', name: 'Detalhes' },
+};
 
-/** Publicar anúncio (spec 025): dados → modalidade → foto → revisar → publicar. */
+/** O limite que o Figma mostra no contador da descrição. */
+const DESCRIPTION_LIMIT = 280;
+
+/** Id provisório só para a capa ilustrativa escolher a cor enquanto o anúncio não existe. */
+const PREVIEW_ID = 'novo-anuncio';
+
+/**
+ * Anunciar livro (spec 025) pelos quadros do Figma: 04.01 livro e modalidade,
+ * 04.04 fotos, 04.05 detalhes e 04.07 anúncio publicado.
+ */
 export function PublishListingScreen() {
   const router = useRouter();
   const vm = usePublishListing();
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [picking, setPicking] = useState(false);
+
+  const choosePhoto = async () => {
+    setPhotoError(null);
+    setPicking(true);
+    const result = await pickCoverImage();
+    setPicking(false);
+    if (!result) return;
+    if ('error' in result) setPhotoError(result.error);
+    else vm.pickCover(result);
+  };
 
   if (vm.published) {
-    return (
-      <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
-        <View style={styles.done}>
-          <Text accessibilityRole="header" style={styles.doneTitle}>
-            Anúncio publicado
-          </Text>
-          <Text style={styles.doneText}>
-            {`"${vm.published.title}" já aparece para quem procura livros.`}
-          </Text>
-          <Button label="Ver na minha estante" onPress={() => router.replace('/estante')} />
-          <Button
-            label="Voltar ao início"
-            variant="text"
-            onPress={() => router.replace('/inicio')}
-          />
-        </View>
-      </SafeAreaView>
-    );
+    return <Published listing={vm.published} />;
   }
 
-  const bookErrors = vm.errorsOf('book');
-  const modalityErrors = vm.errorsOf('modality');
+  // 04.02 a 04.18: a leitura ocupa a tela e devolve o formulário intacto.
+  if (vm.scanning) {
+    return <ScanIsbnScreen onUse={vm.applyLookup} onClose={vm.closeScanner} />;
+  }
+
+  const { title, name } = stepTitles[vm.step];
+  const errors = vm.stepErrors(vm.step);
+  const busy = vm.submitting || picking;
+  const preview = { id: PREVIEW_ID, title: vm.draft.title || 'Seu livro', author: vm.draft.author };
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.appBar}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={vm.isFirst ? 'Fechar' : 'Voltar'}
+          onPress={() => (vm.isFirst ? router.back() : vm.back())}
+          disabled={vm.submitting}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.iconButton,
+            pressed && styles.iconPressed,
+            focused && styles.focused,
+          ]}
+        >
+          <AppIcon name="back" color={colors.onSurface} />
+        </Pressable>
+        <Text accessibilityRole="header" style={styles.appTitle}>
+          {title}
+        </Text>
+      </View>
+
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <ListingStepper current={vm.stepNumber} total={vm.stepCount} title={titles[vm.step]} />
-
-        {vm.step === 'book' ? (
-          <BookFields
-            draft={vm.draft}
-            errors={bookErrors}
-            onText={(field, value) => vm.setText(field, value)}
-            onCategory={vm.setCategory}
-            onCondition={vm.setCondition}
-            disabled={vm.submitting}
-          />
-        ) : null}
-
-        {vm.step === 'modality' ? (
-          <ModalityFields
-            modality={vm.draft.modality}
-            priceInput={vm.priceInput}
-            tradeTerms={vm.draft.tradeTerms}
-            errors={modalityErrors}
-            onModality={vm.setModality}
-            onPrice={vm.setPriceInput}
-            onTerms={(value) => vm.setText('tradeTerms', value)}
-            disabled={vm.submitting}
-          />
-        ) : null}
-
-        {vm.step === 'cover' ? (
-          <CoverPicker
-            picked={vm.cover}
-            onPick={vm.pickCover}
-            onClear={vm.clearCover}
-            disabled={vm.submitting}
-          />
-        ) : null}
-
-        {vm.step === 'review' ? (
-          <View style={styles.review}>
-            <Review
-              label="Livro"
-              value={`${vm.draft.title} — ${vm.draft.author}`}
-              onEdit={() => vm.goTo('book')}
-            />
-            <Review label="Categoria" value={vm.draft.category} onEdit={() => vm.goTo('book')} />
-            <Review
-              label="Estado"
-              value={conditionLabels[vm.draft.condition]}
-              onEdit={() => vm.goTo('book')}
-            />
-            <Review
-              label={modalityLabels[vm.draft.modality]}
-              value={modalityHighlight(vm.draft) || '—'}
-              onEdit={() => vm.goTo('modality')}
-            />
-            {vm.draft.tradeTerms ? (
-              <Review
-                label="Aceita em troca"
-                value={vm.draft.tradeTerms}
-                onEdit={() => vm.goTo('modality')}
-              />
-            ) : null}
-            <Review
-              label="Foto"
-              value={vm.cover ? 'Escolhida' : 'Sem foto — usa a capa ilustrativa'}
-              onEdit={() => vm.goTo('cover')}
-            />
+        {vm.step !== 'fotos' ? (
+          <View
+            style={styles.progress}
+            accessible
+            accessibilityLabel={`Etapa ${vm.stepNumber} de ${vm.stepCount}: ${name}`}
+          >
+            <View style={styles.progressRow}>
+              <Text style={styles.progressText}>{`Etapa ${vm.stepNumber} de ${vm.stepCount}`}</Text>
+              <Text style={styles.progressText}>{name}</Text>
+            </View>
+            <View style={styles.track}>
+              <View style={[styles.fill, { width: `${(vm.stepNumber / vm.stepCount) * 100}%` }]} />
+            </View>
           </View>
         ) : null}
 
-        <FormMessage tone="error" message={vm.error} />
+        {vm.step === 'livro' ? (
+          <>
+            {/* 04.01: o atalho fica acima dos campos, e é só um atalho (spec 030). */}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Ler ISBN com a câmera"
+              accessibilityHint="Preenche título e autor a partir do código de barras"
+              onPress={vm.openScanner}
+              disabled={busy}
+              style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+                styles.isbnLink,
+                pressed && styles.iconPressed,
+                focused && styles.focused,
+              ]}
+            >
+              <AppIcon name="search" color={colors.actionDeep} />
+              <View style={styles.flex}>
+                <Text style={styles.isbnTitle}>Ler ISBN com a câmera</Text>
+                <Text style={styles.caption}>Preenche título e autor</Text>
+              </View>
+              <AppIcon name="chevronRight" size={20} color={colors.onSurfaceVariant} />
+            </Pressable>
+            <SegmentedButtons
+              label="Como você quer anunciar"
+              options={modalities.map((value) => ({ value, label: modalityLabels[value] }))}
+              value={vm.draft.modality}
+              onChange={vm.setModality}
+              disabled={vm.submitting}
+            />
+            <View style={styles.bookRow}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={vm.cover ? 'Trocar a foto da capa' : 'Foto da capa'}
+                accessibilityHint="Abre as fotos do aparelho"
+                onPress={choosePhoto}
+                disabled={busy}
+                style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+                  styles.photoTile,
+                  pressed && styles.iconPressed,
+                  focused && styles.focused,
+                ]}
+              >
+                {vm.cover ? (
+                  <Image
+                    source={{ uri: vm.cover.previewUri }}
+                    style={StyleSheet.absoluteFill}
+                    contentFit="cover"
+                    accessible={false}
+                  />
+                ) : (
+                  <>
+                    <AppIcon name="add" color={colors.onSurface} />
+                    <Text style={styles.photoLabel}>Foto da capa</Text>
+                  </>
+                )}
+              </Pressable>
+              <View style={styles.bookFields}>
+                <TextField
+                  label="Título"
+                  value={vm.draft.title}
+                  onChangeText={(value) => vm.setText('title', value)}
+                  error={errors.title}
+                  editable={!vm.submitting}
+                  autoCapitalize="sentences"
+                  returnKeyType="next"
+                />
+                <TextField
+                  label="Autor"
+                  value={vm.draft.author}
+                  onChangeText={(value) => vm.setText('author', value)}
+                  error={errors.author}
+                  editable={!vm.submitting}
+                  autoCapitalize="words"
+                />
+              </View>
+            </View>
+            {photoError ? <Text style={styles.error}>{photoError}</Text> : null}
 
-        <View style={styles.actions}>
-          {vm.isLast ? (
-            <Button label="Publicar anúncio" onPress={vm.submit} loading={vm.submitting} />
-          ) : (
-            <Button label="Continuar" onPress={vm.next} disabled={vm.submitting} />
-          )}
-          <Button
-            label={vm.isFirst ? 'Cancelar' : 'Voltar'}
-            variant="text"
-            disabled={vm.submitting}
-            onPress={() => (vm.isFirst ? router.back() : vm.back())}
-          />
-        </View>
+            {vm.draft.modality === 'sale' ? (
+              <TextField
+                label="Preço (R$)"
+                value={vm.priceInput}
+                onChangeText={vm.setPriceInput}
+                error={errors.priceCents}
+                editable={!vm.submitting}
+                keyboardType="decimal-pad"
+                placeholder="25,00"
+              />
+            ) : null}
+            {vm.draft.modality === 'trade' ? (
+              <TextField
+                label="O que você aceita em troca"
+                value={vm.draft.tradeTerms ?? ''}
+                onChangeText={(value) => vm.setText('tradeTerms', value)}
+                error={errors.tradeTerms}
+                editable={!vm.submitting}
+                multiline
+                numberOfLines={3}
+                placeholder="Qualquer livro de ficção científica"
+              />
+            ) : null}
+
+            <View style={styles.note}>
+              <AppIcon name="info" size={18} color={colors.onSurfaceVariant} />
+              <Text style={styles.noteText}>
+                {vm.draft.modality === 'donation'
+                  ? 'Doação é gratuita: ninguém paga nada. Conservação e bairro vêm na próxima etapa.'
+                  : 'Foto leve, com boa luz. Conservação e bairro vêm na próxima etapa.'}
+              </Text>
+            </View>
+          </>
+        ) : null}
+
+        {vm.step === 'fotos' ? (
+          <>
+            <View style={styles.intro}>
+              <Text accessibilityRole="header" style={styles.brand}>
+                Mostre seu livro.
+              </Text>
+              <Text style={styles.body}>
+                Uma foto nítida ajuda a conhecer o estado do exemplar.
+              </Text>
+            </View>
+            <View style={styles.photoPreview}>
+              {vm.cover ? (
+                <Image
+                  source={{ uri: vm.cover.previewUri }}
+                  style={styles.photoLarge}
+                  contentFit="cover"
+                  accessibilityLabel="Foto escolhida da capa"
+                />
+              ) : (
+                <ListingCover listing={{ ...preview, coverUrl: null }} variant="publish" />
+              )}
+            </View>
+            {!vm.cover ? (
+              <Text style={styles.caption}>
+                Capa ilustrativa: a foto real substitui esta prévia.
+              </Text>
+            ) : null}
+            {photoError ? <Text style={styles.error}>{photoError}</Text> : null}
+            <View style={styles.tip}>
+              <Text style={styles.tipTitle}>Dica de foto</Text>
+              <Text style={styles.body}>Luz natural, fundo liso e a capa inteira no quadro.</Text>
+            </View>
+          </>
+        ) : null}
+
+        {vm.step === 'detalhes' ? (
+          <>
+            <ChoiceChips
+              label="Conservação"
+              options={conditions.map((value) => ({ value, label: conditionLabels[value] }))}
+              value={vm.draft.condition}
+              onChange={vm.setCondition}
+              error={errors.condition}
+            />
+            <ChoiceChips
+              label="Categoria"
+              options={categories.map((value) => ({ value, label: value }))}
+              value={vm.draft.category || null}
+              onChange={vm.setCategory}
+              error={errors.category}
+            />
+            <View>
+              <TextField
+                label="Descrição"
+                value={vm.draft.description ?? ''}
+                onChangeText={(value) => vm.setText('description', value)}
+                editable={!vm.submitting}
+                multiline
+                numberOfLines={3}
+                maxLength={DESCRIPTION_LIMIT}
+                placeholder="Marcas leves de uso, páginas completas."
+              />
+              <Text style={styles.counter}>
+                {`${(vm.draft.description ?? '').length}/${DESCRIPTION_LIMIT}`}
+              </Text>
+            </View>
+            <TextField
+              label="Bairro para retirada"
+              value={vm.draft.neighborhood ?? ''}
+              onChangeText={(value) => vm.setText('neighborhood', value)}
+              editable={!vm.submitting}
+              autoCapitalize="words"
+              placeholder="Centro"
+              hint="Só o bairro aparece no anúncio."
+            />
+          </>
+        ) : null}
+
+        <FormMessage tone="error" message={vm.error} />
       </ScrollView>
+
+      <ActionBar>
+        {vm.step === 'livro' ? (
+          <Button label="Continuar" onPress={vm.next} disabled={busy} />
+        ) : null}
+        {vm.step === 'fotos' ? (
+          <>
+            <Button
+              label={vm.cover ? 'Usar esta foto' : 'Continuar sem foto'}
+              onPress={vm.next}
+              disabled={busy}
+            />
+            <Button
+              label={vm.cover ? 'Escolher outra foto' : 'Escolher foto'}
+              variant="text"
+              onPress={choosePhoto}
+              loading={picking}
+              disabled={vm.submitting}
+            />
+          </>
+        ) : null}
+        {vm.step === 'detalhes' ? (
+          <Button
+            label="Publicar anúncio"
+            onPress={vm.submit}
+            loading={vm.submitting}
+            disabled={picking}
+          />
+        ) : null}
+      </ActionBar>
     </SafeAreaView>
   );
 }
 
-/** Uma linha da revisão, com o atalho para voltar e corrigir aquele passo. */
-function Review({ label, value, onEdit }: { label: string; value: string; onEdit: () => void }) {
+/** 04.07 Anúncio publicado: confirmação, prévia do anúncio e próximos passos. */
+function Published({ listing }: { listing: MyListing }) {
+  const router = useRouter();
+  const share = () => {
+    Share.share({ message: `"${listing.title}" está no IpêBook, em Piripiri.` }).catch(
+      () => undefined,
+    );
+  };
+
   return (
-    <View style={styles.reviewRow}>
-      <View style={styles.reviewText}>
-        <Text style={styles.reviewLabel}>{label}</Text>
-        <Text style={styles.reviewValue}>{value}</Text>
+    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScrollView contentContainerStyle={[styles.content, styles.doneContent]}>
+        <View style={styles.doneIcon}>
+          <AppIcon name="check" size={spacing.xl} color={colors.containerLowest} />
+        </View>
+        <View
+          accessible
+          accessibilityRole="header"
+          accessibilityLabel="Seu livro ganhou um novo começo."
+        >
+          <Text style={styles.brand}>Seu livro ganhou</Text>
+          <View style={styles.highlight}>
+            <Text style={styles.brand}>um novo começo.</Text>
+          </View>
+        </View>
+        <Text style={styles.body}>O anúncio já aparece para leitores de Piripiri.</Text>
+
+        <View style={styles.previewRow}>
+          <ListingCover listing={listing} variant="row" />
+          <View style={styles.previewText}>
+            <Text style={styles.overline}>{modalitySummary(listing)}</Text>
+            <Text style={styles.previewTitle} numberOfLines={2}>
+              {listing.title}
+            </Text>
+            <Text style={styles.body} numberOfLines={1}>
+              {listing.author}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.nextSteps}>
+          <Text accessibilityRole="header" style={styles.sectionTitle}>
+            Próximos passos
+          </Text>
+          <NextStep
+            number={1}
+            title="Espere o primeiro contato"
+            text="Você recebe uma notificação quando alguém se interessar."
+          />
+          <NextStep
+            number={2}
+            title="Combine em local público"
+            text="Escolham juntos o ponto, o dia e o horário."
+          />
+        </View>
+      </ScrollView>
+
+      <ActionBar>
+        <View style={styles.doneActions}>
+          <View style={styles.flex}>
+            <Button label="Compartilhar" variant="secondary" onPress={share} />
+          </View>
+          <View style={styles.flex}>
+            <Button label="Ver estante" onPress={() => router.replace('/estante')} />
+          </View>
+        </View>
+        <Button label="Voltar ao início" variant="text" onPress={() => router.replace('/inicio')} />
+      </ActionBar>
+    </SafeAreaView>
+  );
+}
+
+function NextStep({ number, title, text }: { number: number; title: string; text: string }) {
+  return (
+    <View style={styles.step}>
+      <View style={styles.stepNumber}>
+        <Text style={styles.stepNumberText}>{number}</Text>
       </View>
-      <Button
-        label="Alterar"
-        variant="text"
-        onPress={onEdit}
-        accessibilityHint={`Volta para alterar ${label.toLowerCase()}`}
-      />
+      <View style={styles.flex}>
+        <Text style={styles.stepTitle}>{title}</Text>
+        <Text style={styles.body}>{text}</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  content: {
-    padding: metrics.pagePadding,
-    gap: spacing.lg,
-    maxWidth: metrics.formMaxWidth,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  actions: { gap: spacing.xs },
-  review: { gap: spacing.xs },
-  reviewRow: {
+  flex: { flex: 1 },
+  appBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.xxs,
+    paddingHorizontal: spacing.xxs,
     paddingVertical: spacing.xs,
-    borderBottomWidth: metrics.borderThin,
-    borderBottomColor: colors.disabledBackground,
   },
-  reviewText: { flex: 1, gap: spacing.xxs },
-  reviewLabel: { ...typography.labelMedium, color: colors.secondaryText },
-  reviewValue: { ...typography.bodyLarge, color: colors.text },
-  done: {
-    flex: 1,
+  iconButton: {
+    width: metrics.touchTarget,
+    height: metrics.touchTarget,
+    borderRadius: metrics.touchTarget / 2,
+    alignItems: 'center',
     justifyContent: 'center',
-    padding: metrics.pagePadding,
+  },
+  iconPressed: { backgroundColor: colors.pressed },
+  appTitle: {
+    ...typography.titleLarge,
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '400',
+    color: colors.onSurface,
+  },
+  content: {
+    paddingHorizontal: metrics.pagePadding,
+    paddingTop: spacing.xs,
+    paddingBottom: spacing.lg,
     gap: spacing.md,
     maxWidth: metrics.formMaxWidth,
     width: '100%',
     alignSelf: 'center',
   },
-  doneTitle: { ...typography.titleLarge, color: colors.text },
-  doneText: { ...typography.bodyLarge, color: colors.secondaryText },
+  progress: { gap: spacing.xs, marginBottom: spacing.xs },
+  progressRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  progressText: { ...typography.labelLarge, color: colors.onSurfaceVariant },
+  track: {
+    height: spacing.xxs,
+    borderRadius: spacing.xxs / 2,
+    backgroundColor: colors.soft,
+    overflow: 'hidden',
+  },
+  fill: { height: '100%', borderRadius: spacing.xxs / 2, backgroundColor: colors.action },
+  isbnLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    minHeight: metrics.touchTarget,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.medium,
+    backgroundColor: colors.containerLow,
+  },
+  isbnTitle: { ...typography.bodyLarge, color: colors.onSurface },
+  bookRow: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start' },
+  photoTile: {
+    width: 92,
+    height: 130,
+    marginTop: spacing.xs,
+    borderRadius: radius.medium,
+    borderWidth: metrics.borderThin,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    overflow: 'hidden',
+  },
+  photoLabel: { ...typography.labelMedium, color: colors.actionDeep, textAlign: 'center' },
+  bookFields: { flex: 1, gap: spacing.xs },
+  note: { flexDirection: 'row', gap: spacing.xs, alignItems: 'flex-start' },
+  noteText: { ...typography.bodyMedium, color: colors.onSurfaceVariant, flex: 1 },
+  intro: { gap: spacing.xs },
+  brand: { ...typography.brandHeadline, color: colors.onSurface },
+  body: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
+  caption: { ...typography.caption, color: colors.onSurfaceVariant },
+  photoPreview: { alignItems: 'center' },
+  photoLarge: {
+    width: 176,
+    aspectRatio: 96 / 136,
+    borderRadius: radius.medium,
+    backgroundColor: colors.disabledBackground,
+  },
+  tip: {
+    gap: spacing.xxs,
+    padding: spacing.md,
+    borderRadius: radius.medium,
+    backgroundColor: colors.containerLow,
+  },
+  tipTitle: { ...typography.titleMedium, color: colors.onSurface },
+  counter: {
+    ...typography.caption,
+    color: colors.onSurfaceVariant,
+    textAlign: 'right',
+    marginTop: spacing.xxs,
+  },
+  error: { ...typography.caption, color: colors.error },
+  doneContent: { paddingTop: spacing.xl, gap: spacing.lg },
+  doneIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: radius.medium,
+    backgroundColor: colors.action,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  highlight: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.highlight,
+    borderRadius: radius.small,
+    paddingHorizontal: spacing.xxs,
+    marginLeft: -spacing.xxs,
+  },
+  previewRow: { flexDirection: 'row', gap: spacing.md, alignItems: 'center' },
+  previewText: { flex: 1, gap: spacing.xxs },
+  overline: { ...typography.labelMedium, color: colors.onSurfaceVariant },
+  previewTitle: { ...typography.bodyLarge, color: colors.onSurface },
+  nextSteps: { gap: spacing.md },
+  sectionTitle: { ...typography.titleMedium, color: colors.onSurface },
+  step: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start' },
+  stepNumber: {
+    width: spacing.xl,
+    height: spacing.xl,
+    borderRadius: spacing.xl / 2,
+    backgroundColor: colors.soft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepNumberText: { ...typography.labelLarge, color: colors.actionDeep },
+  stepTitle: { ...typography.bodyLarge, color: colors.onSurface },
+  doneActions: { flexDirection: 'row', gap: spacing.sm },
+  focused: Platform.select({
+    web: {
+      outlineColor: colors.focus,
+      outlineStyle: 'solid',
+      outlineWidth: metrics.focusWidth,
+      outlineOffset: metrics.focusOffset,
+    },
+    default: {},
+  }),
 });

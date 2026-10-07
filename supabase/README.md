@@ -47,6 +47,14 @@ Aplique, nesta ordem e depois das migrações do catálogo e das notificações:
 2. `migrations/20261002130000_seguranca_denuncias_bloqueios.sql` — `reports`, `user_blocks` e a view `catalog_listings` sem anúncios de quem foi bloqueado.
 3. `migrations/20261002140000_negociacao_transicoes.sql` — a função `transition_book_request`, que é o único jeito de aceitar, recusar, cancelar ou concluir, e os avisos da negociação.
 
+## Perfil e bairro (Figma 01.17 e 11.01)
+
+Aplique `migrations/20261003140000_perfil_bairro.sql` depois da migração do catálogo. Ela cria `profiles` com o bairro de cada pessoa e RLS: cada pessoa lê e grava só o próprio perfil, o app só altera `neighborhood` e a cidade fica fixa em Piripiri. Sem essa migração, Seu bairro e Escolher bairro mostram "O perfil ainda não foi configurado neste ambiente.".
+
+## Excluir conta (ADR 0023)
+
+Aplique `migrations/20261003150000_excluir_conta.sql` por último. Ela cria `delete_own_account()`, que só a própria pessoa autenticada pode chamar. A função apaga a conta, e os dados ligados saem em cascata; as capas são removidas pelo app antes. Teste com uma conta descartável: depois de excluir, o login com ela deve falhar.
+
 ## Anúncio de teste (só em projeto de desenvolvimento)
 
 O catálogo esconde os anúncios da própria pessoa. Para ver um anúncio no app, crie duas contas de teste e insira o anúncio com o id da conta que **não** vai abrir o app (Authentication → Users):

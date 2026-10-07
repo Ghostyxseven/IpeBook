@@ -28,9 +28,22 @@
     "error": { "$type": "color", "$value": "#B3261E" },
     "gold": { "$type": "color", "$value": "#D99719" },
     "highlight": { "$type": "color", "$value": "#F4B942" },
+    "brandBrown": { "$type": "color", "$value": "#58331F" },
+    "brandAmber": { "$type": "color", "$value": "#F2BC45" },
+    "tertiaryContainer": { "$type": "color", "$value": "#F8D88A" },
     "errorContainer": { "$type": "color", "$value": "#F9DEDC" },
     "inverseSurface": { "$type": "color", "$value": "#322F2B" },
     "inverseOnSurface": { "$type": "color", "$value": "#F5EFE8" },
+    "scanner": {
+      "surface": { "$type": "color", "$value": "#1F2B25" },
+      "onSurface": { "$type": "color", "$value": "#FFFFFF" },
+      "veil": { "$type": "color", "$value": "#14181680" }
+    },
+    "ios": {
+      "cell": { "$type": "color", "$value": "#F7F3EC" },
+      "secondaryLabel": { "$type": "color", "$value": "#6B645C" },
+      "separator": { "$type": "color", "$value": "#3C322829" }
+    },
     "onSurface": { "$type": "color", "$value": "#1D1B18" },
     "onSurfaceVariant": { "$type": "color", "$value": "#4D4740" },
     "outlineVariant": { "$type": "color", "$value": "#D3CCC2" },
@@ -159,10 +172,10 @@
       "pagePadding": { "$type": "dimension", "$value": "24px" }
     },
     "ios": {
-      "fieldRadius": { "$type": "dimension", "$value": "20px" },
+      "fieldRadius": { "$type": "dimension", "$value": "12px" },
       "cardRadius": { "$type": "dimension", "$value": "22px" },
       "navigationRadius": { "$type": "dimension", "$value": "28px" },
-      "controlHeight": { "$type": "dimension", "$value": "52px" },
+      "controlHeight": { "$type": "dimension", "$value": "50px" },
       "pagePadding": { "$type": "dimension", "$value": "24px" }
     },
     "web": {
@@ -237,12 +250,44 @@
         "lineHeight": { "$type": "dimension", "$value": "20px" }
       }
     },
+    "ios": {
+      "body": {
+        "weight": { "$type": "fontWeight", "$value": 400 },
+        "fontSize": { "$type": "dimension", "$value": "17px" },
+        "lineHeight": { "$type": "dimension", "$value": "22px" }
+      },
+      "subheadline": {
+        "weight": { "$type": "fontWeight", "$value": 400 },
+        "fontSize": { "$type": "dimension", "$value": "15px" },
+        "lineHeight": { "$type": "dimension", "$value": "20px" }
+      },
+      "footnote": {
+        "weight": { "$type": "fontWeight", "$value": 400 },
+        "fontSize": { "$type": "dimension", "$value": "13px" },
+        "lineHeight": { "$type": "dimension", "$value": "18px" }
+      }
+    },
     "brand": {
       "fontFamily": { "$type": "fontFamily", "$value": "Source Serif 4" },
       "headline": {
         "weight": { "$type": "fontWeight", "$value": 700 },
         "fontSize": { "$type": "dimension", "$value": "30px" },
         "lineHeight": { "$type": "dimension", "$value": "36px" }
+      },
+      "largeTitle": {
+        "weight": { "$type": "fontWeight", "$value": 700 },
+        "fontSize": { "$type": "dimension", "$value": "34px" },
+        "lineHeight": { "$type": "dimension", "$value": "41px" }
+      },
+      "display": {
+        "weight": { "$type": "fontWeight", "$value": 700 },
+        "fontSize": { "$type": "dimension", "$value": "36px" },
+        "lineHeight": { "$type": "dimension", "$value": "41px" }
+      },
+      "wordmark": {
+        "weight": { "$type": "fontWeight", "$value": 700 },
+        "fontSize": { "$type": "dimension", "$value": "28px" },
+        "lineHeight": { "$type": "dimension", "$value": "31px" }
       },
       "title": {
         "weight": { "$type": "fontWeight", "$value": 700 },

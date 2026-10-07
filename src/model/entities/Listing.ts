@@ -34,9 +34,19 @@ export type CatalogFilters = {
   query: string;
   modalities: Modality[];
   category: string | null;
+  /** Conservações aceitas (Figma 02.03). Lista vazia aceita todas. */
+  conditions: ListingCondition[];
+  /** Teto de preço em centavos (Figma 02.03). `null` não limita. */
+  maxPriceCents: number | null;
 };
 
-export const emptyFilters: CatalogFilters = { query: '', modalities: [], category: null };
+export const emptyFilters: CatalogFilters = {
+  query: '',
+  modalities: [],
+  category: null,
+  conditions: [],
+  maxPriceCents: null,
+};
 
 // ── Anúncios de quem publicou (spec 025) ────────────────────────────────────
 

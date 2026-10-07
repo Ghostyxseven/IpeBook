@@ -96,7 +96,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
           'Use um e-mail seu e uma senha exclusiva para o IpêBook. Mantenha a senha em segredo: quem tiver acesso a ela pode entrar na sua conta.',
           'A conta existe apenas no aplicativo. Depois de entrar, você pode ver o catálogo de livros anunciados por outras pessoas (Início, Explorar e detalhe do livro). Ainda não é possível publicar anúncios, fazer pedidos, trocar mensagens nem ter perfil público.',
           'No aplicativo há também uma lista de avisos e as Configurações. Em Configurações você liga ou desliga cada tipo de aviso (pedido recebido, aceito ou recusado, livro reservado e negociação concluída), consulta a versão do aplicativo e toca em Sair. Como ainda não há pedidos nem negociação, nenhum aviso desses é gerado por enquanto. Os avisos aparecem só dentro do aplicativo: não há notificação no celular, e-mail ou SMS.',
-          `Excluir a conta pelo aplicativo ainda não é possível. Por enquanto, pedidos sobre a conta podem ser enviados para ${contact.email}, sem prazo de resposta garantido. Essa pendência precisa ser resolvida antes de o cadastro ser divulgado.`,
+          `Você pode excluir a conta pelo aplicativo, em Configurações › Privacidade e dados. A exclusão apaga a conta, os anúncios, as capas e as conversas, e não pode ser desfeita. Quem não tiver mais acesso ao aplicativo pode pedir a exclusão por ${contact.email}, sem prazo de resposta garantido.`,
         ],
       },
       {
@@ -158,7 +158,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
           'O cadastro existe apenas no aplicativo para Android e iOS, ainda em desenvolvimento; o site não coleta esses dados. Para criar a conta, pedimos nome, e-mail e senha. O nome aparece na sua área inicial. O e-mail serve para entrar, confirmar a conta e recuperar a senha, por meio de códigos enviados a ele.',
           'Esses dados são tratados pelo Supabase, o serviço que hospeda a autenticação. A senha viaja por conexão segura e é guardada cifrada (hash): o IpêBook não consegue lê-la. O serviço pode registrar dados técnicos de acesso, como endereço IP, data e hora, para proteger a conta.',
           'Depois que você entra, a sessão fica guardada no armazenamento do aplicativo, no celular, para não pedir a senha a cada abertura. Tocar em Sair remove a sessão. O aplicativo também guarda se você já viu a apresentação inicial.',
-          'Os dados da conta ficam no projeto do IpêBook no Supabase, na região us-east-1 (Leste dos Estados Unidos). Isso significa que são tratados fora do Brasil. Ainda faltam confirmar o prazo de conservação e a base legal. Excluir a conta pelo aplicativo ainda não é possível; pedidos podem ser enviados para ' +
+          'Os dados da conta ficam no projeto do IpêBook no Supabase, na região us-east-1 (Leste dos Estados Unidos). Isso significa que são tratados fora do Brasil. Ainda faltam confirmar o prazo de conservação e a base legal. Excluir a conta pelo aplicativo, em Configurações › Privacidade e dados, apaga esses dados e os anúncios. Quem não tiver mais acesso ao aplicativo pode pedir a exclusão por ' +
             contact.email +
             '.',
         ],

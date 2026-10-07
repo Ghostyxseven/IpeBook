@@ -12,7 +12,12 @@ import {
   normalizeQuery,
   resultSummary,
   toLikePattern,
+  toggleCondition,
   toggleModality,
+  normalizeMaxPrice,
+  maxPriceLabel,
+  MAX_PRICE_CENTS,
+  PRICE_STEP_CENTS,
 } from '../src/model/services/catalogFilters.ts';
 import { firstName, greeting } from '../src/model/services/userFormat.ts';
 import {
@@ -20,6 +25,7 @@ import {
   listingMeta,
   coverIndex,
   detailHeadline,
+  detailActionLabel,
   detailMeta,
   modalitySummary,
   cardOverline,
@@ -97,15 +103,59 @@ test('busca ignora texto curto e normaliza espaços', () => {
   assert.equal(hasActiveSearch({ ...emptyFilters, query: 'do' }), true);
 });
 
-test('filtros contam modalidades sem repetição e categoria', () => {
-  const filters = { query: 'x', modalities: ['sale', 'sale', 'trade'], category: 'Quadrinhos' };
+test('filtros contam modalidades sem repetição, categoria, conservação e preço', () => {
+  const filters = {
+    ...emptyFilters,
+    query: 'x',
+    modalities: ['sale', 'sale', 'trade'],
+    category: 'Quadrinhos',
+  };
   assert.deepEqual(effectiveFilters(filters), {
     query: '',
     modalities: ['sale', 'trade'],
     category: 'Quadrinhos',
+    conditions: [],
+    maxPriceCents: null,
   });
   assert.equal(activeFilterCount(filters), 3);
+  assert.equal(activeFilterCount({ ...filters, conditions: ['novo', 'bom'] }), 5);
+  assert.equal(activeFilterCount({ ...filters, maxPriceCents: 3000 }), 4);
   assert.equal(activeFilterCount(emptyFilters), 0);
+});
+
+test('conservações saem na ordem do Figma e sem repetição (Figma 02.03)', () => {
+  const { conditions } = effectiveFilters({
+    ...emptyFilters,
+    conditions: ['marcas_de_uso', 'novo', 'novo'],
+  });
+  assert.deepEqual(conditions, ['novo', 'marcas_de_uso']);
+  assert.deepEqual(toggleCondition([], 'bom'), ['bom']);
+  assert.deepEqual(toggleCondition(['bom', 'novo'], 'bom'), ['novo']);
+});
+
+test('preço máximo fica na faixa do controle, no passo, e zero não limita', () => {
+  assert.equal(normalizeMaxPrice(null), null);
+  assert.equal(normalizeMaxPrice(0), null);
+  assert.equal(normalizeMaxPrice(-500), null);
+  assert.equal(normalizeMaxPrice(3), PRICE_STEP_CENTS);
+  assert.equal(normalizeMaxPrice(3040), 3000);
+  assert.equal(normalizeMaxPrice(MAX_PRICE_CENTS + 10000), MAX_PRICE_CENTS);
+  assert.equal(maxPriceLabel(null), 'Qualquer preço');
+  assert.equal(maxPriceLabel(3000), 'Até R$ 30,00');
+});
+
+test('o resumo do Explorar junta modalidade, categoria, conservação e preço (Figma 02.04)', () => {
+  assert.equal(
+    resultSummary(1, {
+      ...emptyFilters,
+      modalities: ['sale'],
+      category: 'Literatura brasileira',
+      conditions: ['bom'],
+      maxPriceCents: 3000,
+    }),
+    '1 livro · Venda · Literatura brasileira · Bom estado · Até R$ 30,00',
+  );
+  assert.equal(resultSummary(2, emptyFilters), '2 livros · Mais recentes');
 });
 
 test('alternar modalidade adiciona e remove', () => {
@@ -142,10 +192,11 @@ test('textos do Figma para lista, Início e detalhe', () => {
   );
   assert.equal(cardValue({ modality: 'trade', priceCents: null, tradeTerms: null }), 'Para trocar');
   assert.equal(cardValue({ modality: 'donation', priceCents: null, tradeTerms: null }), 'Gratuito');
-  assert.deepEqual(detailHeadline(listing), { value: 'R$ 25,00', label: 'À venda' });
+  // O selo do detalhe é sempre a modalidade escrita, como o componente Tag do Figma.
+  assert.deepEqual(detailHeadline(listing), { value: 'R$ 25,00', label: 'Venda' });
   assert.deepEqual(detailHeadline({ modality: 'trade', priceCents: null }), {
-    value: 'Troca',
-    label: 'Por outro livro',
+    value: 'Por outro livro',
+    label: 'Troca',
   });
   assert.deepEqual(detailHeadline({ modality: 'donation', priceCents: null }), {
     value: 'Gratuito',
@@ -190,7 +241,7 @@ test('detalhe decide parágrafos, quem anunciou e notas pelas regras da modalida
   assert.deepEqual(sale.paragraphs, ['Bem conservado.']);
   assert.equal(sale.owner, 'Ana · Centro, Picos');
   assert.match(sale.notes, /^Capa ilustrativa · Publicado em 30 de set\. de 2026$/);
-  assert.deepEqual(sale.headline, { value: 'R$ 25,00', label: 'À venda' });
+  assert.deepEqual(sale.headline, { value: 'R$ 25,00', label: 'Venda' });
 
   const trade = listingDetails({
     ...listing,
@@ -223,4 +274,10 @@ test('saudação usa só o primeiro nome e tolera cadastro sem nome', () => {
   assert.equal(firstName(undefined), null);
   assert.equal(greeting('Micael Cardoso Reis'), 'Olá, Micael');
   assert.equal(greeting(null), 'Olá');
+});
+
+test('a ação do detalhe diz o que a pessoa está pedindo (Figma 03.01 a 03.03)', () => {
+  assert.equal(detailActionLabel('sale'), 'Combinar encontro');
+  assert.equal(detailActionLabel('trade'), 'Propor troca');
+  assert.equal(detailActionLabel('donation'), 'Quero receber');
 });

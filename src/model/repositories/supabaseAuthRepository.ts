@@ -97,10 +97,12 @@ export function createSupabaseAuthRepository(client: SupabaseAuthClient | null):
       return toUser(data.user!);
     },
 
-    async signUp(name, email, password) {
+    async signUp(name, email, password, termsAcceptedAt) {
       // Com "Confirm email" ligado, um e-mail já cadastrado recebe um usuário ofuscado,
       // sem erro: o app segue para a verificação sem revelar se a conta existe.
-      await run(() => auth().signUp({ email, password, options: { data: { name } } }));
+      // A data do aceite fica nos metadados da conta (auth.users.raw_user_meta_data).
+      const data = { name, terms_accepted_at: termsAcceptedAt.toISOString() };
+      await run(() => auth().signUp({ email, password, options: { data } }));
     },
 
     async verifySignUp(email, code) {
@@ -133,6 +135,22 @@ export function createSupabaseAuthRepository(client: SupabaseAuthClient | null):
       const { data } = await run(() => auth().updateUser({ password: newPassword }));
       recoveringEmail = null;
       gate.release(data.user ? toUser(data.user) : null);
+    },
+
+    async changePassword(currentPassword, newPassword) {
+      const { data } = await run(() => auth().getSession());
+      const email = data.session?.user.email;
+      if (!email) throw new AuthError('unknown');
+      // O Supabase não confere a senha atual no updateUser: entrar de novo com ela confirma
+      // que é a pessoa dona da conta. A sessão continua a mesma.
+      try {
+        await run(() => auth().signInWithPassword({ email, password: currentPassword }));
+      } catch (error) {
+        if (error instanceof AuthError && error.code === 'invalid_credentials')
+          throw new AuthError('wrong_current_password', error);
+        throw error;
+      }
+      await run(() => auth().updateUser({ password: newPassword }));
     },
 
     async cancelPasswordRecovery() {

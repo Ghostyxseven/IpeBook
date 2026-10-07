@@ -82,7 +82,7 @@ export function createSupabaseCatalogRepository(
   return {
     async list({ filters, cursor, limit }) {
       const supabase = requireClient();
-      const { query, modalities, category } = effectiveFilters(filters);
+      const { query, modalities, category, conditions, maxPriceCents } = effectiveFilters(filters);
       // Conta o total só na primeira página, para o resumo "3 livros · Mais recentes".
       let request = supabase
         .from(CATALOG_VIEW)
@@ -95,6 +95,11 @@ export function createSupabaseCatalogRepository(
       }
       if (modalities.length) request = request.in('modality', modalities);
       if (category) request = request.eq('category', category);
+      if (conditions.length) request = request.in('condition', conditions);
+      // O teto de preço só limita a venda: troca e doação não guardam valor.
+      if (maxPriceCents != null) {
+        request = request.or(`price_cents.is.null,price_cents.lte.${maxPriceCents}`);
+      }
       if (cursor) {
         const at = quoted(cursor.createdAt);
         request = request.or(

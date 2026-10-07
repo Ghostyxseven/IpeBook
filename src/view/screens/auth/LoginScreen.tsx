@@ -16,17 +16,16 @@ export function LoginScreen() {
   });
   return (
     <AuthLayout
-      title="Entrar"
-      description="Que bom ter você de volta. Entre para encontrar, trocar e doar livros em Piripiri."
+      brand
+      title="Sua próxima leitura começa aqui."
+      description="Entre com o e-mail e a senha da sua conta."
       footer={
-        <>
-          <Button
-            label="Criar conta"
-            variant="secondary"
-            onPress={() => router.push('/criar-conta')}
-            accessibilityHint="Abre o cadastro"
-          />
-        </>
+        <Button
+          label="Criar uma conta"
+          variant="text"
+          onPress={() => router.push('/criar-conta')}
+          accessibilityHint="Abre o cadastro"
+        />
       }
     >
       <FormMessage tone="error" message={vm.errors.form} />

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { CatalogFilters, Modality } from '../model/entities/Listing';
+import type { CatalogFilters, ListingCondition, Modality } from '../model/entities/Listing';
 import type { CatalogRepository } from '../model/repositories/CatalogRepository';
 import {
   activeFilterCount,
@@ -13,6 +13,12 @@ import { useCatalogPages } from './useCatalogPages.ts';
 
 export const SEARCH_DEBOUNCE_MS = 300;
 
+/** O que a tela Filtrar livros edita antes de aplicar (Figma 02.03). */
+export type FilterDraft = Pick<
+  CatalogFilters,
+  'modalities' | 'category' | 'conditions' | 'maxPriceCents'
+>;
+
 /** Explorar: texto com espera após a digitação, modalidades combináveis e paginação. */
 export function useCatalogSearchViewModel(
   repository: CatalogRepository,
@@ -24,6 +30,9 @@ export function useCatalogSearchViewModel(
   const [modalities, setModalities] = useState<Modality[]>(
     initialModality ? [initialModality] : [],
   );
+  const [category, setCategory] = useState<string | null>(null);
+  const [conditions, setConditions] = useState<ListingCondition[]>([]);
+  const [maxPriceCents, setMaxPriceCents] = useState<number | null>(null);
 
   useEffect(() => {
     const next = normalizeQuery(query);
@@ -33,8 +42,8 @@ export function useCatalogSearchViewModel(
   }, [query, appliedQuery, debounceMs]);
 
   const filters = useMemo<CatalogFilters>(
-    () => ({ query: appliedQuery, modalities, category: null }),
-    [appliedQuery, modalities],
+    () => ({ query: appliedQuery, modalities, category, conditions, maxPriceCents }),
+    [appliedQuery, modalities, category, conditions, maxPriceCents],
   );
   const pages = useCatalogPages(repository, filters);
   const empty = pages.status === 'ready' && pages.items.length === 0;
@@ -59,10 +68,35 @@ export function useCatalogSearchViewModel(
     searching: hasActiveSearch(filters),
     title: exploreTitle(filters, empty),
     summary: resultSummary(pages.total, filters),
+    category,
+    conditions,
+    maxPriceCents,
+    /** Chip de categoria do Figma 02.02; tocar de novo na mesma volta para "Todos". */
+    selectCategory: (next: string | null) =>
+      setCategory((current) => (current === next ? null : next)),
+    /** "Mostrar livros" da tela Filtrar livros (Figma 02.03). */
+    applyFilters: (next: FilterDraft) => {
+      setModalities(next.modalities);
+      setCategory(next.category);
+      setConditions(next.conditions);
+      setMaxPriceCents(next.maxPriceCents);
+    },
+    /** Quantos livros o filtro em edição mostraria, para o botão "Mostrar N livros". */
+    countFor: async (draft: FilterDraft) => {
+      const page = await repository.list({
+        filters: { query: appliedQuery, ...draft },
+        cursor: null,
+        limit: 1,
+      });
+      return page.total;
+    },
     clear: () => {
       setQuery('');
       setAppliedQuery('');
       setModalities([]);
+      setCategory(null);
+      setConditions([]);
+      setMaxPriceCents(null);
     },
   };
 }

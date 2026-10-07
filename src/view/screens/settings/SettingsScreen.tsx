@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   notificationKindDescriptions,
@@ -31,9 +32,10 @@ const focusRing = Platform.select({
 
 /**
  * Configurações (Figma 07.05): avisos por tipo em itens com chave, depois a conta, os documentos
- * legais e Sair. Excluir conta é da issue #47.
+ * legais, Excluir conta (issue #47) e Sair.
  */
 export function SettingsScreen() {
+  const router = useRouter();
   const vm = useSettings();
 
   return (
@@ -93,6 +95,74 @@ export function SettingsScreen() {
             </View>
           </View>
         )}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Seu bairro"
+          onPress={() => router.push('/escolher-bairro')}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.listItem,
+            pressed && styles.pressed,
+            focused && focusRing,
+          ]}
+        >
+          <AppIcon name="place" size={20} color={colors.onSurfaceVariant} />
+          <View style={styles.rowCopy}>
+            <Text style={styles.rowTitle}>Seu bairro</Text>
+            <Text style={styles.rowBody}>Onde você quer encontrar livros em Piripiri.</Text>
+          </View>
+          <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Alterar senha"
+          onPress={() => router.push('/alterar-senha')}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.listItem,
+            pressed && styles.pressed,
+            focused && focusRing,
+          ]}
+        >
+          <AppIcon name="key" size={20} color={colors.onSurfaceVariant} />
+          <View style={styles.rowCopy}>
+            <Text style={styles.rowTitle}>Alterar senha</Text>
+            <Text style={styles.rowBody}>Confirme a senha atual e escolha outra.</Text>
+          </View>
+          <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Pessoas bloqueadas"
+          onPress={() => router.push('/(app)/seguranca')}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.listItem,
+            pressed && styles.pressed,
+            focused && focusRing,
+          ]}
+        >
+          <AppIcon name="close" size={20} color={colors.onSurfaceVariant} />
+          <View style={styles.rowCopy}>
+            <Text style={styles.rowTitle}>Pessoas bloqueadas</Text>
+            <Text style={styles.rowBody}>Veja quem você bloqueou e desbloqueie.</Text>
+          </View>
+          <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Privacidade e dados"
+          onPress={() => router.push('/privacidade-dados')}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.listItem,
+            pressed && styles.pressed,
+            focused && focusRing,
+          ]}
+        >
+          <AppIcon name="lock" size={20} color={colors.onSurfaceVariant} />
+          <View style={styles.rowCopy}>
+            <Text style={styles.rowTitle}>Privacidade e dados</Text>
+            <Text style={styles.rowBody}>Veja o que fica visível e apague seus dados.</Text>
+          </View>
+          <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+        </Pressable>
         {vm.legalLinks.map((link) => (
           <Pressable
             key={link.url}
@@ -111,6 +181,26 @@ export function SettingsScreen() {
             <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
           </Pressable>
         ))}
+        {/* Figma 07.05: Excluir conta em vermelho; a confirmação fica em Privacidade e dados. */}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Excluir conta"
+          accessibilityHint="Seus anúncios saem do catálogo"
+          onPress={() =>
+            router.push({ pathname: '/privacidade-dados', params: { confirmar: '1' } })
+          }
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.listItem,
+            pressed && styles.pressed,
+            focused && focusRing,
+          ]}
+        >
+          <AppIcon name="delete" size={20} color={colors.error} />
+          <View style={styles.rowCopy}>
+            <Text style={[styles.rowTitle, styles.danger]}>Excluir conta</Text>
+            <Text style={styles.rowBody}>Seus anúncios saem do catálogo.</Text>
+          </View>
+        </Pressable>
         <FormMessage tone="error" message={vm.signOutError} />
         <Pressable
           accessibilityRole="button"

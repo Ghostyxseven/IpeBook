@@ -3,6 +3,7 @@ import { toAuthError } from '../model/entities/AuthError.ts';
 import type { AuthRepository } from '../model/repositories/AuthRepository';
 import { authErrorMessage } from '../model/services/authMessages.ts';
 import { normalizeCode, validateCode } from '../model/services/authValidation.ts';
+import { afterSignIn } from './afterSignIn.ts';
 import { useAsyncAction } from './useAsyncAction.ts';
 import { useResendCooldown } from './useResendCooldown.ts';
 
@@ -36,9 +37,11 @@ export function useVerifyEmailViewModel(repository: AuthRepository, email: strin
         setError(invalid);
         setNotice(undefined);
         if (invalid) return;
+        afterSignIn.mark('emailConfirmed');
         try {
           await repository.verifySignUp(email, normalizeCode(code));
         } catch (failure) {
+          afterSignIn.clear();
           const { code: reason } = toAuthError(failure);
           if (reason === 'invalid_code') setError(authErrorMessage(reason));
           else setFormError(authErrorMessage(reason));

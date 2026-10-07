@@ -1,25 +1,14 @@
-import { useState } from 'react';
 import type { PreferencesRepository } from '../model/repositories/preferencesRepository';
-import { onboardingPages } from '../model/services/onboarding.ts';
+import { welcome } from '../model/services/onboarding.ts';
 
+/** Boas-vindas numa tela só (Figma 01.01): qualquer saída marca a apresentação como vista. */
 export function useOnboardingViewModel(
   preferences: PreferencesRepository,
-  { onFinish }: { onFinish: () => void },
+  { onStart, onSignIn }: { onStart: () => void; onSignIn: () => void },
 ) {
-  const [index, setIndex] = useState(0);
-  const isLast = index === onboardingPages.length - 1;
-  const finish = () => {
+  const leave = (go: () => void) => () => {
     preferences.markOnboardingSeen();
-    onFinish();
+    go();
   };
-  return {
-    index,
-    page: onboardingPages[index],
-    total: onboardingPages.length,
-    isFirst: index === 0,
-    isLast,
-    next: () => (isLast ? finish() : setIndex(index + 1)),
-    back: () => setIndex(Math.max(0, index - 1)),
-    skip: finish,
-  };
+  return { content: welcome, start: leave(onStart), signIn: leave(onSignIn) };
 }

@@ -1,3 +1,4 @@
+import { StyleSheet, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useVerifyEmail } from '../../../factories/auth';
 import { ErrorState } from '../../components/feedback/ErrorState';
@@ -5,6 +6,7 @@ import { AuthLayout } from '../../components/ui/AuthLayout';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TextField } from '../../components/ui/TextField';
+import { colors, typography } from '../../theme/nativeTheme';
 
 export function VerifyEmailScreen() {
   const router = useRouter();
@@ -25,14 +27,19 @@ export function VerifyEmailScreen() {
 
   return (
     <AuthLayout
-      title="Confirme seu e-mail"
-      description={`Enviamos um código para ${vm.email}. Digite-o abaixo para ativar sua conta.`}
+      title="Confirme seu e-mail."
+      description={`Enviamos um código para ${vm.email}. Digite-o abaixo para confirmar seu endereço e continuar.`}
       footer={
-        <Button
-          label="Usar outro e-mail"
-          variant="text"
-          onPress={() => router.replace('/criar-conta')}
-        />
+        <>
+          <Button
+            label="Corrigir e-mail"
+            variant="text"
+            onPress={() => router.replace('/criar-conta')}
+          />
+          <Text style={styles.note}>
+            Não chegou? Confira a caixa de spam e se o endereço está correto.
+          </Text>
+        </>
       }
     >
       <FormMessage tone="error" message={vm.formError} />
@@ -60,3 +67,7 @@ export function VerifyEmailScreen() {
     </AuthLayout>
   );
 }
+
+const styles = StyleSheet.create({
+  note: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
+});

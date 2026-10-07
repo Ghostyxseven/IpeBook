@@ -12,14 +12,14 @@ O IpêBook é um aplicativo comunitário para venda, troca e doação de livros 
 
 Os requisitos detalhados ficam nas specs em [`specs/`](../specs). Resumo por feature:
 
-| Feature (responsável)                   | Requisitos principais                                                                                                   | Spec                                                                       | Situação                                            |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------- |
-| Autenticação e onboarding (Maria Clara) | RF1 criar conta; RF2 confirmar e-mail por código; RF3 entrar e sair; RF4 recuperar senha; RF5 onboarding na 1ª abertura | [014](../specs/014-autenticacao-onboarding)                                | Implementada; validação em aparelho aberta          |
-| Catálogo (Micael)                       | RF6 ver feed; RF7 buscar e filtrar por modalidade; RF8 ver detalhe do livro                                             | [018](../specs/018-catalogo-descoberta)                                    | Implementada; conferência com anúncios reais aberta |
-| Configurações e notificações (Micael)   | RF9 ver avisos; RF10 ajustar preferências                                                                               | [024](../specs/024-configuracoes-notificacoes)                             | Implementada (extra); validação em aparelho aberta  |
-| Anúncios e perfil (Eric)                | RF11 criar, editar, arquivar e excluir anúncio; RF12 ver "Minhas publicações" e perfil                                  | [025](../specs/025-anuncios-gestao) e [026](../specs/026-perfil-minimo)    | Implementada; validação em aparelho aberta          |
-| Negociação e segurança (Antonio)        | RF13 pedir o livro; RF14 aceitar ou recusar; RF15 concluir; RF16 denunciar e bloquear                                   | **A preencher** (issues #38 e #40)                                         | Não implementada                                    |
-| Página institucional Web                | Apresentar o projeto, estante de exemplos e documentos legais                                                           | [001](../specs/001-pagina-institucional) a [023](../specs/023-rotas-reais) | Implementada                                        |
+| Feature (responsável)                   | Requisitos principais                                                                                                                                                                                           | Spec                                                                                                                                           | Situação                                                                   |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Autenticação e onboarding (Maria Clara) | RF1 criar conta; RF2 confirmar e-mail por código; RF3 entrar e sair; RF4 recuperar senha; RF5 onboarding na 1ª abertura                                                                                         | [014](../specs/014-autenticacao-onboarding)                                                                                                    | Implementada; validação em aparelho aberta                                 |
+| Catálogo (Micael)                       | RF6 ver feed; RF7 buscar e filtrar por modalidade; RF8 ver detalhe do livro                                                                                                                                     | [018](../specs/018-catalogo-descoberta)                                                                                                        | Implementada; conferência com anúncios reais aberta                        |
+| Configurações e notificações (Micael)   | RF9 ver avisos; RF10 ajustar preferências                                                                                                                                                                       | [024](../specs/024-configuracoes-notificacoes)                                                                                                 | Implementada (extra); validação em aparelho aberta                         |
+| Anúncios e perfil (Eric)                | RF11 criar, editar, arquivar e excluir anúncio; RF12 ver "Minhas publicações" e perfil; RF17 excluir a própria conta; RF18 ler o ISBN pela câmera; RF19 avaliações, histórico, perfil de outras pessoas e ajuda | [025](../specs/025-anuncios-gestao), [026](../specs/026-perfil-minimo), [030](../specs/030-leitura-isbn) e [031](../specs/031-perfil-completo) | Implementada; falta aparelho, build com câmera e aplicar a migração da 031 |
+| Negociação e segurança (Antonio)        | RF13 pedir o livro; RF14 aceitar ou recusar; RF15 concluir; RF16 denunciar e bloquear                                                                                                                           | **A preencher** (issues #38 e #40)                                                                                                             | Não implementada                                                           |
+| Página institucional Web                | Apresentar o projeto, estante de exemplos e documentos legais                                                                                                                                                   | [001](../specs/001-pagina-institucional) a [023](../specs/023-rotas-reais)                                                                     | Implementada                                                               |
 
 **Requisitos não funcionais:** português do Brasil; alvos de toque de 48 × 48; rótulos acessíveis em ícones e cards; texto ampliável; respeito a movimento reduzido; estados de carregamento, vazio, erro e sem conexão; preço em BRL apenas na venda; dados de exemplo nunca apresentados como reais; segredos fora do repositório; Política de Privacidade coerente com os dados coletados.
 
@@ -122,6 +122,18 @@ erDiagram
   AUTH_USERS ||--o{ LISTINGS : "anuncia (owner_id)"
   AUTH_USERS ||--o{ NOTIFICATIONS : "recebe"
   AUTH_USERS ||--o| NOTIFICATION_PREFERENCES : "ajusta"
+  AUTH_USERS ||--o{ RATINGS : "escreve (author_id)"
+  AUTH_USERS ||--o{ RATINGS : "recebe (subject_id)"
+  BOOK_REQUESTS ||--o| RATINGS : "é avaliada em"
+  RATINGS {
+    uuid id PK
+    uuid request_id FK "negociação concluída"
+    uuid author_id FK "quem escreve"
+    uuid subject_id FK "quem é avaliado"
+    smallint score "1 a 5"
+    text comment "até 280, opcional"
+    timestamptz created_at
+  }
   LISTINGS {
     uuid id PK
     uuid owner_id FK
@@ -143,6 +155,8 @@ erDiagram
 ```
 
 As tabelas `notifications` e `notification_preferences` (colunas na migração) têm RLS: cada pessoa lê e altera só as suas, e os avisos são criados apenas pela função `create_notification`, chamada por gatilhos do banco.
+
+A tabela `ratings` (migração `20261007120000_avaliacoes_e_perfil_publico.sql`, [ADR 0027](adr/0027-avaliacoes-e-perfil-publico.md)) **não aceita `update` nem `delete` de ninguém**: reputação que a pessoa avaliada consegue limpar não é reputação. A escrita exige, pela RLS, uma negociação com situação `completed` e autoria de quem participou dela, e a chave única `(request_id, author_id)` garante uma avaliação por pessoa por negociação. O perfil de outra pessoa sai da função `public_profile`, `security definer`, que devolve seis colunas e não tem como devolver e-mail ou bairro.
 
 O catálogo lê somente a view `catalog_listings` (anúncios `disponivel` ou `reservado` de outras pessoas, com o primeiro nome de quem anunciou). A RLS permite que cada pessoa leia anúncios visíveis e crie, altere e exclua só os próprios.
 
@@ -298,7 +312,7 @@ flowchart TD
 
 #### Telas
 
-Abertura com a marca; onboarding em 3 páginas (o que é o IpêBook, Venda/Troca/Doação, combinar com cuidado), com Pular, Voltar e Próxima; Entrar; Criar conta; Confirmar e-mail; Recuperar senha (pedir código, depois código e nova senha); aviso "Sem conexão" na abertura e faixa de conexão nas áreas `(auth)` e `(app)`.
+Abertura com a marca; boas-vindas numa tela só (marca, cidade, ilustração e Venda/Troca/Doação), com Começar e Já tenho conta; Entrar; Criar conta; Confirmar e-mail; Recuperar senha (pedir código, depois código e nova senha); aviso "Sem conexão" na abertura e faixa de conexão nas áreas `(auth)` e `(app)`.
 
 #### Como foi testado
 
@@ -343,14 +357,29 @@ Uma regra que atravessa a feature inteira: **só anúncio `disponivel` pode ser 
 
 **Dinheiro em centavos, `integer`.** `parseBRLToCents` converte sobre os dígitos, nunca multiplicando o número: `19.90 * 100` dá 1989,9999… em ponto flutuante, e um centavo perdido por anúncio vira reclamação.
 
-**O que ainda falta:** conferência em aparelho real e a comparação com o Figma, bloqueada porque os quadros citados nas issues #36 e #37 não existem mais no arquivo, reorganizado em 01/10/2026.
+**Leitura de ISBN (spec 030, [ADR 0026](adr/0026-leitura-de-isbn.md)).** A pessoa aponta a câmera para o código de barras e o título e o autor chegam preenchidos. É um atalho e nunca um caminho obrigatório: câmera negada, livro sem ISBN e edição que a base pública não conhece têm, cada uma, uma saída de volta para o cadastro manual. O dígito verificador é conferido no Model antes de qualquer rede — é o que deixa testar o caso difícil sem câmera e sem internet, e o que impede gastar uma requisição com um código torto.
+
+Uma decisão de navegação vale registro: **a leitura é um estado da tela Anunciar, não uma rota**. Uma rota separada desmontaria o formulário e levaria junto o rascunho já digitado; devolver o resultado exigiria estado global ou parâmetro de volta, e os dois criam um segundo lugar onde o rascunho pode divergir.
+
+**Perfil completo (spec 031, [ADR 0027](adr/0027-avaliacoes-e-perfil-publico.md)).** Avaliações, histórico das negociações concluídas, perfil de outras pessoas e ajuda. Duas regras moram no banco e não só na tela: só quem participou de uma negociação **concluída** avalia, uma vez por negociação; e `ratings` não aceita `update` nem `delete`. O perfil público sai de uma função com seis colunas, e um teste falha se alguém acrescentar campo — foi a forma de garantir que e-mail e bairro nunca escapem por ali.
+
+Uma regra de apresentação que atravessa as duas telas: **perfil sem avaliação não tem média**. O app mostra "Ainda sem avaliações", nunca "0,0 de 5" — numa escala de 1 a 5, zero é uma nota, e péssima, atribuída a quem nunca fez nada de errado. É o mesmo raciocínio do `profileSummary`, que não lista "0 concluídos".
+
+**Excluir a própria conta (issue #47, [ADR 0023](adr/0023-excluir-conta-pelo-app.md)).** Função `delete_own_account()` no banco, `security definer`, apagando só a linha de quem chama; as capas saem antes, pelo Storage, porque o SQL não as alcança. A Política de Privacidade foi atualizada junto.
+
+**O Figma deixou de estar bloqueado (07/10/2026).** As specs 024, 025 e 026 registraram que "a ferramenta de leitura só enxerga as páginas 00 e 05". A _listagem_ de páginas é mesmo incompleta — mas pedir um `node-id` direto alcança qualquer seção. Faltava o número, não a permissão; os números estão em [`figma-mapa.md`](figma-mapa.md).
+
+A reconferência achou coisa real. O **Meu perfil** tinha sido montado às cegas e estava bem longe do quadro 07.01: faltavam a barra com engrenagem, os três números e a lista de seis destinos, e sobrava o e-mail, que não aparece em ponto nenhum do quadro. Refeito. Na **gestão de anúncios**, cinco divergências, a maior sendo a ausência completa do fluxo de **rascunhos** (quadros 04.11 a 04.16): sair do Anunciar hoje perde tudo.
+
+**O que ainda falta:** conferência em aparelho real; um build de desenvolvimento para a câmera (`expo-camera` é módulo nativo, o Expo Go não serve); aplicar a migração da spec 031 no Supabase; e o fluxo de rascunhos, que precisa de issue própria.
 
 ## 10. Decisões arquiteturais
 
-Índice completo em [`adr/index.md`](adr/index.md). O ADR 0008 foi aceito em 02/10/2026. Os ADRs 0011 e 0014 já estão implementados e aguardam a concordância da equipe; o 0015 aguarda o primeiro build.
+Índice completo em [`adr/index.md`](adr/index.md). O ADR 0008 foi aceito em 02/10/2026. Os ADRs 0011 e 0014 já estão implementados e aguardam a concordância da equipe; o 0015 aguarda o primeiro build. Os ADRs [0026](adr/0026-leitura-de-isbn.md) e [0027](adr/0027-avaliacoes-e-perfil-publico.md) estão implementados: o 0026 aguarda um build com câmera real e o 0027, a aplicação da migração.
 
 ## 11. Pendências do relatório
 
-- Completar as seções 9.2 a 9.4 e o diagrama de casos de uso com as features restantes.
+- Completar as seções 9.2 e 9.3 e o diagrama de casos de uso com as features restantes. A 9.4 está escrita.
 - Atualizar a tabela de requisitos quando #38 for concluída.
+- Acrescentar ao diagrama de casos de uso: ler ISBN, avaliar uma negociação concluída, ver o perfil de outra pessoa e excluir a conta.
 - Revisão final pelo grupo (critério de aceite da issue #48).

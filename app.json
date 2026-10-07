@@ -32,6 +32,22 @@
           "cameraPermission": false,
           "microphonePermission": false
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "O IpêBook usa a câmera apenas para ler o código de barras (ISBN) do livro que você está anunciando.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "O IpêBook usa sua localização aproximada só para preencher o seu bairro. O endereço não é guardado.",
+          "isAndroidBackgroundLocationEnabled": false,
+          "isAndroidForegroundServiceEnabled": false
+        }
       ]
     ],
     "scheme": "ipebook",
