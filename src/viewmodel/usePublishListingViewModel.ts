@@ -60,6 +60,9 @@ export function usePublishListingViewModel(
   const [savedDraft, setSavedDraft] = useState<DraftRecord | null>(null);
   const [resumedId, setResumedId] = useState<string | null>(null);
   const [draftError, setDraftError] = useState<string | null>(null);
+  // 04.19: publicar falhou por rede COM foto escolhida. É o único caso em que
+  // o quadro aparece — erro de validação ou de regra não é problema de envio.
+  const [uploadFailed, setUploadFailed] = useState(false);
   const [submitting, run] = useAsyncAction();
 
   const step = publishSteps[index] as PublishStep;
@@ -176,6 +179,7 @@ export function usePublishListingViewModel(
     () =>
       run(async () => {
         setError(null);
+        setUploadFailed(false);
         setTried({ livro: true, detalhes: true });
         if (!form.complete()) {
           setError(listingErrorMessage('invalid'));
@@ -184,7 +188,11 @@ export function usePublishListingViewModel(
         try {
           setPublished(await repository.create(form.toSubmit(), cover?.file ?? null));
         } catch (failure) {
-          setError(listingErrorMessage(toListingError(failure).code));
+          const code = toListingError(failure).code;
+          // Com foto e sem rede, o quadro 04.19 diz o que falhou e o que sobrou.
+          // Sem foto, a mesma falha é só uma mensagem no rodapé do formulário.
+          if (code === 'network' && cover) setUploadFailed(true);
+          else setError(listingErrorMessage(code));
         }
       }),
     [run, form, repository, cover],
@@ -212,6 +220,8 @@ export function usePublishListingViewModel(
     closeScanner,
     applyLookup,
     hasContent,
+    uploadFailed,
+    dismissUploadFailure: () => setUploadFailed(false),
     saveDraft,
     savedDraft,
     clearSavedDraft: () => setSavedDraft(null),

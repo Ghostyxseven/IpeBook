@@ -9,7 +9,7 @@ Data: 07/10/2026 · Branch `feat/isbn-e-perfil-completo`.
 | `npm run typecheck`    | sem erros                                      |
 | `npm run lint`         | sem erros novos                                |
 | `npm run format:check` | sem diferenças                                 |
-| `npm test`             | 316 testes, 316 aprovados (2 novos desta spec) |
+| `npm test`             | 317 testes, 317 aprovados (2 novos desta spec) |
 | `npx expo export`      | Android e iOS gerados                          |
 
 Os dois testes cobrem a concordância de número das duas frases — "1 anúncio

@@ -1,6 +1,6 @@
 # Tarefas
 
-- [ ] ADR 0028 — por que o rascunho mora no aparelho.
+- [x] ADR 0028 — por que o rascunho mora no aparelho.
 - [x] `entities/Draft.ts` e `services/draftSummary.ts`.
 - [x] Porta `DraftsRepository`, versão local e dublê em memória.
 - [x] `useDraftsViewModel`; `usePublishListingViewModel` com `hasContent`,
@@ -10,6 +10,7 @@
 - [x] `ManageListingScreen` (04.08, 04.10, 04.20, 04.21) e rota `anuncio/[id]`.
 - [x] A estante abre Gerenciar no lugar da folha de opções.
 - [x] "Revise o anúncio" na edição com erro (04.06).
+- [x] "Falha ao enviar fotos" (04.19), com a saída de salvar rascunho.
 - [x] Vocabulário Pausar / Pausado / Retomar nas telas.
 - [x] Entrada "Rascunhos" na estante, como no quadro 05.01.
 - [x] Testes: o que falta no rascunho, limite de 20, armazenamento que falha,

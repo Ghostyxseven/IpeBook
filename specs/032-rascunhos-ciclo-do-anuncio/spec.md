@@ -5,7 +5,7 @@ Responsável: Eric Vinícius dos Santos Oliveira. Issue #36 (as telas que faltav
 ## Objetivo
 
 Fechar a seção **04 · Publicação** do Figma. A spec 025 entregou o caminho feliz —
-preencher e publicar. Faltavam onze quadros: o que fazer com um anúncio depois de
+preencher e publicar. Faltavam doze quadros: o que fazer com um anúncio depois de
 publicado, o que acontece quando você desiste no meio, e o que acontece quando
 você exclui.
 
@@ -46,6 +46,20 @@ para terminar, em vez de um depósito.
 | 04.20 `397:6961` | Excluir anúncio?  | "Excluir este anúncio?" · "As conversas sobre o livro continuam disponíveis no seu histórico." · **Excluir anúncio** / **Manter anúncio**                           |
 | 04.21 `397:7003` | Anúncio excluído  | "Anúncio excluído." · **Ver minha estante**, **Anunciar outro livro**                                                                                               |
 
+### Falha ao enviar fotos (04.19)
+
+`370:6433` — publicar falhou por rede **com uma foto escolhida**. "Sua foto não
+foi enviada." · "Confira sua conexão. As informações do anúncio continuam
+guardadas." · **Tentar novamente** / **Salvar rascunho**.
+
+A perda aqui é assimétrica: o texto inteiro está digitado e só a foto não subiu.
+É também o quadro que mais depende desta spec — ele oferece "Salvar rascunho",
+que até agora não existia.
+
+Sem foto, a mesma falha de rede continua sendo só uma mensagem no rodapé do
+formulário: não é problema de envio de foto, e abrir uma tela cheia para dizer
+"sem internet" seria exagero.
+
 ### Revise o anúncio (04.06)
 
 `19:327` — a edição quando a validação recusa: a barra passa a dizer **"Revise o
@@ -84,6 +98,7 @@ verdade. Está registrado em `docs/design-system/divergencias.md`.
 - Um anúncio pausado mostra "Fora do catálogo" e oferece **Retomar**.
 - Excluir pede confirmação, e a confirmação diz que as conversas continuam.
 - A edição com erro se chama "Revise o anúncio".
+- Publicar sem rede com foto escolhida mostra o quadro 04.19, com a saída de salvar rascunho; sem foto, segue sendo mensagem no rodapé.
 - Estados: carregando, vazio, erro com "Tentar de novo", e ação recusada.
 - Alvos de 48 × 48, rótulos acessíveis, texto ampliável, nada só por cor.
 - Model e ViewModel testados com repositório em memória.

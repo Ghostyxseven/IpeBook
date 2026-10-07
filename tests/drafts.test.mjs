@@ -236,3 +236,51 @@ test('a contagem de propostas recusadas concorda em número (quadro 05.08)', () 
   assert.equal(closedProposalsLabel(1), 'Uma proposta ficou registrada como recusada.');
   assert.equal(closedProposalsLabel(3), '3 propostas ficaram registradas como recusadas.');
 });
+
+// ── 04.19 · Falha ao enviar fotos ───────────────────────────────────────────
+
+test('publicar sem rede COM foto mostra o quadro 04.19; sem foto, só a mensagem', async () => {
+  const { createMemoryListingsRepository } =
+    await import('../src/model/repositories/memoryListingsRepository.ts');
+  const { usePublishListingViewModel } =
+    await import('../src/viewmodel/usePublishListingViewModel.ts');
+  const { ListingError } = await import('../src/model/entities/ListingError.ts');
+
+  const semRede = {
+    ...createMemoryListingsRepository([]),
+    async create() {
+      throw new ListingError('network');
+    },
+  };
+  const drafts = createMemoryDraftsRepository([]);
+
+  const comFoto = await renderHook(() => usePublishListingViewModel(semRede, drafts));
+  await act(async () => {
+    comFoto.vm.setText('title', 'Dom Casmurro');
+    comFoto.vm.setText('author', 'Machado de Assis');
+    comFoto.vm.setCategory('Literatura brasileira');
+    comFoto.vm.setPriceInput('25,00');
+  });
+  await act(async () =>
+    comFoto.vm.pickCover({
+      file: { filename: 'capa.jpg', mimeType: 'image/jpeg', bytes: new ArrayBuffer(8) },
+      previewUri: 'file://capa.jpg',
+    }),
+  );
+  await act(async () => comFoto.vm.submit());
+  assert.equal(comFoto.vm.uploadFailed, true, 'com foto, o quadro 04.19');
+  assert.equal(comFoto.vm.error, null, 'e sem mensagem duplicada no rodapé');
+  await comFoto.unmount();
+
+  const semFoto = await renderHook(() => usePublishListingViewModel(semRede, drafts));
+  await act(async () => {
+    semFoto.vm.setText('title', 'Dom Casmurro');
+    semFoto.vm.setText('author', 'Machado de Assis');
+    semFoto.vm.setCategory('Literatura brasileira');
+    semFoto.vm.setPriceInput('25,00');
+  });
+  await act(async () => semFoto.vm.submit());
+  assert.equal(semFoto.vm.uploadFailed, false, 'sem foto, não é falha de envio de foto');
+  assert.match(semFoto.vm.error, /internet/);
+  await semFoto.unmount();
+});

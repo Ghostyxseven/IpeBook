@@ -86,6 +86,18 @@ export function PublishListingScreen() {
     return <DraftSaved record={vm.savedDraft} onContinue={vm.clearSavedDraft} />;
   }
 
+  // 04.19 · Falha ao enviar fotos
+  if (vm.uploadFailed) {
+    return (
+      <UploadFailed
+        busy={vm.submitting}
+        onRetry={vm.submit}
+        onSaveDraft={vm.saveDraft}
+        onBack={vm.dismissUploadFailure}
+      />
+    );
+  }
+
   // 04.02 a 04.18: a leitura ocupa a tela e devolve o formulário intacto.
   if (vm.scanning) {
     return <ScanIsbnScreen onUse={vm.applyLookup} onClose={vm.closeScanner} />;
@@ -373,6 +385,64 @@ export function PublishListingScreen() {
           setLeaving(false);
         }}
       />
+    </SafeAreaView>
+  );
+}
+
+/**
+ * 04.19 · Falha ao enviar fotos.
+ *
+ * Existe porque a perda aqui é assimétrica: o texto do anúncio está todo
+ * digitado e só a foto não subiu. A tela diz isso ("as informações continuam
+ * guardadas") e oferece as duas saídas — tentar de novo, ou guardar como
+ * rascunho e resolver a internet depois.
+ */
+function UploadFailed({
+  busy,
+  onRetry,
+  onSaveDraft,
+  onBack,
+}: {
+  busy: boolean;
+  onRetry: () => void;
+  onSaveDraft: () => void;
+  onBack: () => void;
+}) {
+  return (
+    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.appBar}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Voltar"
+          onPress={onBack}
+          disabled={busy}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.iconButton,
+            pressed && styles.iconPressed,
+            focused && styles.focused,
+          ]}
+        >
+          <AppIcon name="back" color={colors.onSurface} />
+        </Pressable>
+        <Text accessibilityRole="header" style={styles.appTitle}>
+          Fotos do livro
+        </Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.intro} accessibilityLiveRegion="polite">
+          <Text accessibilityRole="header" style={styles.brand}>
+            Sua foto não foi enviada.
+          </Text>
+          <Text style={styles.body}>
+            Confira sua conexão. As informações do anúncio continuam guardadas.
+          </Text>
+        </View>
+      </ScrollView>
+      <ActionBar>
+        <Button label="Tentar novamente" onPress={onRetry} loading={busy} />
+        <Button label="Salvar rascunho" variant="text" onPress={onSaveDraft} disabled={busy} />
+      </ActionBar>
     </SafeAreaView>
   );
 }

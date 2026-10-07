@@ -9,7 +9,7 @@ Data: 07/10/2026 · Branch `feat/isbn-e-perfil-completo`.
 | `npm run typecheck`                  | sem erros                                       |
 | `npm run lint`                       | sem erros novos                                 |
 | `npm run format:check`               | sem diferenças                                  |
-| `npm test`                           | 316 testes, 316 aprovados (16 novos desta spec) |
+| `npm test`                           | 317 testes, 317 aprovados (17 novos desta spec) |
 | `architecture.test.mjs`              | o Model não importa `expo-sqlite`               |
 | `npx expo export --platform android` | bundle gerado                                   |
 | `npx expo export --platform ios`     | bundle gerado                                   |
@@ -22,6 +22,17 @@ topo; atualizar o que sumiu; o teto de 20; JSON corrompido virando lista vazia;
 armazenamento recusando gravar; e as duas ViewModels.
 
 ## O que a revisão pegou
+
+**O quadro 04.19 tinha passado batido.** A varredura tela a tela mostrou que
+"Falha ao enviar fotos" não era citado em lugar nenhum do código nem das specs —
+eu havia contado onze quadros faltando na seção 04 quando eram doze. Implementado
+agora, com teste que separa os dois casos: falha de rede **com** foto abre o
+quadro; **sem** foto continua sendo mensagem no rodapé.
+
+**Uma caixa de tarefa ficou aberta por engano.** O script que marcou as tarefas
+concluídas pulava toda linha contendo "aparelho", para preservar as pendências de
+teste em dispositivo — e o título "ADR 0028 — por que o rascunho mora no
+aparelho" casou com o filtro. O ADR existe desde o primeiro commit da spec.
 
 **Um teste criava o repositório dentro do hook.** `renderHook(() =>
 useDraftsViewModel(createMemoryDraftsRepository([])))` devolve um repositório
