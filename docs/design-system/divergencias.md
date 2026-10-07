@@ -181,3 +181,30 @@ Entraram como `color.scanner.surface`, `color.scanner.onSurface` e
 onde a interface fica por cima de imagem ao vivo, e é isso que exige um fundo
 escuro próprio. Se outra tela precisar de superfície escura, o caminho é
 discutir um papel de verdade, não reaproveitar estes.
+
+## Perfil completo (spec 031, 07/10/2026)
+
+**Telas sem quadro no Figma.** Duas telas desta spec não têm quadro:
+
+- **Histórico** das negociações concluídas. A issue #53 pede "histórico de trocas
+  e doações" e a seção 07 não tem quadro para ele.
+- **Avaliar**, que vive dentro do histórico. Avaliar ao lado da negociação que
+  acabou é o que evita pedir à pessoa que lembre qual foi.
+
+As duas foram desenhadas com os componentes da biblioteca (cartão, chips de
+escolha, campo e botões) e com os títulos de marca do mesmo tom das outras. Se a
+equipe de design desenhar os quadros, vale reconferir.
+
+**Textos ajustados ao produto:**
+
+- 03.04 diz "Telefone confirmado"; o app diz **"E-mail confirmado"**. O IpêBook
+  confirma por e-mail e nunca pede telefone (ADR 0020).
+- 07.01 traz o número "4,8" direto; o app mostra **"—"** para quem ainda não tem
+  nota. Um 0,0 numa escala de 1 a 5 é uma nota ruim dada a quem não fez nada.
+
+## Gestão de anúncios × Figma (reconferência de 07/10/2026)
+
+A comparação da spec 025 estava marcada como bloqueada desde 02/10/2026 por causa
+dos links quebrados. Feita agora, apontou cinco divergências — a maior é a
+ausência completa do fluxo de **rascunhos** (quadros 04.11 a 04.16). A lista está
+em [`specs/025-anuncios-gestao/verify.md`](../../specs/025-anuncios-gestao/verify.md).

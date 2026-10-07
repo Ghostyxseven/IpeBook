@@ -10,6 +10,8 @@ Dar à pessoa autenticada um lugar para ver avisos sobre o que acontece com os s
 
 O arquivo oficial passou a ser o `IpêBook Mobile` (`cxEisNRzOQR6krv8Ow7HCa`, 02/10/2026). A ferramenta de leitura só enxerga as páginas 00 e 05, então a tela de Notificações foi comparada por uma captura enviada pelo Micael. Pelo quadro Android:
 
+> **Correção de 07/10/2026 (spec 031):** a limitação registrada acima não existe. A _listagem_ de páginas é incompleta, mas pedir um `node-id` direto alcança qualquer seção do arquivo. Os números estão em [`docs/figma-mapa.md`](../../docs/figma-mapa.md), e a seção de Configurações e Notificações é a 07 (`206:3618`). Vale reconferir esta spec contra os quadros.
+
 - barra superior com seta e o título "Notificações" à esquerda;
 - lista agrupada em **Hoje** e **Esta semana**, em linhas planas sem borda;
 - cada linha tem ícone do tipo à esquerda, título, subtítulo "detalhe · hora" (por exemplo "10h", "Seg", "Dom") e seta à direita;
