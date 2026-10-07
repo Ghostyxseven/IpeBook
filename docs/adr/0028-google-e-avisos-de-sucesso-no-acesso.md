@@ -30,6 +30,6 @@ Uma comparação das telas do fluxo "01 · Acesso" do Figma (`cxEisNRzOQR6krv8Ow
 
 ## Consequências
 
-- No painel do Supabase: Authentication → Providers → Google, com o client ID e o client secret de um client OAuth "Web application" do Google Cloud Console. Em Authentication → URL Configuration, acrescentar `ipebook://auth/callback` (e o `https://auth.expo.io/...` do Expo Go, se o time testar por ele) em "Redirect URLs".
+- No painel do Supabase: Authentication → Providers → Google, com o client ID e o client secret de um client OAuth "Web application" do Google Cloud Console. Em Authentication → URL Configuration → "Redirect URLs", acrescentar `ipebook://**` (app instalado) e `exp://**` (Expo Go, que volta por `exp://<IP>:8081/--/auth/callback`). A versão anterior desta decisão citava só `ipebook://auth/callback` e o `auth.expo.io`, que o Expo não usa mais. Sem o `exp://**`, o teste no Expo Go terminava com "O Safari não pode abrir a página porque o endereço é inválido" (07/10/2026). O passo a passo está no `supabase/README.md`.
 - `signInWithGoogle` cria a conta no primeiro acesso (comportamento padrão do Supabase para OAuth); quem entra pelo Google não passa pela verificação de e-mail nem grava `terms_accepted_at` — falta decidir onde registrar o aceite dos termos para essas contas.
 - As telas 01.04, 01.05, 01.08 e 01.12 do Figma ainda falam em "link" de e-mail; o app continua com código (OTP), como já decidido no ADR 0006. Ninguém atualizou o texto dessas telas no Figma — fica para quando o arquivo for revisado de novo.
