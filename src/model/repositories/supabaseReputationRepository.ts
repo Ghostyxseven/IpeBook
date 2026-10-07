@@ -73,6 +73,8 @@ export function createSupabaseReputationRepository(
 
   return {
     async getPublicProfile(userId) {
+      // Sessão ainda carregando: id vazio não vira requisição malformada ao `uuid`.
+      if (!userId) throw new ReputationError('not_found');
       const { data, error } = await requireClient().rpc('public_profile', { person: userId });
       if (error) throw mapSupabaseReputationError(error);
       const row = (data as ProfileRow[] | null)?.[0];
@@ -89,6 +91,7 @@ export function createSupabaseReputationRepository(
     },
 
     async listRatingsReceived(userId) {
+      if (!userId) throw new ReputationError('not_found');
       const { data, error } = await requireClient().rpc('ratings_received', { person: userId });
       if (error) throw mapSupabaseReputationError(error);
       return ((data as RatingRow[] | null) ?? []).map((row) => ({

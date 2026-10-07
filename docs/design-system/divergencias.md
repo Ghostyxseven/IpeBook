@@ -288,3 +288,29 @@ A comparação da spec 025 estava marcada como bloqueada desde 02/10/2026 por ca
 dos links quebrados. Feita agora, apontou cinco divergências — a maior é a
 ausência completa do fluxo de **rascunhos** (quadros 04.11 a 04.16). A lista está
 em [`specs/025-anuncios-gestao/verify.md`](../../specs/025-anuncios-gestao/verify.md).
+
+## Rascunhos e ciclo do anúncio (spec 032, 07/10/2026)
+
+- **Quatro quadros, uma tela.** 04.08, 04.10, 04.20 e 04.21 são estados do mesmo
+  anúncio. Rotas separadas deixariam, depois de excluir, uma tela que recarregaria
+  um anúncio inexistente.
+- **"Marcar como concluído" não grava nada.** O quadro 04.08 traz a ação, mas a
+  situação `concluido` pertence à negociação (ADR 0018). A linha existe e leva às
+  Conversas, com o texto de apoio dizendo onde a conclusão acontece.
+- **O rascunho não guarda a foto** (ADR 0030), e a tela avisa.
+- **"Pausar" no lugar de "arquivar"** em toda a interface; no banco continua
+  `arquivado`.
+- **A folha de opções da estante saiu**, substituída pela tela 04.08.
+- **O texto do quadro 04.16** veio do quadro renderizado, não do nome da camada,
+  que ainda trazia uma versão antiga.
+- **04.19 só aparece com foto.** Falha de rede ao publicar **com** foto escolhida
+  abre o quadro; sem foto, continua sendo mensagem no rodapé do formulário.
+
+## Estante depois da ação (spec 033, 07/10/2026)
+
+- **05.07 virou aviso no topo da estante**, não tela: o 04.21 já ocupa o momento
+  logo depois de excluir.
+- **05.08 virou bloco na aba Propostas**, não tela: para ser tela, a recusa — que
+  acontece na negociação, feature de outra pessoa — teria de navegar até aqui.
+- **O nome de quem propôs não aparece** no 05.08: a lista de propostas carrega o
+  pedido e o livro, não o nome.

@@ -20,8 +20,8 @@
 
 - [x] Propor troca: escolher um livro seu para oferecer (Figma 03.05), com a migração `20261003130000_negociacao_completa.sql` e o ADR 0022.
 - [x] Reagendar encontro (Figma 06.13 e 06.14) e Não comparecimento (06.15).
-- [x] Contraproposta (Figma 06.19 e 06.20). Coluna `counter_listing_id`, funções `counter_offer`, `answer_counter_offer` e `shelf_of_requester` (ADR 0030); a folha de escolha e a resposta ficam na tela da negociação.
-- [ ] Avaliar a troca ao concluir (o Figma atual não tem o quadro; 07.03 só lista avaliações recebidas).
+- [x] Contraproposta (Figma 06.19 e 06.20). Coluna `counter_listing_id`, funções `counter_offer`, `answer_counter_offer` e `shelf_of_requester` (ADR 0031); a folha de escolha e a resposta ficam na tela da negociação.
+- [x] Avaliar a troca ao concluir (o Figma atual não tem o quadro; 07.03 só lista avaliações recebidas). O fim da negociação oferece a avaliação na própria tela, reusando o formulário do Histórico (`RatingForm`) e as regras do ADR 0027: uma por negociação, e nenhuma quando a conta da outra pessoa saiu.
 - [x] Telas da negociação conforme o Figma (06.01, 06.03 a 06.08, 06.11, 06.12, 06.17 e 06.18): Conversas, proposta recebida e enviada, combinar encontro com chips de dia e horário, encontro combinado, confirmações e retorno de cada etapa.
 - [x] Falha ao aceitar, recusar, cancelar ou concluir aparece na tela (antes virava uma promessa rejeitada sem mensagem).
 - [x] Mostrar o nome de quem pediu para quem anunciou (função `listing_owner_first_name`).

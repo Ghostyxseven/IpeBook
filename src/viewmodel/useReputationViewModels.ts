@@ -83,6 +83,51 @@ export function useRatingsReceivedViewModel(repository: ReputationRepository, us
   };
 }
 
+/**
+ * Avaliar logo no fim da negociação (spec 028), sem passar pelo Histórico.
+ *
+ * O que a tela precisa saber — se já avaliei e quem é o outro lado — já vem em
+ * `listMyHistory`, então não há método novo no repositório: a negociação recém-concluída
+ * é uma entrada desse histórico. Enquanto ela não aparecer, a tela não oferece nada.
+ */
+export function useCompletionRatingViewModel(repository: ReputationRepository, requestId: string) {
+  const load = useCallback(() => repository.listMyHistory(), [repository]);
+  const history = useLoad<HistoryEntry[]>(load, []);
+  const [submitting, run] = useAsyncAction();
+  const [error, setError] = useState<string | null>(null);
+  const [justRated, setJustRated] = useState(false);
+
+  const entry = history.data.find((item) => item.requestId === requestId) ?? null;
+  // Sem o outro lado (conta excluída) não há a quem avaliar.
+  const canRate = Boolean(entry && !entry.rated && entry.otherPersonId) && !justRated;
+
+  const rate = useCallback(
+    (score: number, comment: string | null) =>
+      run(async () => {
+        setError(null);
+        if (!entry?.otherPersonId) return;
+        try {
+          await repository.rate(entry.requestId, entry.otherPersonId, score, comment);
+          setJustRated(true);
+        } catch (cause) {
+          setError(reputationErrorMessage(toReputationError(cause).code));
+        }
+      }),
+    [run, repository, entry],
+  );
+
+  return {
+    status: history.status,
+    canRate,
+    /** `true` depois de enviar, para a tela agradecer sem recarregar o histórico. */
+    justRated,
+    otherFirstName: entry?.otherFirstName ?? null,
+    submitting,
+    error,
+    rate,
+  };
+}
+
 /** Histórico das negociações concluídas de quem está na conta. */
 export function useHistoryViewModel(repository: ReputationRepository) {
   const load = useCallback(() => repository.listMyHistory(), [repository]);

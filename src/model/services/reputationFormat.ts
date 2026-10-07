@@ -67,3 +67,16 @@ export function historyLine(entry: HistoryEntry): string {
   const verbs = historyVerbs[entry.modality];
   return `${entry.iWasOwner ? verbs.owner : verbs.other} ${personName(entry.otherFirstName)}`;
 }
+
+/**
+ * "4,8 de 5 em 8 trocas concluídas" — o apoio da linha Avaliações recebidas
+ * (Figma 07.01). Quem ainda não tem nota recebe o convite, não um número.
+ */
+export function ratingsLine(profile: {
+  ratingAverage: number | null;
+  completedCount: number;
+}): string {
+  const average = averageLabel(profile.ratingAverage);
+  if (!average) return 'Ainda sem avaliações';
+  return `${average} em ${completedLabel(profile.completedCount).toLocaleLowerCase('pt-BR')}`;
+}

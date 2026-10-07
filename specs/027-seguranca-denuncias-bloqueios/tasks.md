@@ -17,7 +17,7 @@
 - [x] Desenvolver a tela 4: "Bloquear [nome]?" (Confirmação descritiva).
 - [x] Desenvolver a tela 5: "Perfil bloqueado" (Sucesso e atalho extra).
 - [x] Adicionar atalho (botão "Sua segurança") na tela de Detalhes do Anúncio (`ListingDetailScreen`).
-- [ ] Adicionar atalho na tela de Perfil Público — **pendente: tela de Perfil Público ainda não existe no projeto (dependência futura)**.
+- [x] Adicionar atalho na tela de Perfil Público — a tela chegou com a spec 031 e já traz "Denunciar ou bloquear" (`PublicProfileScreen.tsx`).
 - [x] Validar que nenhum Request de adoção existente está sendo deletado ou alterado automaticamente.
 - [x] Validar a filtragem do catálogo com testes (ou manual no Supabase).
 

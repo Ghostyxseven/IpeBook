@@ -226,6 +226,23 @@ test('recuperar senha não revela contas e valida a nova senha antes do código'
   await hook.unmount();
 });
 
+test('recuperar senha: reenviar marca o aviso de vidro do iPhone (Figma 01.15)', async () => {
+  const memory = createMemoryAuthRepository({ code: '654321' });
+  memory.addAccount(ana, 'livros2026');
+  const hook = await renderHook(() =>
+    usePasswordRecoveryViewModel(memory.repository, 'ana@email.com'),
+  );
+  assert.equal(hook.vm.resent, false, 'ainda não reenviou');
+
+  await act(async () => hook.vm.resend());
+  assert.equal(hook.vm.resent, true, 'reenvio concluído marca o aviso');
+  assert.match(hook.vm.notice, /Se houver uma conta/);
+
+  await act(async () => hook.vm.changeEmail());
+  assert.equal(hook.vm.resent, false, 'trocar o e-mail limpa o aviso');
+  await hook.unmount();
+});
+
 /** Promessa controlada pelo teste, para segurar a gravação da senha. */
 function deferred() {
   let resolve;
