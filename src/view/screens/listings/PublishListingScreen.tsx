@@ -19,6 +19,7 @@ import { ChoiceChips } from '../../components/listings/ChoiceChips';
 import { pickCoverImage } from '../../components/listings/CoverPicker';
 import { SegmentedButtons } from '../../components/listings/SegmentedButtons';
 import { ActionBar } from '../../components/negotiation/ActionBar';
+import { ScanIsbnScreen } from './ScanIsbnScreen';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TextField } from '../../components/ui/TextField';
@@ -59,6 +60,11 @@ export function PublishListingScreen() {
 
   if (vm.published) {
     return <Published listing={vm.published} />;
+  }
+
+  // 04.02 a 04.18: a leitura ocupa a tela e devolve o formulário intacto.
+  if (vm.scanning) {
+    return <ScanIsbnScreen onUse={vm.applyLookup} onClose={vm.closeScanner} />;
   }
 
   const { title, name } = stepTitles[vm.step];
@@ -107,6 +113,26 @@ export function PublishListingScreen() {
 
         {vm.step === 'livro' ? (
           <>
+            {/* 04.01: o atalho fica acima dos campos, e é só um atalho (spec 030). */}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Ler ISBN com a câmera"
+              accessibilityHint="Preenche título e autor a partir do código de barras"
+              onPress={vm.openScanner}
+              disabled={busy}
+              style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+                styles.isbnLink,
+                pressed && styles.iconPressed,
+                focused && styles.focused,
+              ]}
+            >
+              <AppIcon name="search" color={colors.actionDeep} />
+              <View style={styles.flex}>
+                <Text style={styles.isbnTitle}>Ler ISBN com a câmera</Text>
+                <Text style={styles.caption}>Preenche título e autor</Text>
+              </View>
+              <AppIcon name="chevronRight" size={20} color={colors.onSurfaceVariant} />
+            </Pressable>
             <SegmentedButtons
               label="Como você quer anunciar"
               options={modalities.map((value) => ({ value, label: modalityLabels[value] }))}
@@ -443,6 +469,17 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   fill: { height: '100%', borderRadius: spacing.xxs / 2, backgroundColor: colors.action },
+  isbnLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    minHeight: metrics.touchTarget,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.medium,
+    backgroundColor: colors.containerLow,
+  },
+  isbnTitle: { ...typography.bodyLarge, color: colors.onSurface },
   bookRow: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start' },
   photoTile: {
     width: 92,

@@ -158,16 +158,58 @@ Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e p
 
 ## Acesso — comparação com o Figma 06 · Android e 07 · iPhone (07/10/2026)
 
-Comparação das 17 telas do fluxo "01 · Acesso" nas páginas `06 · Android` e `07 · iPhone` (01.01 a 01.17) com `src/view/screens/auth`. O que ficou diferente do Figma, e por quê (decisão no [ADR 0026](../adr/0026-google-e-avisos-de-sucesso-no-acesso.md), salvo onde indicado):
+Comparação das 17 telas do fluxo "01 · Acesso" nas páginas `06 · Android` e `07 · iPhone` (01.01 a 01.17) com `src/view/screens/auth`. O que ficou diferente do Figma, e por quê (decisão no [ADR 0028](../adr/0028-google-e-avisos-de-sucesso-no-acesso.md), salvo onde indicado):
 
 | Item                                                    | Situação                                                                                                                                                                                                                                                           |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| "Continuar com a Apple" (01.02, 01.03, 01.09 do iPhone) | Fora por enquanto: exige conta paga no Apple Developer Program e `Sign in with Apple` nativo. O Google (nos dois quadros) já entrou (ADR 0026).                                                                                                                    |
+| "Continuar com a Apple" (01.02, 01.03, 01.09 do iPhone) | Fora por enquanto: exige conta paga no Apple Developer Program e `Sign in with Apple` nativo. O Google (nos dois quadros) já entrou (ADR 0028).                                                                                                                    |
 | Telas 01.02 "Entrar" (hub social, Android e iPhone)     | O app não tem uma tela à parte só com os botões de login social antes do formulário: o Login (01.10) já mostra e-mail e senha direto, com o Google acima.                                                                                                          |
 | "Link" nas telas 01.04, 01.05, 01.08 e 01.12            | O app usa código por e-mail (OTP), decidido no [ADR 0006](../adr/0006-autenticacao-supabase.md). O texto dessas telas no Figma não foi atualizado para "código" depois dessa decisão.                                                                              |
-| 01.14 "E-mail já cadastrado" e 01.16 "E-mail inválido"  | Não são telas à parte: o erro aparece no campo de e-mail. Depois do ADR 0026, o erro de e-mail já cadastrado também mostra o atalho "Recuperar senha".                                                                                                             |
-| 01.09 e 01.13 como telas de sucesso (iPhone)            | Resolvido pelo ADR 0026 só no iPhone: o app leva direto para a tela seguinte (Início ou Seu bairro) com um aviso por cima. No Android e na Web, o quadro pede tela dedicada com cartão — o app manteve `EmailConfirmedScreen`/`PasswordUpdatedScreen` nesses dois. |
-| "Explorar livros sem entrar" (01.01, só no Android)     | Não existe no app: o catálogo exige sessão em `(app)`. Sem decisão ainda (ADR 0026); mudaria a proteção de rotas.                                                                                                                                                  |
+| 01.14 "E-mail já cadastrado" e 01.16 "E-mail inválido"  | Não são telas à parte: o erro aparece no campo de e-mail. Depois do ADR 0028, o erro de e-mail já cadastrado também mostra o atalho "Recuperar senha".                                                                                                             |
+| 01.09 e 01.13 como telas de sucesso (iPhone)            | Resolvido pelo ADR 0028 só no iPhone: o app leva direto para a tela seguinte (Início ou Seu bairro) com um aviso por cima. No Android e na Web, o quadro pede tela dedicada com cartão — o app manteve `EmailConfirmedScreen`/`PasswordUpdatedScreen` nesses dois. |
+| "Explorar livros sem entrar" (01.01, só no Android)     | Não existe no app: o catálogo exige sessão em `(app)`. Sem decisão ainda (ADR 0028); mudaria a proteção de rotas.                                                                                                                                                  |
+
+## Onde do Combinar encontro e ação do detalhe (07/10/2026)
+
+Decidido com o Micael em 07/10/2026, pelos quadros 06.04 e 03.03 das duas plataformas.
+
+| Item                                  | Situação                                                                                                                                                                                 |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Locais do "Onde" (06.04)              | O app só tinha campo escrito. Entraram os atalhos de lugar público do quadro mais "Outro local", nas duas plataformas, e o campo continua aberto. O mesmo seletor vale no reagendamento. |
+| Nomes dos locais sugeridos            | São atalhos de tipo de lugar, não endereços conferidos: o app não tem cadastro de pontos públicos. Quem combina confirma o ponto exato na conversa.                                      |
+| Ação do detalhe (03.01 a 03.03)       | Era sempre "Combinar encontro". Agora diz o que a pessoa pede: "Quero receber" na doação, "Propor troca" na troca, "Combinar encontro" na venda. As três abrem a mesma tela.             |
+| "Conversar" na doação (03.03, iPhone) | **Fora.** As mensagens só existem dentro de uma negociação aberta (ADR 0021); conversar antes disso seria recurso novo, com spec e banco. O Figma precisa tirar a ação ou abrir a spec.  |
+
+## Selo da troca no detalhe (07/10/2026)
+
+No detalhe do livro (03.01 a 03.03) o selo mostrava "Por outro livro" e o valor grande mostrava
+"Troca" — o contrário do componente Tag do Figma, que é a "etiqueta de modalidade e status", e do
+que os cards do catálogo já faziam. Corrigido: o selo diz sempre a modalidade escrita (Venda,
+Troca, Doação) e o valor grande diz o valor ("R$ 25,00", "Por outro livro", "Gratuito"). O selo da
+venda passou de "À venda" para "Venda", pelo mesmo motivo.
+
+O quadro Android 03.02 desenha esse selo em verde; a cor certa é a amarela de Troca
+(`tertiary-container`), que o app já usava. O Figma precisa ser corrigido.
+
+## Filtrar livros nas duas plataformas (07/10/2026)
+
+O quadro Android 02.03 (`149:2803`) e o do iPhone 02.03 (`192:2819`) ofereciam filtros diferentes: o
+Android tinha modalidade, categoria e o rádio "Somente bom estado"; o iPhone acrescentava as quatro
+conservações, preço máximo e distância. O app seguia o Android.
+
+Decidido: **os filtros são os mesmos nas duas plataformas**, com a apresentação nativa de cada uma.
+O quadro do iPhone é a referência por ser o mais completo, menos a distância.
+
+| Item                                 | Situação                                                                                                                                                                   |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Conservação                          | Entrou nas duas, como chips de seleção múltipla. Usa as quatro conservações do banco (ADR 0008), não os rótulos de exemplo do Figma ("Com marcas", "Desgastado").          |
+| Preço máximo                         | Entrou nas duas, com controle deslizante próprio (ADR 0013): de R$ 5 a R$ 200, de R$ 5 em R$ 5, e o fim da faixa significa "Qualquer preço".                               |
+| Preço máximo em troca e doação       | O teto só corta anúncios de venda; troca e doação não guardam valor e continuam na lista. A tela avisa isso abaixo do controle.                                            |
+| Distância (1 km, 3 km, 5 km, Cidade) | **Fora.** O app não conhece a localização de quem usa e o anúncio não guarda coordenadas: só bairro e cidade fixa (ADR 0020). Entrar exigiria migração e uma spec própria. |
+| Rádio "Somente bom estado" (Android) | Saiu: virou a escolha de conservações, que cobre o mesmo caso e mais.                                                                                                      |
+
+O Figma precisa ser atualizado junto: tirar "Distância" do quadro do iPhone e acrescentar
+conservação e preço máximo ao do Android.
 
 ## Explorar e Filtrar livros (03/10/2026)
 
@@ -180,3 +222,44 @@ Refeitos pelos quadros Android 02.02 a 02.04. Diferenças que ficaram:
 | Categorias dos chips                           | O Figma mostra "Ficção", "Não ficção" e "Infantil"; o app usa as categorias fixas do ADR 0008.     |
 | "Mais recentes" em verde no resumo (02.04)     | A lista só tem essa ordem; o resumo diz a ordem ou os filtros, sem botão.                          |
 | Lista compacta com filtro (02.04)              | O app mantém os cards do 02.02 também com filtro.                                                  |
+
+## Visor da leitura de ISBN (spec 030, Figma 04.02 e 04.03)
+
+O quadro usa `#1F2B25` no fundo do visor, `white` no texto sobre ele e
+`rgba(20,24,22,0.5)` no véu que escurece o visor quando a folha "Livro
+identificado" sobe. Nenhum dos três existia nos tokens, e nenhum papel do
+Material 3 já definido serve: `inverseSurface` (`#322F2B`) é marrom e
+`cover.green` (`#30574A`) é claro demais para funcionar como fundo de câmera.
+
+Entraram como `color.scanner.surface`, `color.scanner.onSurface` e
+`color.scanner.veil`. São de uso restrito a esta tela: é o único lugar do app
+onde a interface fica por cima de imagem ao vivo, e é isso que exige um fundo
+escuro próprio. Se outra tela precisar de superfície escura, o caminho é
+discutir um papel de verdade, não reaproveitar estes.
+
+## Perfil completo (spec 031, 07/10/2026)
+
+**Telas sem quadro no Figma.** Duas telas desta spec não têm quadro:
+
+- **Histórico** das negociações concluídas. A issue #53 pede "histórico de trocas
+  e doações" e a seção 07 não tem quadro para ele.
+- **Avaliar**, que vive dentro do histórico. Avaliar ao lado da negociação que
+  acabou é o que evita pedir à pessoa que lembre qual foi.
+
+As duas foram desenhadas com os componentes da biblioteca (cartão, chips de
+escolha, campo e botões) e com os títulos de marca do mesmo tom das outras. Se a
+equipe de design desenhar os quadros, vale reconferir.
+
+**Textos ajustados ao produto:**
+
+- 03.04 diz "Telefone confirmado"; o app diz **"E-mail confirmado"**. O IpêBook
+  confirma por e-mail e nunca pede telefone (ADR 0020).
+- 07.01 traz o número "4,8" direto; o app mostra **"—"** para quem ainda não tem
+  nota. Um 0,0 numa escala de 1 a 5 é uma nota ruim dada a quem não fez nada.
+
+## Gestão de anúncios × Figma (reconferência de 07/10/2026)
+
+A comparação da spec 025 estava marcada como bloqueada desde 02/10/2026 por causa
+dos links quebrados. Feita agora, apontou cinco divergências — a maior é a
+ausência completa do fluxo de **rascunhos** (quadros 04.11 a 04.16). A lista está
+em [`specs/025-anuncios-gestao/verify.md`](../../specs/025-anuncios-gestao/verify.md).

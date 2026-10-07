@@ -1,10 +1,10 @@
-# 0026 — Entrar com o Google e avisos de sucesso no acesso
+# 0028 — Entrar com o Google e avisos de sucesso no acesso
 
 Data: 07/10/2026
 
 ## Status
 
-Proposto, implementado. Falta configurar o provedor Google no painel do Supabase e testar no Android, no iPhone e na Web.
+Proposto, implementado (numerado como 0026 até o merge com os ADRs 0026 de leitura de ISBN e 0027 de avaliações, em 07/10/2026). Falta configurar o provedor Google no painel do Supabase e testar no Android, no iPhone e na Web.
 
 ## Contexto
 

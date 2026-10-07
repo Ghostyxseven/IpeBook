@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { emptyFilters } from '../src/model/entities/Listing.ts';
+import { createMemoryCatalogRepository } from '../src/model/repositories/memoryCatalogRepository.ts';
 import {
   CATALOG_VIEW,
   createSupabaseCatalogRepository,
@@ -118,6 +119,30 @@ test('lista lê a view, aplica filtros e pede um item a mais para paginar', asyn
   assert.deepEqual(page.nextCursor, { createdAt: '2026-09-29T10:00:00Z', id: 'b' });
 });
 
+test('conservação e teto de preço viram condições da consulta (Figma 02.03)', async () => {
+  const fake = fakeClient({ data: [], error: null, count: 0 });
+  const repository = createSupabaseCatalogRepository(fake.client);
+  await repository.list({
+    filters: {
+      ...emptyFilters,
+      conditions: ['marcas_de_uso', 'novo'],
+      maxPriceCents: 3000,
+    },
+    cursor: null,
+    limit: 2,
+  });
+  assert.deepEqual(
+    fake.calls.find(([method]) => method === 'in'),
+    ['in', 'condition', ['novo', 'marcas_de_uso']],
+    'a ordem canônica evita consultas diferentes para a mesma escolha',
+  );
+  assert.deepEqual(
+    fake.calls.find(([method]) => method === 'or'),
+    ['or', 'price_cents.is.null,price_cents.lte.3000'],
+    'troca e doação não guardam preço e continuam na lista',
+  );
+});
+
 test('busca curta não filtra e cursor continua depois do último item', async () => {
   const fake = fakeClient({ data: [row('a', '2026-09-28T10:00:00Z')], error: null, count: 9 });
   const repository = createSupabaseCatalogRepository(fake.client);
@@ -181,4 +206,53 @@ test('detalhe lê só colunas que existem na tabela e busca o nome do dono pela 
   );
   assert.equal(listing.ownerFirstName, 'Ana');
   assert.equal(listing.ownerId, 'u-ana');
+});
+
+test('o teto de preço corta a venda cara e preserva troca e doação (Figma 02.03)', async () => {
+  const listing = (id, modality, priceCents, condition = 'bom') => ({
+    id,
+    title: `Livro ${id}`,
+    author: 'Autora',
+    category: 'Outros',
+    modality,
+    priceCents,
+    tradeTerms: null,
+    condition,
+    neighborhood: 'Centro',
+    city: 'Piripiri',
+    description: null,
+    coverUrl: null,
+    status: 'disponivel',
+    ownerId: 'u1',
+    ownerFirstName: 'Ana',
+    createdAt: `2026-09-2${id}T10:00:00Z`,
+  });
+  const { repository } = createMemoryCatalogRepository([
+    listing('1', 'sale', 2500),
+    listing('2', 'sale', 9900),
+    listing('3', 'trade', null),
+    listing('4', 'donation', null, 'marcas_de_uso'),
+  ]);
+
+  const barato = await repository.list({
+    filters: { ...emptyFilters, maxPriceCents: 3000 },
+    cursor: null,
+    limit: 10,
+  });
+  assert.deepEqual(
+    barato.items.map((item) => item.id).sort(),
+    ['1', '3', '4'],
+    'só a venda acima do teto sai da lista',
+  );
+
+  const conservados = await repository.list({
+    filters: { ...emptyFilters, conditions: ['bom'] },
+    cursor: null,
+    limit: 10,
+  });
+  assert.deepEqual(
+    conservados.items.map((item) => item.id).sort(),
+    ['1', '2', '3'],
+    'a conservação escolhida filtra qualquer modalidade',
+  );
 });

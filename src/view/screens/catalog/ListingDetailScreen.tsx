@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { locationLabel } from '../../../model/services/catalogFormat';
+import { detailActionLabel, locationLabel } from '../../../model/services/catalogFormat';
 import { blockLabel } from '../../../model/services/securityFormat';
 import { useListingDetail } from '../../../factories/catalog';
 import { AppIcon } from '../../components/AppIcon';
@@ -71,7 +71,7 @@ export function ListingDetailScreen() {
     });
   const primary = canNegotiate
     ? {
-        label: 'Combinar encontro',
+        label: detailActionLabel(listing.modality),
         onPress: () => router.push(`/livro/${listingId}/combinar`),
         hint: 'Abre o formulário para propor local, dia e horário.',
       }
@@ -120,17 +120,41 @@ export function ListingDetailScreen() {
           </Text>
         ))}
         {listing.ownerFirstName ? (
-          <View
-            style={styles.listItem}
-            accessible
-            accessibilityLabel={`Anunciado por ${details.owner}`}
-          >
-            <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
-            <View style={styles.listText}>
-              <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
-              {place && <Text style={styles.listBody}>{place}</Text>}
+          // Spec 031: o nome de quem anunciou abre o perfil daquela pessoa. Sem
+          // `ownerId` não há perfil para abrir — fica a informação, como antes.
+          listing.ownerId && !isOwner ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Ver o perfil de ${listing.ownerFirstName}`}
+              accessibilityHint="Mostra avaliações e histórico na comunidade."
+              onPress={() =>
+                router.push({
+                  pathname: '/pessoa/[id]',
+                  params: { id: listing.ownerId as string, livro: listing.id },
+                })
+              }
+              style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
+            >
+              <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
+              <View style={styles.listText}>
+                <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
+                {place && <Text style={styles.listBody}>{place}</Text>}
+              </View>
+              <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+            </Pressable>
+          ) : (
+            <View
+              style={styles.listItem}
+              accessible
+              accessibilityLabel={`Anunciado por ${details.owner}`}
+            >
+              <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
+              <View style={styles.listText}>
+                <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
+                {place && <Text style={styles.listBody}>{place}</Text>}
+              </View>
             </View>
-          </View>
+          )
         ) : null}
         {!isOwner && session.status === 'signedIn' && listing.ownerId ? (
           <>

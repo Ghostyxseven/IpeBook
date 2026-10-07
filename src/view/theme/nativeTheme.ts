@@ -59,6 +59,10 @@ export const colors = {
   errorContainer: tokens.color.errorContainer.$value,
   inverseSurface: tokens.color.inverseSurface.$value,
   inverseOnSurface: tokens.color.inverseOnSurface.$value,
+  /** Visor da leitura de ISBN (Figma 04.02): fundo escuro atrás da imagem da câmera. */
+  scannerSurface: tokens.color.scanner.surface.$value,
+  scannerOnSurface: tokens.color.scanner.onSurface.$value,
+  scannerVeil: tokens.color.scanner.veil.$value,
   /** iOS (Figma 07 · iPhone): célula agrupada, rótulo secundário e separador. */
   iosCell: tokens.color.ios.cell.$value,
   iosSecondaryLabel: tokens.color.ios.secondaryLabel.$value,

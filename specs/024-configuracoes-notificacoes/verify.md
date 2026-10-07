@@ -22,6 +22,8 @@ Cobertura dos testes novos:
 
 Feita por uma captura do quadro Android de Notificações enviada pelo Micael, porque a ferramenta de leitura só enxerga as páginas 00 e 05 do arquivo `IpêBook Mobile`. A seção F e o quadro do iPhone não foram vistos.
 
+> **Correção de 07/10/2026 (spec 031):** a limitação registrada acima não existe. A _listagem_ de páginas é incompleta, mas pedir um `node-id` direto alcança qualquer seção do arquivo. Os números estão em [`docs/figma-mapa.md`](../../docs/figma-mapa.md), e a seção de Configurações e Notificações é a 07 (`206:3618`). Vale reconferir esta spec contra os quadros.
+
 | Item do quadro                                                 | Situação                                                                                                          |
 | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | Barra superior com seta e título "Notificações" à esquerda     | feito (cabeçalho da rota com o título, alinhado à esquerda)                                                       |

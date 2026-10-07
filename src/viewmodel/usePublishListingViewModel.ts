@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
+import type { BookLookup } from '../model/entities/BookLookup';
 import type { MyListing } from '../model/entities/Listing';
 import { toListingError } from '../model/entities/ListingError.ts';
+import { fillFromLookup } from '../model/services/bookLookup.ts';
 import { listingErrorMessage } from '../model/services/listingMessages.ts';
 import type { CoverFile, ListingsRepository } from '../model/repositories/ListingsRepository';
 import { useAsyncAction } from './useAsyncAction.ts';
@@ -41,6 +43,9 @@ export function usePublishListingViewModel(repository: ListingsRepository) {
   const [cover, setCover] = useState<PickedCover | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [published, setPublished] = useState<MyListing | null>(null);
+  // A leitura de ISBN (spec 030) é um estado desta tela, não uma rota: uma rota
+  // desmontaria o formulário e levaria junto o rascunho já digitado.
+  const [scanning, setScanning] = useState(false);
   const [submitting, run] = useAsyncAction();
 
   const step = publishSteps[index] as PublishStep;
@@ -73,6 +78,20 @@ export function usePublishListingViewModel(repository: ListingsRepository) {
     setIndex((current) => Math.min(current + 1, publishSteps.length - 1));
     return true;
   }, [step, rawErrorsOf]);
+
+  const openScanner = useCallback(() => setScanning(true), []);
+  const closeScanner = useCallback(() => setScanning(false), []);
+
+  /** "Usar estes dados" da 04.03: entra só no que está vazio (`fillFromLookup`). */
+  const applyLookup = useCallback(
+    (book: BookLookup) => {
+      const filled = fillFromLookup(draft, book);
+      form.setText('title', filled.title);
+      form.setText('author', filled.author);
+      setScanning(false);
+    },
+    [draft, form],
+  );
 
   const back = useCallback(() => {
     setError(null);
@@ -114,5 +133,9 @@ export function usePublishListingViewModel(repository: ListingsRepository) {
     submit,
     error,
     published,
+    scanning,
+    openScanner,
+    closeScanner,
+    applyLookup,
   };
 }

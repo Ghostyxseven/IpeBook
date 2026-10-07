@@ -106,13 +106,32 @@ export function cardOverline(listing: Pick<Listing, 'modality' | 'priceCents'>) 
   return [modalityLabels[listing.modality], price].filter(Boolean).join(' · ');
 }
 
-/** Destaque do detalhe (Figma 04, 13 e 14): valor grande e rótulo da modalidade. */
+/**
+ * Destaque do detalhe (Figma 03.01 a 03.03): valor grande e o selo da modalidade ao lado.
+ *
+ * O selo é sempre a modalidade escrita — "Venda", "Troca" ou "Doação" —, como manda o
+ * componente Tag do Figma ("etiqueta de modalidade e status"). A troca vinha trocada: o
+ * selo dizia "Por outro livro" e o valor dizia "Troca".
+ */
 export function detailHeadline(listing: Pick<Listing, 'modality' | 'priceCents'>) {
+  const label = modalityLabels[listing.modality];
   if (listing.modality === 'sale') {
-    return { value: priceLabel(listing) ?? modalityLabels.sale, label: 'À venda' };
+    return { value: priceLabel(listing) ?? modalityLabels.sale, label };
   }
-  if (listing.modality === 'trade') return { value: 'Troca', label: 'Por outro livro' };
-  return { value: 'Gratuito', label: 'Doação' };
+  if (listing.modality === 'trade') return { value: 'Por outro livro', label };
+  return { value: 'Gratuito', label };
+}
+
+/**
+ * Rótulo da ação principal do detalhe (Figma 03.01 a 03.03).
+ *
+ * As três levam à mesma tela de combinar local, dia e horário; muda só o que a pessoa
+ * está pedindo, como nos quadros de cada modalidade.
+ */
+export function detailActionLabel(modality: Modality) {
+  if (modality === 'donation') return 'Quero receber';
+  if (modality === 'trade') return 'Propor troca';
+  return 'Combinar encontro';
 }
 
 /** "BOM ESTADO · LITERATURA BRASILEIRA" */

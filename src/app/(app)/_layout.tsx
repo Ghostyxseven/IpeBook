@@ -137,6 +137,35 @@ export default function AppLayout() {
             contentStyle: { backgroundColor: colors.surface },
           }}
         />
+        {/* Perfil completo (spec 031). */}
+        <Stack.Screen
+          name="pessoa/[id]"
+          options={{
+            ...stackHeader('Perfil'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="avaliacoes"
+          options={{
+            ...stackHeader('Avaliações recebidas'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="historico"
+          options={{
+            ...stackHeader('Histórico'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
+        <Stack.Screen
+          name="ajuda"
+          options={{
+            ...stackHeader('Ajuda'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
         <Stack.Screen
           name="livro/[id]"
           options={{

@@ -25,4 +25,6 @@
 - [0023 - Excluir a própria conta pelo app](0023-excluir-conta-pelo-app.md) (proposto, implementado)
 - [0024 - Componentes do iPhone nas telas de acesso](0024-componentes-ios-da-autenticacao.md) (proposto, falta iPhone real)
 - [0025 - App completo na Web, em /app](0025-app-completo-na-web.md) (proposto, falta configurar a Vercel)
-- [0026 - Entrar com o Google e avisos de sucesso no acesso](0026-google-e-avisos-de-sucesso-no-acesso.md) (proposto, falta configurar o provedor no Supabase)
+- [0026 - Leitura de ISBN pela câmera](0026-leitura-de-isbn.md) (proposto, implementado; falta build com câmera real)
+- [0027 - Avaliações e perfil público](0027-avaliacoes-e-perfil-publico.md) (proposto, implementado; falta aplicar a migração)
+- [0028 - Entrar com o Google e avisos de sucesso no acesso](0028-google-e-avisos-de-sucesso-no-acesso.md) (proposto, falta configurar o provedor no Supabase; renumerado de 0026 para 0028 ao integrar com o 0026/0027 de ISBN e avaliações)
