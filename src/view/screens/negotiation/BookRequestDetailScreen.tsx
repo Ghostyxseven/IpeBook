@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBookRequestDetail } from '../../../factories/bookRequest';
@@ -13,10 +14,11 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { ActionBar } from '../../components/negotiation/ActionBar';
 import { MeetingCard } from '../../components/negotiation/MeetingCard';
 import { OutcomeHero } from '../../components/negotiation/OutcomeHero';
+import { CounterOfferSheet } from '../../components/negotiation/CounterOfferSheet';
 import { RequestBookRow } from '../../components/negotiation/RequestBookRow';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 /**
  * Negociação de um livro (Figma 06.03 a 06.18): a mesma tela mostra a proposta recebida ou
@@ -25,6 +27,8 @@ import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 export function BookRequestDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const vm = useBookRequestDetail(String(id ?? ''));
+  // Qual livro da estante de quem propôs o dono escolheu na folha (Figma 06.19).
+  const [counterChoice, setCounterChoice] = useState<string | null>(null);
 
   if (vm.status === 'loading') {
     return (
@@ -222,10 +226,77 @@ export function BookRequestDetailScreen() {
         <Text style={styles.label}>Encontro proposto</Text>
         <MeetingCard request={request} />
         {asOwner && <Text style={styles.note}>{copy.body}</Text>}
+        {/* Contraproposta de pé: quem propôs responde, e o dono espera (Figma 06.19). */}
+        {request.counterListingId ? (
+          <View style={styles.counter}>
+            <Text style={styles.counterTitle}>
+              {capabilities.canAnswerCounter
+                ? `${vm.other.name ?? 'Quem anunciou'} pediu outro livro seu`
+                : 'Contraproposta enviada'}
+            </Text>
+            {vm.counterListing ? (
+              <RequestBookRow
+                listing={vm.counterListing}
+                onPress={() => router.push(`/livros/${vm.counterListing!.id}`)}
+              />
+            ) : (
+              <FormMessage
+                tone="error"
+                message="Não conseguimos carregar o livro solicitado. Reabra a negociação antes de aceitar."
+              />
+            )}
+            <Text style={styles.note}>
+              {capabilities.canAnswerCounter
+                ? 'Aceitar fecha a troca com esse livro no lugar do que você ofereceu.'
+                : `Aguardando ${vm.other.name ?? 'quem pediu'} aceitar ou recusar.`}
+            </Text>
+            {capabilities.canAnswerCounter ? (
+              <>
+                <Button
+                  label="Aceitar contraproposta"
+                  disabled={!vm.counterListing}
+                  loading={vm.busy}
+                  onPress={() => void vm.answerCounter(true)}
+                />
+                <Button
+                  label="Recusar"
+                  variant="secondary"
+                  disabled={vm.busy}
+                  onPress={() => void vm.answerCounter(false)}
+                />
+              </>
+            ) : null}
+          </View>
+        ) : null}
+        {capabilities.canCounter ? (
+          <Button
+            label="Fazer contraproposta"
+            disabled={vm.busy}
+            variant="text"
+            onPress={() => {
+              setCounterChoice(null);
+              void vm.openCounter();
+            }}
+          />
+        ) : null}
         {chat}
         {error}
       </ScrollView>
-      {asOwner ? (
+      <CounterOfferSheet
+        visible={vm.shelfStatus !== 'idle'}
+        status={vm.shelfStatus}
+        shelf={vm.shelf}
+        otherName={vm.other.name ?? 'quem pediu'}
+        listingTitle={listing.title}
+        selected={counterChoice}
+        onSelect={setCounterChoice}
+        submitting={vm.busy}
+        error={vm.counterError}
+        onRetry={() => void vm.openCounter()}
+        onClose={vm.closeCounter}
+        onSubmit={() => counterChoice && void vm.counterOffer(counterChoice)}
+      />
+      {capabilities.canAccept ? (
         <ActionBar row>
           <View style={styles.flex}>
             <Button
@@ -253,6 +324,13 @@ export function BookRequestDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  counter: {
+    gap: spacing.xs,
+    padding: spacing.md,
+    borderRadius: radius.medium,
+    backgroundColor: colors.containerLow,
+  },
+  counterTitle: { ...typography.titleMedium, color: colors.onSurface },
   safe: { flex: 1, backgroundColor: colors.surface },
   content: {
     padding: metrics.pagePadding,

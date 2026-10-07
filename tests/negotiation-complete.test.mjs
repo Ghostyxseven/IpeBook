@@ -312,3 +312,267 @@ test('reagendar uma proposta ainda pendente avisa que não dá', async () => {
   assert.equal(hook.vm.otherName, 'Ana');
   await hook.unmount();
 });
+
+// ── Contraproposta (Figma 06.19 e 06.20, ADR 0030) ──────────────────────────
+
+const cortico = () =>
+  listing({ id: 'l-cortico', title: 'O Cortiço', ownerId: 'u-lucas', modality: 'trade' });
+
+test('o dono pede outro livro da estante de quem propôs e quem propôs aceita', async () => {
+  const listingStatus = { 'l-dom': 'disponivel' };
+  const repo = createMemoryBookRequestRepository([request()], {
+    listingStatus,
+    shelf: [cortico()],
+  });
+
+  const estante = await repo.shelfOfRequester('r-1');
+  assert.deepEqual(
+    estante.map((item) => item.id),
+    ['l-cortico'],
+    'a estante traz só trocas disponíveis, sem o anúncio pedido',
+  );
+
+  const comContra = await repo.counterOffer('r-1', 'l-cortico');
+  assert.equal(comContra.counterListingId, 'l-cortico');
+  assert.equal(comContra.status, 'pending', 'contrapor não fecha nem recusa a negociação');
+  assert.equal(comContra.offeredListingId, 'l-vidas', 'a proposta original continua visível');
+
+  const aceita = await repo.answerCounterOffer('r-1', true);
+  assert.equal(aceita.status, 'accepted');
+  assert.equal(aceita.offeredListingId, 'l-cortico', 'o contraproposto vira o livro da troca');
+  assert.equal(aceita.counterListingId, null);
+  assert.equal(listingStatus['l-dom'], 'reservado', 'aceitar reserva o anúncio, como aceitar');
+});
+
+test('recusar a contraproposta encerra a negociação', async () => {
+  const repo = createMemoryBookRequestRepository([request()], {
+    listingStatus: { 'l-dom': 'disponivel' },
+    shelf: [cortico()],
+  });
+  await repo.counterOffer('r-1', 'l-cortico');
+  const recusada = await repo.answerCounterOffer('r-1', false);
+  assert.equal(recusada.status, 'rejected');
+  assert.equal(recusada.counterListingId, null);
+});
+
+test('a contraproposta recusa livro inválido e não se repete', async () => {
+  const repo = createMemoryBookRequestRepository([request()], {
+    listingStatus: { 'l-dom': 'disponivel' },
+    shelf: [cortico(), listing({ id: 'l-fora', ownerId: 'u-lucas', status: 'reservado' })],
+  });
+
+  // O livro que já foi oferecido não serve: a contraproposta existe para pedir outro.
+  await assert.rejects(() => repo.counterOffer('r-1', 'l-vidas'), { code: 'invalid_transition' });
+  // Nem o próprio anúncio pedido.
+  await assert.rejects(() => repo.counterOffer('r-1', 'l-dom'), { code: 'invalid_transition' });
+  // Nem um anúncio que não está disponível.
+  await assert.rejects(() => repo.counterOffer('r-1', 'l-fora'), { code: 'invalid_transition' });
+
+  await repo.counterOffer('r-1', 'l-cortico');
+  // Uma por vez: a bola está com quem propôs.
+  await assert.rejects(() => repo.counterOffer('r-1', 'l-cortico'), {
+    code: 'invalid_transition',
+  });
+});
+
+test('sem contraproposta de pé, não há o que responder', async () => {
+  const repo = createMemoryBookRequestRepository([request()], {
+    listingStatus: { 'l-dom': 'disponivel' },
+    shelf: [cortico()],
+  });
+  await assert.rejects(() => repo.answerCounterOffer('r-1', true), {
+    code: 'invalid_transition',
+  });
+});
+
+test('aceitar contraproposta reserva ambos e recusa pedidos concorrentes', async () => {
+  const listingStatus = {
+    'l-dom': 'disponivel',
+    'l-cortico': 'disponivel',
+    'l-vidas': 'disponivel',
+  };
+  const repo = createMemoryBookRequestRepository(
+    [
+      request({ counterListingId: 'l-cortico' }),
+      request({ id: 'r-2', requesterId: 'outra-pessoa' }),
+    ],
+    { listingStatus, shelf: [cortico()] },
+  );
+  await repo.answerCounterOffer('r-1', true);
+  assert.equal(listingStatus['l-cortico'], 'reservado');
+  assert.equal(listingStatus['l-vidas'], 'disponivel');
+  assert.equal((await repo.getRequestById('r-2')).status, 'rejected');
+  await repo.transitionRequest('r-1', 'canceled');
+  assert.equal(listingStatus['l-cortico'], 'disponivel');
+});
+
+test('a proposta original não pode ser aceita enquanto aguarda contraproposta', async () => {
+  const repo = createMemoryBookRequestRepository([request({ counterListingId: 'l-cortico' })]);
+  await assert.rejects(repo.transitionRequest('r-1', 'accepted'), { code: 'invalid_transition' });
+});
+
+test('estante exclui livro original, terceiros e modalidades diferentes', async () => {
+  const shelf = [
+    cortico(),
+    mine(),
+    listing({ id: 'terceiro' }),
+    mine({ id: 'venda', modality: 'sale' }),
+  ];
+  const repo = createMemoryBookRequestRepository([request()], { shelf });
+  assert.deepEqual(
+    (await repo.shelfOfRequester('r-1')).map((item) => item.id),
+    ['l-cortico'],
+  );
+  for (const id of ['l-vidas', 'terceiro', 'venda']) {
+    await assert.rejects(repo.counterOffer('r-1', id), { code: 'invalid_transition' });
+  }
+});
+
+test('não aceita contraproposta cujo livro ficou indisponível', async () => {
+  const repo = createMemoryBookRequestRepository([request({ counterListingId: 'l-cortico' })], {
+    listingStatus: { 'l-dom': 'disponivel', 'l-cortico': 'reservado' },
+    shelf: [cortico()],
+  });
+  await assert.rejects(repo.answerCounterOffer('r-1', true), { code: 'invalid_transition' });
+  assert.equal((await repo.getRequestById('r-1')).status, 'pending');
+});
+
+test('detalhe identifica contraproposta e bloqueia aceite original do dono', async () => {
+  const catalog = createMemoryCatalogRepository([listing(), mine(), cortico()]).repository;
+  const repo = createMemoryBookRequestRepository([request({ counterListingId: 'l-cortico' })]);
+  const hook = await renderHook(() => useBookRequestDetailViewModel(catalog, repo, 'r-1'), 'u-ana');
+  try {
+    assert.equal(hook.vm.counterListing?.title, 'O Cortiço');
+    assert.equal(hook.vm.offeredListing.title, 'Vidas Secas');
+    assert.equal(hook.vm.capabilities.canAccept, false);
+    assert.equal(hook.vm.capabilities.canReject, false);
+  } finally {
+    await hook.unmount();
+  }
+});
+
+test('ViewModel envia contraproposta, apresenta livro escolhido e erro dentro da folha', async () => {
+  const catalog = createMemoryCatalogRepository([listing(), mine(), cortico()]).repository;
+  const repo = createMemoryBookRequestRepository([request()], { shelf: [cortico()] });
+  const hook = await renderHook(() => useBookRequestDetailViewModel(catalog, repo, 'r-1'), 'u-ana');
+  try {
+    await act(async () => hook.vm.openCounter());
+    assert.equal(hook.vm.shelfStatus, 'ready');
+    await act(async () => hook.vm.counterOffer('inexistente'));
+    assert.ok(hook.vm.counterError);
+    assert.equal(hook.vm.shelfStatus, 'ready');
+    await act(async () => hook.vm.counterOffer('l-cortico'));
+    assert.equal(hook.vm.counterError, null);
+    assert.equal(hook.vm.shelfStatus, 'idle');
+    assert.equal(hook.vm.counterListing.id, 'l-cortico');
+    assert.equal(hook.vm.capabilities.canAccept, false);
+  } finally {
+    await hook.unmount();
+  }
+});
+
+test('fechar folha durante carregamento não reabre quando a resposta chega', async () => {
+  const catalog = createMemoryCatalogRepository([listing(), mine()]).repository;
+  const repo = createMemoryBookRequestRepository([request()]);
+  let resolve;
+  repo.shelfOfRequester = () =>
+    new Promise((done) => {
+      resolve = done;
+    });
+  const hook = await renderHook(() => useBookRequestDetailViewModel(catalog, repo, 'r-1'), 'u-ana');
+  try {
+    let loading;
+    await act(async () => {
+      loading = hook.vm.openCounter();
+    });
+    await act(async () => hook.vm.closeCounter());
+    await act(async () => {
+      resolve([cortico()]);
+      await loading;
+    });
+    assert.equal(hook.vm.shelfStatus, 'idle');
+  } finally {
+    await hook.unmount();
+  }
+});
+
+test('quem pediu aceita contraproposta e o detalhe passa a mostrar o novo livro', async () => {
+  const catalog = createMemoryCatalogRepository([listing(), mine(), cortico()]).repository;
+  const repo = createMemoryBookRequestRepository([request({ counterListingId: 'l-cortico' })], {
+    shelf: [cortico()],
+  });
+  const hook = await renderHook(() => useBookRequestDetailViewModel(catalog, repo, 'r-1'));
+  try {
+    assert.equal(hook.vm.capabilities.canAnswerCounter, true);
+    await act(async () => hook.vm.answerCounter(true));
+    assert.equal(hook.vm.request.status, 'accepted');
+    assert.equal(hook.vm.offeredListing.id, 'l-cortico');
+    assert.equal(hook.vm.counterListing, null);
+    assert.equal(hook.vm.lastAction, 'accepted');
+  } finally {
+    await hook.unmount();
+  }
+});
+
+test('memória confere os participantes nas ações da contraproposta', async () => {
+  const options = {
+    currentUserId: 'terceiro',
+    listingOwner: { 'l-dom': 'u-ana' },
+    shelf: [cortico()],
+  };
+  const repo = createMemoryBookRequestRepository([request()], options);
+  assert.deepEqual(await repo.shelfOfRequester('r-1'), []);
+  await assert.rejects(repo.counterOffer('r-1', 'l-cortico'), { code: 'forbidden' });
+  const pending = createMemoryBookRequestRepository(
+    [request({ counterListingId: 'l-cortico' })],
+    options,
+  );
+  await assert.rejects(pending.answerCounterOffer('r-1', true), { code: 'forbidden' });
+});
+
+test('RPCs de contraproposta enviam parâmetros, traduzem erros e carregam capa', async () => {
+  const calls = [];
+  let error = null;
+  const row = {
+    id: 'r-1',
+    listing_id: 'l-dom',
+    requester_id: 'u-lucas',
+    offered_listing_id: 'l-vidas',
+    counter_listing_id: 'l-cortico',
+    status: 'pending',
+  };
+  const client = {
+    rpc(name, args) {
+      calls.push([name, args]);
+      if (name === 'shelf_of_requester')
+        return Promise.resolve({
+          data: [{ ...cortico(), owner_id: 'u-lucas', cover_path: 'capa.jpg' }],
+          error,
+        });
+      return { select: () => ({ maybeSingle: async () => ({ data: row, error }) }) };
+    },
+    storage: {
+      from: () => ({
+        getPublicUrl: (path) => ({ data: { publicUrl: `https://example.test/${path}` } }),
+      }),
+    },
+  };
+  const repo = createSupabaseBookRequestRepository(client);
+  assert.equal((await repo.counterOffer('r-1', 'l-cortico')).counterListingId, 'l-cortico');
+  assert.deepEqual(calls.at(-1), [
+    'counter_offer',
+    { p_request_id: 'r-1', p_listing_id: 'l-cortico' },
+  ]);
+  await repo.answerCounterOffer('r-1', false);
+  assert.deepEqual(calls.at(-1), [
+    'answer_counter_offer',
+    { p_request_id: 'r-1', p_accept: false },
+  ]);
+  assert.equal((await repo.shelfOfRequester('r-1'))[0].coverUrl, 'https://example.test/capa.jpg');
+  error = { code: '42501' };
+  await assert.rejects(repo.counterOffer('r-1', 'l-cortico'), { code: 'forbidden' });
+  error = { code: 'P0001', message: 'invalid_transition' };
+  await assert.rejects(repo.answerCounterOffer('r-1', true), { code: 'invalid_transition' });
+  error = { message: 'network error' };
+  await assert.rejects(repo.shelfOfRequester('r-1'), { code: 'network' });
+});

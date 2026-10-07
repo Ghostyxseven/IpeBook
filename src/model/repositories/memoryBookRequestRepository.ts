@@ -1,7 +1,7 @@
 import type { BookRequest, RequestStatus } from '../entities/BookRequest';
 import { BookRequestError } from '../entities/BookRequestError.ts';
 import type { BookRequestRepository } from './BookRequestRepository';
-import type { ListingStatus } from '../entities/Listing';
+import type { Listing, ListingStatus } from '../entities/Listing';
 import {
   ensureTransition,
   listingStatusOnAccept,
@@ -29,6 +29,8 @@ export function createMemoryBookRequestRepository(
     currentUserId?: string;
     /** Primeiros nomes que `personFirstName` devolve. */
     names?: Record<string, string>;
+    /** Anúncios que a estante de quem pediu devolve na contraproposta (Figma 06.19). */
+    shelf?: Listing[];
   },
 ): BookRequestRepository & { snapshot(): BookRequest[] } {
   const items: BookRequest[] = [...seed];
@@ -91,6 +93,9 @@ export function createMemoryBookRequestRepository(
       if (index < 0) throw new BookRequestError('not_found');
       const current = items[index];
       ensureTransition(current.status, status);
+      if (current.counterListingId && current.status === 'pending' && status !== 'canceled') {
+        throw new BookRequestError('invalid_transition');
+      }
       const now = nowIso();
       items[index] = { ...current, status, updatedAt: now };
 
@@ -131,6 +136,98 @@ export function createMemoryBookRequestRepository(
         meetingTime,
         updatedAt: nowIso(),
       };
+      return items[index];
+    },
+
+    async shelfOfRequester(requestId) {
+      const index = findIndex(requestId);
+      if (index < 0) throw new BookRequestError('not_found');
+      const request = items[index];
+      if (request.status !== 'pending' || request.counterListingId) return [];
+      if (options?.currentUserId && listingOwner[request.listingId] !== options.currentUserId)
+        return [];
+      // O mesmo recorte da função do banco: troca, disponível e nunca o anúncio pedido.
+      return (options?.shelf ?? []).filter(
+        (listing) =>
+          listing.modality === 'trade' &&
+          (listingStatus[listing.id] ?? listing.status) === 'disponivel' &&
+          listing.ownerId === request.requesterId &&
+          listing.id !== request.offeredListingId &&
+          listing.id !== request.listingId,
+      );
+    },
+
+    async counterOffer(requestId, listingId) {
+      const index = findIndex(requestId);
+      if (index < 0) throw new BookRequestError('not_found');
+      const request = items[index];
+      if (request.status !== 'pending' || request.counterListingId) {
+        throw new BookRequestError('invalid_transition');
+      }
+      if (options?.currentUserId && listingOwner[request.listingId] !== options.currentUserId) {
+        throw new BookRequestError('forbidden');
+      }
+      // Como a função do banco: o livro é de quem pediu, está disponível e não é o pedido.
+      const shelf = options?.shelf ?? [];
+      const chosen = shelf.find((listing) => listing.id === listingId);
+      if (
+        !chosen ||
+        (listingStatus[chosen.id] ?? chosen.status) !== 'disponivel' ||
+        chosen.modality !== 'trade' ||
+        chosen.ownerId !== request.requesterId ||
+        chosen.id === request.listingId ||
+        chosen.id === request.offeredListingId
+      ) {
+        throw new BookRequestError('invalid_transition');
+      }
+      items[index] = { ...request, counterListingId: listingId, updatedAt: nowIso() };
+      return items[index];
+    },
+
+    async answerCounterOffer(requestId, accept) {
+      const index = findIndex(requestId);
+      if (index < 0) throw new BookRequestError('not_found');
+      const request = items[index];
+      if (request.status !== 'pending' || !request.counterListingId) {
+        throw new BookRequestError('invalid_transition');
+      }
+      if (options?.currentUserId && options.currentUserId !== request.requesterId) {
+        throw new BookRequestError('forbidden');
+      }
+      const chosen = options?.shelf?.find((item) => item.id === request.counterListingId);
+      if (
+        accept &&
+        (!chosen ||
+          chosen.ownerId !== request.requesterId ||
+          chosen.modality !== 'trade' ||
+          (listingStatus[chosen.id] ?? chosen.status) !== 'disponivel' ||
+          (listingStatus[request.listingId] ?? 'disponivel') !== 'disponivel')
+      ) {
+        throw new BookRequestError('invalid_transition');
+      }
+      items[index] = accept
+        ? {
+            ...request,
+            // Aceitar fecha o acordo: o contraproposto vira o livro da troca.
+            offeredListingId: request.counterListingId,
+            counterListingId: null,
+            status: 'accepted',
+            updatedAt: nowIso(),
+          }
+        : { ...request, counterListingId: null, status: 'rejected', updatedAt: nowIso() };
+      if (accept) {
+        listingStatus[request.listingId] = listingStatusOnAccept();
+        listingStatus[request.counterListingId] = listingStatusOnAccept();
+        items.forEach((item, i) => {
+          if (
+            item.listingId === request.listingId &&
+            item.status === 'pending' &&
+            item.id !== requestId
+          ) {
+            items[i] = { ...item, status: 'rejected', updatedAt: nowIso() };
+          }
+        });
+      }
       return items[index];
     },
 
