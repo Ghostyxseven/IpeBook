@@ -55,6 +55,14 @@ Aplique `migrations/20261003140000_perfil_bairro.sql` depois da migração do ca
 
 Aplique `migrations/20261003150000_excluir_conta.sql` por último. Ela cria `delete_own_account()`, que só a própria pessoa autenticada pode chamar. A função apaga a conta, e os dados ligados saem em cascata; as capas são removidas pelo app antes. Teste com uma conta descartável: depois de excluir, o login com ela deve falhar.
 
+## Entrar com o Google (ADR 0028)
+
+1. **Authentication → Providers → Google:** ligue o provedor e cole o client ID e o client secret de um client OAuth "Web application" do Google Cloud. Nele, a "Authorized redirect URI" é `https://<projeto>.supabase.co/auth/v1/callback`.
+2. **Authentication → URL Configuration → Redirect URLs:** acrescente **os três** endereços abaixo. O app volta para um deles depois do Google; se o endereço não estiver na lista, o Supabase manda para a "Site URL", e o celular mostra "O Safari não pode abrir a página porque o endereço é inválido".
+   - `ipebook://**`: app instalado (build de desenvolvimento ou de loja).
+   - `exp://**`: Expo Go. Nele o retorno é `exp://<IP-do-computador>:8081/--/auth/callback`, e o IP muda de rede para rede; por isso o curinga.
+   - O endereço da Web, se o login pelo site for usado (ex.: `https://<dominio>/**`).
+
 ## Anúncio de teste (só em projeto de desenvolvimento)
 
 O catálogo esconde os anúncios da própria pessoa. Para ver um anúncio no app, crie duas contas de teste e insira o anúncio com o id da conta que **não** vai abrir o app (Authentication → Users):

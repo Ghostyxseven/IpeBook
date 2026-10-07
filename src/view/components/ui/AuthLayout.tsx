@@ -15,6 +15,7 @@ export function AuthLayout({
   description,
   brand = false,
   titleSize = 'display',
+  withoutHeader = false,
   children,
   footer,
 }: {
@@ -26,12 +27,20 @@ export function AuthLayout({
   brand?: boolean;
   /** 'headline' (30/36) no cadastro, como no Figma 01.03; 'display' (36/41) nas demais. */
   titleSize?: 'display' | 'headline';
+  /**
+   * Tela sem cabeçalho de navegação (ex.: Entrar): reserva a área segura do topo para o
+   * logotipo não ficar embaixo da barra de status ou do recorte da câmera.
+   */
+  withoutHeader?: boolean;
   children: ReactNode;
   footer?: ReactNode;
 }) {
   const fullTitle = highlight ? `${title} ${highlight}` : title;
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView
+      style={styles.safe}
+      edges={withoutHeader ? ['top', 'bottom', 'left', 'right'] : ['bottom', 'left', 'right']}
+    >
       <KeyboardAvoidingView
         style={styles.safe}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
