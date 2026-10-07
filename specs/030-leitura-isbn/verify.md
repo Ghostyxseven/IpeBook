@@ -9,7 +9,7 @@ Data: 07/10/2026 · Branch `feat/isbn-e-perfil-completo`.
 | `npm run typecheck`                  | sem erros                                       |
 | `npm run lint`                       | sem erros novos                                 |
 | `npm run format:check`               | sem diferenças                                  |
-| `npm test`                           | 297 testes, 297 aprovados (18 novos desta spec) |
+| `npm test`                           | 298 testes, 298 aprovados (18 novos desta spec) |
 | `architecture.test.mjs`              | o Model não importa `expo-camera`               |
 | `npx expo export --platform android` | bundle gerado (4,1 MB)                          |
 | `npx expo export --platform ios`     | bundle gerado (3,8 MB)                          |
@@ -40,6 +40,18 @@ testar a tela com aquele número.
 | 04.02                      | "Digitar o ISBN" troca o visor pelo campo na mesma tela, em vez de abrir outro quadro                                                |
 | 04.03                      | A capa do livro encontrado é um ícone, não a imagem: a Open Library nem sempre tem capa, e um quadrado vazio seria pior que um ícone |
 | visor                      | Cor nova `color.scanner.*`, registrada em `docs/design-system/divergencias.md`                                                       |
+
+## O que a revisão pegou
+
+**Pedido de permissão em laço.** `useIsbnCameraPermission` devolvia um objeto
+novo a cada render, e o efeito que pede a permissão dependia dele — então o
+efeito rodava sempre, reabrindo o pedido enquanto a pessoa não respondesse. Em
+aparelho isso é um diálogo que não para de voltar. O hook passou a memorizar o
+retorno, e os efeitos passaram a depender dos valores (`granted`, `canAskAgain`)
+em vez do objeto.
+
+O `npm test` não pegaria: a tela da câmera não é montada em teste. Apareceu
+relendo o código à procura de dependência de efeito instável.
 
 ## Não executado
 

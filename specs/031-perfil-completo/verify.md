@@ -9,7 +9,7 @@ Data: 07/10/2026 · Branch `feat/isbn-e-perfil-completo`.
 | `npm run typecheck`                  | sem erros                                           |
 | `npm run lint`                       | sem erros novos                                     |
 | `npm run format:check`               | sem diferenças                                      |
-| `npm test`                           | 297 testes, 297 aprovados (18 novos desta spec)     |
+| `npm test`                           | 298 testes, 298 aprovados (19 novos desta spec)     |
 | `architecture.test.mjs`              | Model sem React/Expo; View e rotas sem repositórios |
 | `npx expo export --platform android` | bundle gerado (4,1 MB)                              |
 | `npx expo export --platform ios`     | bundle gerado (3,8 MB)                              |
@@ -42,6 +42,23 @@ diferenças eram grandes:
 "histórico de trocas e doações" e a seção 07 não tem quadro para ela — e é de lá
 que a avaliação sai, que também não tem quadro. Registrado em
 `docs/design-system/divergencias.md`.
+
+## O que a revisão pegou
+
+**Formatação morando na View.** `publicationsLine` e `ratingsLine` nasceram
+dentro do `ProfileScreen`. O projeto põe esse tipo de frase no Model — é o que
+`profileSummary` e `catalogFormat` já fazem — porque é lá que dá para testar sem
+montar tela. As duas foram para `profileSummary.ts` e `reputationFormat.ts`, com
+teste.
+
+**`summaryLine` ficou órfã.** Era a frase do perfil antigo ("2 livros anunciados
+· 2 disponíveis"); o quadro 07.01 põe o total num azulejo próprio, então repetir
+na linha de baixo era dizer duas vezes a mesma coisa. Foi substituída por
+`publicationsLine`, e os quatro testes dela foram adaptados em vez de apagados.
+
+**Id vazio virando requisição.** Com a sessão ainda carregando, o perfil chamava
+`public_profile('')` — um `uuid` malformado, erro garantido no servidor. O
+repositório agora recusa antes de sair da máquina.
 
 ## Divergências do Figma
 
