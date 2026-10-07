@@ -26,6 +26,7 @@ import {
   coverIndex,
   detailHeadline,
   detailActionLabel,
+  detailSignedOutLabel,
   detailMeta,
   modalitySummary,
   cardOverline,
@@ -280,4 +281,14 @@ test('a ação do detalhe diz o que a pessoa está pedindo (Figma 03.01 a 03.03)
   assert.equal(detailActionLabel('sale'), 'Combinar encontro');
   assert.equal(detailActionLabel('trade'), 'Propor troca');
   assert.equal(detailActionLabel('donation'), 'Quero receber');
+});
+
+test('quem não entrou vê o rótulo no infinitivo, sem frase quebrada', () => {
+  assert.equal(detailSignedOutLabel('sale'), 'Entrar para combinar encontro');
+  assert.equal(detailSignedOutLabel('trade'), 'Entrar para propor troca');
+  assert.equal(detailSignedOutLabel('donation'), 'Entrar para receber o livro');
+  // "Quero receber" é primeira pessoa: interpolar daria "Entrar para quero receber".
+  for (const modality of ['sale', 'trade', 'donation']) {
+    assert.doesNotMatch(detailSignedOutLabel(modality), /\bquero\b/i);
+  }
 });

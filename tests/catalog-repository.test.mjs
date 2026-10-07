@@ -143,6 +143,26 @@ test('conservação e teto de preço viram condições da consulta (Figma 02.03)
   );
 });
 
+test('busca por texto e teto de preço convivem na mesma consulta', async () => {
+  const fake = fakeClient({ data: [], error: null, count: 0 });
+  const repository = createSupabaseCatalogRepository(fake.client);
+  await repository.list({
+    filters: { ...emptyFilters, query: 'dom casmurro', maxPriceCents: 2500 },
+    cursor: null,
+    limit: 2,
+  });
+  const ors = fake.calls.filter(([method]) => method === 'or').map(([, arg]) => arg);
+  assert.equal(ors.length, 2, 'uma condição para o texto e outra para o preço');
+  assert.ok(
+    ors.some((arg) => arg.includes('title.ilike')),
+    'a busca por texto continua valendo',
+  );
+  assert.ok(
+    ors.some((arg) => arg === 'price_cents.is.null,price_cents.lte.2500'),
+    'o teto de preço entra como condição própria',
+  );
+});
+
 test('busca curta não filtra e cursor continua depois do último item', async () => {
   const fake = fakeClient({ data: [row('a', '2026-09-28T10:00:00Z')], error: null, count: 9 });
   const repository = createSupabaseCatalogRepository(fake.client);

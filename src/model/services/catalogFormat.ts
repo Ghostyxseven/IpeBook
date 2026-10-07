@@ -134,6 +134,19 @@ export function detailActionLabel(modality: Modality) {
   return 'Combinar encontro';
 }
 
+/**
+ * Rótulo de quem ainda não entrou (Figma 03.01 a 03.03).
+ *
+ * Não dá para reaproveitar `detailActionLabel` aqui: ele é escrito na primeira pessoa
+ * ("Quero receber") e viraria "Entrar para quero receber". Este diz o que vem depois
+ * de entrar, no infinitivo.
+ */
+export function detailSignedOutLabel(modality: Modality) {
+  if (modality === 'donation') return 'Entrar para receber o livro';
+  if (modality === 'trade') return 'Entrar para propor troca';
+  return 'Entrar para combinar encontro';
+}
+
 /** "BOM ESTADO · LITERATURA BRASILEIRA" */
 export function detailMeta(listing: Pick<Listing, 'condition' | 'category'>) {
   return `${conditionLabels[listing.condition]} · ${listing.category}`;
