@@ -1,23 +1,40 @@
 import { useEffect, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { CatalogFilters, Modality } from '../../../model/entities/Listing';
-import { modalityLabels } from '../../../model/services/catalogFormat';
-import { toggleModality } from '../../../model/services/catalogFilters';
+import type { Modality } from '../../../model/entities/Listing';
+import { conditionLabels, modalityLabels } from '../../../model/services/catalogFormat';
+import {
+  CONDITION_ORDER,
+  toggleCondition,
+  toggleModality,
+} from '../../../model/services/catalogFilters';
 import { categories } from '../../../model/services/categories';
+import type { FilterDraft } from '../../../viewmodel/useCatalogSearchViewModel';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 import { AppIcon } from '../AppIcon';
 import { Button } from '../ui/Button';
 import { TextField } from '../ui/TextField';
 import { ModalityChip } from './ModalityChip';
+import { PriceSlider } from './PriceSlider';
 
-type Draft = Pick<CatalogFilters, 'modalities' | 'category' | 'goodCondition'>;
+type Draft = FilterDraft;
 
 const modalities: Modality[] = ['sale', 'trade', 'donation'];
 
+const emptyDraft: Draft = {
+  modalities: [],
+  category: null,
+  conditions: [],
+  maxPriceCents: null,
+};
+
 /**
- * Filtrar livros (Figma Android 02.03). Edita uma cópia dos filtros e só aplica em
+ * Filtrar livros (Figma 02.03, Android e iPhone). Edita uma cópia dos filtros e só aplica em
  * "Mostrar livros"; a cidade é fixa porque o app atende só Piripiri (ADR 0020).
+ *
+ * As seções seguem o quadro do iPhone, que é o mais completo: modalidade, conservação,
+ * categoria e preço máximo. "Distância" fica de fora porque o app não conhece a localização
+ * de quem usa nem guarda coordenadas do anúncio (ADR 0020).
  */
 export function FilterModal({
   visible,
@@ -102,6 +119,24 @@ export function FilterModal({
             ))}
           </View>
 
+          <Text style={styles.section}>Conservação</Text>
+          <View style={styles.chips}>
+            {CONDITION_ORDER.map((condition) => (
+              <ModalityChip
+                key={condition}
+                modality="all"
+                label={conditionLabels[condition]}
+                selected={draft.conditions.includes(condition)}
+                onPress={() =>
+                  setDraft((current) => ({
+                    ...current,
+                    conditions: toggleCondition(current.conditions, condition),
+                  }))
+                }
+              />
+            ))}
+          </View>
+
           <Text style={styles.section}>Categoria</Text>
           <View style={styles.chips}>
             <ModalityChip
@@ -121,56 +156,22 @@ export function FilterModal({
             ))}
           </View>
 
-          <Text style={styles.section}>Condição do livro</Text>
-          <View accessibilityRole="radiogroup">
-            <Radio
-              label="Todas as condições"
-              selected={!draft.goodCondition}
-              onPress={() => setDraft((current) => ({ ...current, goodCondition: false }))}
-            />
-            <Radio
-              label="Somente bom estado"
-              selected={Boolean(draft.goodCondition)}
-              onPress={() => setDraft((current) => ({ ...current, goodCondition: true }))}
-            />
-          </View>
+          <Text style={styles.section}>Preço máximo</Text>
+          <PriceSlider
+            value={draft.maxPriceCents}
+            onChange={(maxPriceCents) => setDraft((current) => ({ ...current, maxPriceCents }))}
+          />
+          <Text style={styles.hint}>
+            Vale para a venda. Livros de troca e doação continuam aparecendo.
+          </Text>
         </ScrollView>
 
         <View style={styles.actions}>
           <Button label={show} disabled={count === 0} onPress={() => onApply(draft)} />
-          <Button
-            label="Limpar filtros"
-            variant="text"
-            onPress={() => setDraft({ modalities: [], category: null, goodCondition: false })}
-          />
+          <Button label="Limpar filtros" variant="text" onPress={() => setDraft(emptyDraft)} />
         </View>
       </SafeAreaView>
     </Modal>
-  );
-}
-
-function Radio({
-  label,
-  selected,
-  onPress,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="radio"
-      accessibilityState={{ checked: selected }}
-      onPress={onPress}
-      style={({ pressed }) => [styles.radio, pressed && styles.pressed]}
-    >
-      <AppIcon
-        name={selected ? 'radioOn' : 'radioOff'}
-        color={selected ? colors.action : colors.onSurfaceVariant}
-      />
-      <Text style={styles.radioLabel}>{label}</Text>
-    </Pressable>
   );
 }
 
@@ -209,15 +210,7 @@ const styles = StyleSheet.create({
   introText: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
   section: { ...typography.titleMedium, color: colors.onSurface, marginTop: spacing.xs },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
-  radio: {
-    minHeight: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingHorizontal: spacing.md,
-  },
-  pressed: { backgroundColor: colors.pressed },
-  radioLabel: { ...typography.bodyLarge, color: colors.onSurface },
+  hint: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
   actions: {
     paddingHorizontal: metrics.pagePadding,
     paddingTop: spacing.sm,

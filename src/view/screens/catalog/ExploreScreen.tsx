@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Modality } from '../../../model/entities/Listing';
-import { modalityLabels } from '../../../model/services/catalogFormat';
+import { conditionLabels, modalityLabels } from '../../../model/services/catalogFormat';
+import { maxPriceLabel } from '../../../model/services/catalogFilters';
 import { categories } from '../../../model/services/categories';
 import { useCatalogSearch } from '../../../factories/catalog';
 import { AppIcon } from '../../components/AppIcon';
@@ -35,7 +36,17 @@ export function ExploreScreen() {
   }, [params.atalho, shortcut, showOnly]);
 
   const [filtering, setFiltering] = useState(false);
-  const filterCount = vm.modalities.length + (vm.category ? 1 : 0) + (vm.goodCondition ? 1 : 0);
+  const filterCount =
+    vm.modalities.length +
+    (vm.category ? 1 : 0) +
+    vm.conditions.length +
+    (vm.maxPriceCents != null ? 1 : 0);
+  const applied = {
+    modalities: vm.modalities,
+    category: vm.category,
+    conditions: vm.conditions,
+    maxPriceCents: vm.maxPriceCents,
+  };
 
   const header = (
     <View style={styles.header}>
@@ -97,19 +108,28 @@ export function ExploreScreen() {
                 onPress={() => vm.selectCategory(null)}
               />
             ) : null}
-            {vm.goodCondition ? (
+            {vm.conditions.map((condition) => (
               <ModalityChip
+                key={condition}
                 modality="all"
-                label="Bom estado"
+                label={conditionLabels[condition]}
                 selected
                 removable
                 onPress={() =>
                   vm.applyFilters({
-                    modalities: vm.modalities,
-                    category: vm.category,
-                    goodCondition: false,
+                    ...applied,
+                    conditions: vm.conditions.filter((item) => item !== condition),
                   })
                 }
+              />
+            ))}
+            {vm.maxPriceCents != null ? (
+              <ModalityChip
+                modality="all"
+                label={maxPriceLabel(vm.maxPriceCents)}
+                selected
+                removable
+                onPress={() => vm.applyFilters({ ...applied, maxPriceCents: null })}
               />
             ) : null}
           </>
@@ -191,11 +211,7 @@ export function ExploreScreen() {
       />
       <FilterModal
         visible={filtering}
-        initial={{
-          modalities: vm.modalities,
-          category: vm.category,
-          goodCondition: vm.goodCondition,
-        }}
+        initial={applied}
         countFor={vm.countFor}
         onClose={() => setFiltering(false)}
         onApply={(draft) => {

@@ -156,6 +156,26 @@ Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e p
 | Folha de opções ao tocar em um livro               | Sem quadro. Segue a folha inferior do M3: `container.low`, cantos `radius.extraLarge`, itens de 56 px. O véu usa preto a 32% (o valor do M3), porque não há token de véu. |
 | Subtítulo de Concluídos                            | O Figma diz "trocas e doações"; o app diz "vendas, trocas e doações", porque venda também conclui.                                                                        |
 
+## Filtrar livros nas duas plataformas (07/10/2026)
+
+O quadro Android 02.03 (`149:2803`) e o do iPhone 02.03 (`192:2819`) ofereciam filtros diferentes: o
+Android tinha modalidade, categoria e o rádio "Somente bom estado"; o iPhone acrescentava as quatro
+conservações, preço máximo e distância. O app seguia o Android.
+
+Decidido: **os filtros são os mesmos nas duas plataformas**, com a apresentação nativa de cada uma.
+O quadro do iPhone é a referência por ser o mais completo, menos a distância.
+
+| Item                                 | Situação                                                                                                                                                                   |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Conservação                          | Entrou nas duas, como chips de seleção múltipla. Usa as quatro conservações do banco (ADR 0008), não os rótulos de exemplo do Figma ("Com marcas", "Desgastado").          |
+| Preço máximo                         | Entrou nas duas, com controle deslizante próprio (ADR 0013): de R$ 5 a R$ 200, de R$ 5 em R$ 5, e o fim da faixa significa "Qualquer preço".                               |
+| Preço máximo em troca e doação       | O teto só corta anúncios de venda; troca e doação não guardam valor e continuam na lista. A tela avisa isso abaixo do controle.                                            |
+| Distância (1 km, 3 km, 5 km, Cidade) | **Fora.** O app não conhece a localização de quem usa e o anúncio não guarda coordenadas: só bairro e cidade fixa (ADR 0020). Entrar exigiria migração e uma spec própria. |
+| Rádio "Somente bom estado" (Android) | Saiu: virou a escolha de conservações, que cobre o mesmo caso e mais.                                                                                                      |
+
+O Figma precisa ser atualizado junto: tirar "Distância" do quadro do iPhone e acrescentar
+conservação e preço máximo ao do Android.
+
 ## Explorar e Filtrar livros (03/10/2026)
 
 Refeitos pelos quadros Android 02.02 a 02.04. Diferenças que ficaram:
