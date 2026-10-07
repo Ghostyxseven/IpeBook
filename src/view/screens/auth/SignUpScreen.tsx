@@ -1,11 +1,13 @@
 import { useRef } from 'react';
 import type { TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSignUp } from '../../../factories/auth';
+import { useSignUp, useSocialAuth } from '../../../factories/auth';
 import { AuthLayout } from '../../components/ui/AuthLayout';
 import { Button } from '../../components/ui/Button';
 import { Checkbox } from '../../components/ui/Checkbox';
+import { Divider } from '../../components/ui/Divider';
 import { FormMessage } from '../../components/ui/FormMessage';
+import { SocialButton } from '../../components/ui/SocialButton';
 import { TextField } from '../../components/ui/TextField';
 
 export function SignUpScreen() {
@@ -15,6 +17,7 @@ export function SignUpScreen() {
   const vm = useSignUp({
     onSignedUp: (email) => router.replace({ pathname: '/verificar-email', params: { email } }),
   });
+  const social = useSocialAuth();
   return (
     <AuthLayout
       brand
@@ -30,6 +33,13 @@ export function SignUpScreen() {
       }
     >
       <FormMessage tone="error" message={vm.errors.form} />
+      <FormMessage tone="error" message={social.error} />
+      <SocialButton
+        label="Continuar com o Google"
+        onPress={social.continueWithGoogle}
+        loading={social.loading}
+      />
+      <Divider label="ou crie com e-mail" />
       <TextField
         label="Nome completo"
         value={vm.values.name}
@@ -79,6 +89,15 @@ export function SignUpScreen() {
         error={vm.errors.terms}
       />
       <Button label="Criar conta" onPress={vm.submit} loading={vm.submitting} />
+      {vm.emailInUse && (
+        <Button
+          label="Recuperar senha"
+          variant="text"
+          onPress={() =>
+            router.push({ pathname: '/recuperar-senha', params: { email: vm.values.email } })
+          }
+        />
+      )}
     </AuthLayout>
   );
 }

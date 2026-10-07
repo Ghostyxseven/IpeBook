@@ -25,3 +25,4 @@
 - [0023 - Excluir a própria conta pelo app](0023-excluir-conta-pelo-app.md) (proposto, implementado)
 - [0024 - Componentes do iPhone nas telas de acesso](0024-componentes-ios-da-autenticacao.md) (proposto, falta iPhone real)
 - [0025 - App completo na Web, em /app](0025-app-completo-na-web.md) (proposto, falta configurar a Vercel)
+- [0026 - Entrar com o Google e avisos de sucesso no acesso](0026-google-e-avisos-de-sucesso-no-acesso.md) (proposto, falta configurar o provedor no Supabase)

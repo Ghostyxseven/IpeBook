@@ -10,6 +10,7 @@ export type AuthErrorCode =
   | 'rate_limited'
   | 'network'
   | 'not_configured'
+  | 'oauth_cancelled'
   | 'unknown';
 
 /** Erro de autenticação independente do provedor (Supabase fica só no repositório). */

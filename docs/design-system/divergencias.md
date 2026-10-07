@@ -156,6 +156,19 @@ Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e p
 | Folha de opções ao tocar em um livro               | Sem quadro. Segue a folha inferior do M3: `container.low`, cantos `radius.extraLarge`, itens de 56 px. O véu usa preto a 32% (o valor do M3), porque não há token de véu. |
 | Subtítulo de Concluídos                            | O Figma diz "trocas e doações"; o app diz "vendas, trocas e doações", porque venda também conclui.                                                                        |
 
+## Acesso — comparação com o Figma 06 · Android e 07 · iPhone (07/10/2026)
+
+Comparação das 17 telas do fluxo "01 · Acesso" nas páginas `06 · Android` e `07 · iPhone` (01.01 a 01.17) com `src/view/screens/auth`. O que ficou diferente do Figma, e por quê (decisão no [ADR 0026](../adr/0026-google-e-avisos-de-sucesso-no-acesso.md), salvo onde indicado):
+
+| Item                                                    | Situação                                                                                                                                                                                                                                                           |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| "Continuar com a Apple" (01.02, 01.03, 01.09 do iPhone) | Fora por enquanto: exige conta paga no Apple Developer Program e `Sign in with Apple` nativo. O Google (nos dois quadros) já entrou (ADR 0026).                                                                                                                    |
+| Telas 01.02 "Entrar" (hub social, Android e iPhone)     | O app não tem uma tela à parte só com os botões de login social antes do formulário: o Login (01.10) já mostra e-mail e senha direto, com o Google acima.                                                                                                          |
+| "Link" nas telas 01.04, 01.05, 01.08 e 01.12            | O app usa código por e-mail (OTP), decidido no [ADR 0006](../adr/0006-autenticacao-supabase.md). O texto dessas telas no Figma não foi atualizado para "código" depois dessa decisão.                                                                              |
+| 01.14 "E-mail já cadastrado" e 01.16 "E-mail inválido"  | Não são telas à parte: o erro aparece no campo de e-mail. Depois do ADR 0026, o erro de e-mail já cadastrado também mostra o atalho "Recuperar senha".                                                                                                             |
+| 01.09 e 01.13 como telas de sucesso (iPhone)            | Resolvido pelo ADR 0026 só no iPhone: o app leva direto para a tela seguinte (Início ou Seu bairro) com um aviso por cima. No Android e na Web, o quadro pede tela dedicada com cartão — o app manteve `EmailConfirmedScreen`/`PasswordUpdatedScreen` nesses dois. |
+| "Explorar livros sem entrar" (01.01, só no Android)     | Não existe no app: o catálogo exige sessão em `(app)`. Sem decisão ainda (ADR 0026); mudaria a proteção de rotas.                                                                                                                                                  |
+
 ## Explorar e Filtrar livros (03/10/2026)
 
 Refeitos pelos quadros Android 02.02 a 02.04. Diferenças que ficaram:

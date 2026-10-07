@@ -15,9 +15,12 @@ type Account = { user: User; password: string; termsAcceptedAt?: Date };
 export function createMemoryAuthRepository({
   code = '123456',
   beforePasswordUpdate,
+  googleAccount,
 }: {
   code?: string;
   beforePasswordUpdate?: () => Promise<void>;
+  /** Conta que o Google "devolve" em `signInWithGoogle`; `undefined` simula cancelar. */
+  googleAccount?: User;
 } = {}) {
   const accounts = new Map<string, Account>();
   const gate = createUserChangeGate();
@@ -48,6 +51,12 @@ export function createMemoryAuthRepository({
       if (!account.user.emailVerified) throw new AuthError('email_not_confirmed');
       setCurrent(account.user);
       return account.user;
+    },
+    async signInWithGoogle() {
+      calls.push('signInWithGoogle');
+      if (!googleAccount) throw new AuthError('oauth_cancelled');
+      setCurrent(googleAccount);
+      return googleAccount;
     },
     async signUp(name, email, password, termsAcceptedAt) {
       calls.push('signUp');
