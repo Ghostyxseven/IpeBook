@@ -83,6 +83,8 @@ test('ensureTransition lança invalid_transition para transição proibida', () 
   assert.throws(() => ensureTransition('rejected', 'accepted'), {
     code: 'invalid_transition',
   });
+  // Quem captura espera a classe do domínio, não um Error qualquer.
+  assert.throws(() => ensureTransition('pending', 'completed'), BookRequestError);
   // Transições válidas não lançam
   ensureTransition('pending', 'accepted');
   ensureTransition('accepted', 'completed');
