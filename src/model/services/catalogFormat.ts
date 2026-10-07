@@ -122,6 +122,18 @@ export function detailHeadline(listing: Pick<Listing, 'modality' | 'priceCents'>
   return { value: 'Gratuito', label };
 }
 
+/**
+ * Rótulo da ação principal do detalhe (Figma 03.01 a 03.03).
+ *
+ * As três levam à mesma tela de combinar local, dia e horário; muda só o que a pessoa
+ * está pedindo, como nos quadros de cada modalidade.
+ */
+export function detailActionLabel(modality: Modality) {
+  if (modality === 'donation') return 'Quero receber';
+  if (modality === 'trade') return 'Propor troca';
+  return 'Combinar encontro';
+}
+
 /** "BOM ESTADO · LITERATURA BRASILEIRA" */
 export function detailMeta(listing: Pick<Listing, 'condition' | 'category'>) {
   return `${conditionLabels[listing.condition]} · ${listing.category}`;

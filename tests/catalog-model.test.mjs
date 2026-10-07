@@ -25,6 +25,7 @@ import {
   listingMeta,
   coverIndex,
   detailHeadline,
+  detailActionLabel,
   detailMeta,
   modalitySummary,
   cardOverline,
@@ -273,4 +274,10 @@ test('saudação usa só o primeiro nome e tolera cadastro sem nome', () => {
   assert.equal(firstName(undefined), null);
   assert.equal(greeting('Micael Cardoso Reis'), 'Olá, Micael');
   assert.equal(greeting(null), 'Olá');
+});
+
+test('a ação do detalhe diz o que a pessoa está pedindo (Figma 03.01 a 03.03)', () => {
+  assert.equal(detailActionLabel('sale'), 'Combinar encontro');
+  assert.equal(detailActionLabel('trade'), 'Propor troca');
+  assert.equal(detailActionLabel('donation'), 'Quero receber');
 });

@@ -99,6 +99,17 @@ export function meetingDayOptions(today: Date, count = 7) {
 /** Horários oferecidos nos chips de "Horário" (Figma 06.04), em horário comercial. */
 export const meetingTimeOptions = ['09:00', '10:00', '14:00', '15:00', '17:00', '19:00'];
 
+/**
+ * Atalhos de local do "Onde" (Figma 06.04): tipos de lugar público e movimentado, não
+ * endereços conferidos. Quem combina confirma o ponto exato na conversa, e o campo
+ * continua aberto para escrever outro.
+ */
+export const meetingPlaceSuggestions = ['Praça da Matriz', 'Biblioteca Municipal'];
+
+export function isSuggestedPlace(place: string) {
+  return meetingPlaceSuggestions.includes(place.trim());
+}
+
 const dealNouns: Record<Modality, string> = { sale: 'compra', trade: 'troca', donation: 'doação' };
 const wantVerbs: Record<Modality, string> = {
   sale: 'comprar',
