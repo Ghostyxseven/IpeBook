@@ -30,6 +30,8 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
   });
   const [errors, setErrors] = useState<FieldErrors<Field>>({});
   const [notice, setNotice] = useState<string | undefined>();
+  // Vira true a cada reenvio bem-sucedido (Figma 01.15): a tela usa para mostrar o aviso.
+  const [resent, setResent] = useState(false);
   const [submitting, run] = useAsyncAction();
   const [resending, runResend] = useAsyncAction();
   const cooldown = useResendCooldown(0);
@@ -52,6 +54,7 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
     values,
     errors,
     notice,
+    resent,
     submitting,
     resending,
     resendSeconds: cooldown.seconds,
@@ -76,10 +79,12 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
     resend: () =>
       runResend(async () => {
         if (cooldown.seconds > 0) return;
+        setResent(false);
         try {
           await repository.requestPasswordReset(address);
           setNotice(sentNotice());
           cooldown.restart();
+          setResent(true);
         } catch (failure) {
           setErrors({ form: authErrorMessage(toAuthError(failure).code) });
         }
@@ -88,6 +93,7 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
       void repository.cancelPasswordRecovery().catch(() => undefined);
       setStep('request');
       setNotice(undefined);
+      setResent(false);
       setErrors({});
       setValues((current) => ({ ...current, code: '' }));
     },
