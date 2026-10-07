@@ -55,15 +55,15 @@ relendo o código à procura de dependência de efeito instável.
 
 ## Não executado
 
-| O quê                                 | Por quê                                                                                                                          |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Câmera real lendo um código de barras | `expo-camera` é módulo nativo: precisa de build de desenvolvimento (ADR 0015), que não existe nesta máquina. O Expo Go não serve |
-| Consulta real à Open Library          | Os testes usam `fetch` falso. A chamada real depende de aparelho com internet                                                    |
-| Permissão negada em aparelho          | Mesmo motivo do primeiro item                                                                                                    |
+| O quê                                 | Por quê                                                                                                                      |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Câmera real lendo um código de barras | Depende de aparelho. `expo-camera` **está incluído no Expo Go**, então o teste não espera build — o que falta é alguém rodar |
+| Consulta real à Open Library          | Os testes usam `fetch` falso. A chamada real depende de aparelho com internet                                                |
+| Permissão negada em aparelho          | Mesmo motivo do primeiro item                                                                                                |
 
 ## Pendências
 
-- Rodar em Android com build de desenvolvimento e ler o código de barras de um
+- Rodar em Android pelo Expo Go e ler o código de barras de um
   livro de verdade, de preferência uma edição brasileira — é onde a cobertura da
   Open Library é mais fraca e onde a tela 04.18 mais vai aparecer.
 - Avisar a equipe de design sobre o ISBN inválido do quadro 04.18.

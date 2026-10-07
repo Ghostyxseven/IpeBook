@@ -75,7 +75,7 @@ repositório agora recusa antes de sair da máquina.
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Fluxo real contra o Supabase      | **A migração `20261007120000_avaliacoes_e_perfil_publico.sql` ainda não foi aplicada.** Até lá o app mostra "As avaliações ainda não foram configuradas neste ambiente" e o resto segue funcionando |
 | Avaliar uma negociação de verdade | Depende do item acima e de duas contas com uma negociação concluída                                                                                                                                 |
-| Fluxo em aparelho                 | Pendente, junto com as specs 025 e 026                                                                                                                                                              |
+| Fluxo em aparelho                 | Pendente, junto com as specs 025 e 026. Roda no Expo Go; o que falta é a migração                                                                                                                   |
 
 ## Pendências
 

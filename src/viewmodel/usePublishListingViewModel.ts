@@ -1,12 +1,18 @@
 import { useCallback, useMemo, useState } from 'react';
 import type { BookLookup } from '../model/entities/BookLookup';
+import type { DraftRecord } from '../model/entities/Draft';
+import { DraftError, toDraftError } from '../model/entities/Draft.ts';
 import type { MyListing } from '../model/entities/Listing';
 import { toListingError } from '../model/entities/ListingError.ts';
 import { fillFromLookup } from '../model/services/bookLookup.ts';
 import { listingErrorMessage } from '../model/services/listingMessages.ts';
+import type { DraftsRepository } from '../model/repositories/DraftsRepository';
 import type { CoverFile, ListingsRepository } from '../model/repositories/ListingsRepository';
+import { draftErrorMessage } from '../model/services/draftMessages.ts';
+import { missingFields } from '../model/services/draftSummary.ts';
 import { useAsyncAction } from './useAsyncAction.ts';
 import {
+  emptyDraft,
   validateBookStep,
   validateModalityStep,
   type ListingErrors,
@@ -36,7 +42,10 @@ export type PickedCover = { file: CoverFile; previewUri: string };
  * Uma etapa só avança com os campos dela válidos, e tentar avançar é o que
  * acende os erros: antes disso o formulário fica limpo.
  */
-export function usePublishListingViewModel(repository: ListingsRepository) {
+export function usePublishListingViewModel(
+  repository: ListingsRepository,
+  drafts?: DraftsRepository,
+) {
   const form = useListingForm();
   const [index, setIndex] = useState(0);
   const [tried, setTried] = useState<Partial<Record<PublishStep, boolean>>>({});
@@ -46,6 +55,11 @@ export function usePublishListingViewModel(repository: ListingsRepository) {
   // A leitura de ISBN (spec 030) é um estado desta tela, não uma rota: uma rota
   // desmontaria o formulário e levaria junto o rascunho já digitado.
   const [scanning, setScanning] = useState(false);
+  // O rascunho recém-guardado (quadro 04.14) e o que foi retomado, para que
+  // salvar de novo atualize em vez de criar um segundo.
+  const [savedDraft, setSavedDraft] = useState<DraftRecord | null>(null);
+  const [resumedId, setResumedId] = useState<string | null>(null);
+  const [draftError, setDraftError] = useState<string | null>(null);
   const [submitting, run] = useAsyncAction();
 
   const step = publishSteps[index] as PublishStep;
@@ -78,6 +92,66 @@ export function usePublishListingViewModel(repository: ListingsRepository) {
     setIndex((current) => Math.min(current + 1, publishSteps.length - 1));
     return true;
   }, [step, rawErrorsOf]);
+
+  /**
+   * Há algo a perder ao sair? É o que decide se o quadro 04.13 aparece.
+   *
+   * "Algo" é qualquer coisa que a pessoa tenha digitado ou escolhido — inclusive
+   * uma foto. Perguntar num formulário intocado seria atrapalhar quem só abriu
+   * a tela por engano.
+   */
+  const hasContent = useMemo(() => {
+    const missing = missingFields(draft).length;
+    const untouched = missingFields(emptyDraft()).length;
+    return missing < untouched || Boolean(cover) || form.priceInput.trim().length > 0;
+  }, [draft, cover, form.priceInput]);
+
+  /** "Salvar" do quadro 04.13. Sem repositório de rascunho, não faz nada. */
+  const saveDraft = useCallback(
+    () =>
+      run(async () => {
+        if (!drafts) return;
+        setDraftError(null);
+        try {
+          const record = resumedId
+            ? await drafts.update(resumedId, draft)
+            : await drafts.save(draft);
+          setResumedId(record.id);
+          setSavedDraft(record);
+        } catch (cause) {
+          setDraftError(draftErrorMessage(toDraftError(cause).code));
+        }
+      }),
+    [run, drafts, draft, resumedId],
+  );
+
+  /** "Retomar anúncio": o formulário volta preenchido, na etapa 1 (quadro 04.12). */
+  const resume = useCallback(
+    (record: DraftRecord) => {
+      form.reset(record.draft);
+      setResumedId(record.id);
+      setSavedDraft(null);
+      setIndex(0);
+      setTried({});
+    },
+    [form],
+  );
+
+  /** O mesmo, a partir do id que a tela de rascunhos manda pela rota. */
+  const resumeDraft = useCallback(
+    async (id: string) => {
+      if (!drafts) return;
+      setDraftError(null);
+      try {
+        const found = (await drafts.list()).find((record) => record.id === id);
+        if (!found) throw new DraftError('not_found');
+        resume(found);
+      } catch (cause) {
+        setDraftError(draftErrorMessage(toDraftError(cause).code));
+      }
+    },
+    [drafts, resume],
+  );
 
   const openScanner = useCallback(() => setScanning(true), []);
   const closeScanner = useCallback(() => setScanning(false), []);
@@ -137,5 +211,13 @@ export function usePublishListingViewModel(repository: ListingsRepository) {
     openScanner,
     closeScanner,
     applyLookup,
+    hasContent,
+    saveDraft,
+    savedDraft,
+    clearSavedDraft: () => setSavedDraft(null),
+    resume,
+    resumeDraft,
+    resumedId,
+    draftError,
   };
 }

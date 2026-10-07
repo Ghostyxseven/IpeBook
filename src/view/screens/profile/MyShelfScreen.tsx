@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,11 +6,15 @@ import { useBookRequestList } from '../../../factories/bookRequest';
 import { useMyListings } from '../../../factories/listings';
 import { requestListLabel } from '../../../model/services/bookRequestFormat';
 import { modalityLabels } from '../../../model/services/catalogFormat';
-import { shelfSections, shelfSupportingText } from '../../../model/services/listingFormat';
+import {
+  closedProposalsLabel,
+  remainingLabel,
+  shelfSections,
+  shelfSupportingText,
+} from '../../../model/services/listingFormat';
 import { AppIcon } from '../../components/AppIcon';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
-import { ShelfActionsSheet } from '../../components/shelf/ShelfActionsSheet';
 import { ShelfBookRow } from '../../components/shelf/ShelfBookRow';
 import { ShelfTabs, type ShelfTab } from '../../components/shelf/ShelfTabs';
 import { Button } from '../../components/ui/Button';
@@ -35,7 +39,12 @@ export function MyShelfScreen() {
   const vm = useMyListings();
   const requests = useBookRequestList();
   const [tab, setTab] = useState<ShelfTab>('anuncios');
-  const [openId, setOpenId] = useState<string | null>(null);
+  // 05.07: a estante logo depois de uma exclusão. O título vem pela rota, de
+  // quem excluiu — o anúncio já não existe para ser consultado.
+  const { removido } = useLocalSearchParams<{ removido?: string }>();
+  const [removedNotice, setRemovedNotice] = useState<string | null>(
+    removido ? String(removido) : null,
+  );
 
   // Ao voltar de uma edição ou de uma negociação, a estante mostra a situação nova.
   // As funções de recarregar mudam a cada render; a ref evita reexecutar o efeito sem foco novo.
@@ -53,6 +62,12 @@ export function MyShelfScreen() {
   );
 
   const { active, done } = useMemo(() => shelfSections(vm.listings), [vm.listings]);
+  // 05.08 · Proposta encerrada: as recusadas não entram no fluxo principal, mas
+  // quem anunciou precisa saber que elas não reservam mais o livro.
+  const closed = useMemo(
+    () => requests.items.filter((item) => item.asOwner && item.request.status === 'rejected'),
+    [requests.items],
+  );
   const proposals = useMemo(
     () =>
       requests.items.filter(
@@ -61,7 +76,6 @@ export function MyShelfScreen() {
       ),
     [requests.items],
   );
-  const opened = vm.listings.find((item) => item.id === openId) ?? null;
   const now = new Date();
 
   const announce = () => router.push('/anunciar');
@@ -143,26 +157,42 @@ export function MyShelfScreen() {
         {tab === 'anuncios' ? (
           active.length ? (
             <>
+              {removedNotice ? (
+                <View style={styles.notice} accessibilityLiveRegion="polite">
+                  <Text accessibilityRole="header" style={styles.noticeTitle}>
+                    Seus livros continuam a circular.
+                  </Text>
+                  <Text style={styles.introText}>
+                    {`${removedNotice} foi removido dos anúncios ativos.`}
+                  </Text>
+                  <Text style={styles.footnote}>{remainingLabel(active.length)}</Text>
+                  <Button label="Entendi" variant="text" onPress={() => setRemovedNotice(null)} />
+                </View>
+              ) : null}
               {active.map((listing) => (
                 <ShelfBookRow
                   key={listing.id}
                   listing={listing}
                   supporting={shelfSupportingText(listing, now)}
-                  hint="Abre as opções deste anúncio"
+                  hint="Abre o gerenciamento deste anúncio"
                   disabled={vm.pendingId === listing.id}
-                  onPress={() => setOpenId(listing.id)}
+                  onPress={() =>
+                    router.push({ pathname: '/anuncio/[id]', params: { id: listing.id } })
+                  }
                 />
               ))}
-              <Text style={styles.footnote}>
-                Toque em um livro para ver, editar, arquivar ou excluir.
-              </Text>
+              <Text style={styles.footnote}>Toque em um livro para editar, pausar ou excluir.</Text>
+              <DraftsEntry onPress={() => router.push('/anunciar/rascunhos')} />
             </>
           ) : (
-            <TabEmpty
-              title="Nenhum anúncio ativo"
-              text="Os livros que você anunciar aparecem aqui."
-              primary={{ label: 'Anunciar um livro', onPress: announce }}
-            />
+            <>
+              <TabEmpty
+                title="Nenhum anúncio ativo"
+                text="Os livros que você anunciar aparecem aqui."
+                primary={{ label: 'Anunciar um livro', onPress: announce }}
+              />
+              <DraftsEntry onPress={() => router.push('/anunciar/rascunhos')} />
+            </>
           )
         ) : null}
 
@@ -198,6 +228,7 @@ export function MyShelfScreen() {
                 title="Tudo pela conversa"
                 text="Confira a proposta e combine os detalhes antes de reservar seu livro."
               />
+              <ClosedProposals items={closed} onOpen={() => setTab('anuncios')} />
             </>
           ) : (
             <TabEmpty
@@ -249,33 +280,65 @@ export function MyShelfScreen() {
         <AppIcon name="add" color={colors.onSelected} />
         <Text style={styles.fabLabel}>Anunciar livro</Text>
       </Pressable>
-
-      <ShelfActionsSheet
-        listing={opened}
-        busy={opened ? vm.pendingId === opened.id : false}
-        onClose={() => setOpenId(null)}
-        onOpen={() => {
-          setOpenId(null);
-          if (opened) router.push({ pathname: '/livro/[id]', params: { id: opened.id } });
-        }}
-        onEdit={() => {
-          setOpenId(null);
-          if (opened) router.push(`/anunciar/${opened.id}`);
-        }}
-        onArchive={() => {
-          setOpenId(null);
-          if (opened) vm.archive(opened.id);
-        }}
-        onRepublish={() => {
-          setOpenId(null);
-          if (opened) vm.republish(opened.id);
-        }}
-        onRemove={() => {
-          setOpenId(null);
-          if (opened) vm.remove(opened.id);
-        }}
-      />
     </SafeAreaView>
+  );
+}
+
+/** A entrada "Rascunhos" do quadro 05.01. */
+function DraftsEntry({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Rascunhos"
+      accessibilityHint="Anúncios que você começou e ainda não publicou"
+      onPress={onPress}
+      style={({ pressed }) => [styles.draftsEntry, pressed && styles.draftsPressed]}
+    >
+      <AppIcon name="document" size={20} color={colors.onSurfaceVariant} />
+      <View style={styles.draftsText}>
+        <Text style={styles.draftsTitle}>Rascunhos</Text>
+        <Text style={styles.footnote}>Anúncios que você começou e ainda não publicou.</Text>
+      </View>
+      <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+    </Pressable>
+  );
+}
+
+/**
+ * 05.08 · Proposta encerrada.
+ *
+ * O quadro é uma tela inteira; aqui é um bloco dentro da aba Propostas. Levar
+ * a pessoa a outra tela exigiria que a recusa — que acontece na negociação —
+ * navegasse para cá, e a negociação é de outra feature.
+ */
+function ClosedProposals({
+  items,
+  onOpen,
+}: {
+  items: readonly { request: { id: string }; listing: { title: string } | null }[];
+  onOpen: () => void;
+}) {
+  const router = useRouter();
+  if (items.length === 0) return null;
+  return (
+    <View style={styles.notice}>
+      <Text accessibilityRole="header" style={styles.noticeTitle}>
+        Proposta encerrada.
+      </Text>
+      <Text style={styles.introText}>{closedProposalsLabel(items.length)}</Text>
+      {items.map(({ request, listing }) => (
+        <Text key={request.id} style={styles.footnote}>
+          {`${listing?.title ?? 'Livro indisponível'} · recusada`}
+        </Text>
+      ))}
+      <Text style={styles.footnote}>
+        Essa proposta não reserva o anúncio. Seu livro pode receber novas propostas.
+      </Text>
+      <View style={styles.noticeActions}>
+        <Button label="Ver meus anúncios" variant="secondary" onPress={onOpen} />
+        <Button label="Abrir conversas" variant="text" onPress={() => router.push('/conversas')} />
+      </View>
+    </View>
   );
 }
 
@@ -316,6 +379,26 @@ function Note({ title, text }: { title: string; text: string }) {
 }
 
 const styles = StyleSheet.create({
+  notice: {
+    gap: spacing.xs,
+    padding: spacing.md,
+    borderRadius: radius.medium,
+    backgroundColor: colors.containerLow,
+  },
+  noticeTitle: { ...typography.brandTitle, color: colors.onSurface },
+  noticeActions: { gap: spacing.xxs, paddingTop: spacing.xxs },
+  draftsEntry: {
+    minHeight: metrics.touchTarget,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.small,
+  },
+  draftsPressed: { backgroundColor: colors.pressed },
+  draftsText: { flex: 1, gap: 2 },
+  draftsTitle: { ...typography.bodyLarge, color: colors.onSurface },
   screen: { flex: 1, backgroundColor: colors.surface },
   // Barra superior pequena do M3: título de 22/28 alinhado à esquerda.
   appBar: {

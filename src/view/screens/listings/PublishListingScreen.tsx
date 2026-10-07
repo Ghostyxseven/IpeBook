@@ -1,15 +1,17 @@
 import { Image } from 'expo-image';
-import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePublishListing } from '../../../factories/listings';
+import type { DraftRecord } from '../../../model/entities/Draft';
 import type { MyListing } from '../../../model/entities/Listing';
 import {
   conditionLabels,
   modalityLabels,
   modalitySummary,
 } from '../../../model/services/catalogFormat';
+import { draftSupporting, draftTitle } from '../../../model/services/draftSummary';
 import { categories } from '../../../model/services/categories';
 import { conditions, modalities } from '../../../model/services/listingValidation';
 import type { PublishStep } from '../../../viewmodel/usePublishListingViewModel';
@@ -21,6 +23,7 @@ import { SegmentedButtons } from '../../components/listings/SegmentedButtons';
 import { ActionBar } from '../../components/negotiation/ActionBar';
 import { ScanIsbnScreen } from './ScanIsbnScreen';
 import { Button } from '../../components/ui/Button';
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TextField } from '../../components/ui/TextField';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
@@ -45,8 +48,24 @@ const PREVIEW_ID = 'novo-anuncio';
 export function PublishListingScreen() {
   const router = useRouter();
   const vm = usePublishListing();
+  const { rascunho } = useLocalSearchParams<{ rascunho?: string }>();
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [picking, setPicking] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+
+  // 04.12 · Retomar rascunho. Uma vez por id: `resumeDraft` reescreve o
+  // formulário, e repetir isso a cada render apagaria o que a pessoa digitar.
+  const resumed = useRef<string | null>(null);
+  const resumeDraft = vm.resumeDraft;
+  useEffect(() => {
+    const id = rascunho ? String(rascunho) : null;
+    if (!id || resumed.current === id) return;
+    resumed.current = id;
+    void resumeDraft(id);
+  }, [rascunho, resumeDraft]);
+
+  /** Sair com algo preenchido pergunta antes (04.13); sem nada, sai direto. */
+  const leave = () => (vm.hasContent ? setLeaving(true) : router.back());
 
   const choosePhoto = async () => {
     setPhotoError(null);
@@ -60,6 +79,11 @@ export function PublishListingScreen() {
 
   if (vm.published) {
     return <Published listing={vm.published} />;
+  }
+
+  // 04.14 · Rascunho salvo
+  if (vm.savedDraft) {
+    return <DraftSaved record={vm.savedDraft} onContinue={vm.clearSavedDraft} />;
   }
 
   // 04.02 a 04.18: a leitura ocupa a tela e devolve o formulário intacto.
@@ -79,7 +103,7 @@ export function PublishListingScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={vm.isFirst ? 'Fechar' : 'Voltar'}
-          onPress={() => (vm.isFirst ? router.back() : vm.back())}
+          onPress={() => (vm.isFirst ? leave() : vm.back())}
           disabled={vm.submitting}
           style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
             styles.iconButton,
@@ -334,6 +358,62 @@ export function PublishListingScreen() {
           />
         ) : null}
       </ActionBar>
+
+      {/* 04.13 · Salvar para depois? */}
+      <ConfirmDialog
+        visible={leaving}
+        title="Salvar para depois?"
+        message="Guarde este anúncio como rascunho e continue quando quiser. Ele ainda não será publicado."
+        confirmLabel="Salvar"
+        busy={vm.submitting}
+        error={vm.draftError}
+        onCancel={() => setLeaving(false)}
+        onConfirm={async () => {
+          await vm.saveDraft();
+          setLeaving(false);
+        }}
+      />
+    </SafeAreaView>
+  );
+}
+
+/** 04.14 · Rascunho salvo: o que foi guardado e para onde ir em seguida. */
+function DraftSaved({ record, onContinue }: { record: DraftRecord; onContinue: () => void }) {
+  const router = useRouter();
+  return (
+    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScrollView contentContainerStyle={[styles.content, styles.doneContent]}>
+        <View accessibilityRole="header" accessible accessibilityLiveRegion="polite">
+          <Text style={styles.brand}>Seu anúncio pode esperar.</Text>
+        </View>
+        <Text style={styles.body}>
+          O livro ficou nos seus rascunhos. Retome quando estiver pronto.
+        </Text>
+        <View style={styles.draftRow}>
+          <View style={styles.flex}>
+            <Text style={styles.previewTitle} numberOfLines={1}>
+              {draftTitle(record)}
+            </Text>
+            <Text style={styles.body} numberOfLines={2}>
+              {draftSupporting(record)}
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+      <ActionBar>
+        <Button label="Continuar edição" onPress={onContinue} />
+        <Button
+          label="Ver rascunhos"
+          variant="secondary"
+          onPress={() => router.replace('/anunciar/rascunhos')}
+        />
+        <Button
+          label="Voltar à estante"
+          variant="text"
+          onPress={() => router.replace('/estante')}
+        />
+      </ActionBar>
     </SafeAreaView>
   );
 }
@@ -480,6 +560,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.containerLow,
   },
   isbnTitle: { ...typography.bodyLarge, color: colors.onSurface },
+  draftRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    alignItems: 'center',
+    padding: spacing.md,
+    borderRadius: radius.medium,
+    backgroundColor: colors.containerLow,
+  },
   bookRow: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start' },
   photoTile: {
     width: 92,

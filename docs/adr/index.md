@@ -27,3 +27,4 @@
 - [0025 - App completo na Web, em /app](0025-app-completo-na-web.md) (proposto, falta configurar a Vercel)
 - [0026 - Leitura de ISBN pela câmera](0026-leitura-de-isbn.md) (proposto, implementado; falta build com câmera real)
 - [0027 - Avaliações e perfil público](0027-avaliacoes-e-perfil-publico.md) (proposto, implementado; falta aplicar a migração)
+- [0028 - Rascunho de anúncio guardado no aparelho](0028-rascunhos-no-aparelho.md) (proposto, implementado; falta conferir a persistência em aparelho)

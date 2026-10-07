@@ -4,12 +4,12 @@ O IpêBook usa **duas vozes**: uma serifada, de livro, para a marca e os momento
 
 ## Famílias
 
-| Papel | Família | Onde | Pesos |
-| --- | --- | --- | --- |
-| Marca | Source Serif 4 (`--font-serif`) | Logotipo, títulos de entrada, confirmações, herói da Web | 600, 700 |
-| Interface Android e Web | Roboto Flex (`--font-sans`) | Todo o resto | 400, 500, 600, 700 |
-| Interface iOS | SF Pro, fonte do sistema (`--font-ios`) | Todo o resto no iPhone e iPad | Regular, Semibold, Bold |
-| Códigos | Roboto Mono (`--font-mono`) | ISBN | 400 |
+| Papel                   | Família                                 | Onde                                                     | Pesos                   |
+| ----------------------- | --------------------------------------- | -------------------------------------------------------- | ----------------------- |
+| Marca                   | Source Serif 4 (`--font-serif`)         | Logotipo, títulos de entrada, confirmações, herói da Web | 600, 700                |
+| Interface Android e Web | Roboto Flex (`--font-sans`)             | Todo o resto                                             | 400, 500, 600, 700      |
+| Interface iOS           | SF Pro, fonte do sistema (`--font-ios`) | Todo o resto no iPhone e iPad                            | Regular, Semibold, Bold |
+| Códigos                 | Roboto Mono (`--font-mono`)             | ISBN                                                     | 400                     |
 
 SF Pro não é distribuída com o app: no iOS use sempre a fonte do sistema (`.body`, `.headline`…), que já traz Dynamic Type e ajustes óticos. Source Serif 4 e Roboto Flex são de licença aberta (OFL) e podem ser embarcadas no Android e servidas na Web.
 

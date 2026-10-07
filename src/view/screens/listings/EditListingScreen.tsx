@@ -34,12 +34,23 @@ export function EditListingScreen({ id }: { id: string }) {
     );
   }
 
+  // 04.06 · Revise o anúncio: com campo recusado, a tela passa a se chamar pelo
+  // que está acontecendo. "Editar anúncio" não diz à pessoa que falta corrigir.
+  const bookErrors = vm.errorsOf('book');
+  const modalityErrors = vm.errorsOf('modality');
+  const reviewing = Object.keys(bookErrors).length + Object.keys(modalityErrors).length > 0;
+
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text accessibilityRole="header" style={styles.title}>
-          Editar anúncio
+          {reviewing ? 'Revise o anúncio' : 'Editar anúncio'}
         </Text>
+        {reviewing ? (
+          <Text style={styles.reviewHint} accessibilityLiveRegion="polite">
+            Corrija os campos destacados para salvar.
+          </Text>
+        ) : null}
 
         {/* A trava é um aviso, não um campo desabilitado em silêncio: quem chegou
             aqui pelo card precisa entender por que não consegue mexer. */}
@@ -47,7 +58,7 @@ export function EditListingScreen({ id }: { id: string }) {
 
         <BookFields
           draft={vm.draft}
-          errors={vm.errorsOf('book')}
+          errors={bookErrors}
           onText={(field, value) => vm.setText(field, value)}
           onCategory={vm.setCategory}
           onCondition={vm.setCondition}
@@ -58,7 +69,7 @@ export function EditListingScreen({ id }: { id: string }) {
           modality={vm.draft.modality}
           priceInput={vm.priceInput}
           tradeTerms={vm.draft.tradeTerms}
-          errors={vm.errorsOf('modality')}
+          errors={modalityErrors}
           onModality={vm.setModality}
           onPrice={vm.setPriceInput}
           onTerms={(value) => vm.setText('tradeTerms', value)}
@@ -108,6 +119,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   title: { ...typography.titleLarge, color: colors.text },
+  reviewHint: { ...typography.bodyMedium, color: colors.onSurfaceVariant, marginTop: -spacing.sm },
   sectionTitle: { ...typography.labelMedium, color: colors.secondaryText },
   cover: { gap: spacing.xs },
   actions: { gap: spacing.xs },
