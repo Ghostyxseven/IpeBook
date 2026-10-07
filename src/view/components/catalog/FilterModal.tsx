@@ -21,6 +21,9 @@ type Draft = FilterDraft;
 
 const modalities: Modality[] = ['sale', 'trade', 'donation'];
 
+/** Espera entre a última mudança do rascunho e a contagem de "Mostrar N livros". */
+const COUNT_DEBOUNCE_MS = 300;
+
 const emptyDraft: Draft = {
   modalities: [],
   category: null,
@@ -57,16 +60,21 @@ export function FilterModal({
     if (visible) setDraft(initial);
   }, [visible]);
 
+  // Espera a mão parar antes de contar: arrastar o preço mudaria o rascunho a cada quadro,
+  // e cada mudança é uma consulta ao servidor.
   useEffect(() => {
     if (!visible) return;
     let active = true;
     setCount(null);
-    countFor(draft).then(
-      (total) => active && setCount(total),
-      () => active && setCount(null),
-    );
+    const timer = setTimeout(() => {
+      countFor(draft).then(
+        (total) => active && setCount(total),
+        () => active && setCount(null),
+      );
+    }, COUNT_DEBOUNCE_MS);
     return () => {
       active = false;
+      clearTimeout(timer);
     };
   }, [visible, draft]);
 

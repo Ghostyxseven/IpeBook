@@ -124,15 +124,16 @@ export function PriceSlider({
         {...keyboard}
         {...pan.panHandlers}
       >
-        <View style={styles.track} />
-        <View style={[styles.fill, { width: `${ratio * 100}%` }]} />
-        <View
-          style={[
-            styles.thumb,
-            // Recua meio polegar para a bolinha parar dentro da trilha nas duas pontas.
-            { left: `${ratio * 100}%`, marginLeft: -THUMB / 2 },
-          ]}
-        />
+        <View style={styles.track}>
+          <View style={[styles.fill, { width: `${ratio * 100}%` }]} />
+          <View
+            style={[
+              styles.thumb,
+              // Recua meio polegar para a bolinha parar dentro da trilha nas duas pontas.
+              { left: `${ratio * 100}%`, marginLeft: -THUMB / 2 },
+            ]}
+          />
+        </View>
       </View>
     </View>
   );
@@ -157,15 +158,19 @@ const styles = StyleSheet.create({
     height: TRACK,
     borderRadius: TRACK / 2,
     backgroundColor: colors.containerHigh,
+    justifyContent: 'center',
   },
   fill: {
     position: 'absolute',
+    left: 0,
     height: TRACK,
     borderRadius: TRACK / 2,
     backgroundColor: colors.action,
   },
   thumb: {
     position: 'absolute',
+    // Centrado na trilha: metade da diferença entre a bolinha e os 6 px da trilha.
+    top: -(THUMB - TRACK) / 2,
     width: THUMB,
     height: THUMB,
     borderRadius: radius.full,
