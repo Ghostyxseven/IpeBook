@@ -4,6 +4,7 @@ import { Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-nat
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, metrics, spacing, typography } from '../theme/nativeTheme';
 import { AppIcon, type AppIconName } from './AppIcon';
+import { GlassSurface } from './ui/GlassSurface';
 
 /** Ícone de cada aba; as outras features acrescentam as suas aqui. */
 const tabIcons: Record<string, AppIconName> = {
@@ -36,8 +37,11 @@ export function NavigationBar({ state, descriptors, navigation }: BottomTabBarPr
   const insets = useSafeAreaInsets();
   const keyboardOpen = useKeyboardOpen();
   if (keyboardOpen && Platform.OS === 'android') return null;
+  // No iPhone a barra flutua em Liquid Glass (referência `ios.md`); no Android e na Web
+  // continua sólida, com a borda de cima do Material 3.
+  const Surface = Platform.OS === 'ios' ? GlassSurface : View;
   return (
-    <View
+    <Surface
       style={[styles.bar, { paddingBottom: spacing.xs + insets.bottom }]}
       accessibilityRole="tablist"
     >
@@ -82,19 +86,26 @@ export function NavigationBar({ state, descriptors, navigation }: BottomTabBarPr
           </Pressable>
         );
       })}
-    </View>
+    </Surface>
   );
 }
 
 const styles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row',
-    paddingTop: spacing.xs,
-    paddingHorizontal: spacing.xs,
-    backgroundColor: colors.background,
-    borderTopWidth: metrics.borderThin,
-    borderTopColor: colors.border,
-  },
+  bar: Platform.select({
+    ios: {
+      flexDirection: 'row',
+      paddingTop: spacing.xs,
+      paddingHorizontal: spacing.xs,
+    },
+    default: {
+      flexDirection: 'row',
+      paddingTop: spacing.xs,
+      paddingHorizontal: spacing.xs,
+      backgroundColor: colors.background,
+      borderTopWidth: metrics.borderThin,
+      borderTopColor: colors.border,
+    },
+  }),
   item: {
     flex: 1,
     minHeight: spacing.xxl + spacing.md,

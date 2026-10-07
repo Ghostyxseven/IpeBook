@@ -60,3 +60,18 @@ test('tokens globais usam objetos tipados com $value', () => {
 
   for (const group of groups) validate(group);
 });
+
+test('Liquid Glass traz os tokens da referência, sem inventar valor', () => {
+  // Os valores vêm de docs/design-system/referencia/tokens.json, em hex com alfa:
+  // rgba(252, 250, 245, 0.58) → #FCFAF594, e assim por diante.
+  assert.equal(tokens.color.ios.glassFill.$value, '#FCFAF594');
+  assert.equal(tokens.color.ios.glassStroke.$value, '#FFFFFFBF');
+  assert.equal(tokens.color.ios.glassFillDark.$value, '#1E1E1E6B');
+  // A receita: desfoque de 22pt, saturação de 180% e borda de 0,5pt.
+  assert.equal(tokens.platform.ios.glassBlur.$value, 22);
+  assert.equal(tokens.platform.ios.glassSaturation.$value, 180);
+  assert.equal(tokens.border.hairline.$value, '0.5px');
+  // O vidro é só do iPhone: Android e Web não ganham token de vidro.
+  assert.equal(tokens.platform.android.glassBlur, undefined);
+  assert.equal(tokens.platform.web.glassBlur, undefined);
+});

@@ -180,6 +180,19 @@ Decidido com o Micael em 07/10/2026, pelos quadros 06.04 e 03.03 das duas plataf
 | Ação do detalhe (03.01 a 03.03)       | Era sempre "Combinar encontro". Agora diz o que a pessoa pede: "Quero receber" na doação, "Propor troca" na troca, "Combinar encontro" na venda. As três abrem a mesma tela.             |
 | "Conversar" na doação (03.03, iPhone) | **Fora.** As mensagens só existem dentro de uma negociação aberta (ADR 0021); conversar antes disso seria recurso novo, com spec e banco. O Figma precisa tirar a ação ou abrir a spec.  |
 
+## Liquid Glass no iPhone (07/10/2026)
+
+Implementado pelo [ADR 0029](../adr/0029-liquid-glass-no-iphone.md), com os tokens da
+referência (`glass-fill`, `glass-stroke`, `glass-fill-dark`, `glass-shadow`) copiados para
+`design-tokens.json`. O que ficou diferente da receita, e por quê:
+
+| Item               | Situação                                                                                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Saturação de 180%  | **Não aplicada.** O `expo-blur` só expõe `intensity` e `tint`; não há como saturar o que está atrás. O desfoque e o preenchimento ficam fiéis.                 |
+| Desfoque de 22 pt  | O `intensity` do `expo-blur` vai de 1 a 100 e não é medido em pontos. O token guarda os 22 pt e o componente os usa como intensidade — aproximação a conferir. |
+| Onde o vidro entra | Barra de abas, por enquanto. Os botões circulares da barra superior e os controles sobre a capa ainda estão sólidos.                                           |
+| Android e Web      | Sem vidro, como manda a referência. Não há token de vidro para essas plataformas, e um teste garante isso.                                                     |
+
 ## Selo da troca no detalhe (07/10/2026)
 
 No detalhe do livro (03.01 a 03.03) o selo mostrava "Por outro livro" e o valor grande mostrava
