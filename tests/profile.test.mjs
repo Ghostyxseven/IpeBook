@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { summarize, summaryLine } from '../src/model/services/profileSummary.ts';
+import { summarize, publicationsLine } from '../src/model/services/profileSummary.ts';
 
 const listing = (status) => ({
   id: `id-${status}-${Math.random()}`,
@@ -35,18 +35,20 @@ test('o resumo conta cada situação', () => {
 });
 
 test('sem anúncio, o perfil convida em vez de mostrar zeros', () => {
-  assert.match(summaryLine(summarize([])), /ainda não anunciou/i);
+  assert.match(publicationsLine(summarize([])), /ainda não anunciou/i);
 });
 
 test('a frase não lista situação que não existe', () => {
-  const line = summaryLine(summarize([listing('disponivel')]));
-  assert.match(line, /1 livro anunciado/);
-  assert.match(line, /1 disponível/);
-  assert.doesNotMatch(line, /concluído|arquivado|reservado/);
+  const line = publicationsLine(summarize([listing('disponivel')]));
+  assert.equal(line, '1 ativa');
+  assert.doesNotMatch(line, /concluída|arquivada|reservada/);
 });
 
 test('singular e plural concordam', () => {
-  const two = summaryLine(summarize([listing('disponivel'), listing('disponivel')]));
-  assert.match(two, /2 livros anunciados/);
-  assert.match(two, /2 disponíveis/);
+  const duas = publicationsLine(summarize([listing('disponivel'), listing('disponivel')]));
+  assert.equal(duas, '2 ativas');
+  const mistura = publicationsLine(
+    summarize([listing('disponivel'), listing('reservado'), listing('concluido')]),
+  );
+  assert.equal(mistura, '1 ativa, 1 reservada, 1 concluída');
 });

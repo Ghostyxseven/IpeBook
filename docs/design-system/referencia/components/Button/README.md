@@ -1,4 +1,5 @@
 # Button
+
 Botões em pílula de 52px (M3 médio) para as ações de cada tela.
 
 - **Preenchido** (`primary` / `on-primary`): uma ação principal por tela. Seta à direita quando avança o fluxo (Entrar, Continuar, Criar conta).

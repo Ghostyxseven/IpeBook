@@ -67,6 +67,15 @@ export default function AppLayout() {
         <Stack.Screen name="email-confirmado" options={{ title: 'E-mail confirmado' }} />
         <Stack.Screen name="anunciar/index" options={stackHeader('Anunciar um livro')} />
         <Stack.Screen name="anunciar/[id]" options={stackHeader('Editar anúncio')} />
+        {/* Rascunhos e ciclo de vida do anúncio (spec 032). */}
+        <Stack.Screen name="anunciar/rascunhos" options={stackHeader('Rascunhos')} />
+        <Stack.Screen
+          name="anuncio/[id]"
+          options={{
+            ...stackHeader('Gerenciar anúncio'),
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
         <Stack.Screen
           name="negociacoes/index"
           options={{

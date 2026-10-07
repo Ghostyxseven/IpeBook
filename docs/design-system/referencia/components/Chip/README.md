@@ -1,4 +1,5 @@
 # Chip
+
 Chips de 32px com raio `radius-sm` para filtrar, escolher uma opção ou mostrar metadados.
 
 - **Filtro**: Todos/Venda/Troca/Doação, conservação, categoria, dia e horário. Selecionado = `secondary-container` + ícone de check; não selecionado = borda `outline`.

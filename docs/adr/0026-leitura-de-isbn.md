@@ -24,7 +24,7 @@ Digitar título e autor é o passo mais chato de anunciar um livro, e o dado já
 ## Consequências
 
 - O aplicativo passa a pedir permissão de câmera. Quem negar continua anunciando normalmente; a tela 04.17 explica e oferece as duas saídas.
-- O `expo-camera` é módulo nativo: Android e iPhone precisam de um build novo (ADR 0015). O Expo Go não serve para testar esta tela.
+- O `expo-camera` **está incluído no Expo Go**, então a leitura dá para testar sem build. O que o config plugin do `app.json` acrescenta é o texto da permissão em português — e esse, sim, só aparece num build próprio (ADR 0015); no Expo Go a permissão é pedida com o texto genérico do próprio Expo Go.
 - A cobertura da Open Library para edições brasileiras é irregular. É por isso que a tela 04.18 existe e é um caminho normal, não um erro: o cadastro manual continua sendo o caminho principal.
 - Uma consulta a serviço externo acontece com o ISBN lido. Nenhum dado da pessoa viaja junto — só o código impresso no livro.
 - Se a Open Library sair do ar, a leitura falha com mensagem em português e o cadastro manual segue intacto.

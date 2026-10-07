@@ -1,4 +1,5 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, typography } from '../../theme/nativeTheme';
 
@@ -22,12 +23,18 @@ const BARCODE_TYPES = ['ean13'] as const;
  */
 export function useIsbnCameraPermission() {
   const [permission, requestPermission] = useCameraPermissions();
-  return {
-    granted: permission ? permission.granted : null,
-    /** `false` quando o sistema não vai mais perguntar: resta as Configurações. */
-    canAskAgain: permission ? permission.canAskAgain : true,
-    request: requestPermission,
-  };
+  // Memorizado de propósito: devolvido solto, este objeto é novo a cada render,
+  // e um efeito que dependa dele roda sempre — o que, aqui, significa reabrir o
+  // pedido de permissão em laço enquanto a resposta não chega.
+  return useMemo(
+    () => ({
+      granted: permission ? permission.granted : null,
+      /** `false` quando o sistema não vai mais perguntar: resta as Configurações. */
+      canAskAgain: permission ? permission.canAskAgain : true,
+      request: requestPermission,
+    }),
+    [permission, requestPermission],
+  );
 }
 
 export function IsbnCamera({

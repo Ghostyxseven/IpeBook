@@ -2,13 +2,13 @@
 
 ## Classes de janela
 
-| Classe | Largura | Navegação | Grade |
-| --- | --- | --- | --- |
-| Compacta | < 600 | Barra inferior (layout de celular) | 4 colunas, margem 16 |
-| Média | 600–839 | Navigation rail | 8 colunas, margem 24, cartões em 2 colunas |
-| Expandida | 840–1199 | Rail + lista e detalhe | 8–12 colunas |
-| Grande | ≥ 1200 | Cabeçalho com busca e "Anunciar" | 12 colunas, margem 80, cartões em 4 colunas |
-| Extra | ≥ 1600 | Igual à grande | Conteúdo até `content-max` (1280) centralizado |
+| Classe    | Largura  | Navegação                          | Grade                                          |
+| --------- | -------- | ---------------------------------- | ---------------------------------------------- |
+| Compacta  | < 600    | Barra inferior (layout de celular) | 4 colunas, margem 16                           |
+| Média     | 600–839  | Navigation rail                    | 8 colunas, margem 24, cartões em 2 colunas     |
+| Expandida | 840–1199 | Rail + lista e detalhe             | 8–12 colunas                                   |
+| Grande    | ≥ 1200   | Cabeçalho com busca e "Anunciar"   | 12 colunas, margem 80, cartões em 4 colunas    |
+| Extra     | ≥ 1600   | Igual à grande                     | Conteúdo até `content-max` (1280) centralizado |
 
 ## Padrões da Web
 

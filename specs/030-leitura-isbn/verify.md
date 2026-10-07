@@ -9,7 +9,7 @@ Data: 07/10/2026 · Branch `feat/isbn-e-perfil-completo`.
 | `npm run typecheck`                  | sem erros                                       |
 | `npm run lint`                       | sem erros novos                                 |
 | `npm run format:check`               | sem diferenças                                  |
-| `npm test`                           | 297 testes, 297 aprovados (18 novos desta spec) |
+| `npm test`                           | 298 testes, 298 aprovados (18 novos desta spec) |
 | `architecture.test.mjs`              | o Model não importa `expo-camera`               |
 | `npx expo export --platform android` | bundle gerado (4,1 MB)                          |
 | `npx expo export --platform ios`     | bundle gerado (3,8 MB)                          |
@@ -41,17 +41,29 @@ testar a tela com aquele número.
 | 04.03                      | A capa do livro encontrado é um ícone, não a imagem: a Open Library nem sempre tem capa, e um quadrado vazio seria pior que um ícone |
 | visor                      | Cor nova `color.scanner.*`, registrada em `docs/design-system/divergencias.md`                                                       |
 
+## O que a revisão pegou
+
+**Pedido de permissão em laço.** `useIsbnCameraPermission` devolvia um objeto
+novo a cada render, e o efeito que pede a permissão dependia dele — então o
+efeito rodava sempre, reabrindo o pedido enquanto a pessoa não respondesse. Em
+aparelho isso é um diálogo que não para de voltar. O hook passou a memorizar o
+retorno, e os efeitos passaram a depender dos valores (`granted`, `canAskAgain`)
+em vez do objeto.
+
+O `npm test` não pegaria: a tela da câmera não é montada em teste. Apareceu
+relendo o código à procura de dependência de efeito instável.
+
 ## Não executado
 
-| O quê                                 | Por quê                                                                                                                          |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Câmera real lendo um código de barras | `expo-camera` é módulo nativo: precisa de build de desenvolvimento (ADR 0015), que não existe nesta máquina. O Expo Go não serve |
-| Consulta real à Open Library          | Os testes usam `fetch` falso. A chamada real depende de aparelho com internet                                                    |
-| Permissão negada em aparelho          | Mesmo motivo do primeiro item                                                                                                    |
+| O quê                                 | Por quê                                                                                                                      |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Câmera real lendo um código de barras | Depende de aparelho. `expo-camera` **está incluído no Expo Go**, então o teste não espera build — o que falta é alguém rodar |
+| Consulta real à Open Library          | Os testes usam `fetch` falso. A chamada real depende de aparelho com internet                                                |
+| Permissão negada em aparelho          | Mesmo motivo do primeiro item                                                                                                |
 
 ## Pendências
 
-- Rodar em Android com build de desenvolvimento e ler o código de barras de um
+- Rodar em Android pelo Expo Go e ler o código de barras de um
   livro de verdade, de preferência uma edição brasileira — é onde a cobertura da
   Open Library é mais fraca e onde a tela 04.18 mais vai aparecer.
 - Avisar a equipe de design sobre o ISBN inválido do quadro 04.18.
