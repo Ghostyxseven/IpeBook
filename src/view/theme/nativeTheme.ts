@@ -67,6 +67,11 @@ export const colors = {
   iosCell: tokens.color.ios.cell.$value,
   iosSecondaryLabel: tokens.color.ios.secondaryLabel.$value,
   iosSeparator: tokens.color.ios.separator.$value,
+  /** Liquid Glass (referência `ios.md`): só na camada de navegação que flutua. */
+  glassFill: tokens.color.ios.glassFill.$value,
+  glassStroke: tokens.color.ios.glassStroke.$value,
+  /** Sobre imagem ou câmera, com ícones brancos. */
+  glassFillDark: tokens.color.ios.glassFillDark.$value,
 } as const;
 
 const badge = (name: keyof typeof tokens.color.badge) => ({
@@ -128,8 +133,19 @@ export const metrics = {
   focusOffset: px(tokens.accessibility.focusOffset),
   borderThin: px(tokens.border.thin),
   borderStrong: px(tokens.border.strong),
+  /** Fio de 0,5 pt da borda do Liquid Glass. */
+  borderHairline: px(tokens.border.hairline),
   /** Largura máxima de formulários em tablets. */
   formMaxWidth: px(tokens.app.formMaxWidth),
+} as const;
+
+/**
+ * Receita do Liquid Glass (referência `ios.md`): desfoque de 22 pt e saturação de 180%.
+ * Só existe no iPhone; as outras plataformas usam superfície sólida.
+ */
+export const glass = {
+  blur: tokens.platform.ios.glassBlur.$value,
+  saturation: tokens.platform.ios.glassSaturation.$value,
 } as const;
 
 /** Nome com que a fonte da marca é registrada no `useFonts` do layout raiz. */
