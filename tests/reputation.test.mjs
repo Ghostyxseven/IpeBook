@@ -16,6 +16,7 @@ import {
   memberSinceLabel,
   personName,
   ratingLabel,
+  ratingsLine,
   reputationLine,
 } from '../src/model/services/reputationFormat.ts';
 import {
@@ -279,4 +280,18 @@ test('histórico vazio fica pronto, não em erro', async () => {
   assert.equal(screen.vm.status, 'ready');
   assert.deepEqual(screen.vm.history, []);
   await screen.unmount();
+});
+
+test('a linha de avaliações do Meu perfil convida quem ainda não tem nota', () => {
+  assert.equal(
+    ratingsLine({ ratingAverage: 4.8, completedCount: 8 }),
+    '4,8 de 5 em 8 trocas concluídas',
+  );
+  assert.equal(
+    ratingsLine({ ratingAverage: 5, completedCount: 1 }),
+    '5,0 de 5 em 1 troca concluída',
+  );
+  assert.equal(ratingsLine({ ratingAverage: null, completedCount: 0 }), 'Ainda sem avaliações');
+  // Já concluiu, mas ninguém avaliou: ainda assim não existe média.
+  assert.equal(ratingsLine({ ratingAverage: null, completedCount: 3 }), 'Ainda sem avaliações');
 });

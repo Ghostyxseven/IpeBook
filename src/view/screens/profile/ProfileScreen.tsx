@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMyListings } from '../../../factories/listings';
 import { usePublicProfile } from '../../../factories/reputation';
 import { SERVICE_CITY } from '../../../model/services/neighborhood';
-import { summarize } from '../../../model/services/profileSummary';
-import { averageLabel, completedLabel } from '../../../model/services/reputationFormat';
+import { publicationsLine, summarize } from '../../../model/services/profileSummary';
+import { ratingsLine } from '../../../model/services/reputationFormat';
 import { firstName } from '../../../model/services/userFormat';
 import { useSessionContext } from '../../../viewmodel/useSession';
 import { AppIcon, type AppIconName } from '../../components/AppIcon';
@@ -82,7 +82,7 @@ export function ProfileScreen() {
           <Entry
             icon="checkCircle"
             title="Avaliações recebidas"
-            body={ratingsLine(profile)}
+            body={profile ? ratingsLine(profile) : 'Carregando…'}
             onPress={() => router.push('/avaliacoes')}
           />
           <Entry
@@ -117,31 +117,6 @@ export function ProfileScreen() {
       </ScrollView>
     </SafeAreaView>
   );
-}
-
-/** "4 anúncios · 1 reservado", o apoio da linha Minhas publicações. */
-function publicationsLine(counts: ReturnType<typeof summarize>): string {
-  if (counts.total === 0) return 'Você ainda não anunciou nenhum livro';
-  const parts: string[] = [];
-  if (counts.disponivel > 0)
-    parts.push(`${counts.disponivel} ativa${counts.disponivel > 1 ? 's' : ''}`);
-  if (counts.reservado > 0)
-    parts.push(`${counts.reservado} reservada${counts.reservado > 1 ? 's' : ''}`);
-  if (counts.concluido > 0)
-    parts.push(`${counts.concluido} concluída${counts.concluido > 1 ? 's' : ''}`);
-  return parts.length > 0
-    ? parts.join(', ')
-    : `${counts.total} arquivada${counts.total > 1 ? 's' : ''}`;
-}
-
-/** "4,8 de 5 em 8 trocas", como no quadro — ou o convite, para quem não tem nota. */
-function ratingsLine(
-  profile: { ratingAverage: number | null; completedCount: number } | null,
-): string {
-  if (!profile) return 'Carregando…';
-  const average = averageLabel(profile.ratingAverage);
-  if (!average) return 'Ainda sem avaliações';
-  return `${average} em ${completedLabel(profile.completedCount).toLocaleLowerCase('pt-BR')}`;
 }
 
 function Number({ value, label }: { value: string; label: string }) {
