@@ -34,6 +34,11 @@
     "errorContainer": { "$type": "color", "$value": "#F9DEDC" },
     "inverseSurface": { "$type": "color", "$value": "#322F2B" },
     "inverseOnSurface": { "$type": "color", "$value": "#F5EFE8" },
+    "scanner": {
+      "surface": { "$type": "color", "$value": "#1F2B25" },
+      "onSurface": { "$type": "color", "$value": "#FFFFFF" },
+      "veil": { "$type": "color", "$value": "#14181680" }
+    },
     "ios": {
       "cell": { "$type": "color", "$value": "#F7F3EC" },
       "secondaryLabel": { "$type": "color", "$value": "#6B645C" },

@@ -167,3 +167,17 @@ Refeitos pelos quadros Android 02.02 a 02.04. Diferenças que ficaram:
 | Categorias dos chips                           | O Figma mostra "Ficção", "Não ficção" e "Infantil"; o app usa as categorias fixas do ADR 0008.     |
 | "Mais recentes" em verde no resumo (02.04)     | A lista só tem essa ordem; o resumo diz a ordem ou os filtros, sem botão.                          |
 | Lista compacta com filtro (02.04)              | O app mantém os cards do 02.02 também com filtro.                                                  |
+
+## Visor da leitura de ISBN (spec 030, Figma 04.02 e 04.03)
+
+O quadro usa `#1F2B25` no fundo do visor, `white` no texto sobre ele e
+`rgba(20,24,22,0.5)` no véu que escurece o visor quando a folha "Livro
+identificado" sobe. Nenhum dos três existia nos tokens, e nenhum papel do
+Material 3 já definido serve: `inverseSurface` (`#322F2B`) é marrom e
+`cover.green` (`#30574A`) é claro demais para funcionar como fundo de câmera.
+
+Entraram como `color.scanner.surface`, `color.scanner.onSurface` e
+`color.scanner.veil`. São de uso restrito a esta tela: é o único lugar do app
+onde a interface fica por cima de imagem ao vivo, e é isso que exige um fundo
+escuro próprio. Se outra tela precisar de superfície escura, o caminho é
+discutir um papel de verdade, não reaproveitar estes.
