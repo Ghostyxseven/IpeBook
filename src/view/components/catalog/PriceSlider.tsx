@@ -87,7 +87,8 @@ export function PriceSlider({
   const keyboard =
     Platform.OS === 'web'
       ? {
-          focusable: true,
+          // `focusable` está deprecado no react-native-web; `tabIndex` é o substituto.
+          tabIndex: 0 as const,
           onKeyDown: (event: { key: string; preventDefault: () => void }) => {
             if (event.key === 'ArrowRight' || event.key === 'ArrowUp') step(1);
             else if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') step(-1);
