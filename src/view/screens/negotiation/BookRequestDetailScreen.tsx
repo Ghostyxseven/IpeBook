@@ -1,7 +1,9 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBookRequestDetail } from '../../../factories/bookRequest';
+import { useCompletionRating } from '../../../factories/reputation';
 import {
   confirmCopy,
   offeredLabel,
@@ -14,6 +16,7 @@ import { ActionBar } from '../../components/negotiation/ActionBar';
 import { MeetingCard } from '../../components/negotiation/MeetingCard';
 import { OutcomeHero } from '../../components/negotiation/OutcomeHero';
 import { RequestBookRow } from '../../components/negotiation/RequestBookRow';
+import { RatingForm } from '../../components/profile/RatingForm';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
@@ -24,7 +27,10 @@ import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
  */
 export function BookRequestDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const vm = useBookRequestDetail(String(id ?? ''));
+  const requestId = String(id ?? '');
+  const vm = useBookRequestDetail(requestId);
+  const rating = useCompletionRating(requestId);
+  const [rateOpen, setRateOpen] = useState(false);
 
   if (vm.status === 'loading') {
     return (
@@ -153,6 +159,35 @@ export function BookRequestDetailScreen() {
             body={copy.body}
           />
           <RequestBookRow listing={listing} onPress={openListing} />
+          {/* Avaliar aqui mesmo (spec 028): só na conclusão, e só de quem ainda não avaliou. */}
+          {request.status === 'completed' ? (
+            rating.justRated ? (
+              <Text style={styles.rated}>Avaliação enviada. Obrigado!</Text>
+            ) : rating.canRate ? (
+              <View style={styles.rate}>
+                <Text style={styles.rateTitle} accessibilityRole="header">
+                  {rating.otherFirstName
+                    ? `Como foi o encontro com ${rating.otherFirstName}?`
+                    : 'Como foi o encontro?'}
+                </Text>
+                <FormMessage tone="error" message={rating.error} />
+                {rateOpen ? (
+                  <RatingForm
+                    submitting={rating.submitting}
+                    onSubmit={(score, comment) => void rating.rate(score, comment)}
+                    onCancel={() => setRateOpen(false)}
+                  />
+                ) : (
+                  <Button
+                    label="Avaliar"
+                    variant="secondary"
+                    onPress={() => setRateOpen(true)}
+                    accessibilityHint="A avaliação é pública e não dá para editar depois."
+                  />
+                )}
+              </View>
+            ) : null
+          ) : null}
         </ScrollView>
         <ActionBar>
           <Button label="Explorar livros" onPress={() => router.replace('/explorar')} />
@@ -253,6 +288,9 @@ export function BookRequestDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  rate: { gap: spacing.xs, marginTop: spacing.xs },
+  rateTitle: { ...typography.titleMedium, color: colors.onSurface },
+  rated: { ...typography.labelLarge, color: colors.action, marginTop: spacing.xs },
   safe: { flex: 1, backgroundColor: colors.surface },
   content: {
     padding: metrics.pagePadding,
