@@ -2,7 +2,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { detailActionLabel, locationLabel } from '../../../model/services/catalogFormat';
+import {
+  detailActionLabel,
+  detailSignedOutLabel,
+  locationLabel,
+} from '../../../model/services/catalogFormat';
 import { blockLabel } from '../../../model/services/securityFormat';
 import { useListingDetail } from '../../../factories/catalog';
 import { AppIcon } from '../../components/AppIcon';
@@ -78,7 +82,10 @@ export function ListingDetailScreen() {
     : isOwner
       ? { label: 'Ver solicitações', onPress: () => router.push('/conversas') }
       : session.status === 'signedOut' && isAvailable
-        ? { label: 'Entrar para combinar encontro', onPress: () => router.replace('/entrar') }
+        ? {
+            label: detailSignedOutLabel(listing.modality),
+            onPress: () => router.replace('/entrar'),
+          }
         : null;
 
   return (
