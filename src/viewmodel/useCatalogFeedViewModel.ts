@@ -14,7 +14,13 @@ export function useCatalogFeedViewModel(
 ) {
   const [modality, setModality] = useState<Modality | null>(null);
   const filters = useMemo<CatalogFilters>(
-    () => ({ query: '', modalities: modality ? [modality] : [], category: null }),
+    () => ({
+      query: '',
+      modalities: modality ? [modality] : [],
+      category: null,
+      conditions: [],
+      maxPriceCents: null,
+    }),
     [modality],
   );
   const pages = useCatalogPages(repository, filters);

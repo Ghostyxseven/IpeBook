@@ -1,6 +1,6 @@
 import { CatalogError } from '../entities/CatalogError.ts';
 import type { Listing } from '../entities/Listing';
-import { GOOD_CONDITIONS, effectiveFilters } from '../services/catalogFilters.ts';
+import { effectiveFilters } from '../services/catalogFilters.ts';
 import type { CatalogCursor, CatalogRepository } from './CatalogRepository';
 
 const newestFirst = (a: Listing, b: Listing) =>
@@ -28,7 +28,7 @@ export function createMemoryCatalogRepository(initial: Listing[] = []) {
       calls.push(`list:${JSON.stringify({ filters, cursor, limit })}`);
       if (delay) await delay;
       takeError();
-      const { query, modalities, category, goodCondition } = effectiveFilters(filters);
+      const { query, modalities, category, conditions, maxPriceCents } = effectiveFilters(filters);
       const text = query.toLocaleLowerCase('pt-BR');
       const matches = listings
         .filter((item) => item.status === 'disponivel' || item.status === 'reservado')
@@ -41,7 +41,12 @@ export function createMemoryCatalogRepository(initial: Listing[] = []) {
         )
         .filter((item) => !modalities.length || modalities.includes(item.modality))
         .filter((item) => !category || item.category === category)
-        .filter((item) => !goodCondition || GOOD_CONDITIONS.includes(item.condition))
+        .filter((item) => !conditions.length || conditions.includes(item.condition))
+        // O teto de preço só limita a venda: troca e doação não têm valor a comparar.
+        .filter(
+          (item) =>
+            maxPriceCents == null || item.priceCents == null || item.priceCents <= maxPriceCents,
+        )
         .sort(newestFirst);
       const total = matches.length;
       const remaining = matches.filter((item) => !cursor || isAfter(item, cursor));

@@ -1,7 +1,7 @@
 import type { SupabaseClient, User as SupabaseUser } from '@supabase/supabase-js';
 import { AuthError, type AuthErrorCode } from '../entities/AuthError.ts';
 import type { User } from '../entities/User';
-import type { AuthRepository } from './AuthRepository';
+import type { AuthRepository, OAuthBrowser } from './AuthRepository';
 import { createUserChangeGate } from './userChangeGate.ts';
 
 /** Só a parte `auth` do cliente é usada; facilita testar com um cliente falso. */
@@ -52,7 +52,10 @@ async function run<T extends { error: unknown }>(call: () => Promise<T>): Promis
   return result;
 }
 
-export function createSupabaseAuthRepository(client: SupabaseAuthClient | null): AuthRepository {
+export function createSupabaseAuthRepository(
+  client: SupabaseAuthClient | null,
+  oauthBrowser?: OAuthBrowser,
+): AuthRepository {
   const auth = () => {
     if (!client) throw new AuthError('not_configured');
     return client.auth;
@@ -95,6 +98,25 @@ export function createSupabaseAuthRepository(client: SupabaseAuthClient | null):
     async signIn(email, password) {
       const { data } = await run(() => auth().signInWithPassword({ email, password }));
       return toUser(data.user!);
+    },
+
+    async signInWithGoogle() {
+      if (!oauthBrowser) throw new AuthError('not_configured');
+      // O retorno usa o esquema do app (ipebook://), nunca a URL vista pelo navegador: o
+      // Supabase guarda a sessão por código (PKCE), sem detectSessionInUrl (ADR 0006).
+      const redirectTo = oauthBrowser.createRedirectUrl('auth/callback');
+      const { data } = await run(() =>
+        auth().signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo, skipBrowserRedirect: true },
+        }),
+      );
+      if (!data.url) throw new AuthError('unknown');
+      const result = await oauthBrowser.openAuthSession(data.url, redirectTo);
+      if (result.type !== 'success' || !result.url) throw new AuthError('oauth_cancelled');
+      const { data: session } = await run(() => auth().exchangeCodeForSession(result.url!));
+      if (!session.user) throw new AuthError('unknown');
+      return toUser(session.user);
     },
 
     async signUp(name, email, password, termsAcceptedAt) {

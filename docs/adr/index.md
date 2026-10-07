@@ -27,4 +27,6 @@
 - [0025 - App completo na Web, em /app](0025-app-completo-na-web.md) (proposto, falta configurar a Vercel)
 - [0026 - Leitura de ISBN pela câmera](0026-leitura-de-isbn.md) (proposto, implementado; falta build com câmera real)
 - [0027 - Avaliações e perfil público](0027-avaliacoes-e-perfil-publico.md) (proposto, implementado; falta aplicar a migração)
-- [0028 - Rascunho de anúncio guardado no aparelho](0028-rascunhos-no-aparelho.md) (proposto, implementado; falta conferir a persistência em aparelho)
+- [0028 - Entrar com o Google e avisos de sucesso no acesso](0028-google-e-avisos-de-sucesso-no-acesso.md) (proposto, falta configurar o provedor no Supabase; renumerado de 0026 para 0028 ao integrar com o 0026/0027 de ISBN e avaliações)
+- [0029 - Liquid Glass no iPhone](0029-liquid-glass-no-iphone.md) (aceito, implementado em parte; falta a barra superior e o iPhone real)
+- [0030 - Rascunho de anúncio guardado no aparelho](0030-rascunhos-no-aparelho.md) (proposto, implementado; renumerado de 0028 para 0030 por colisão com o Google; falta conferir a persistência em aparelho)

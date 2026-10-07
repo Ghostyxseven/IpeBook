@@ -12,6 +12,7 @@ const messages: Record<AuthErrorCode, string> = {
   rate_limited: 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente de novo.',
   network: 'Não conseguimos falar com o servidor. Confira sua internet e tente de novo.',
   not_configured: 'A autenticação ainda não foi configurada neste ambiente.',
+  oauth_cancelled: 'A entrada com o Google foi cancelada.',
   unknown: 'Algo deu errado. Tente de novo em instantes.',
 };
 

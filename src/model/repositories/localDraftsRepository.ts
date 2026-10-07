@@ -5,7 +5,7 @@ import type { DraftsRepository } from './DraftsRepository';
 export const DRAFTS_KEY = 'ipebook:rascunhos';
 
 /**
- * Teto de rascunhos guardados (ADR 0028): alto o bastante para ninguém esbarrar
+ * Teto de rascunhos guardados (ADR 0030): alto o bastante para ninguém esbarrar
  * por uso normal, baixo o bastante para o armazenamento não crescer sem fim.
  * Passando disso, o mais antigo sai.
  */

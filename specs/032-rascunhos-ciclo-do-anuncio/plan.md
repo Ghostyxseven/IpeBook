@@ -8,7 +8,7 @@
   sai da mesma `validateDraft` que o formulário usa, para não existirem duas
   noções de "incompleto".
 - `repositories/DraftsRepository.ts` — a porta, com `Promise` mesmo sendo
-  síncrona hoje: é o que deixa trocar por servidor sem tocar em tela (ADR 0028).
+  síncrona hoje: é o que deixa trocar por servidor sem tocar em tela (ADR 0030).
 - `repositories/localDraftsRepository.ts` — `localStorage` do `src/infra`.
 - `repositories/memoryDraftsRepository.ts` — o dublê dos testes.
 
@@ -41,7 +41,7 @@ roteamento difícil de enxergar.
    anúncio inexistente no histórico, alcançável pelo botão voltar.
 2. **A folha de opções sai.** O Figma desenhou uma tela, e a tela cabe o que a
    folha não cabia: a prévia do anúncio e o cartão de situação.
-3. **O rascunho não guarda a foto** (ADR 0028), e a tela diz isso.
+3. **O rascunho não guarda a foto** (ADR 0030), e a tela diz isso.
 4. **Salvar é escolha, não automático** — o quadro 04.13 existe para perguntar.
 5. **"Pausar" em vez de "arquivar"** na tela; `arquivado` continua no banco.
 

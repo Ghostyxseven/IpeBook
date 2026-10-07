@@ -5,6 +5,7 @@
 import { supabase } from '../infra/supabaseClient';
 import { createSupabaseReputationRepository } from '../model/repositories/supabaseReputationRepository';
 import {
+  useCompletionRatingViewModel,
   useHistoryViewModel,
   usePublicProfileViewModel,
   useRatingsReceivedViewModel,
@@ -17,3 +18,5 @@ export const usePublicProfile = (userId: string) =>
 export const useRatingsReceived = (userId: string) =>
   useRatingsReceivedViewModel(reputationRepository, userId);
 export const useHistory = () => useHistoryViewModel(reputationRepository);
+export const useCompletionRating = (requestId: string) =>
+  useCompletionRatingViewModel(reputationRepository, requestId);

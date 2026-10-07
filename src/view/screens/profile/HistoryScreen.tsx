@@ -6,19 +6,13 @@ import { useHistory } from '../../../factories/reputation';
 import type { HistoryEntry } from '../../../model/entities/Rating';
 import { modalityLabels } from '../../../model/services/catalogFormat';
 import { historyLine } from '../../../model/services/reputationFormat';
-import { ChoiceChips } from '../../components/listings/ChoiceChips';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
+import { RatingForm } from '../../components/profile/RatingForm';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { TextField } from '../../components/ui/TextField';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
-
-/** O limite que o banco aceita no comentário (`check` de 3 a 280). */
-const COMMENT_LIMIT = 280;
-
-const scores = ['1', '2', '3', '4', '5'] as const;
 
 /**
  * Histórico de trocas, vendas e doações concluídas (spec 031).
@@ -102,12 +96,8 @@ function Entry({
   onCancel: () => void;
   onSubmit: (score: number, comment: string | null) => Promise<void>;
 }) {
-  const [score, setScore] = useState<string | null>(null);
-  const [comment, setComment] = useState('');
   const line = historyLine(entry);
   const when = new Date(entry.completedAt).toLocaleDateString('pt-BR');
-  // O banco recusa comentário com 1 ou 2 caracteres; a tela não oferece o envio.
-  const commentIsShort = comment.trim().length > 0 && comment.trim().length < 3;
 
   return (
     <View style={styles.card}>
@@ -126,41 +116,11 @@ function Entry({
         // A conta da outra pessoa foi excluída: não há a quem avaliar.
         <Text style={styles.done}>Esta pessoa não está mais na comunidade.</Text>
       ) : open ? (
-        <View style={styles.form}>
-          <ChoiceChips
-            label="Que nota você dá para este encontro?"
-            options={scores.map((value) => ({ value, label: `${value}` }))}
-            value={score}
-            onChange={setScore}
-          />
-          <View>
-            <TextField
-              label="Comentário (opcional)"
-              value={comment}
-              onChangeText={setComment}
-              editable={!submitting}
-              multiline
-              numberOfLines={3}
-              maxLength={COMMENT_LIMIT}
-              error={
-                commentIsShort ? 'Escreva pelo menos três letras, ou deixe em branco.' : undefined
-              }
-              placeholder="Pontual e cuidadoso com os livros."
-            />
-            <Text style={styles.counter}>{`${comment.length}/${COMMENT_LIMIT}`}</Text>
-          </View>
-          <Text style={styles.body}>A avaliação é pública e não dá para editar depois.</Text>
-          <Button
-            label="Enviar avaliação"
-            loading={submitting}
-            disabled={!score || commentIsShort}
-            onPress={() => {
-              if (!score) return;
-              void onSubmit(Number(score), comment.trim() || null);
-            }}
-          />
-          <Button label="Agora não" variant="text" onPress={onCancel} disabled={submitting} />
-        </View>
+        <RatingForm
+          submitting={submitting}
+          onSubmit={(score, comment) => void onSubmit(score, comment)}
+          onCancel={onCancel}
+        />
       ) : (
         <Button label="Avaliar" variant="secondary" onPress={onOpen} />
       )}
@@ -189,11 +149,4 @@ const styles = StyleSheet.create({
   title: { ...typography.titleMedium, color: colors.onSurface },
   line: { ...typography.bodyLarge, color: colors.onSurface, marginTop: spacing.xxs },
   done: { ...typography.labelLarge, color: colors.action, marginTop: spacing.xs },
-  form: { gap: spacing.sm, marginTop: spacing.xs },
-  counter: {
-    ...typography.caption,
-    color: colors.onSurfaceVariant,
-    textAlign: 'right',
-    marginTop: spacing.xxs,
-  },
 });

@@ -116,7 +116,7 @@ export function DraftsScreen() {
           })}
         </View>
 
-        {/* A foto não entra no rascunho (ADR 0028), e é melhor dizer antes. */}
+        {/* A foto não entra no rascunho (ADR 0030), e é melhor dizer antes. */}
         <View style={styles.note}>
           <AppIcon name="info" size={18} color={colors.onSurfaceVariant} />
           <Text style={styles.noteText}>

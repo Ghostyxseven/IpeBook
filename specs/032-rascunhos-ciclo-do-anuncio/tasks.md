@@ -1,6 +1,6 @@
 # Tarefas
 
-- [x] ADR 0028 — por que o rascunho mora no aparelho.
+- [x] ADR 0030 — por que o rascunho mora no aparelho.
 - [x] `entities/Draft.ts` e `services/draftSummary.ts`.
 - [x] Porta `DraftsRepository`, versão local e dublê em memória.
 - [x] `useDraftsViewModel`; `usePublishListingViewModel` com `hasContent`,

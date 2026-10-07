@@ -1,15 +1,20 @@
 import { Redirect, Stack } from 'expo-router';
+import { Platform } from 'react-native';
 import { OfflineBanner } from '../../view/components/feedback/OfflineBanner';
 import { colors, typography } from '../../view/theme/nativeTheme';
 import { useAppSession } from '../../factories/auth';
 import { afterSignIn, type AfterSignIn } from '../../viewmodel/afterSignIn';
 import { SessionContext } from '../../viewmodel/useSession';
 
-/** Telas de sucesso que aparecem logo depois de confirmar o código (Figma 01.09 e 01.13). */
-const successRoutes = {
-  emailConfirmed: '/email-confirmado',
-  passwordUpdated: '/senha-atualizada',
-} as const satisfies Record<AfterSignIn, string>;
+/**
+ * Destino logo depois de confirmar o código. No Android e na Web (Figma 01.09 e 01.13),
+ * telas dedicadas com cartão de sucesso. No iPhone, a própria tela seguinte com um aviso por
+ * cima (`(app)/_layout` mostra o aviso), como o quadro iOS do Figma.
+ */
+const material = Platform.OS !== 'ios';
+const successRoutes: Record<AfterSignIn, string> = material
+  ? { emailConfirmed: '/email-confirmado', passwordUpdated: '/senha-atualizada' }
+  : { emailConfirmed: '/seu-bairro', passwordUpdated: '/inicio' };
 
 /** Telas de entrada: quem já tem sessão vai direto para a Início. */
 export default function AuthLayout() {

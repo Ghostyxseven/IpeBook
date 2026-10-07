@@ -13,7 +13,7 @@ import { useMyListingsViewModel } from '../viewmodel/useMyListingsViewModel';
 import { usePublishListingViewModel } from '../viewmodel/usePublishListingViewModel';
 
 export const listingsRepository = createSupabaseListingsRepository(supabase);
-/** Rascunhos moram no aparelho, não no servidor (ADR 0028). */
+/** Rascunhos moram no aparelho, não no servidor (ADR 0030). */
 export const draftsRepository = createLocalDraftsRepository(localStore);
 
 export const usePublishListing = () =>

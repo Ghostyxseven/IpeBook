@@ -34,15 +34,18 @@ export type CatalogFilters = {
   query: string;
   modalities: Modality[];
   category: string | null;
-  /** "Somente bom estado" do Figma 02.03: novo, como novo ou bom. */
-  goodCondition?: boolean;
+  /** Conservações aceitas (Figma 02.03). Lista vazia aceita todas. */
+  conditions: ListingCondition[];
+  /** Teto de preço em centavos (Figma 02.03). `null` não limita. */
+  maxPriceCents: number | null;
 };
 
 export const emptyFilters: CatalogFilters = {
   query: '',
   modalities: [],
   category: null,
-  goodCondition: false,
+  conditions: [],
+  maxPriceCents: null,
 };
 
 // ── Anúncios de quem publicou (spec 025) ────────────────────────────────────

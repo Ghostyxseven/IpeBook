@@ -31,7 +31,7 @@ quadro; **sem** foto continua sendo mensagem no rodapé.
 
 **Uma caixa de tarefa ficou aberta por engano.** O script que marcou as tarefas
 concluídas pulava toda linha contendo "aparelho", para preservar as pendências de
-teste em dispositivo — e o título "ADR 0028 — por que o rascunho mora no
+teste em dispositivo — e o título "ADR 0030 — por que o rascunho mora no
 aparelho" casou com o filtro. O ADR existe desde o primeiro commit da spec.
 
 **Um teste criava o repositório dentro do hook.** `renderHook(() =>
@@ -47,7 +47,7 @@ erro fácil de repetir.
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 04.08, 04.10, 04.20, 04.21 | São **estados de uma tela**. Rotas separadas deixariam, depois de excluir, uma tela de anúncio inexistente alcançável pelo botão voltar                     |
 | 04.08                      | **"Marcar como concluído" não grava nada.** Concluir pertence à negociação (ADR 0018); a linha leva às Conversas, com o apoio dizendo isso                  |
-| 04.11 a 04.16              | O rascunho **não guarda a foto** (ADR 0028). A tela avisa antes de a pessoa descobrir sozinha                                                               |
+| 04.11 a 04.16              | O rascunho **não guarda a foto** (ADR 0030). A tela avisa antes de a pessoa descobrir sozinha                                                               |
 | 04.16                      | O texto é o do quadro renderizado ("Salve um anúncio durante o preenchimento e continue quando quiser."), não o do nome da camada, que estava desatualizado |
 | vocabulário                | "Pausar", "Pausado" e "Retomar" nas telas; a situação no banco continua `arquivado`                                                                         |
 | estante                    | A folha de opções saiu: o Figma desenhou uma tela, e ela cabe a prévia e o cartão de situação que a folha não cabia                                         |

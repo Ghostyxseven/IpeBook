@@ -2,7 +2,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { locationLabel } from '../../../model/services/catalogFormat';
+import {
+  detailActionLabel,
+  detailSignedOutLabel,
+  locationLabel,
+} from '../../../model/services/catalogFormat';
 import { blockLabel } from '../../../model/services/securityFormat';
 import { useListingDetail } from '../../../factories/catalog';
 import { AppIcon } from '../../components/AppIcon';
@@ -71,14 +75,17 @@ export function ListingDetailScreen() {
     });
   const primary = canNegotiate
     ? {
-        label: 'Combinar encontro',
+        label: detailActionLabel(listing.modality),
         onPress: () => router.push(`/livro/${listingId}/combinar`),
         hint: 'Abre o formulário para propor local, dia e horário.',
       }
     : isOwner
       ? { label: 'Ver solicitações', onPress: () => router.push('/conversas') }
       : session.status === 'signedOut' && isAvailable
-        ? { label: 'Entrar para combinar encontro', onPress: () => router.replace('/entrar') }
+        ? {
+            label: detailSignedOutLabel(listing.modality),
+            onPress: () => router.replace('/entrar'),
+          }
         : null;
 
   return (

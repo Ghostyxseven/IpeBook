@@ -20,6 +20,7 @@ import {
   reputationLine,
 } from '../src/model/services/reputationFormat.ts';
 import {
+  useCompletionRatingViewModel,
   useHistoryViewModel,
   usePublicProfileViewModel,
   useRatingsReceivedViewModel,
@@ -294,4 +295,56 @@ test('a linha de avaliações do Meu perfil convida quem ainda não tem nota', (
   assert.equal(ratingsLine({ ratingAverage: null, completedCount: 0 }), 'Ainda sem avaliações');
   // Já concluiu, mas ninguém avaliou: ainda assim não existe média.
   assert.equal(ratingsLine({ ratingAverage: null, completedCount: 3 }), 'Ainda sem avaliações');
+});
+
+test('avaliar no fim da negociação só aparece para quem ainda não avaliou', async () => {
+  const repository = createMemoryReputationRepository({ history: [concluida] });
+  const screen = await renderHook(() => useCompletionRatingViewModel(repository, 'r1'));
+  assert.equal(screen.vm.status, 'ready');
+  assert.equal(screen.vm.canRate, true);
+  assert.equal(screen.vm.otherFirstName, 'Ana Paula');
+
+  await act(async () => screen.vm.rate(4, 'Encontro tranquilo.'));
+  assert.deepEqual(repository.rated, [{ requestId: 'r1', subjectId: 'ana', score: 4 }]);
+  // Some da tela sem recarregar o histórico inteiro.
+  assert.equal(screen.vm.justRated, true);
+  assert.equal(screen.vm.canRate, false);
+  assert.equal(screen.vm.error, null);
+  await screen.unmount();
+});
+
+test('quem já avaliou, ou negociação de outra pessoa, não recebe o convite', async () => {
+  // O repositório fica FORA do `renderHook`: criá-lo dentro muda a dependência a cada
+  // render e o carregamento nunca para.
+  const avaliado = createMemoryReputationRepository({
+    history: [{ ...concluida, rated: true }],
+  });
+  const comAvaliacao = await renderHook(() => useCompletionRatingViewModel(avaliado, 'r1'));
+  assert.equal(comAvaliacao.vm.canRate, false, 'uma avaliação por negociação (ADR 0027)');
+  await comAvaliacao.unmount();
+
+  // A negociação aberta na tela não está no histórico: nada a avaliar ainda.
+  const semEntrada = createMemoryReputationRepository({ history: [concluida] });
+  const outra = await renderHook(() => useCompletionRatingViewModel(semEntrada, 'r9'));
+  assert.equal(outra.vm.canRate, false);
+  assert.equal(outra.vm.otherFirstName, null);
+  await outra.unmount();
+
+  // Conta da outra pessoa excluída: não há a quem avaliar.
+  const semPessoa = createMemoryReputationRepository({
+    history: [{ ...concluida, otherPersonId: null, otherFirstName: null }],
+  });
+  const semOutro = await renderHook(() => useCompletionRatingViewModel(semPessoa, 'r1'));
+  assert.equal(semOutro.vm.canRate, false);
+  await semOutro.unmount();
+});
+
+test('falha ao avaliar no fim da negociação vira mensagem, sem travar a tela', async () => {
+  const repository = createMemoryReputationRepository({ history: [concluida] });
+  const screen = await renderHook(() => useCompletionRatingViewModel(repository, 'r1'));
+  await act(async () => screen.vm.rate(5, null));
+  // A segunda tentativa é recusada, como a `unique` do banco recusaria.
+  await act(async () => screen.vm.rate(1, null));
+  assert.equal(repository.rated.length, 1);
+  await screen.unmount();
 });

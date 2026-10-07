@@ -1,7 +1,7 @@
 import type { ListingDraft } from './Listing';
 
 /**
- * Um anúncio pela metade, guardado no aparelho (ADR 0028).
+ * Um anúncio pela metade, guardado no aparelho (ADR 0030).
  *
  * Guarda o texto e não a foto: a foto escolhida são alguns megabytes de bytes
  * crus, e `localStorage` é o lugar errado para isso. Quem retoma escolhe a foto

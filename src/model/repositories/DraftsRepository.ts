@@ -2,7 +2,7 @@ import type { DraftRecord } from '../entities/Draft';
 import type { ListingDraft } from '../entities/Listing';
 
 /**
- * Rascunhos de anúncio (ADR 0028). Rejeita com `DraftError`.
+ * Rascunhos de anúncio (ADR 0030). Rejeita com `DraftError`.
  *
  * `Promise` mesmo onde a implementação de hoje é síncrona: é o que permite
  * trocar o aparelho por um servidor sem tocar em ViewModel nem em tela.

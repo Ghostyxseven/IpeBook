@@ -105,13 +105,13 @@ verdade. Está registrado em `docs/design-system/divergencias.md`.
 
 ## Fora do escopo
 
-Rascunho sincronizado entre aparelhos (ADR 0028); guardar a foto no rascunho;
+Rascunho sincronizado entre aparelhos (ADR 0030); guardar a foto no rascunho;
 agendar publicação; duplicar um anúncio existente.
 
 ## Dependências
 
 - **Spec 025** — o formulário, a estante e o `ListingsRepository`.
-- **ADR 0028** — por que o rascunho mora no aparelho.
+- **ADR 0030** — por que o rascunho mora no aparelho.
 - **ADR 0018** — por que "Marcar como concluído" não grava nada.
 
 ## Referência de design
