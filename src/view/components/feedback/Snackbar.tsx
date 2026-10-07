@@ -1,24 +1,21 @@
 import { useEffect } from 'react';
 import { AccessibilityInfo, Platform, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { GlassView } from 'expo-glass-effect';
+import { GlassSurface } from '../ui/GlassSurface';
 import { AppIcon } from '../AppIcon';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 const ios = Platform.OS === 'ios';
-// No Android e na Web, GlassView já cai para uma View comum, sem pintura própria: usa o
-// `Banner = View` com o fundo `inverse-surface` do Material 3. No iPhone, `Banner = GlassView`
-// pinta o próprio vidro: não leva `backgroundColor`.
-const Banner = ios ? GlassView : View;
-const glassProps = ios ? ({ glassEffectStyle: 'regular' } as const) : {};
+// No Android e na Web, o aviso usa o Snackbar do Material 3 (`inverse-surface`). No iPhone,
+// `GlassSurface` é a "barra de mensagem" da referência do Liquid Glass (ADR 0029): vidro de
+// verdade, com a célula sólida como ela mesma já resolve fora do iPhone e com "Reduzir
+// Transparência" ligado.
+const Banner = ios ? GlassSurface : View;
 
 /**
  * Aviso temporário sobre a tela seguinte, em vez de uma tela de sucesso própria (Figma 01.09
- * "Senha atualizada" e 01.13 "E-mail confirmado"): Android e Web usam o Snackbar do Material 3
- * (`inverse-surface`); o iPhone usa vidro de verdade (`expo-glass-effect`, precisa de iOS 26
- * para o blur — cai sozinho para uma célula comum em versões mais antigas), como a "Liquid
- * Glass" do quadro. Some sozinho depois de `duration` e também lê o aviso para quem usa leitor
- * de tela.
+ * "Senha atualizada" e 01.13 "E-mail confirmado"). Some sozinho depois de `duration` e também
+ * lê o aviso para quem usa leitor de tela.
  */
 export function Snackbar({
   title,
@@ -43,7 +40,6 @@ export function Snackbar({
   return (
     <View style={[styles.wrapper, { paddingTop: insets.top + spacing.xs }]}>
       <Banner
-        {...glassProps}
         accessibilityRole="alert"
         accessibilityLiveRegion="polite"
         style={[styles.banner, !ios && styles.bannerMaterial]}
