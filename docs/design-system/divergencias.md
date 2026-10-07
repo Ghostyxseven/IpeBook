@@ -180,6 +180,18 @@ Decidido com o Micael em 07/10/2026, pelos quadros 06.04 e 03.03 das duas plataf
 | Ação do detalhe (03.01 a 03.03)       | Era sempre "Combinar encontro". Agora diz o que a pessoa pede: "Quero receber" na doação, "Propor troca" na troca, "Combinar encontro" na venda. As três abrem a mesma tela.             |
 | "Conversar" na doação (03.03, iPhone) | **Fora.** As mensagens só existem dentro de uma negociação aberta (ADR 0021); conversar antes disso seria recurso novo, com spec e banco. O Figma precisa tirar a ação ou abrir a spec.  |
 
+## Contraproposta (07/10/2026)
+
+Feita pelos quadros 06.19 e 06.20, com o [ADR 0030](../adr/0030-contraproposta-de-troca.md).
+
+| Item                                          | Situação                                                                                                                                   |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Cartões da contraproposta na conversa (06.20) | O app mostra na tela da negociação, que é onde aceitar e recusar já acontecem. A conversa segue só com mensagens.                          |
+| Apresentação da escolha (06.19)               | A implementação usa modal de tela inteira, com largura limitada em tablets/Web, em vez da folha parcial sobre a proposta.                  |
+| Mensagem automática ("Prefiro O Cortiço…")    | Não existe: o app não escreve mensagem no lugar de ninguém. Quem contrapropõe pode explicar na conversa.                                   |
+| "Perfil confirmado · 5 trocas · 4,9" (06.19)  | A linha de quem propôs não aparece na folha: o nome já está na negociação, e a reputação tem tela própria (spec 031).                      |
+| Lista da folha                                | O Figma mostra o livro oferecido junto dos outros; o app lista só os outros, porque pedir de volta o mesmo livro não é uma contraproposta. |
+
 ## Liquid Glass no iPhone (07/10/2026)
 
 Implementado pelo [ADR 0029](../adr/0029-liquid-glass-no-iphone.md), com os tokens da

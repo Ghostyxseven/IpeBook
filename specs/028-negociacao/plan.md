@@ -29,3 +29,15 @@ A decisão está no [ADR 0018](../../docs/adr/0018-transicoes-da-negociacao-no-b
 ## ViewModel
 
 - `useBookRequestDetailViewModel` confere a transição antes (resposta rápida), chama `transitionRequest` e recarrega o anúncio.
+
+## Etapa 4 — Contraproposta
+
+1. Revisar a implementação interrompida e reproduzir falhas com testes de regressão.
+2. Corrigir as RPCs com `security definer`, autenticação explícita, `search_path`
+   restrito e bloqueios de linha; manter a atualização direta protegida por RLS.
+3. Alinhar memória, cliente Supabase e ViewModel ao contrato; apresentar os dois
+   livros, impedir aceite original e manter erros de envio visíveis.
+4. Reusar tema e componentes na folha (Android, iOS e Web); registrar adaptação do
+   Figma em divergências.
+5. Executar verificações locais e registrar evidências em `verify.md`. Aplicação
+   no Supabase e ensaio com duas contas em aparelhos permanecem etapas separadas.

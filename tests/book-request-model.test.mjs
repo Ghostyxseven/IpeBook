@@ -10,6 +10,9 @@ import {
   listingStatusOnAccept,
   listingStatusOnComplete,
   listingStatusOnCancel,
+  canCounter,
+  canAnswerCounter,
+  effectiveOfferId,
 } from '../src/model/services/bookRequestTransitions.ts';
 import { BookRequestError } from '../src/model/entities/BookRequestError.ts';
 import { bookRequestErrorMessage } from '../src/model/services/bookRequestMessages.ts';
@@ -404,4 +407,46 @@ test('o "Onde" sugere lugares públicos e reconhece o local escrito (Figma 06.04
   assert.ok(isSuggestedPlace(` ${meetingPlaceSuggestions[0]} `), 'espaços não mudam a escolha');
   assert.equal(isSuggestedPlace('Escola do bairro'), false);
   assert.equal(isSuggestedPlace(''), false);
+});
+
+test('contraproposta: só o dono, só na troca e só uma por vez (Figma 06.19)', () => {
+  const troca = { ownerId: 'dono', modality: 'trade', counterListingId: null };
+  assert.equal(canCounter('pending', 'dono', troca), true);
+  assert.equal(canCounter('pending', 'quem-pediu', troca), false, 'quem pede não contrapropõe');
+  assert.equal(
+    canCounter('pending', 'dono', { ...troca, modality: 'sale' }),
+    false,
+    'venda não tem livro do outro lado',
+  );
+  assert.equal(canCounter('pending', 'dono', { ...troca, modality: 'donation' }), false);
+  assert.equal(
+    canCounter('pending', 'dono', { ...troca, counterListingId: 'l9' }),
+    false,
+    'a bola está com quem pediu até ele responder',
+  );
+  // Fora de `pending` a negociação já seguiu: não dá para contrapropor.
+  for (const status of ['accepted', 'rejected', 'canceled', 'completed']) {
+    assert.equal(canCounter(status, 'dono', troca), false);
+  }
+});
+
+test('quem responde a contraproposta é quem pediu, e só enquanto ela existe', () => {
+  const comContra = { requesterId: 'quem-pediu', counterListingId: 'l9' };
+  assert.equal(canAnswerCounter('pending', 'quem-pediu', comContra), true);
+  assert.equal(canAnswerCounter('pending', 'dono', comContra), false);
+  assert.equal(
+    canAnswerCounter('pending', 'quem-pediu', {
+      requesterId: 'quem-pediu',
+      counterListingId: null,
+    }),
+    false,
+    'sem contraproposta não há o que responder',
+  );
+  assert.equal(canAnswerCounter('accepted', 'quem-pediu', comContra), false);
+});
+
+test('o livro que vale na troca é o contraproposto, quando há um', () => {
+  assert.equal(effectiveOfferId({ offeredListingId: 'a', counterListingId: 'b' }), 'b');
+  assert.equal(effectiveOfferId({ offeredListingId: 'a', counterListingId: null }), 'a');
+  assert.equal(effectiveOfferId({ offeredListingId: null, counterListingId: null }), null);
 });

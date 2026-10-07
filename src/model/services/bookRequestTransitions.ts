@@ -1,5 +1,5 @@
-import type { Listing, ListingStatus } from '../entities/Listing';
-import type { RequestStatus } from '../entities/BookRequest';
+import type { Listing, ListingStatus, Modality } from '../entities/Listing';
+import type { BookRequest, RequestStatus } from '../entities/BookRequest';
 import { BookRequestError } from '../entities/BookRequestError.ts';
 
 /**
@@ -29,6 +29,47 @@ export function ensureTransition(from: RequestStatus, to: RequestStatus): void {
   if (!canTransition(from, to)) {
     throw new BookRequestError('invalid_transition');
   }
+}
+
+/**
+ * Contraproposta (Figma 06.19, ADR 0030): o dono pede outro livro da estante de quem
+ * propôs, em vez do oferecido. Não muda o status — a proposta segue `pending` —, só
+ * passa a vez de responder para quem pediu.
+ *
+ * Só na troca: em venda e doação não há livro do outro lado para trocar.
+ */
+export function canCounter(
+  requestStatus: RequestStatus,
+  userId: string,
+  {
+    ownerId,
+    modality,
+    counterListingId,
+  }: { ownerId?: string | null; modality: Modality; counterListingId?: string | null },
+): boolean {
+  if (requestStatus !== 'pending' || modality !== 'trade') return false;
+  // Uma contraproposta por vez: a bola está com quem pediu até ele responder.
+  if (counterListingId) return false;
+  return Boolean(ownerId && userId === ownerId);
+}
+
+/** Quem responde a contraproposta é quem pediu, e só enquanto ela estiver de pé. */
+export function canAnswerCounter(
+  requestStatus: RequestStatus,
+  userId: string,
+  { requesterId, counterListingId }: { requesterId: string; counterListingId?: string | null },
+): boolean {
+  return requestStatus === 'pending' && Boolean(counterListingId) && userId === requesterId;
+}
+
+/**
+ * O livro que vale na troca: o contraproposto, quando há um, senão o oferecido.
+ * Serve para a tela e para o resumo falarem do mesmo livro.
+ */
+export function effectiveOfferId(
+  request: Pick<BookRequest, 'offeredListingId' | 'counterListingId'>,
+): string | null {
+  return request.counterListingId ?? request.offeredListingId ?? null;
 }
 
 /** Quem pode ACCEPT / REJECT? somente o DONO do anúncio. */

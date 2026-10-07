@@ -1,4 +1,5 @@
 import { BookRequest, RequestStatus } from '../entities/BookRequest';
+import type { Listing } from '../entities/Listing';
 
 /** Novo local, dia e horário de um encontro combinado (Figma 06.13). */
 export type MeetingChange = Pick<BookRequest, 'publicLocation' | 'meetingDate' | 'meetingTime'>;
@@ -26,6 +27,18 @@ export interface BookRequestRepository {
 
   /** Muda local, dia e horário de um encontro aceito; qualquer um dos dois pode (ADR 0022). */
   reschedule(id: string, meeting: MeetingChange): Promise<BookRequest>;
+
+  /**
+   * Anúncios de troca disponíveis de quem pediu, para o dono escolher a contraproposta
+   * (Figma 06.19). Só o dono do anúncio pedido enxerga, e só enquanto está pendente.
+   */
+  shelfOfRequester(requestId: string): Promise<Listing[]>;
+
+  /** O dono pede outro livro da estante de quem propôs (ADR 0030). Não muda o status. */
+  counterOffer(requestId: string, listingId: string): Promise<BookRequest>;
+
+  /** Quem pediu aceita a contraproposta (fecha o acordo) ou recusa (encerra). */
+  answerCounterOffer(requestId: string, accept: boolean): Promise<BookRequest>;
 
   /** Primeiro nome de uma pessoa da negociação, ou `null` quando o banco não sabe. */
   personFirstName(userId: string): Promise<string | null>;

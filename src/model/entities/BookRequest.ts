@@ -15,6 +15,12 @@ export interface BookRequest {
   /** Na troca, o anúncio de quem pediu oferecido em troca (Figma 03.05, ADR 0022). */
   offeredListingId?: string | null;
 
+  /**
+   * Na troca, o outro livro de quem pediu que o dono prefere receber (Figma 06.19, ADR 0030).
+   * Enquanto está preenchido, a vez de responder é de quem pediu.
+   */
+  counterListingId?: string | null;
+
   /** Data ISO 8601 (mesmo padrão de Listing.createdAt). */
   createdAt: string;
   /** Data ISO 8601 (mesmo padrão de Listing.createdAt). */
