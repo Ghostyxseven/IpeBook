@@ -20,6 +20,7 @@ export function LoginScreen() {
   return (
     <AuthLayout
       brand
+      withoutHeader
       title="Sua próxima leitura começa aqui."
       description="Entre com o e-mail e a senha da sua conta."
       footer={
