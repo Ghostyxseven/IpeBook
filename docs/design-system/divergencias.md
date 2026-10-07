@@ -167,3 +167,44 @@ Refeitos pelos quadros Android 02.02 a 02.04. Diferenças que ficaram:
 | Categorias dos chips                           | O Figma mostra "Ficção", "Não ficção" e "Infantil"; o app usa as categorias fixas do ADR 0008.     |
 | "Mais recentes" em verde no resumo (02.04)     | A lista só tem essa ordem; o resumo diz a ordem ou os filtros, sem botão.                          |
 | Lista compacta com filtro (02.04)              | O app mantém os cards do 02.02 também com filtro.                                                  |
+
+## Visor da leitura de ISBN (spec 030, Figma 04.02 e 04.03)
+
+O quadro usa `#1F2B25` no fundo do visor, `white` no texto sobre ele e
+`rgba(20,24,22,0.5)` no véu que escurece o visor quando a folha "Livro
+identificado" sobe. Nenhum dos três existia nos tokens, e nenhum papel do
+Material 3 já definido serve: `inverseSurface` (`#322F2B`) é marrom e
+`cover.green` (`#30574A`) é claro demais para funcionar como fundo de câmera.
+
+Entraram como `color.scanner.surface`, `color.scanner.onSurface` e
+`color.scanner.veil`. São de uso restrito a esta tela: é o único lugar do app
+onde a interface fica por cima de imagem ao vivo, e é isso que exige um fundo
+escuro próprio. Se outra tela precisar de superfície escura, o caminho é
+discutir um papel de verdade, não reaproveitar estes.
+
+## Perfil completo (spec 031, 07/10/2026)
+
+**Telas sem quadro no Figma.** Duas telas desta spec não têm quadro:
+
+- **Histórico** das negociações concluídas. A issue #53 pede "histórico de trocas
+  e doações" e a seção 07 não tem quadro para ele.
+- **Avaliar**, que vive dentro do histórico. Avaliar ao lado da negociação que
+  acabou é o que evita pedir à pessoa que lembre qual foi.
+
+As duas foram desenhadas com os componentes da biblioteca (cartão, chips de
+escolha, campo e botões) e com os títulos de marca do mesmo tom das outras. Se a
+equipe de design desenhar os quadros, vale reconferir.
+
+**Textos ajustados ao produto:**
+
+- 03.04 diz "Telefone confirmado"; o app diz **"E-mail confirmado"**. O IpêBook
+  confirma por e-mail e nunca pede telefone (ADR 0020).
+- 07.01 traz o número "4,8" direto; o app mostra **"—"** para quem ainda não tem
+  nota. Um 0,0 numa escala de 1 a 5 é uma nota ruim dada a quem não fez nada.
+
+## Gestão de anúncios × Figma (reconferência de 07/10/2026)
+
+A comparação da spec 025 estava marcada como bloqueada desde 02/10/2026 por causa
+dos links quebrados. Feita agora, apontou cinco divergências — a maior é a
+ausência completa do fluxo de **rascunhos** (quadros 04.11 a 04.16). A lista está
+em [`specs/025-anuncios-gestao/verify.md`](../../specs/025-anuncios-gestao/verify.md).
