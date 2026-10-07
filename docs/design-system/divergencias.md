@@ -156,6 +156,17 @@ Refeita pelos quadros Android 05.01 a 05.06. O que ficou diferente do Figma, e p
 | Folha de opções ao tocar em um livro               | Sem quadro. Segue a folha inferior do M3: `container.low`, cantos `radius.extraLarge`, itens de 56 px. O véu usa preto a 32% (o valor do M3), porque não há token de véu. |
 | Subtítulo de Concluídos                            | O Figma diz "trocas e doações"; o app diz "vendas, trocas e doações", porque venda também conclui.                                                                        |
 
+## Onde do Combinar encontro e ação do detalhe (07/10/2026)
+
+Decidido com o Micael em 07/10/2026, pelos quadros 06.04 e 03.03 das duas plataformas.
+
+| Item                                  | Situação                                                                                                                                                                                 |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Locais do "Onde" (06.04)              | O app só tinha campo escrito. Entraram os atalhos de lugar público do quadro mais "Outro local", nas duas plataformas, e o campo continua aberto. O mesmo seletor vale no reagendamento. |
+| Nomes dos locais sugeridos            | São atalhos de tipo de lugar, não endereços conferidos: o app não tem cadastro de pontos públicos. Quem combina confirma o ponto exato na conversa.                                      |
+| Ação do detalhe (03.01 a 03.03)       | Era sempre "Combinar encontro". Agora diz o que a pessoa pede: "Quero receber" na doação, "Propor troca" na troca, "Combinar encontro" na venda. As três abrem a mesma tela.             |
+| "Conversar" na doação (03.03, iPhone) | **Fora.** As mensagens só existem dentro de uma negociação aberta (ADR 0021); conversar antes disso seria recurso novo, com spec e banco. O Figma precisa tirar a ação ou abrir a spec.  |
+
 ## Selo da troca no detalhe (07/10/2026)
 
 No detalhe do livro (03.01 a 03.03) o selo mostrava "Por outro livro" e o valor grande mostrava
