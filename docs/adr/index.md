@@ -31,3 +31,4 @@
 - [0029 - Liquid Glass no iPhone](0029-liquid-glass-no-iphone.md) (aceito, implementado em parte; falta a barra superior e o iPhone real)
 - [0030 - Rascunho de anúncio guardado no aparelho](0030-rascunhos-no-aparelho.md) (proposto, implementado; renumerado de 0028 para 0030 por colisão com o Google; falta conferir a persistência em aparelho)
 - [0031 - Contraproposta de troca](0031-contraproposta-de-troca.md) (aceito, implementado; falta aplicar a migração)
+- [0032 - Favoritos](0032-favoritos.md) (aceito, implementado; falta aplicar a migração e conferir no aparelho)

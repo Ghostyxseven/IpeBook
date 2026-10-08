@@ -8,8 +8,10 @@ import {
   locationLabel,
 } from '../../../model/services/catalogFormat';
 import { blockLabel } from '../../../model/services/securityFormat';
+import { useFavorites } from '../../../factories/favorites';
 import { useListingDetail } from '../../../factories/catalog';
 import { AppIcon } from '../../components/AppIcon';
+import { FavoriteButton } from '../../components/catalog/FavoriteButton';
 import { ListingCover } from '../../components/catalog/ListingCover';
 import { BlockUserDialog } from '../../components/security/BlockUserDialog';
 import { StatusBadge } from '../../components/catalog/StatusBadge';
@@ -26,6 +28,7 @@ export function ListingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const vm = useListingDetail(String(id ?? ''));
   const session = useSessionContext();
+  const favorites = useFavorites();
   const listingId = String(id ?? '');
   const [blocking, setBlocking] = useState(false);
 
@@ -95,9 +98,18 @@ export function ListingDetailScreen() {
           <ListingCover listing={listing} variant="detail" />
         </View>
         <View style={styles.titleBlock}>
-          <Text style={styles.title} accessibilityRole="header">
-            {listing.title}
-          </Text>
+          <View style={styles.titleRow}>
+            <Text style={[styles.title, styles.titleText]} accessibilityRole="header">
+              {listing.title}
+            </Text>
+            {!isOwner && session.status === 'signedIn' && (
+              <FavoriteButton
+                favorite={favorites.isFavorite(listing.id)}
+                onToggle={() => favorites.toggle(listing.id)}
+                title={listing.title}
+              />
+            )}
+          </View>
           <Text style={styles.author}>{listing.author}</Text>
         </View>
         <View
@@ -238,6 +250,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   titleBlock: { gap: spacing.xxs },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xs },
+  titleText: { flex: 1 },
   title: {
     ...typography.titleLarge,
     fontSize: 22,

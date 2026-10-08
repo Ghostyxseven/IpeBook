@@ -67,12 +67,14 @@ O arquivo [IpêBook-Mobile](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/
 
 Decidido no [ADR 0019](../adr/0019-serifa-da-marca-e-superficies-do-figma.md): Source Serif 4 Bold nos títulos de marca (`typography.brand`) e os papéis de superfície do Material 3 em `design-tokens.json` (`onSurface`, `onSurfaceVariant`, `outlineVariant`, `container.*`, `selected.*`). Ainda divergem:
 
-| Item                          | Figma                         | App hoje                                                |
-| ----------------------------- | ----------------------------- | ------------------------------------------------------- |
-| Título de seção do Início     | `m3-title-lg` 22/28, peso 400 | `titleLarge` 24/32 com tamanho e peso ajustados na tela |
-| Raio do card do carrossel     | 12 px                         | `radius.medium` 14 px                                   |
-| Seletor de bairro, distâncias | No topo e nos cards           | Fora: o app não conhece a localização da pessoa         |
-| Favoritar e compartilhar      | Nos cards e no Detalhe        | Fora: o recurso não existe                              |
+| Item                      | Figma                         | App hoje                                                                |
+| ------------------------- | ----------------------------- | ----------------------------------------------------------------------- |
+| Título de seção do Início | `m3-title-lg` 22/28, peso 400 | `titleLarge` 24/32 com tamanho e peso ajustados na tela                 |
+| Raio do card do carrossel | 12 px                         | `radius.medium` 14 px                                                   |
+| Seletor de bairro (chip)  | No topo                       | Entrou em 08/10/2026 (ADR 0032): é o bairro do perfil, não localização. |
+| Distâncias nos cards      | "a 800 m", "a 1,2 km"         | Fora: o app não conhece a localização da pessoa, só o bairro do perfil. |
+| Favoritar                 | Nos cards e no Detalhe        | Entrou em 08/10/2026 (ADR 0032).                                        |
+| Compartilhar              | Nos cards e no Detalhe        | Fora: o recurso não existe (extra #1 da decisão #27).                   |
 
 ## Anunciar livro (03/10/2026)
 
@@ -249,13 +251,13 @@ conservação e preço máximo ao do Android.
 
 Refeitos pelos quadros Android 02.02 a 02.04. Diferenças que ficaram:
 
-| Item                                           | Situação                                                                                           |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Seletor de bairro ("Centro") no topo (02.02)   | O app não guarda o bairro de quem usa e atende só Piripiri (ADR 0020); fica só o botão de filtros. |
-| Coração de favoritos nos cards (02.02 e 02.04) | O app não tem favoritos.                                                                           |
-| Categorias dos chips                           | O Figma mostra "Ficção", "Não ficção" e "Infantil"; o app usa as categorias fixas do ADR 0008.     |
-| "Mais recentes" em verde no resumo (02.04)     | A lista só tem essa ordem; o resumo diz a ordem ou os filtros, sem botão.                          |
-| Lista compacta com filtro (02.04)              | O app mantém os cards do 02.02 também com filtro.                                                  |
+| Item                                           | Situação                                                                                                                                   |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Seletor de bairro ("Centro") no topo (02.02)   | Entrou em 08/10/2026 (ADR 0032): o chip lê o bairro do perfil (spec de Perfil) e abre a tela de editar. A cidade continua fixa (ADR 0020). |
+| Coração de favoritos nos cards (02.02 e 02.04) | Entrou em 08/10/2026 (ADR 0032).                                                                                                           |
+| Categorias dos chips                           | O Figma mostra "Ficção", "Não ficção" e "Infantil"; o app usa as categorias fixas do ADR 0008.                                             |
+| "Mais recentes" em verde no resumo (02.04)     | A lista só tem essa ordem; o resumo diz a ordem ou os filtros, sem botão.                                                                  |
+| Lista compacta com filtro (02.04)              | O app mantém os cards do 02.02 também com filtro.                                                                                          |
 
 ## Visor da leitura de ISBN (spec 030, Figma 04.02 e 04.03)
 

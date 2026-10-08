@@ -18,6 +18,8 @@ export function CatalogList({
   onRefresh,
   onEndReached,
   onOpen,
+  isFavorite,
+  onToggleFavorite,
 }: {
   items: Listing[];
   header: ReactElement;
@@ -30,12 +32,22 @@ export function CatalogList({
   onRefresh: () => void;
   onEndReached: () => void;
   onOpen: (id: string) => void;
+  /** Sem isso, os cards não mostram o coração (Figma 37). */
+  isFavorite?: (id: string) => boolean;
+  onToggleFavorite?: (id: string) => void;
 }) {
   return (
     <FlatList
       data={items}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <BookCard listing={item} onPress={() => onOpen(item.id)} />}
+      renderItem={({ item }) => (
+        <BookCard
+          listing={item}
+          onPress={() => onOpen(item.id)}
+          favorite={isFavorite?.(item.id)}
+          onToggleFavorite={onToggleFavorite ? () => onToggleFavorite(item.id) : undefined}
+        />
+      )}
       ListHeaderComponent={header}
       ListEmptyComponent={empty}
       ListFooterComponent={

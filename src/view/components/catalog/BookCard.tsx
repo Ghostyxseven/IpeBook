@@ -3,6 +3,7 @@ import type { Listing } from '../../../model/entities/Listing';
 import { cardValue, listingAccessibilityLabel } from '../../../model/services/catalogFormat';
 import { BRAND_FONT, colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 import { AppIcon } from '../AppIcon';
+import { FavoriteButton } from './FavoriteButton';
 import { ListingCover } from './ListingCover';
 import { StatusBadge } from './StatusBadge';
 
@@ -10,7 +11,18 @@ import { StatusBadge } from './StatusBadge';
  * IpêBook / Book Card na lista do Explorar (Figma 02.02, "Livro"): capa, título em serifa,
  * autor, etiqueta da modalidade com o valor e a seta de abrir. Lido como um único item.
  */
-export function BookCard({ listing, onPress }: { listing: Listing; onPress: () => void }) {
+export function BookCard({
+  listing,
+  onPress,
+  favorite,
+  onToggleFavorite,
+}: {
+  listing: Listing;
+  onPress: () => void;
+  /** Sem isso, o card não mostra o coração (ex.: listas sem favoritos). */
+  favorite?: boolean;
+  onToggleFavorite?: () => void;
+}) {
   const value = cardValue(listing);
   return (
     <Pressable
@@ -42,6 +54,13 @@ export function BookCard({ listing, onPress }: { listing: Listing; onPress: () =
         </View>
         {listing.status === 'reservado' && <StatusBadge variant="reserved" />}
       </View>
+      {onToggleFavorite && (
+        <FavoriteButton
+          favorite={Boolean(favorite)}
+          onToggle={onToggleFavorite}
+          title={listing.title}
+        />
+      )}
       <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
     </Pressable>
   );

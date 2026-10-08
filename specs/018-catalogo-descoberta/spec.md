@@ -31,7 +31,33 @@ Configurações gerais e notificações também são do Micael, mas ficam numa s
 
 ## Fora do escopo
 
-Publicar, editar e arquivar anúncios e as abas Estante e Perfil (feature do Eric); "Combinar encontro" e conversa (feature do Antonio); "ver perfil" e reputação de quem anunciou; favoritos, "Avisar quando aparecer" e compartilhar no WhatsApp (extras, ver a decisão da #27 em [`docs/DIVISAO_FEATURES.md`](../../docs/DIVISAO_FEATURES.md)); "Livros perto de você" e cidade no topo (exigem localização); ordenação por distância ou preço; busca por ISBN; catálogo na Web; configurações e notificações (spec futura).
+Publicar, editar e arquivar anúncios e as abas Estante e Perfil (feature do Eric); "Combinar encontro" e conversa (feature do Antonio); "ver perfil" e reputação de quem anunciou; "Avisar quando aparecer" e compartilhar no WhatsApp (extras, ver a decisão da #27 em [`docs/DIVISAO_FEATURES.md`](../../docs/DIVISAO_FEATURES.md)); "Livros perto de você" e distâncias (exigem localização, continuam fora); ordenação por distância ou preço; busca por ISBN; catálogo na Web; configurações e notificações (spec futura).
+
+## Favoritar (08/10/2026)
+
+Abertura do extra #2 da decisão #27 (`docs/DIVISAO_FEATURES.md`): o coração no Book
+Card e no Book Tile do Início e do Explorar, e no Detalhe, para quem está logado e não
+é dono do anúncio. Tabela, RLS e as regras de implementação estão no
+[ADR 0032](../../docs/adr/0032-favoritos.md). Critérios de aceite:
+
+- O coração muda na hora do toque (otimista) e volta ao estado anterior se o servidor
+  recusar, com o motivo em português.
+- Alvo de 48 × 48 e rótulo acessível ("Favoritar Dom Casmurro" / "Remover Dom Casmurro
+  dos favoritos"), lido separado do resto do card.
+- Dono do próprio anúncio não vê o coração no Detalhe.
+- Toda a área `(app)` — Início, Explorar e Detalhe inclusive — já exige sessão
+  (`_layout.tsx` redireciona `signedOut` para `/entrar`); não há tela de catálogo
+  para quem não entrou, então o coração não precisa de um estado "visitante".
+- Model e ViewModel testados com repositório em memória; montagem da consulta e
+  mapeamento de erros do Supabase testados com cliente falso (`tests/favorites.test.mjs`).
+
+## Bairro no topo do Início e do Explorar (08/10/2026)
+
+O chip "Centro ⌄" do Figma 02.01 e 02.02 não exige localização: é o bairro do perfil,
+já coletado no onboarding (Figma 01.17, spec de Perfil). O chip lê
+`ProfileRepository.getProfile()` e abre a tela de editar bairro ao tocar; sem bairro
+salvo, convida a escolher um. Cidade continua fixa (ADR 0020) — isto não reabre
+localização nem "Livros perto de você".
 
 ## Dependências
 

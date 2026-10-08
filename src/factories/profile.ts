@@ -6,6 +6,7 @@ import { deviceLocator } from '../infra/deviceLocator';
 import { supabase } from '../infra/supabaseClient';
 import { createSupabaseProfileRepository } from '../model/repositories/supabaseProfileRepository';
 import { useLocateNeighborhoodViewModel } from '../viewmodel/useLocateNeighborhoodViewModel';
+import { useMyNeighborhoodViewModel } from '../viewmodel/useMyNeighborhoodViewModel';
 import { useNeighborhoodViewModel } from '../viewmodel/useNeighborhoodViewModel';
 
 export const profileRepository = createSupabaseProfileRepository(supabase);
@@ -16,3 +17,6 @@ export const useNeighborhood = (options: Parameters<typeof useNeighborhoodViewMo
 export const useLocateNeighborhood = (
   options: Parameters<typeof useLocateNeighborhoodViewModel>[1],
 ) => useLocateNeighborhoodViewModel(deviceLocator, options);
+
+/** Bairro de quem está na conta, para o chip do topo do Início e do Explorar (Figma 02.02). */
+export const useMyNeighborhood = () => useMyNeighborhoodViewModel(profileRepository);

@@ -36,7 +36,7 @@ Para garantir uma entrega paralela e sem conflitos de código, estruturamos o tr
   - Configurações gerais e sistema de Notificações
 - **Extras da descoberta (decisão de 02/10/2026, #27):** fora do MVP, a abrir como spec só quando alguém assumir, nesta ordem:
   1. Compartilhar anúncio (Figma 44, 58 e 59): copiar link e compartilhamento nativo, sem tabela nova.
-  2. Favoritos (Figma 37): exige tabela `favorites` com RLS, ADR e spec.
+  2. ~~Favoritos (Figma 37)~~: aberto em 08/10/2026 — ADR 0032, spec 018.
   3. Alerta de desejo (Figma 56): exige tabela, gatilho de notificação e integração com o ADR 0011; depende de negociação e notificações maduras.
 
 ## 3. Antonio Carlos Gomes
