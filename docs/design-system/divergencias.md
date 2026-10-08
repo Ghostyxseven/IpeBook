@@ -180,6 +180,15 @@ Decidido com o Micael em 07/10/2026, pelos quadros 06.04 e 03.03 das duas plataf
 | Ação do detalhe (03.01 a 03.03)       | Era sempre "Combinar encontro". Agora diz o que a pessoa pede: "Quero receber" na doação, "Propor troca" na troca, "Combinar encontro" na venda. As três abrem a mesma tela.             |
 | "Conversar" na doação (03.03, iPhone) | **Fora.** As mensagens só existem dentro de uma negociação aberta (ADR 0021); conversar antes disso seria recurso novo, com spec e banco. O Figma precisa tirar a ação ou abrir a spec.  |
 
+## Barra de abas do iPhone separa a busca (08/10/2026)
+
+A referência (`ios.md`) já dizia: "Explorar é a aba de busca (`Tab(role: .search)`), no
+círculo à direita." O app usava a mesma barra de cinco abas iguais em qualquer
+plataforma. Agora, só no iPhone, Explorar sai da fileira e vira um círculo à parte,
+depois de Início, Estante, Conversas e Perfil — a mesma ordem do componente
+`TabBarIPhone` do Figma. Android e Web continuam com as cinco abas do Material 3,
+sem mudança.
+
 ## Contraproposta (07/10/2026)
 
 Feita pelos quadros 06.19 e 06.20, com o [ADR 0030](../adr/0030-contraproposta-de-troca.md).
