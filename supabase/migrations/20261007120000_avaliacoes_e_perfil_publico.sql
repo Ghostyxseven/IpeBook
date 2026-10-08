@@ -24,7 +24,10 @@ alter table public.ratings enable row level security;
 
 -- 2. Quem pode escrever: os dois lados de uma negociação CONCLUÍDA, um sobre o outro.
 --    A função existe para a política não repetir o mesmo `join` duas vezes.
-create or replace function public.can_rate(request_id uuid, author uuid, subject uuid)
+-- Prefixo `p_` nos parâmetros: sem ele, `author` colide com a coluna
+-- `listings.author` (o autor do livro, texto) trazida pelo `join`, e o Postgres
+-- resolve o nome para a coluna, não o parâmetro — daí o erro "uuid = text".
+create or replace function public.can_rate(p_request_id uuid, p_author uuid, p_subject uuid)
 returns boolean
 language sql
 stable
@@ -35,12 +38,12 @@ as $$
     select 1
     from public.book_requests r
     join public.listings l on l.id = r.listing_id
-    where r.id = request_id
+    where r.id = p_request_id
       and r.status = 'completed'
       -- Quem avalia é um dos dois lados, e avalia exatamente o outro.
       and (
-        (r.requester_id = author and l.owner_id = subject)
-        or (l.owner_id = author and r.requester_id = subject)
+        (r.requester_id = p_author and l.owner_id = p_subject)
+        or (l.owner_id = p_author and r.requester_id = p_subject)
       )
   );
 $$;
