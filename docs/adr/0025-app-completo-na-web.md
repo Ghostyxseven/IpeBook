@@ -4,7 +4,7 @@ Data: 04/10/2026
 
 ## Status
 
-Proposto, implementado. Falta configurar as variáveis do Supabase na Vercel e testar entrar e anunciar no navegador.
+Proposto, implementado. Variáveis do Supabase confirmadas na Vercel em 08/10/2026. Falta testar entrar e anunciar no navegador. A correção local do retorno Google e as limitações da validação estão na [spec 035](../../specs/035-validacao-app-web/verify.md).
 
 ## Contexto
 
