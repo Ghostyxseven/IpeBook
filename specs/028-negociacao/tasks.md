@@ -26,7 +26,7 @@
 - [x] Falha ao aceitar, recusar, cancelar ou concluir aparece na tela (antes virava uma promessa rejeitada sem mensagem).
 - [x] Mostrar o nome de quem pediu para quem anunciou (função `listing_owner_first_name`).
 - [ ] Aplicar a migração `20261003130000_negociacao_completa.sql` no Supabase (precisa do ok do responsável).
-- [ ] Aplicar a migração `20261007130000_contraproposta.sql` no Supabase (precisa do ok do responsável).
+- [x] Aplicar a migração `20261007130000_contraproposta.sql` no Supabase. Aplicada em 08/10/2026; confirmado ao vivo que Conversas e Propostas voltaram a carregar.
 - [ ] Conferir no aparelho os dois lados da negociação com duas contas.
 
 ## Retomada da contraproposta — 07/10/2026
@@ -40,7 +40,10 @@
 - [x] Conferir modal na Web em 375 × 812 e 1280 × 800, foco, seleção por teclado,
       botão desabilitado, erro visível, fechamento, vazio e falha de carga.
 - [ ] Validar fluxo integrado com duas contas em Android e iPhone.
-- [ ] Resolver em entrega própria o erro preexistente da migração de avaliações
+- [x] Resolver em entrega própria o erro preexistente da migração de avaliações
       (`can_rate`, parâmetro `author` confundido com coluna), antes de aplicar toda a cadeia.
+      Corrigido e aplicado em produção (commit `fa8a984`); confirmado ao vivo num
+      Android real: Histórico, avaliar ao concluir e Perfil (avaliações recebidas)
+      funcionando de ponta a ponta.
 
 Comandos, resultados e limites: [verify.md](verify.md).
