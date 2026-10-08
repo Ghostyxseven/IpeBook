@@ -113,8 +113,16 @@ export function createSupabaseAuthRepository(
       );
       if (!data.url) throw new AuthError('unknown');
       const result = await oauthBrowser.openAuthSession(data.url, redirectTo);
+
       if (result.type !== 'success' || !result.url) throw new AuthError('oauth_cancelled');
-      const { data: session } = await run(() => auth().exchangeCodeForSession(result.url!));
+
+      // O Supabase retorna o código no final da URL (?code=...).
+      const codeMatch = result.url.match(/[?&#]code=([^&#]+)/);
+      if (!codeMatch) {
+        throw new AuthError('unknown');
+      }
+
+      const { data: session } = await run(() => auth().exchangeCodeForSession(codeMatch[1]));
       if (!session.user) throw new AuthError('unknown');
       return toUser(session.user);
     },
