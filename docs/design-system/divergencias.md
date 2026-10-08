@@ -325,3 +325,10 @@ em [`specs/025-anuncios-gestao/verify.md`](../../specs/025-anuncios-gestao/verif
   acontece na negociação, feature de outra pessoa — teria de navegar até aqui.
 - **O nome de quem propôs não aparece** no 05.08: a lista de propostas carrega o
   pedido e o livro, não o nome.
+
+## Conclusão do cadastro Google — 08/10/2026
+
+A spec 034 acrescenta uma etapa solicitada pelo usuário sem quadro próprio no Figma.
+Reutiliza AuthLayout, TextField, Checkbox e Button dos quadros 01.03 Android
+(`336:118`) e iPhone (`336:12902`), inspecionados no arquivo oficial. Inclui bairro,
+confirmação de senha e e-mail somente leitura; não altera tokens nem padrões globais.

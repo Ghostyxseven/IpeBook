@@ -52,6 +52,7 @@ export default function AppLayout() {
     if (email) return <Redirect href={{ pathname: '/recuperar-senha', params: { email } }} />;
     return <Redirect href="/entrar" />;
   }
+  if (session.user?.needsRegistration) return <Redirect href="/completar-cadastro" />;
   return (
     <SessionContext.Provider value={session}>
       <OfflineBanner />

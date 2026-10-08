@@ -55,8 +55,19 @@ export function createMemoryAuthRepository({
     async signInWithGoogle() {
       calls.push('signInWithGoogle');
       if (!googleAccount) throw new AuthError('oauth_cancelled');
-      setCurrent(googleAccount);
-      return googleAccount;
+      const user = find(googleAccount.email)?.user ?? googleAccount;
+      setCurrent(user);
+      return user;
+    },
+    async completeGoogleRegistration(name, password, termsAcceptedAt) {
+      calls.push('completeGoogleRegistration');
+      if (!current?.needsRegistration) throw new AuthError('unknown');
+      await beforePasswordUpdate?.();
+      const { needsRegistration: _pending, ...previous } = current;
+      const user = { ...previous, name };
+      accounts.set(user.email, { user, password, termsAcceptedAt });
+      setCurrent(user);
+      return user;
     },
     async signUp(name, email, password, termsAcceptedAt) {
       calls.push('signUp');

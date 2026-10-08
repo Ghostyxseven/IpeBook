@@ -179,3 +179,96 @@ A equipe decidiu seguir o Figma nos itens abaixo. Cada item foi feito num commit
    - **Testes:** `tests/account.test.mjs`.
 
    **Divergências de texto:** os cartões citam só o que o app guarda (sem telefone nem avaliações), e "Editar informações" edita o bairro, porque o app não muda o nome. **Pendente:** aplicar a migration e testar com uma conta descartável.
+
+## Correção do login Google — 08/10/2026
+
+Escopo: alinhar a configuração do cliente ao fluxo PKCE já decidido no ADR 0028,
+sem modificar telas, provedores remotos ou contratos de cadastro e recuperação por OTP.
+A correção anterior extraía o código, mas o cliente ainda iniciava o fluxo implícito.
+
+Critérios e plano de validação:
+
+- Gerar autorização Google com desafio PKCE usando a configuração real do cliente.
+- Trocar somente o código retornado, enviando o verificador correspondente ao desafio.
+- Restaurar a sessão resultante; cancelar ou receber retorno sem código não troca sessão.
+- Propagar falhas do provedor com os erros de domínio existentes.
+- Reproduzir a falha antes da correção; executar tipos, testes e formatação depois.
+- Validar o retorno real do Google no dispositivo depende de acesso ao app e da
+  configuração do provedor e dos redirects no Supabase; a simulação não substitui isso.
+
+Estado inicial: `develop`, commit `2a92825`, sem alterações rastreadas; worktree do
+Claude preservado. Superpowers indisponível nas skills compartilhadas consultadas.
+
+Resultado local:
+
+- `node tests/google-auth.test.mjs`: antes da correção, 5 cenários passaram e o
+  cenário de integração falhou porque `code_challenge_method` era `null`; depois,
+  os 6 cenários passaram. Usa SDK e configuração reais, armazenamento isolado e
+  transporte simulado com dados fictícios, sem chamadas de rede.
+- `npm run verify`: aprovado (tipos, lint, formatação e 31 arquivos de testes,
+  sem falhas nem testes ignorados). A saída agregada conta arquivos; o novo arquivo
+  contém seis cenários executados também diretamente.
+- `git diff --check`: aprovado. Revisão do diff: configuração restrita a
+  `flowType: 'pkce'`, conforme ADR 0028; sem dependências novas, logs sensíveis ou
+  mudanças visuais. Os testes existentes de cadastro e recuperação continuam passando.
+- Implementação e validação local concluídas; validação real Android/iOS/Web e
+  configuração remota não verificadas. Não houve commit, push nem publicação nesta correção.
+
+### Retorno do dispositivo: WebCrypto indisponível
+
+O usuário observou o aviso de fallback para PKCE `plain` após ativar o fluxo.
+O teste anterior usava WebCrypto do Node e não representava essa limitação nativa.
+Correção prevista: fornecer somente as operações criptográficas necessárias ao
+PKCE com `expo-crypto` compatível com SDK 57, antes de criar o cliente Supabase;
+preservar APIs existentes e manter a Web no WebCrypto do navegador. Critérios:
+ausência de WebCrypto deve produzir desafio S256, sem aviso de fallback; verificar
+hash conhecido, aleatoriedade delegada ao módulo nativo e preservação das APIs.
+`expo-crypto` é mantido pelo Expo, licença MIT, incluído no Expo Go, sem serviço
+ou custo externo; substitui a ausência de implementação nativa de digest.
+
+Resultado da correção de WebCrypto:
+
+- Sem o adaptador, uma reprodução isolada com `globalThis.crypto` ausente emitiu
+  exatamente o aviso relatado e gerou `code_challenge_method=plain`.
+- `node tests/pkce-crypto.test.mjs`: aprovado; simula ausência de WebCrypto,
+  substitui somente o módulo Expo por primitivas do Node, confere vetor SHA-256
+  conhecido, geração S256 sem aviso e preservação de WebCrypto existente.
+  Não executa a implementação nativa num aparelho.
+- `node tests/google-auth.test.mjs`: seis cenários aprovados.
+- `npm run typecheck`, `npm run lint`, `npm run format:check` e `npm test`:
+  aprovados; 32 arquivos de teste, sem falhas ou testes ignorados.
+- Instalado somente `expo-crypto@57.0.3`; lock atualizado. O npm informou 33
+  vulnerabilidades na árvore (11 moderadas, 21 altas, 1 crítica), sem análise de
+  origem nesta tarefa; nenhuma atualização automática de outras dependências.
+- O login real e a execução da ponte criptográfica no aparelho seguem pendentes.
+  Reabrir o app após a instalação; builds próprios precisam incorporar o módulo
+  nativo. Expo Go já inclui esse módulo.
+- `npx expo export --platform ios --output-dir /tmp/ipebook-pkce-ios --no-bytecode --max-workers 2`:
+  aprovado; Metro gerou o pacote iOS com a nova dependência. Exportação de JavaScript
+  não comprova execução no aparelho nem autenticação no provedor.
+
+### Reconexão Android por USB — 08/10/2026
+
+Após aviso "Cannot connect to Expo CLI", o servidor existente respondeu
+`packager-status:running` na porta 8081. Configurado `adb reverse tcp:8081 tcp:8081`
+e reaberto o projeto por `exp://127.0.0.1:8081`, reiniciando apenas o Expo Go,
+sem limpar dados. O pacote Android retornou HTTP 200. A captura final mostrou a
+seleção de contas do Google; não houve seleção de conta pelo agente nem confirmação
+de sessão autenticada. Manter o cabo conectado enquanto usar esse endereço.
+
+### Retorno Android em rota inexistente — 08/10/2026
+
+Reprodução no aparelho: após escolher a conta Google, o Expo Router apresentou
+"Unmatched Route" para `/auth/callback`. O retorno continha um código, que não foi
+copiado para logs ou documentação. Faltava o arquivo da rota.
+
+Correção: `/auth/callback` reutiliza `StartScreen`, sua ViewModel e a decisão de
+navegação existente por sessão. A troca do código permanece exclusivamente na
+operação `signInWithGoogle` já aberta; o callback não repete a troca nem propaga
+parâmetros sensíveis ao destino. Sem tela ou padrão visual novo.
+Critério: abrir o retorno sem página inexistente e encaminhar conforme a sessão.
+
+Validação da rota: tipos, formatação e seis cenários de OAuth aprovados.
+Após abrir `/auth/callback` sem código no Android, a captura posterior mostrou
+Entrar, sem "Unmatched Route". Isso comprova o encaminhamento sem sessão, mas
+não comprova conclusão do login Google: falta nova tentativa completa pelo usuário.

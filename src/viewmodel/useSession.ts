@@ -6,7 +6,7 @@ import { authErrorMessage } from '../model/services/authMessages.ts';
 import { useAsyncAction } from './useAsyncAction.ts';
 
 export type SessionStatus = 'loading' | 'signedOut' | 'signedIn';
-export type StartRoute = '/onboarding' | '/entrar' | '/inicio';
+export type StartRoute = '/onboarding' | '/entrar' | '/inicio' | '/completar-cadastro';
 
 export function useSession(repository: AuthRepository) {
   const [user, setUser] = useState<User | null>(null);
@@ -84,8 +84,12 @@ export function useSessionContext(): Session {
 }
 
 /** Destino da abertura no celular: onboarding só na primeira vez. */
-export function startRoute(status: SessionStatus, seenOnboarding: boolean): StartRoute | null {
+export function startRoute(
+  status: SessionStatus,
+  seenOnboarding: boolean,
+  needsRegistration = false,
+): StartRoute | null {
   if (status === 'loading') return null;
-  if (status === 'signedIn') return '/inicio';
+  if (status === 'signedIn') return needsRegistration ? '/completar-cadastro' : '/inicio';
   return seenOnboarding ? '/entrar' : '/onboarding';
 }

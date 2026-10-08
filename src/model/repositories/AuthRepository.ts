@@ -31,6 +31,8 @@ export interface AuthRepository {
    * pessoa fechar o navegador sem concluir.
    */
   signInWithGoogle(): Promise<User>;
+  /** Define senha do IpêBook e dados na identidade Google atual, sem criar outra conta. */
+  completeGoogleRegistration(name: string, password: string, termsAcceptedAt: Date): Promise<User>;
   /**
    * Cria a conta e envia o código de confirmação por e-mail. `termsAcceptedAt` registra quando
    * a pessoa aceitou os Termos de Uso e a Política de Privacidade (Figma 01.03).
