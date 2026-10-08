@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBookRequestDetail } from '../../../factories/bookRequest';
@@ -36,6 +36,18 @@ export function BookRequestDetailScreen() {
 
   const rating = useCompletionRating(requestId);
   const [rateOpen, setRateOpen] = useState(false);
+
+  // `rating` lê o histórico uma vez, ao montar. Concluir aqui muda o status local sem
+  // passar por essa leitura, então sem isto o convite para avaliar só apareceria numa
+  // visita seguinte à tela — recarrega assim que a conclusão acontece nesta sessão.
+  const wasCompleted = useRef(vm.request?.status === 'completed');
+  useEffect(() => {
+    const isCompleted = vm.request?.status === 'completed';
+    if (isCompleted && !wasCompleted.current) rating.retry();
+    wasCompleted.current = isCompleted;
+    // `rating.retry` é estável (memoizado pelo repositório); só `rating.retry` entra
+    // na lista, não `rating` inteiro, que é um objeto novo a cada render.
+  }, [vm.request?.status, rating.retry]);
 
   if (vm.status === 'loading') {
     return (

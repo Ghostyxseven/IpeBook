@@ -348,3 +348,19 @@ test('falha ao avaliar no fim da negociação vira mensagem, sem travar a tela',
   assert.equal(repository.rated.length, 1);
   await screen.unmount();
 });
+
+test('o convite para avaliar aparece assim que a negociação é concluída na mesma tela', async () => {
+  // A lista começa sem a negociação recém-concluída: é o retrato que o hook já tinha
+  // antes da conclusão acontecer nesta mesma sessão de tela.
+  const history = [];
+  const repository = createMemoryReputationRepository({ history });
+  const screen = await renderHook(() => useCompletionRatingViewModel(repository, 'r1'));
+  assert.equal(screen.vm.canRate, false, 'ainda não sabe que a negociação existe');
+
+  // A negociação é concluída "ao vivo"; a tela chama `retry` para atualizar o retrato.
+  history.push(concluida);
+  await act(async () => screen.vm.retry());
+  assert.equal(screen.vm.canRate, true, 'retry() traz a negociação recém-concluída');
+  assert.equal(screen.vm.otherFirstName, 'Ana Paula');
+  await screen.unmount();
+});

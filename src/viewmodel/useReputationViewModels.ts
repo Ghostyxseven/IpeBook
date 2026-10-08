@@ -125,6 +125,13 @@ export function useCompletionRatingViewModel(repository: ReputationRepository, r
     submitting,
     error,
     rate,
+    /**
+     * O histórico é lido uma vez, ao montar a tela. Quem conclui a negociação nessa
+     * mesma tela muda o status local sem passar por `listMyHistory()` de novo, então
+     * a negociação recém-concluída ainda não está no retrato que este hook já tinha.
+     * A tela chama isto quando percebe a conclusão, para o convite aparecer na hora.
+     */
+    retry: history.retry,
   };
 }
 
