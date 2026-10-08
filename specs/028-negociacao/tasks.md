@@ -25,7 +25,7 @@
 - [x] Telas da negociação conforme o Figma (06.01, 06.03 a 06.08, 06.11, 06.12, 06.17 e 06.18): Conversas, proposta recebida e enviada, combinar encontro com chips de dia e horário, encontro combinado, confirmações e retorno de cada etapa.
 - [x] Falha ao aceitar, recusar, cancelar ou concluir aparece na tela (antes virava uma promessa rejeitada sem mensagem).
 - [x] Mostrar o nome de quem pediu para quem anunciou (função `listing_owner_first_name`).
-- [ ] Aplicar a migração `20261003130000_negociacao_completa.sql` no Supabase (precisa do ok do responsável).
+- [x] Aplicar a migração `20261003130000_negociacao_completa.sql` no Supabase. Aplicada em 08/10/2026; o Início, o Explorar e as negociações carregam sem erro depois do reload.
 - [x] Aplicar a migração `20261007130000_contraproposta.sql` no Supabase. Aplicada em 08/10/2026; confirmado ao vivo que Conversas e Propostas voltaram a carregar.
 - [ ] Conferir no aparelho os dois lados da negociação com duas contas.
 
