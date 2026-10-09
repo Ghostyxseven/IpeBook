@@ -59,6 +59,11 @@ const symbols = {
   // Perfil e Configurações reformulados (Figma 07.01, 07.05, 07.06).
   star: { ios: 'star', android: 'star', web: 'star' },
   flag: { ios: 'flag', android: 'flag', web: 'flag' },
+  // Detalhe do livro reformulado (spec 037, Figma 03.01 a 03.03).
+  share: { ios: 'square.and.arrow.up', android: 'share', web: 'share' },
+  conservation: { ios: 'book.closed', android: 'menu_book', web: 'menu_book' },
+  category: { ios: 'tag', android: 'sell', web: 'sell' },
+  more: { ios: 'ellipsis', android: 'more_horiz', web: 'more_horiz' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;
