@@ -92,9 +92,12 @@ export function NotificationsScreen() {
           </Text>
         )}
         ListEmptyComponent={
+          // Figma 07.13: título, texto e o atalho para ajustar os tipos de aviso.
           <EmptyState
-            title="Nenhum aviso por enquanto"
-            message="Quando alguém pedir um livro seu ou responder a um pedido, você vê aqui."
+            title="Tudo em dia."
+            message="Propostas, mensagens e avisos dos seus alertas aparecem aqui."
+            actionLabel="Ajustar notificações"
+            onAction={() => router.push('/configuracoes')}
           />
         }
         ListFooterComponent={
