@@ -54,6 +54,8 @@ const symbols = {
     android: 'check_box_outline_blank',
     web: 'check_box_outline_blank',
   },
+  // Ajuda do iPhone (spec 040): dica "confira o livro antes de pagar".
+  eye: { ios: 'eye', android: 'visibility', web: 'visibility' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;
