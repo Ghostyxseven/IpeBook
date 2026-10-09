@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -95,25 +95,32 @@ export function ListingDetailScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+      <Stack.Screen
+        options={{
+          // Figma 03.01: compartilhar e favoritar no próprio cabeçalho, junto do voltar.
+          headerRight: () => (
+            <View style={styles.headerActions}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Compartilhar ${listing.title}`}
+                onPress={share}
+                hitSlop={8}
+                style={({ pressed }) => [styles.headerButton, pressed && styles.actionPressed]}
+              >
+                <AppIcon name="share" size={22} color={colors.onSurfaceVariant} />
+              </Pressable>
+              {!isOwner && session.status === 'signedIn' && (
+                <FavoriteButton
+                  favorite={favorites.isFavorite(listing.id)}
+                  onToggle={() => favorites.toggle(listing.id)}
+                  title={listing.title}
+                />
+              )}
+            </View>
+          ),
+        }}
+      />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.actions}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Compartilhar ${listing.title}`}
-            onPress={share}
-            hitSlop={8}
-            style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
-          >
-            <AppIcon name="share" size={22} color={colors.onSurfaceVariant} />
-          </Pressable>
-          {!isOwner && session.status === 'signedIn' && (
-            <FavoriteButton
-              favorite={favorites.isFavorite(listing.id)}
-              onToggle={() => favorites.toggle(listing.id)}
-              title={listing.title}
-            />
-          )}
-        </View>
         <View style={styles.gallery}>
           <ListingCover listing={listing} variant="detail" />
         </View>
@@ -277,9 +284,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.container,
     marginBottom: spacing.xs,
   },
-  // Figma 03.01: compartilhar e favoritar juntos, acima da capa.
-  actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.xxs },
-  actionButton: {
+  // Figma 03.01: compartilhar e favoritar no cabeçalho, ao lado de "Detalhes".
+  // Mesmo alvo de 48 do FavoriteButton, para os dois ícones terem o mesmo peso.
+  headerActions: { flexDirection: 'row', alignItems: 'center' },
+  headerButton: {
     width: metrics.touchTarget,
     height: metrics.touchTarget,
     borderRadius: radius.full,
