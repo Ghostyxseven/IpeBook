@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 import { AppIcon } from '../AppIcon';
@@ -7,10 +8,13 @@ export function TopAppBar({
   title,
   onBack,
   backLabel = 'Voltar',
+  trailing,
 }: {
   title: string;
   onBack: () => void;
   backLabel?: string;
+  /** Ação opcional à direita, como o menu "mais opções" da conversa (spec 041). */
+  trailing?: ReactNode;
 }) {
   return (
     <View style={styles.bar}>
@@ -29,6 +33,7 @@ export function TopAppBar({
       <Text accessibilityRole="header" style={styles.title} numberOfLines={1}>
         {title}
       </Text>
+      {trailing}
     </View>
   );
 }

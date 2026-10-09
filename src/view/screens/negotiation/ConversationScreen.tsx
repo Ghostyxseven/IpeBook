@@ -1,8 +1,10 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  ActionSheetIOS,
   FlatList,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   Pressable,
   StyleSheet,
@@ -16,6 +18,7 @@ import { MESSAGE_MAX, messageTime } from '../../../model/services/messageFormat'
 import { AppIcon } from '../../components/AppIcon';
 import { ListingCover } from '../../components/catalog/ListingCover';
 import { StatusBadge } from '../../components/catalog/StatusBadge';
+import { BlockUserDialog } from '../../components/security/BlockUserDialog';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { Button } from '../../components/ui/Button';
@@ -32,6 +35,40 @@ export function ConversationScreen() {
   const vm = useConversation(requestId);
   const list = useRef<FlatList>(null);
   const { refresh, setDraft } = vm;
+
+  // Menu "mais opções" do cabeçalho (Figma 06.02, spec 041): Bloquear e Denunciar, as mesmas
+  // ações já disponíveis no anúncio, como atalho sem sair da conversa.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [blocking, setBlocking] = useState(false);
+  const openReport = useCallback(() => {
+    if (!vm.listing) return;
+    router.push({
+      pathname: '/(app)/seguranca/report',
+      params: {
+        listingId: vm.listing.id,
+        userId: vm.otherId ?? '',
+        userName: vm.otherName ?? '',
+      },
+    });
+  }, [vm.listing, vm.otherId, vm.otherName]);
+  const openMenu = useCallback(() => {
+    if (!vm.otherId) return;
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: [`Bloquear ${vm.otherName ?? 'pessoa'}`, 'Denunciar anúncio', 'Cancelar'],
+          destructiveButtonIndex: 0,
+          cancelButtonIndex: 2,
+        },
+        (index) => {
+          if (index === 0) setBlocking(true);
+          else if (index === 1) openReport();
+        },
+      );
+    } else {
+      setMenuOpen(true);
+    }
+  }, [vm.otherId, vm.otherName, openReport]);
 
   // Vindo do "Não comparecimento" (Figma 06.15), o relato já chega no campo para revisar.
   const prefilled = useRef(false);
@@ -71,9 +108,78 @@ export function ConversationScreen() {
   }
 
   const listing = vm.listing;
+  const canModerate = Boolean(vm.otherId);
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
-      <TopAppBar title={title} onBack={leave} />
+      <TopAppBar
+        title={title}
+        onBack={leave}
+        trailing={
+          canModerate ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Mais opções"
+              onPress={openMenu}
+              style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+                styles.menuButton,
+                pressed && styles.pressed,
+                focused && styles.focused,
+              ]}
+            >
+              <AppIcon name="more" color={colors.onSurface} />
+            </Pressable>
+          ) : undefined
+        }
+      />
+      {/* Android e Web (Figma 06.02): folha simples com as duas ações; no iOS é o ActionSheetIOS. */}
+      <Modal
+        visible={menuOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMenuOpen(false)}
+      >
+        <Pressable
+          style={styles.menuScrim}
+          accessibilityRole="button"
+          accessibilityLabel="Fechar"
+          onPress={() => setMenuOpen(false)}
+        >
+          <View style={styles.menuSheet}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                setMenuOpen(false);
+                setBlocking(true);
+              }}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.pressed]}
+            >
+              <AppIcon name="close" size={20} color={colors.onSurfaceVariant} />
+              <Text style={styles.menuItemText}>Bloquear {vm.otherName ?? 'pessoa'}</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                setMenuOpen(false);
+                openReport();
+              }}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.pressed]}
+            >
+              <AppIcon name="info" size={20} color={colors.onSurfaceVariant} />
+              <Text style={styles.menuItemText}>Denunciar anúncio</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
+      <BlockUserDialog
+        visible={blocking}
+        userId={vm.otherId}
+        firstName={vm.otherName}
+        onCancel={() => setBlocking(false)}
+        onBlocked={() => {
+          setBlocking(false);
+          leave();
+        }}
+      />
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -157,6 +263,17 @@ export function ConversationScreen() {
               <AppIcon name="send" color={vm.canSend ? colors.surface : colors.disabledText} />
             </Pressable>
           </View>
+        ) : vm.request?.status === 'canceled' ? (
+          // Figma 06.12: o desfecho de cancelar vira aviso aqui, não uma tela própria.
+          <View style={styles.canceledNotice} accessibilityRole="alert">
+            <AppIcon name="close" size={18} color={colors.onSurfaceVariant} />
+            <View style={styles.canceledText}>
+              <Text style={styles.canceledTitle}>Encontro cancelado.</Text>
+              <Text style={styles.canceledBody}>
+                O horário foi liberado. Combine uma nova data quando quiser.
+              </Text>
+            </View>
+          </View>
         ) : (
           <View style={styles.composer}>
             <Text style={styles.closed}>
@@ -215,6 +332,45 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   alertText: { ...typography.bodyMedium, color: colors.error, flex: 1 },
+  menuButton: {
+    width: metrics.touchTarget,
+    height: metrics.touchTarget,
+    borderRadius: metrics.touchTarget / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: { backgroundColor: colors.pressed },
+  menuScrim: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.32)',
+    justifyContent: 'flex-end',
+  },
+  menuSheet: {
+    backgroundColor: colors.containerHigh,
+    borderTopLeftRadius: radius.extraLarge,
+    borderTopRightRadius: radius.extraLarge,
+    paddingVertical: spacing.sm,
+    paddingBottom: spacing.xl,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    minHeight: metrics.touchTarget,
+    paddingHorizontal: metrics.pagePadding,
+  },
+  menuItemText: { ...typography.bodyLarge, color: colors.onSurface },
+  canceledNotice: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    paddingHorizontal: metrics.pagePadding,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.containerLow,
+  },
+  canceledText: { flex: 1, gap: spacing.xxs },
+  canceledTitle: { ...typography.bodyMedium, fontWeight: '500', color: colors.onSurface },
+  canceledBody: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
   composer: {
     flexDirection: 'row',
     alignItems: 'center',

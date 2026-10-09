@@ -1,15 +1,17 @@
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RequestStatus } from '../../../model/entities/BookRequest';
 import { useBookRequestList } from '../../../factories/bookRequest';
 import { requestListLabel } from '../../../model/services/bookRequestFormat';
 import { conversationWhen, initials } from '../../../model/services/messageFormat';
+import { afterNegotiationOutcome } from '../../../viewmodel/afterNegotiationOutcome';
 import { AppIcon, type AppIconName } from '../../components/AppIcon';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
+import { Snackbar } from '../../components/feedback/Snackbar';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 /** Ícone de cada situação no círculo à esquerda da linha. */
@@ -39,6 +41,16 @@ export function BookRequestListScreen({ showTitle = true }: { showTitle?: boolea
     }, [retry]),
   );
 
+  // Aviso sobre a tela (Figma 06.18, spec 041) depois de recusar uma proposta, no lugar da
+  // tela de desfecho que a negociação tinha antes.
+  const [toast, setToast] = useState(() => afterNegotiationOutcome.peek());
+  useEffect(() => {
+    afterNegotiationOutcome.clear();
+  }, []);
+  const snackbar = toast ? (
+    <Snackbar title={toast.title} message={toast.message} onDismiss={() => setToast(null)} />
+  ) : null;
+
   const title = showTitle ? (
     <Text style={styles.title} accessibilityRole="header">
       Conversas
@@ -56,6 +68,7 @@ export function BookRequestListScreen({ showTitle = true }: { showTitle?: boolea
   if (vm.status === 'error' || vm.status === 'empty') {
     return (
       <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+        {snackbar}
         <View style={styles.content}>
           {title}
           {vm.status === 'error' ? (
@@ -75,6 +88,7 @@ export function BookRequestListScreen({ showTitle = true }: { showTitle?: boolea
 
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+      {snackbar}
       <FlatList
         data={vm.items}
         keyExtractor={(item) => item.request.id}
