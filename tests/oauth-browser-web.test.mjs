@@ -16,8 +16,11 @@ test('OAuth Web retorna ao app publicado e preserva a sessão do Expo', async (t
   });
   t.after(() => hooks.deregister());
   const previous = globalThis.window;
+  const previousEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
   globalThis.window = { location: { origin: 'https://ipebook.example' } };
   t.after(() => {
+    process.env.NODE_ENV = previousEnv;
     if (previous === undefined) delete globalThis.window;
     else globalThis.window = previous;
   });

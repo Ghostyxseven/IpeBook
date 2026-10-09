@@ -26,7 +26,7 @@ export function BookCard({
   const value = cardValue(listing);
   return (
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole={Platform.OS === 'web' ? undefined : 'button'}
       accessibilityLabel={listingAccessibilityLabel(listing)}
       accessibilityHint="Abre os detalhes do livro"
       onPress={onPress}

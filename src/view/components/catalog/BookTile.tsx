@@ -23,7 +23,7 @@ export function BookTile({
 }) {
   return (
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole={Platform.OS === 'web' ? undefined : 'button'}
       accessibilityLabel={listingAccessibilityLabel(listing)}
       accessibilityHint="Abre os detalhes do livro"
       onPress={onPress}
