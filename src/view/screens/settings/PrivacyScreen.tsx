@@ -17,8 +17,15 @@ const focusRing = Platform.select({
 });
 
 /**
- * Privacidade e dados (Figma 07.09): o que fica visível, editar o bairro e excluir a conta.
+ * Privacidade e dados (Figma 07.07): o que fica visível, editar o bairro e excluir a conta.
  * Os textos descrevem só o que o app guarda hoje (sem telefone nem avaliações).
+ * "Excluir conta" aqui é a linha que abre a confirmação (Figma 07.09), não uma tela própria.
+ *
+ * Observação para quem revisar: o quadro 07.07 atual no Figma já está numa versão mais nova
+ * (cartões "O que aparece no perfil" / "Localização" / "Baixar meus dados" com o aviso de LGPD,
+ * e "Excluir conta" como botão cheio no rodapé). Esta tela ainda segue a versão anterior
+ * (perfil público / dados de acesso privados / editar informações / excluir conta em linha).
+ * Alinhar ao quadro novo é mudança de conteúdo e precisa de decisão de produto antes de mexer.
  */
 export function PrivacyScreen() {
   const router = useRouter();
@@ -58,7 +65,7 @@ export function PrivacyScreen() {
       <ConfirmDialog
         visible={vm.confirming}
         title="Excluir sua conta?"
-        message="Seus anúncios sairão do catálogo e seu perfil ficará indisponível. Esta ação não pode ser desfeita."
+        message="Seus anúncios saem do catálogo e o perfil fica indisponível. Não dá para desfazer."
         confirmLabel="Excluir"
         destructive
         onConfirm={vm.confirm}
@@ -120,7 +127,7 @@ const styles = StyleSheet.create({
   content: { width: '100%', maxWidth: metrics.formMaxWidth, alignSelf: 'center', gap: spacing.md },
   title: { ...typography.brandTitle, color: colors.onSurface },
   description: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
-  // Cartão preenchido do Material 3 (Figma 07.09).
+  // Cartão preenchido do Material 3 (Figma 07.07).
   card: {
     gap: spacing.xxs,
     padding: spacing.md,

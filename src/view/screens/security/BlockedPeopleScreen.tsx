@@ -24,13 +24,11 @@ export default function BlockedPeopleScreen() {
   else if (vm.empty)
     body = (
       <View style={styles.content}>
+        {/* Figma 07.12: sem botão aqui — a volta já é a seta do topo. */}
         <Text accessibilityRole="header" style={styles.brand}>
-          Nenhuma pessoa bloqueada
+          Ninguém bloqueado.
         </Text>
-        <Text style={styles.body}>
-          Se precisar, bloqueie uma pessoa pelo detalhe de um livro que ela anunciou.
-        </Text>
-        <Button label="Voltar às configurações" variant="secondary" onPress={leave} />
+        <Text style={styles.body}>Se alguém incomodar, use Bloquear no perfil ou na conversa.</Text>
       </View>
     );
   else

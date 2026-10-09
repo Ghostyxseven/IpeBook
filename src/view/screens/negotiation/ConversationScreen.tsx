@@ -149,11 +149,12 @@ export function ConversationScreen() {
               onPress={vm.send}
               style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
                 styles.send,
-                pressed && styles.pressed,
+                vm.canSend ? styles.sendActive : styles.sendDisabled,
+                pressed && vm.canSend && styles.sendPressed,
                 focused && styles.focused,
               ]}
             >
-              <AppIcon name="send" color={vm.canSend ? colors.onSurface : colors.disabledText} />
+              <AppIcon name="send" color={vm.canSend ? colors.surface : colors.disabledText} />
             </Pressable>
           </View>
         ) : (
@@ -241,7 +242,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pressed: { backgroundColor: colors.pressed },
+  // Círculo preenchido como no Figma 06.02: fundo da ação principal, ícone claro por cima.
+  sendActive: { backgroundColor: colors.action },
+  sendPressed: { backgroundColor: colors.actionDeep },
+  sendDisabled: { backgroundColor: colors.disabledBackground },
   closed: { ...typography.bodyMedium, color: colors.onSurfaceVariant, flex: 1 },
   focused: Platform.select({
     web: {

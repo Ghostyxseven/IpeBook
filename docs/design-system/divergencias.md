@@ -332,3 +332,46 @@ A spec 034 acrescenta uma etapa solicitada pelo usuário sem quadro próprio no 
 Reutiliza AuthLayout, TextField, Checkbox e Button dos quadros 01.03 Android
 (`336:118`) e iPhone (`336:12902`), inspecionados no arquivo oficial. Inclui bairro,
 confirmação de senha e e-mail somente leitura; não altera tokens nem padrões globais.
+
+## Revisão geral das telas do iPhone contra o Figma (09/10/2026)
+
+Comparação de 28 capturas reais de um iPhone — acesso, descoberta, catálogo, negociação,
+conversa, perfil, configurações e telas de conta — com os quadros atuais da página
+"07 · iPhone / iOS 26" do arquivo [IpêBook-Mobile](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/Ip%C3%AABook-Mobile).
+Cinco achados eram bugs de implementação isolados e foram corrigidos no mesmo PR
+([#118](https://github.com/Ghostyxseven/IpeBook/pull/118)); os demais são o Figma já
+tendo avançado para um desenho que o app ainda não construiu — ficam registrados aqui
+para virarem spec pelo Spec Kit, e não um patch visual avulso.
+
+### Corrigido no PR #118
+
+| Tela (quadro)                      | Correção                                                                                                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Criar conta (01.03)                | Faltava o destaque amarelo no título ("e faça parte."); o `AuthLayout` já suportava o prop, só não era passado.                                                    |
+| Conversa (06.02)                   | O botão de enviar mensagem definia o círculo mas nunca pintava o fundo; renderizava só o ícone solto.                                                              |
+| Pessoas bloqueadas · vazio (07.12) | Texto fora do quadro atual e um botão "Voltar às configurações" que não existe ali — a seta do topo já volta.                                                      |
+| Notificações · vazio (07.13)       | Texto fora do quadro atual; faltava o atalho "Ajustar notificações" para `/configuracoes`.                                                                         |
+| Privacidade e dados                | Comentário no código apontava o quadro errado (07.09, que é só o diálogo de excluir conta) para a tela inteira, que é 07.07; copy do diálogo também desatualizada. |
+
+### Precisa de spec nova — o Figma já avançou além do app
+
+| Área                                                   | O que o Figma já tem, que o app ainda não                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Meu perfil (07.01)                                     | Cartão único com avatar + stats, seção "Favoritos" e tela "Editar perfil" — nenhum dos dois existe no código (spec 026/031 já registraram isso antes, e o quadro mudou de novo desde então).                                                                                                                                                                                         |
+| Configurações (07.05)                                  | Notificações agrupadas em 4 chaves ("Novas propostas", "Mensagens", "Livros dos meus alertas", "Dicas") em vez das 5 granulares atuais; "Pessoas bloqueadas" e "Alterar senha" mudaram para dentro de "Segurança e verificação", no Perfil.                                                                                                                                          |
+| Detalhe do livro — venda (03.01)                       | Cartão agrupado de 3 linhas (Conservação/Categoria/Retirada), dois botões no rodapé (Conversar / Tenho interesse) e ícones de compartilhar/favoritar no header. O app usa uma linha de texto e um botão único ("Combinar encontro").                                                                                                                                                 |
+| Estante (05.01 a 05.06)                                | O quadro é do iPhone, mas a tela inteira (`MyShelfScreen.tsx`) ainda segue o layout Material 3 do Android (FAB estendido, abas M3, "Minha estante") — nunca ganhou variante nativa iOS, ao contrário de `TextField`, `Button`, `Checkbox` e `RadioListItem`.                                                                                                                         |
+| Privacidade e dados (07.07)                            | Virou cartões "O que aparece no perfil", "Localização" e **"Baixar meus dados"** (exportação LGPD) com botão "Excluir conta" cheio no rodapé. O app ainda mostra a versão anterior (perfil público / dados de acesso privados / editar informações / excluir conta em linha).                                                                                                        |
+| Ajuda (09.01)                                          | Virou 3 passos numerados (Anuncie/Combine/Encontre) + seção "Segurança" com 3 dicas. O app ainda é o FAQ de 3 perguntas e respostas.                                                                                                                                                                                                                                                 |
+| Escolher bairro (11.01)                                | Virou bottom sheet ("Onde você está?") com lista fixa de bairros sobre a tela de Explorar. O app é uma tela cheia com campo de texto livre.                                                                                                                                                                                                                                          |
+| Cancelar/Recusar encontro (06.11, 06.12, 06.17, 06.18) | Viraram diálogo modal curto (dois botões lado a lado) seguido de aviso inline dentro do próprio chat, ou toast flutuante (padrão `Snackbar` que o acesso já usa). O app ainda usa telas cheias dedicadas (`OutcomeHero`), compartilhadas por Android/iOS/Web.                                                                                                                        |
+| Combinar encontro (06.04)                              | Trocou os chips de "Onde" por mapa com 6 miniaturas e lista de locais com endereço; "Dia"/"Horário" viraram linhas únicas com chevron. Os chips atuais têm justificativa de acessibilidade documentada em `PlacePicker.tsx` (sempre alimentam um campo de texto, para não deixar quem usa teclado/leitor de tela sem saída) — reconciliar exige decisão de design, não só de código. |
+| Conversa — menu "•••"                                  | Novo no cabeçalho do chat, sem equivalente no app nem em nenhuma spec; precisa definir o que ele faria antes de implementar.                                                                                                                                                                                                                                                         |
+
+**Histórico**: confirmado de novo que não existe quadro no Figma para essa tela (já registrado
+acima, em "Perfil completo (spec 031)") — é tela que o time acrescentou além do kit original, não é bug.
+
+**Risco de processo**: pelo menos três áreas desta revisão (Perfil, Privacidade, Negociação)
+mostraram node-id do Figma que já "morreu" ou mudou de quadro desde a última vez que o código
+foi conferido contra ele — algumas mais de uma vez. Vale um ADR ou uma rotina de reconferência
+periódica para isso não virar surpresa de novo.
