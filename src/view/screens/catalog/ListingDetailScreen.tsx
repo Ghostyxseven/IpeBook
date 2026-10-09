@@ -217,9 +217,9 @@ export function ListingDetailScreen() {
               onPress={openReport}
               style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
             >
-              <AppIcon name="error" size={20} color={colors.onSurfaceVariant} />
+              <AppIcon name="error" size={20} color={colors.error} />
               <View style={styles.listText}>
-                <Text style={styles.listTitle}>Denunciar anúncio</Text>
+                <Text style={[styles.listTitle, styles.dangerText]}>Denunciar anúncio</Text>
                 <Text style={styles.listBody}>Golpe, descrição falsa ou conteúdo ofensivo.</Text>
               </View>
               <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
@@ -231,9 +231,11 @@ export function ListingDetailScreen() {
               onPress={() => setBlocking(true)}
               style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
             >
-              <AppIcon name="close" size={20} color={colors.onSurfaceVariant} />
+              <AppIcon name="close" size={20} color={colors.error} />
               <View style={styles.listText}>
-                <Text style={styles.listTitle}>{blockLabel(listing.ownerFirstName)}</Text>
+                <Text style={[styles.listTitle, styles.dangerText]}>
+                  {blockLabel(listing.ownerFirstName)}
+                </Text>
                 <Text style={styles.listBody}>Os anúncios dessa pessoa somem para você.</Text>
               </View>
             </Pressable>
@@ -249,10 +251,8 @@ export function ListingDetailScreen() {
             />
           </>
         ) : null}
-        <View style={styles.note}>
-          <AppIcon name="info" size={18} color={colors.onSurfaceVariant} />
-          <Text style={styles.noteText}>{details.notes}</Text>
-        </View>
+        <View style={styles.separator} />
+        <Text style={styles.noteText}>{details.notes}</Text>
       </ScrollView>
       {primary && (
         <View style={styles.actionBar}>
@@ -334,9 +334,15 @@ const styles = StyleSheet.create({
   listPressed: { backgroundColor: colors.pressed },
   listText: { flex: 1 },
   listTitle: { ...typography.bodyLarge, color: colors.onSurface },
+  // Mesmo tom "danger" do Sair em ProfileScreen.tsx: denunciar e bloquear também
+  // são ações que afetam a relação com a outra pessoa, não navegação neutra.
+  dangerText: { color: colors.error },
   listBody: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
-  note: { flexDirection: 'row', gap: spacing.xs, alignItems: 'flex-start' },
-  noteText: { ...typography.bodyMedium, color: colors.onSurfaceVariant, flex: 1 },
+  // Separa a nota de publicação das linhas clicáveis acima (perfil, denunciar,
+  // bloquear): sem o traço, as quatro linhas pareciam uma lista só, mas só as
+  // três primeiras respondem ao toque.
+  separator: { height: StyleSheet.hairlineWidth, backgroundColor: colors.outlineVariant },
+  noteText: { ...typography.labelMedium, color: colors.onSurfaceVariant },
   // Barra fixa da ação principal (Figma: 80 de altura sobre o container baixo).
   actionBar: {
     paddingHorizontal: metrics.pagePadding,
