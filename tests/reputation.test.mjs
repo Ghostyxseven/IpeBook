@@ -16,6 +16,7 @@ import {
   memberSinceLabel,
   personName,
   ratingLabel,
+  ratingsLine,
   reputationLine,
 } from '../src/model/services/reputationFormat.ts';
 import {
@@ -282,6 +283,20 @@ test('histórico vazio fica pronto, não em erro', async () => {
   await screen.unmount();
 });
 
+test('a linha de avaliações do Meu perfil convida quem ainda não tem nota', () => {
+  assert.equal(
+    ratingsLine({ ratingAverage: 4.8, completedCount: 8 }),
+    '4,8 de 5 em 8 trocas concluídas',
+  );
+  assert.equal(
+    ratingsLine({ ratingAverage: 5, completedCount: 1 }),
+    '5,0 de 5 em 1 troca concluída',
+  );
+  assert.equal(ratingsLine({ ratingAverage: null, completedCount: 0 }), 'Ainda sem avaliações');
+  // Já concluiu, mas ninguém avaliou: ainda assim não existe média.
+  assert.equal(ratingsLine({ ratingAverage: null, completedCount: 3 }), 'Ainda sem avaliações');
+});
+
 test('avaliar no fim da negociação só aparece para quem ainda não avaliou', async () => {
   const repository = createMemoryReputationRepository({ history: [concluida] });
   const screen = await renderHook(() => useCompletionRatingViewModel(repository, 'r1'));
@@ -331,5 +346,21 @@ test('falha ao avaliar no fim da negociação vira mensagem, sem travar a tela',
   // A segunda tentativa é recusada, como a `unique` do banco recusaria.
   await act(async () => screen.vm.rate(1, null));
   assert.equal(repository.rated.length, 1);
+  await screen.unmount();
+});
+
+test('o convite para avaliar aparece assim que a negociação é concluída na mesma tela', async () => {
+  // A lista começa sem a negociação recém-concluída: é o retrato que o hook já tinha
+  // antes da conclusão acontecer nesta mesma sessão de tela.
+  const history = [];
+  const repository = createMemoryReputationRepository({ history });
+  const screen = await renderHook(() => useCompletionRatingViewModel(repository, 'r1'));
+  assert.equal(screen.vm.canRate, false, 'ainda não sabe que a negociação existe');
+
+  // A negociação é concluída "ao vivo"; a tela chama `retry` para atualizar o retrato.
+  history.push(concluida);
+  await act(async () => screen.vm.retry());
+  assert.equal(screen.vm.canRate, true, 'retry() traz a negociação recém-concluída');
+  assert.equal(screen.vm.otherFirstName, 'Ana Paula');
   await screen.unmount();
 });

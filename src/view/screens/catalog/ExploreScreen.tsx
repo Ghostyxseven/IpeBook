@@ -1,16 +1,20 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { Image } from 'expo-image';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import sublinhadoMarca from '../../../../assets/catalog/sublinhado-marca.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Modality } from '../../../model/entities/Listing';
 import { conditionLabels, modalityLabels } from '../../../model/services/catalogFormat';
 import { maxPriceLabel } from '../../../model/services/catalogFilters';
 import { categories } from '../../../model/services/categories';
 import { useCatalogSearch } from '../../../factories/catalog';
+import { useFavorites } from '../../../factories/favorites';
 import { AppIcon } from '../../components/AppIcon';
 import { CatalogList } from '../../components/catalog/CatalogList';
 import { FilterModal } from '../../components/catalog/FilterModal';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
+import { NeighborhoodChip } from '../../components/catalog/NeighborhoodChip';
 import { SearchBarInput } from '../../components/catalog/SearchBar';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
@@ -29,6 +33,7 @@ export function ExploreScreen() {
   const shortcut = parseModality(params.modalidade);
   const vm = useCatalogSearch(shortcut);
   const { showOnly } = vm;
+  const favorites = useFavorites();
 
   // Cada atalho do Início reaplica a modalidade, mesmo quando ela se repete.
   useEffect(() => {
@@ -50,8 +55,9 @@ export function ExploreScreen() {
 
   const header = (
     <View style={styles.header}>
-      {/* Figma 02.02: ação de filtros à direita; o seletor de bairro não existe no app (ADR 0020). */}
+      {/* Figma 02.02: bairro de quem está logado à esquerda, filtros à direita. */}
       <View style={styles.topRow}>
+        <NeighborhoodChip />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={
@@ -68,6 +74,15 @@ export function ExploreScreen() {
           <Text style={styles.title} accessibilityRole="header" accessibilityLiveRegion="polite">
             {vm.title}
           </Text>
+          {/* Só no título padrão: as variações por modalidade não têm o quadro do Figma. */}
+          {vm.title === 'O que vamos ler hoje?' && (
+            <Image
+              source={sublinhadoMarca}
+              style={styles.underline}
+              contentFit="contain"
+              accessible={false}
+            />
+          )}
           <Text style={styles.subtitle}>
             Livros novos e seminovos para trocar, comprar ou receber aqui perto.
           </Text>
@@ -191,6 +206,8 @@ export function ExploreScreen() {
         items={vm.status === 'loading' ? [] : vm.items}
         header={header}
         empty={empty}
+        isFavorite={favorites.isFavorite}
+        onToggleFavorite={favorites.toggle}
         footer={
           vm.searching && vm.items.length > 0 && !vm.hasMore ? (
             <View style={styles.footer}>
@@ -233,7 +250,12 @@ const styles = StyleSheet.create({
   },
   title: { ...typography.brandHeadline, color: colors.onSurface },
   subtitle: { ...typography.bodyLarge, color: colors.onSurfaceVariant },
-  topRow: { flexDirection: 'row', justifyContent: 'flex-end', marginRight: -spacing.sm },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  underline: { width: 220, height: 12, marginTop: -spacing.xs },
   iconButton: {
     width: metrics.touchTarget,
     height: metrics.touchTarget,

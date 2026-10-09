@@ -20,6 +20,7 @@ const successRoutes: Record<AfterSignIn, string> = material
 export default function AuthLayout() {
   const session = useAppSession();
   if (session.status === 'signedIn') {
+    if (session.user?.needsRegistration) return <Redirect href="/completar-cadastro" />;
     const outcome = afterSignIn.peek();
     return <Redirect href={outcome ? successRoutes[outcome] : '/inicio'} />;
   }

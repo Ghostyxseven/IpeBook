@@ -16,11 +16,13 @@ import type { Modality } from '../../../model/entities/Listing';
 import { modalityLabels } from '../../../model/services/catalogFormat';
 import sublinhadoMarca from '../../../../assets/catalog/sublinhado-marca.svg';
 import { useCatalogFeed } from '../../../factories/catalog';
+import { useFavorites } from '../../../factories/favorites';
 import { useUnreadCount } from '../../../factories/notifications';
 import { useSessionContext } from '../../../viewmodel/useSession';
 import { AppIcon } from '../../components/AppIcon';
 import { BookTile } from '../../components/catalog/BookTile';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
+import { NeighborhoodChip } from '../../components/catalog/NeighborhoodChip';
 import { SearchBarButton } from '../../components/catalog/SearchBar';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
@@ -58,6 +60,7 @@ export function HomeScreen() {
   const router = useRouter();
   const session = useSessionContext();
   const vm = useCatalogFeed(session.user?.name);
+  const favorites = useFavorites();
   const unread = useUnreadCount();
   const refreshUnread = unread.refresh;
   const refreshFeed = vm.refresh;
@@ -89,6 +92,7 @@ export function HomeScreen() {
         }
       >
         <View style={styles.topBar}>
+          <NeighborhoodChip />
           <NotificationBell
             badgeText={unread.badgeText}
             accessibilityLabel={unread.accessibilityLabel}
@@ -100,14 +104,12 @@ export function HomeScreen() {
           <Text style={styles.headline} accessibilityRole="header">
             {'Encontre sua\npróxima história.'}
           </Text>
-          {isIOS && (
-            <Image
-              source={sublinhadoMarca}
-              style={styles.underline}
-              contentFit="contain"
-              accessible={false}
-            />
-          )}
+          <Image
+            source={sublinhadoMarca}
+            style={styles.underline}
+            contentFit="contain"
+            accessible={false}
+          />
           <Text style={styles.subtitle}>
             Compre, troque ou receba livros de quem mora perto de você.
           </Text>
@@ -187,6 +189,8 @@ export function HomeScreen() {
                 key={listing.id}
                 listing={listing}
                 onPress={() => router.push({ pathname: '/livro/[id]', params: { id: listing.id } })}
+                favorite={favorites.isFavorite(listing.id)}
+                onToggleFavorite={() => favorites.toggle(listing.id)}
               />
             ))}
           </ScrollView>
@@ -224,7 +228,12 @@ const styles = StyleSheet.create({
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
   },
-  topBar: { flexDirection: 'row', justifyContent: 'flex-end', paddingTop: spacing.xs },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: spacing.xs,
+  },
   hero: { gap: spacing.xs },
   // Título da marca em serifa (Figma: Source Serif 4 Bold, 30/36 no Android e 36/41 no iOS).
   headline: {

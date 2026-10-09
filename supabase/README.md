@@ -73,3 +73,32 @@ values ('<id-da-outra-conta>', 'Livro de teste', 'Autoria de teste', 'Outros', '
 ```
 
 Apague esses registros antes de usar o projeto com pessoas reais.
+
+## Diagnóstico do login Google (08/10/2026)
+
+As correções locais do fluxo foram:
+
+1. Extrair apenas `code` da URL antes de chamar `exchangeCodeForSession`; remover
+   logs que imprimiam códigos e URLs de autenticação.
+2. Configurar `flowType: 'pkce'` no cliente. Sem isso, o SDK iniciava `implicit`,
+   incompatível com a troca de código feita pelo aplicativo.
+3. Fornecer SHA-256 e aleatoriedade segura ao PKCE nativo via `expo-crypto` do SDK 57.
+   A ausência de WebCrypto causava o aviso de fallback para `plain`. Na Web,
+   preservar WebCrypto do navegador; usar HTTPS ou localhost.
+4. Adicionar a rota `/auth/callback`: o Expo Router exibia "Unmatched Route"
+   depois do retorno do Google. A rota reutiliza a decisão de abertura por sessão;
+   a troca do código continua na operação OAuth, evitando reutilização do código.
+5. Para "Cannot connect to Expo CLI" no Android conectado por USB, verificar
+   `http://127.0.0.1:8081/status` e configurar `adb reverse tcp:8081 tcp:8081`.
+   Abrir `exp://127.0.0.1:8081` no Expo Go e manter o cabo conectado.
+
+Testes reproduziram configuração sem PKCE e ambiente sem WebCrypto, depois
+validaram os caminhos corrigidos. Tipos, lint, formatação e 32 arquivos de testes
+passaram antes da evolução do cadastro. O empacotamento iOS passou; no Android,
+a rota corrigida encaminhou para Entrar. Isso não comprova login completo com
+uma conta real. Detalhes e limites estão no
+[registro da autenticação](../specs/014-autenticacao-onboarding/verify.md).
+
+Não publicar screenshots, códigos OAuth, tokens ou senhas em issues e commits.
+A conclusão de nome, senha do IpêBook e bairro está na
+[spec 034](../specs/034-completar-cadastro-google/spec.md).

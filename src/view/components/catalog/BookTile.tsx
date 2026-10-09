@@ -2,6 +2,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Listing } from '../../../model/entities/Listing';
 import { cardOverline, listingAccessibilityLabel } from '../../../model/services/catalogFormat';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+import { FavoriteButton } from './FavoriteButton';
 import { ListingCover } from './ListingCover';
 import { StatusBadge } from './StatusBadge';
 
@@ -9,7 +10,17 @@ import { StatusBadge } from './StatusBadge';
 export const BOOK_TILE_WIDTH = 166;
 
 /** Card de livro do carrossel do Início (Figma 02.01): capa sobre o fundo e três linhas de texto. */
-export function BookTile({ listing, onPress }: { listing: Listing; onPress: () => void }) {
+export function BookTile({
+  listing,
+  onPress,
+  favorite,
+  onToggleFavorite,
+}: {
+  listing: Listing;
+  onPress: () => void;
+  favorite?: boolean;
+  onToggleFavorite?: () => void;
+}) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -24,6 +35,16 @@ export function BookTile({ listing, onPress }: { listing: Listing; onPress: () =
     >
       <View style={styles.coverArea}>
         <ListingCover listing={listing} variant="tile" />
+        {onToggleFavorite && (
+          <View style={styles.favorite}>
+            <FavoriteButton
+              favorite={Boolean(favorite)}
+              onToggle={onToggleFavorite}
+              title={listing.title}
+              overlay
+            />
+          </View>
+        )}
       </View>
       <View style={styles.info}>
         <Text style={styles.overline} numberOfLines={1}>
@@ -69,6 +90,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.container,
+  },
+  // Canto da capa, sobre a ilustração (Figma 02.01 "Card de livro"). O alvo de 48 px
+  // do botão recua além da borda visível da capa; só o ícone de 22 px fica por dentro.
+  favorite: {
+    position: 'absolute',
+    top: -(metrics.touchTarget - 32) / 2,
+    right: -(metrics.touchTarget - 32) / 2,
   },
   info: { paddingHorizontal: spacing.md, paddingVertical: 10, gap: 0, alignItems: 'flex-start' },
   overline: { ...typography.labelMedium, letterSpacing: 0.5, color: colors.onSurfaceVariant },

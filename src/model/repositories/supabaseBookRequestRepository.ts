@@ -1,22 +1,46 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { BookRequest, RequestStatus } from '../entities/BookRequest';
 import { BookRequestError } from '../entities/BookRequestError.ts';
+import type { Listing } from '../entities/Listing';
 import type { BookRequestRepository } from './BookRequestRepository';
+import { COVERS_BUCKET } from './supabaseCatalogRepository.ts';
 
 /**
  * Subconjunto do SupabaseClient usado pelo repositório (permite cliente falso nos testes).
  */
-export type SupabaseBookRequestClient = Pick<SupabaseClient, 'from' | 'rpc'>;
+// `storage` entrou com a contraproposta: a estante de quem propôs mostra a capa real
+// de cada anúncio, e a URL pública sai do mesmo bucket que o catálogo usa.
+export type SupabaseBookRequestClient = Pick<SupabaseClient, 'from' | 'rpc' | 'storage'>;
+
+/** Linha de `listings` como a função `shelf_of_requester` devolve. */
+type ListingRow = {
+  id: string;
+  title: string;
+  author: string;
+  category: string;
+  modality: Listing['modality'];
+  price_cents: number | null;
+  trade_terms: string | null;
+  condition: Listing['condition'];
+  neighborhood: string | null;
+  city: string | null;
+  description: string | null;
+  cover_path: string | null;
+  status: Listing['status'];
+  owner_id?: string | null;
+  created_at: string;
+};
 
 const TABLE = 'book_requests';
 const COLUMNS =
-  'id,listing_id,requester_id,offered_listing_id,public_location,meeting_date,meeting_time,status,created_at,updated_at';
+  'id,listing_id,requester_id,offered_listing_id,counter_listing_id,public_location,meeting_date,meeting_time,status,created_at,updated_at';
 
 type Row = {
   id: string;
   listing_id: string;
   requester_id: string;
   offered_listing_id?: string | null;
+  counter_listing_id?: string | null;
   public_location: string;
   meeting_date: string;
   meeting_time: string;
@@ -53,6 +77,7 @@ const toBookRequest = (row: Row): BookRequest => ({
   listingId: row.listing_id,
   requesterId: row.requester_id,
   offeredListingId: row.offered_listing_id ?? null,
+  counterListingId: row.counter_listing_id ?? null,
   publicLocation: row.public_location,
   meetingDate: row.meeting_date,
   meetingTime: row.meeting_time,
@@ -158,6 +183,52 @@ export function createSupabaseBookRequestRepository(
           new_date: meetingDate,
           new_time: meetingTime,
         })
+        .select(COLUMNS)
+        .maybeSingle();
+      return readOne(result as { data: Row | null; error: unknown });
+    },
+
+    async shelfOfRequester(requestId) {
+      const db = requireClient();
+      const { data, error } = await db.rpc('shelf_of_requester', { p_request_id: requestId });
+      if (error) throw mapSupabaseBookRequestError(error);
+      if (!Array.isArray(data)) return [];
+      return (data as ListingRow[]).map((row) => ({
+        id: row.id,
+        title: row.title,
+        author: row.author,
+        category: row.category,
+        modality: row.modality,
+        priceCents: row.price_cents,
+        tradeTerms: row.trade_terms,
+        condition: row.condition,
+        neighborhood: row.neighborhood,
+        city: row.city,
+        description: row.description,
+        coverUrl: row.cover_path
+          ? db.storage.from(COVERS_BUCKET).getPublicUrl(row.cover_path).data.publicUrl
+          : null,
+        status: row.status,
+        ownerId: row.owner_id ?? null,
+        // Quem pediu já se identifica na negociação; a linha não repete o nome.
+        ownerFirstName: null,
+        createdAt: row.created_at,
+      }));
+    },
+
+    async counterOffer(requestId, listingId) {
+      const db = requireClient();
+      const result = await db
+        .rpc('counter_offer', { p_request_id: requestId, p_listing_id: listingId })
+        .select(COLUMNS)
+        .maybeSingle();
+      return readOne(result as { data: Row | null; error: unknown });
+    },
+
+    async answerCounterOffer(requestId, accept) {
+      const db = requireClient();
+      const result = await db
+        .rpc('answer_counter_offer', { p_request_id: requestId, p_accept: accept })
         .select(COLUMNS)
         .maybeSingle();
       return readOne(result as { data: Row | null; error: unknown });

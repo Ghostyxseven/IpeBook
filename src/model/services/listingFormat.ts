@@ -47,7 +47,8 @@ export const myStatusLabels: Record<MyListingStatus, string> = {
   disponivel: 'Disponível',
   reservado: 'Reservado',
   concluido: 'Concluído',
-  arquivado: 'Arquivado',
+  // O Figma diz "Pausado"; a situação no banco continua `arquivado` (spec 032).
+  arquivado: 'Pausado',
 };
 
 /** O que o anúncio mostra como destaque da modalidade, na revisão e na estante. */
@@ -108,4 +109,19 @@ export function shelfSupportingText(listing: MyListing, now: Date): string {
       : `${modalityLabels[listing.modality]} · ${myStatusLabels[listing.status]}`;
   const when = listing.status === 'concluido' ? '' : publishedAgo(listing.createdAt, now);
   return [value, listing.neighborhood?.trim() ?? '', when, ending].filter(Boolean).join(' · ');
+}
+
+/** "2 anúncios restantes na sua estante." — o aviso do quadro 05.07. */
+export function remainingLabel(count: number): string {
+  if (count <= 0) return 'Nenhum anúncio ativo na sua estante.';
+  return count === 1
+    ? '1 anúncio restante na sua estante.'
+    : `${count} anúncios restantes na sua estante.`;
+}
+
+/** "Uma proposta ficou registrada como recusada." — o aviso do quadro 05.08. */
+export function closedProposalsLabel(count: number): string {
+  return count === 1
+    ? 'Uma proposta ficou registrada como recusada.'
+    : `${count} propostas ficaram registradas como recusadas.`;
 }

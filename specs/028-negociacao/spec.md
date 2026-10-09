@@ -30,6 +30,30 @@ Registrar o fluxo de negociação que já está na `develop` e fechar as lacunas
 
 ## Fora do escopo desta etapa
 
-- Contraproposta (Figma 06.19 e 06.20) e avaliação da troca (#54).
+- Integração dos cartões da contraproposta na conversa e mensagens automáticas (#39).
 - Conversa e mensagens (#39).
 - Aviso de cancelamento: `notifications.kind` ainda não tem esse tipo.
+
+## Etapa 4 — Contraproposta (07/10/2026)
+
+Quem anunciou um livro de troca pode pedir outro livro disponível da estante de quem
+propôs. Quem propôs vê o livro original e o solicitado e aceita ou recusa. Referência:
+quadros `423:24276` (06.19) e `423:24520` (06.20), ADR 0030.
+
+### Critérios de aceite e verificação
+
+- Só o dono contrapropõe, só em troca pendente, uma vez; só quem pediu responde.
+  Validar permissões no Model, ViewModel e funções SQL.
+- A escolha exclui o livro original, anúncios de terceiros, indisponíveis e outras
+  modalidades. Verificar estante e envio direto de identificadores inválidos.
+- Enquanto aguarda resposta, o dono não aceita nem recusa a proposta original.
+- Aceitar reserva **os dois** livros atomicamente, recusa pedidos concorrentes do
+  anúncio e preserva disponível o livro oferecido originalmente. Cancelar libera
+  ambos; concluir conclui ambos. Livro indisponível bloqueia aceite sem gravação parcial.
+- Recusar encerra o pedido, sem reservar livros. Inserção direta não pode forjar
+  uma contraproposta.
+- A tela identifica o livro solicitado, mostra erro de envio dentro da folha,
+  bloqueia envios duplicados e contempla carregamento, vazio, falha e nova tentativa.
+- Verificar tipos, lint, formatação, testes de regressão e build. Validar apresentação
+  Web/celular quando houver ambiente disponível; registrar separadamente os bloqueios
+  de banco remoto e aparelhos, sem declarar o fluxo real validado.

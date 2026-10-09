@@ -9,8 +9,10 @@ import type { CatalogRepository } from '../model/repositories/CatalogRepository'
 import { toCatalogError } from '../model/entities/CatalogError.ts';
 import { catalogErrorMessage } from '../model/services/catalogMessages.ts';
 import {
+  canAnswerCounter,
   canCancel,
   canComplete,
+  canCounter,
   ensureTransition,
   isOwner,
 } from '../model/services/bookRequestTransitions.ts';
@@ -30,6 +32,7 @@ export function useBookRequestDetailViewModel(
   const [listing, setListing] = useState<Listing | null>(null);
   /** Na troca, o livro que quem pediu ofereceu (Figma 03.05). */
   const [offeredListing, setOfferedListing] = useState<Listing | null>(null);
+  const [counterListing, setCounterListing] = useState<Listing | null>(null);
   /** Primeiro nome de quem pediu, para quem anunciou ver com quem combina. */
   const [requesterName, setRequesterName] = useState<string | null>(null);
   const [status, setStatus] = useState<DetailStatus>('loading');
@@ -48,16 +51,20 @@ export function useBookRequestDetailViewModel(
       const br = await bookRequestRepository.getRequestById(requestId);
       const list = await catalogRepository.getById(br.listingId);
       // Livro oferecido e nome de quem pediu são extras: sem eles a negociação ainda abre.
-      const [offered, name] = await Promise.all([
+      const [offered, name, counter] = await Promise.all([
         br.offeredListingId
           ? catalogRepository.getById(br.offeredListingId).catch(() => null)
           : Promise.resolve(null),
         bookRequestRepository.personFirstName(br.requesterId).catch(() => null),
+        br.counterListingId
+          ? catalogRepository.getById(br.counterListingId).catch(() => null)
+          : Promise.resolve(null),
       ]);
       if (current !== reqId.current) return;
       setRequest(br);
       setListing(list);
       setOfferedListing(offered);
+      setCounterListing(counter);
       setRequesterName(name);
       setStatus('ready');
     } catch (failure) {
@@ -74,6 +81,7 @@ export function useBookRequestDetailViewModel(
       setRequest(null);
       setListing(null);
       setOfferedListing(null);
+      setCounterListing(null);
     }
   }, [bookRequestRepository, catalogRepository, requestId]);
 
@@ -92,6 +100,8 @@ export function useBookRequestDetailViewModel(
         canReject: false,
         canCancel: false,
         canComplete: false,
+        canCounter: false,
+        canAnswerCounter: false,
       };
     }
     const owner = isOwner(userId, listing);
@@ -99,15 +109,100 @@ export function useBookRequestDetailViewModel(
     return {
       asOwner: owner,
       asRequester: requester,
-      canAccept: owner && request.status === 'pending',
-      canReject: owner && request.status === 'pending',
+      canAccept: owner && request.status === 'pending' && !request.counterListingId,
+      canReject: owner && request.status === 'pending' && !request.counterListingId,
       canCancel: canCancel(request.status, userId, {
         requesterId: request.requesterId,
         ownerId: listing.ownerId,
       }),
       canComplete: canComplete(request.status, userId, { ownerId: listing.ownerId }),
+      // Contraproposta (Figma 06.19, ADR 0030): o dono pede outro livro da estante de
+      // quem propôs; quem propôs responde.
+      canCounter: canCounter(request.status, userId, {
+        ownerId: listing.ownerId,
+        modality: listing.modality,
+        counterListingId: request.counterListingId,
+      }),
+      canAnswerCounter: canAnswerCounter(request.status, userId, {
+        requesterId: request.requesterId,
+        counterListingId: request.counterListingId,
+      }),
     };
   }, [request, listing, userId]);
+
+  /** Estante de quem propôs, carregada só quando o dono abre a folha. */
+  const [shelf, setShelf] = useState<Listing[]>([]);
+  const shelfVersion = useRef(0);
+  const [counterError, setCounterError] = useState<string | null>(null);
+  const [shelfStatus, setShelfStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+
+  const openCounter = useCallback(async () => {
+    if (!request || !capabilities.canCounter) return;
+    const version = ++shelfVersion.current;
+    setShelfStatus('loading');
+    setCounterError(null);
+    try {
+      const items = await bookRequestRepository.shelfOfRequester(request.id);
+      if (version !== shelfVersion.current) return;
+      setShelf(items);
+      setShelfStatus('ready');
+    } catch (failure) {
+      if (version !== shelfVersion.current) return;
+      setCounterError(bookRequestErrorMessage(toBookRequestError(failure).code));
+      setShelfStatus('error');
+    }
+  }, [request, bookRequestRepository, capabilities.canCounter]);
+
+  const counterOffer = useCallback(
+    (listingId: string) =>
+      run(async () => {
+        if (!request || !capabilities.canCounter) return;
+        setCounterError(null);
+        try {
+          setRequest(await bookRequestRepository.counterOffer(request.id, listingId));
+          setCounterListing(shelf.find((item) => item.id === listingId) ?? null);
+          setShelfStatus('idle');
+        } catch (failure) {
+          setCounterError(bookRequestErrorMessage(toBookRequestError(failure).code));
+        }
+      }),
+    [run, request, bookRequestRepository, capabilities.canCounter, shelf],
+  );
+
+  const answerCounter = useCallback(
+    (accept: boolean) =>
+      run(async () => {
+        if (!request || !listing || !capabilities.canAnswerCounter || (accept && !counterListing))
+          return;
+        setError(null);
+        try {
+          const updated = await bookRequestRepository.answerCounterOffer(request.id, accept);
+          setRequest(updated);
+          setCounterListing(null);
+          setLastAction(updated.status);
+          if (accept) {
+            setOfferedListing(counterListing);
+            // A gravação já aconteceu; falha ao recarregar não significa falha no aceite.
+            try {
+              setListing(await catalogRepository.getById(listing.id));
+            } catch {
+              /* recarrega ao reabrir */
+            }
+          }
+        } catch (failure) {
+          setError(bookRequestErrorMessage(toBookRequestError(failure).code));
+        }
+      }),
+    [
+      run,
+      request,
+      listing,
+      bookRequestRepository,
+      catalogRepository,
+      capabilities.canAnswerCounter,
+      counterListing,
+    ],
+  );
 
   const act = useCallback(
     async (nextStatus: BookRequest['status']) => {
@@ -120,6 +215,14 @@ export function useBookRequestDetailViewModel(
         // Confere antes para dar resposta rápida; o banco confere de novo (ADR 0018).
         try {
           ensureTransition(request.status, nextStatus);
+          if (
+            request.counterListingId &&
+            request.status === 'pending' &&
+            nextStatus !== 'canceled'
+          ) {
+            setError(bookRequestErrorMessage('invalid_transition'));
+            return;
+          }
         } catch (failure) {
           setError(bookRequestErrorMessage(toBookRequestError(failure).code));
           return;
@@ -176,6 +279,8 @@ export function useBookRequestDetailViewModel(
     request,
     listing,
     offeredListing,
+    counterListing,
+    counterError,
     requesterName,
     other,
     status,
@@ -183,6 +288,16 @@ export function useBookRequestDetailViewModel(
     busy,
     retry: load,
     capabilities,
+    shelf,
+    shelfStatus,
+    openCounter,
+    closeCounter: () => {
+      if (busy) return;
+      shelfVersion.current++;
+      setShelfStatus('idle');
+    },
+    counterOffer,
+    answerCounter,
     confirming,
     lastAction,
     askConfirm,

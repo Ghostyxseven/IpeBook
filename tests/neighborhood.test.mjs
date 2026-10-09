@@ -17,6 +17,7 @@ import {
   validateNeighborhood,
 } from '../src/model/services/neighborhood.ts';
 import { useLocateNeighborhoodViewModel } from '../src/viewmodel/useLocateNeighborhoodViewModel.ts';
+import { useMyNeighborhoodViewModel } from '../src/viewmodel/useMyNeighborhoodViewModel.ts';
 import { useNeighborhoodViewModel } from '../src/viewmodel/useNeighborhoodViewModel.ts';
 
 const dom = new JSDOM('<div id="root"></div>', { url: 'http://localhost/' });
@@ -176,4 +177,29 @@ test('Escolher bairro: o bairro achado pela localização preenche o campo', asy
   await act(async () => hook.vm.save());
   assert.equal(memory.current().neighborhood, 'Morro da Saudade');
   await hook.unmount();
+});
+
+test('o chip do topo lê o bairro salvo (Figma 02.01 e 02.02)', async () => {
+  const memory = createMemoryProfileRepository({ neighborhood: 'Centro' });
+  const screen = await renderHook(() => useMyNeighborhoodViewModel(memory.repository));
+  assert.equal(screen.vm.status, 'ready');
+  assert.equal(screen.vm.neighborhood, 'Centro');
+  await screen.unmount();
+});
+
+test('sem bairro salvo, o chip não inventa um nome', async () => {
+  const memory = createMemoryProfileRepository();
+  const screen = await renderHook(() => useMyNeighborhoodViewModel(memory.repository));
+  assert.equal(screen.vm.status, 'ready');
+  assert.equal(screen.vm.neighborhood, null);
+  await screen.unmount();
+});
+
+test('erro ao carregar o bairro não trava: a tela cai para "Escolher bairro"', async () => {
+  const memory = createMemoryProfileRepository();
+  memory.fail(new ProfileError('network'));
+  const screen = await renderHook(() => useMyNeighborhoodViewModel(memory.repository));
+  assert.equal(screen.vm.status, 'error');
+  assert.equal(screen.vm.neighborhood, null);
+  await screen.unmount();
 });

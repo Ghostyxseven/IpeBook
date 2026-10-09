@@ -67,12 +67,14 @@ O arquivo [IpêBook-Mobile](https://www.figma.com/design/cxEisNRzOQR6krv8Ow7HCa/
 
 Decidido no [ADR 0019](../adr/0019-serifa-da-marca-e-superficies-do-figma.md): Source Serif 4 Bold nos títulos de marca (`typography.brand`) e os papéis de superfície do Material 3 em `design-tokens.json` (`onSurface`, `onSurfaceVariant`, `outlineVariant`, `container.*`, `selected.*`). Ainda divergem:
 
-| Item                          | Figma                         | App hoje                                                |
-| ----------------------------- | ----------------------------- | ------------------------------------------------------- |
-| Título de seção do Início     | `m3-title-lg` 22/28, peso 400 | `titleLarge` 24/32 com tamanho e peso ajustados na tela |
-| Raio do card do carrossel     | 12 px                         | `radius.medium` 14 px                                   |
-| Seletor de bairro, distâncias | No topo e nos cards           | Fora: o app não conhece a localização da pessoa         |
-| Favoritar e compartilhar      | Nos cards e no Detalhe        | Fora: o recurso não existe                              |
+| Item                      | Figma                         | App hoje                                                                |
+| ------------------------- | ----------------------------- | ----------------------------------------------------------------------- |
+| Título de seção do Início | `m3-title-lg` 22/28, peso 400 | `titleLarge` 24/32 com tamanho e peso ajustados na tela                 |
+| Raio do card do carrossel | 12 px                         | `radius.medium` 14 px                                                   |
+| Seletor de bairro (chip)  | No topo                       | Entrou em 08/10/2026 (ADR 0032): é o bairro do perfil, não localização. |
+| Distâncias nos cards      | "a 800 m", "a 1,2 km"         | Fora: o app não conhece a localização da pessoa, só o bairro do perfil. |
+| Favoritar                 | Nos cards e no Detalhe        | Entrou em 08/10/2026 (ADR 0032).                                        |
+| Compartilhar              | Nos cards e no Detalhe        | Fora: o recurso não existe (extra #1 da decisão #27).                   |
 
 ## Anunciar livro (03/10/2026)
 
@@ -180,6 +182,27 @@ Decidido com o Micael em 07/10/2026, pelos quadros 06.04 e 03.03 das duas plataf
 | Ação do detalhe (03.01 a 03.03)       | Era sempre "Combinar encontro". Agora diz o que a pessoa pede: "Quero receber" na doação, "Propor troca" na troca, "Combinar encontro" na venda. As três abrem a mesma tela.             |
 | "Conversar" na doação (03.03, iPhone) | **Fora.** As mensagens só existem dentro de uma negociação aberta (ADR 0021); conversar antes disso seria recurso novo, com spec e banco. O Figma precisa tirar a ação ou abrir a spec.  |
 
+## Barra de abas do iPhone separa a busca (08/10/2026)
+
+A referência (`ios.md`) já dizia: "Explorar é a aba de busca (`Tab(role: .search)`), no
+círculo à direita." O app usava a mesma barra de cinco abas iguais em qualquer
+plataforma. Agora, só no iPhone, Explorar sai da fileira e vira um círculo à parte,
+depois de Início, Estante, Conversas e Perfil — a mesma ordem do componente
+`TabBarIPhone` do Figma. Android e Web continuam com as cinco abas do Material 3,
+sem mudança.
+
+## Contraproposta (07/10/2026)
+
+Feita pelos quadros 06.19 e 06.20, com o [ADR 0030](../adr/0030-contraproposta-de-troca.md).
+
+| Item                                          | Situação                                                                                                                                   |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Cartões da contraproposta na conversa (06.20) | O app mostra na tela da negociação, que é onde aceitar e recusar já acontecem. A conversa segue só com mensagens.                          |
+| Apresentação da escolha (06.19)               | A implementação usa modal de tela inteira, com largura limitada em tablets/Web, em vez da folha parcial sobre a proposta.                  |
+| Mensagem automática ("Prefiro O Cortiço…")    | Não existe: o app não escreve mensagem no lugar de ninguém. Quem contrapropõe pode explicar na conversa.                                   |
+| "Perfil confirmado · 5 trocas · 4,9" (06.19)  | A linha de quem propôs não aparece na folha: o nome já está na negociação, e a reputação tem tela própria (spec 031).                      |
+| Lista da folha                                | O Figma mostra o livro oferecido junto dos outros; o app lista só os outros, porque pedir de volta o mesmo livro não é uma contraproposta. |
+
 ## Liquid Glass no iPhone (07/10/2026)
 
 Implementado pelo [ADR 0029](../adr/0029-liquid-glass-no-iphone.md), com os tokens da
@@ -228,13 +251,13 @@ conservação e preço máximo ao do Android.
 
 Refeitos pelos quadros Android 02.02 a 02.04. Diferenças que ficaram:
 
-| Item                                           | Situação                                                                                           |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Seletor de bairro ("Centro") no topo (02.02)   | O app não guarda o bairro de quem usa e atende só Piripiri (ADR 0020); fica só o botão de filtros. |
-| Coração de favoritos nos cards (02.02 e 02.04) | O app não tem favoritos.                                                                           |
-| Categorias dos chips                           | O Figma mostra "Ficção", "Não ficção" e "Infantil"; o app usa as categorias fixas do ADR 0008.     |
-| "Mais recentes" em verde no resumo (02.04)     | A lista só tem essa ordem; o resumo diz a ordem ou os filtros, sem botão.                          |
-| Lista compacta com filtro (02.04)              | O app mantém os cards do 02.02 também com filtro.                                                  |
+| Item                                           | Situação                                                                                                                                   |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Seletor de bairro ("Centro") no topo (02.02)   | Entrou em 08/10/2026 (ADR 0032): o chip lê o bairro do perfil (spec de Perfil) e abre a tela de editar. A cidade continua fixa (ADR 0020). |
+| Coração de favoritos nos cards (02.02 e 02.04) | Entrou em 08/10/2026 (ADR 0032).                                                                                                           |
+| Categorias dos chips                           | O Figma mostra "Ficção", "Não ficção" e "Infantil"; o app usa as categorias fixas do ADR 0008.                                             |
+| "Mais recentes" em verde no resumo (02.04)     | A lista só tem essa ordem; o resumo diz a ordem ou os filtros, sem botão.                                                                  |
+| Lista compacta com filtro (02.04)              | O app mantém os cards do 02.02 também com filtro.                                                                                          |
 
 ## Visor da leitura de ISBN (spec 030, Figma 04.02 e 04.03)
 
@@ -276,6 +299,39 @@ A comparação da spec 025 estava marcada como bloqueada desde 02/10/2026 por ca
 dos links quebrados. Feita agora, apontou cinco divergências — a maior é a
 ausência completa do fluxo de **rascunhos** (quadros 04.11 a 04.16). A lista está
 em [`specs/025-anuncios-gestao/verify.md`](../../specs/025-anuncios-gestao/verify.md).
+
+## Rascunhos e ciclo do anúncio (spec 032, 07/10/2026)
+
+- **Quatro quadros, uma tela.** 04.08, 04.10, 04.20 e 04.21 são estados do mesmo
+  anúncio. Rotas separadas deixariam, depois de excluir, uma tela que recarregaria
+  um anúncio inexistente.
+- **"Marcar como concluído" não grava nada.** O quadro 04.08 traz a ação, mas a
+  situação `concluido` pertence à negociação (ADR 0018). A linha existe e leva às
+  Conversas, com o texto de apoio dizendo onde a conclusão acontece.
+- **O rascunho não guarda a foto** (ADR 0030), e a tela avisa.
+- **"Pausar" no lugar de "arquivar"** em toda a interface; no banco continua
+  `arquivado`.
+- **A folha de opções da estante saiu**, substituída pela tela 04.08.
+- **O texto do quadro 04.16** veio do quadro renderizado, não do nome da camada,
+  que ainda trazia uma versão antiga.
+- **04.19 só aparece com foto.** Falha de rede ao publicar **com** foto escolhida
+  abre o quadro; sem foto, continua sendo mensagem no rodapé do formulário.
+
+## Estante depois da ação (spec 033, 07/10/2026)
+
+- **05.07 virou aviso no topo da estante**, não tela: o 04.21 já ocupa o momento
+  logo depois de excluir.
+- **05.08 virou bloco na aba Propostas**, não tela: para ser tela, a recusa — que
+  acontece na negociação, feature de outra pessoa — teria de navegar até aqui.
+- **O nome de quem propôs não aparece** no 05.08: a lista de propostas carrega o
+  pedido e o livro, não o nome.
+
+## Conclusão do cadastro Google — 08/10/2026
+
+A spec 034 acrescenta uma etapa solicitada pelo usuário sem quadro próprio no Figma.
+Reutiliza AuthLayout, TextField, Checkbox e Button dos quadros 01.03 Android
+(`336:118`) e iPhone (`336:12902`), inspecionados no arquivo oficial. Inclui bairro,
+confirmação de senha e e-mail somente leitura; não altera tokens nem padrões globais.
 
 ## Revisão geral das telas do iPhone contra o Figma (09/10/2026)
 

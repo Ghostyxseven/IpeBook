@@ -25,6 +25,15 @@ Uma comparação das telas do fluxo "01 · Acesso" do Figma (`cxEisNRzOQR6krv8Ow
 - **Vidro de verdade no aviso do iPhone, com o `GlassSurface` do ADR 0029.** A primeira versão do `Snackbar` só imitava o Liquid Glass com a cor sólida `color.ios.cell`; a comparação com o Figma mostrou o vidro de verdade (dá para ver o conteúdo desfocado atrás). A primeira tentativa de corrigir isso usou `expo-glass-effect` (`GlassView`) direto no componente — nessa mesma data, o Micael registrou o ADR 0029 e o componente `GlassSurface` (`expo-blur`, tokens `color.ios.glass*`, respeita "Reduzir Transparência") para a mesma necessidade, aplicado primeiro na barra de abas. Para não manter dois jeitos de fazer vidro no app, o `Snackbar` passou a usar `GlassSurface` e a dependência `expo-glass-effect` saiu do projeto. A barra de navegação superior (iOS) continua fora do escopo deste ADR: o cabeçalho nativo do Expo Router já usa o material do sistema sozinho no iOS 26, sem código extra.
 - **Aviso de vidro também ao reenviar o código de recuperação (Figma 01.15).** `usePasswordRecoveryViewModel` ganhou o campo `resent`, `true` logo depois de um reenvio concluído (não do primeiro envio) e limpo ao trocar o e-mail. No iPhone, `PasswordRecoveryScreen` mostra o `Snackbar` quando `resent` muda; nas outras plataformas e para leitores de tela, o aviso inline (`FormMessage`) que já existia continua igual.
 
+Complemento de implementação em 08/10/2026: o cliente define `flowType: 'pkce'`
+explicitamente. Android/iOS usam `expo-crypto` do SDK 57 para disponibilizar
+aleatoriedade segura e SHA-256 ao Supabase quando WebCrypto estiver ausente.
+O adaptador de infraestrutura fornece apenas as operações necessárias ao PKCE,
+preserva APIs existentes e rejeita algoritmos não suportados; a Web mantém o
+WebCrypto do navegador. Isso evita o fallback `plain` observado no dispositivo,
+sem implementar criptografia própria ou adotar outro SDK de login.
+Validação e limitações: [registro da autenticação](../../specs/014-autenticacao-onboarding/verify.md).
+
 ## Alternativas
 
 - **Login nativo do Google (`@react-native-google-signin/google-signin`):** mais próximo do botão oficial do Google e sem abrir navegador, mas pede client ID por plataforma, SHA-1 de debug e de release no Android, e módulo nativo fora do Expo Go — custo maior do que o prazo da disciplina permite agora.

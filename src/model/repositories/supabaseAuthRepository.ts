@@ -37,6 +37,10 @@ export function toUser(user: SupabaseUser): User {
     email: user.email ?? '',
     name: typeof name === 'string' ? name : '',
     emailVerified: Boolean(user.email_confirmed_at),
+    ...(user.app_metadata?.provider === 'google' &&
+    user.user_metadata?.google_registration_completed !== true
+      ? { needsRegistration: true }
+      : {}),
   };
 }
 
@@ -113,10 +117,37 @@ export function createSupabaseAuthRepository(
       );
       if (!data.url) throw new AuthError('unknown');
       const result = await oauthBrowser.openAuthSession(data.url, redirectTo);
+
       if (result.type !== 'success' || !result.url) throw new AuthError('oauth_cancelled');
-      const { data: session } = await run(() => auth().exchangeCodeForSession(result.url!));
+
+      // O Supabase retorna o código no final da URL (?code=...).
+      const codeMatch = result.url.match(/[?&#]code=([^&#]+)/);
+      if (!codeMatch) {
+        throw new AuthError('unknown');
+      }
+
+      const { data: session } = await run(() => auth().exchangeCodeForSession(codeMatch[1]));
       if (!session.user) throw new AuthError('unknown');
       return toUser(session.user);
+    },
+
+    async completeGoogleRegistration(name, password, termsAcceptedAt) {
+      const { data: current } = await run(() => auth().getUser());
+      if (!current.user || !toUser(current.user).needsRegistration) throw new AuthError('unknown');
+      const { data } = await run(() =>
+        auth().updateUser({
+          password,
+          data: {
+            name,
+            terms_accepted_at: termsAcceptedAt.toISOString(),
+            google_registration_completed: true,
+          },
+        }),
+      );
+      if (!data.user) throw new AuthError('unknown');
+      const user = toUser(data.user);
+      gate.emit(user);
+      return user;
     },
 
     async signUp(name, email, password, termsAcceptedAt) {

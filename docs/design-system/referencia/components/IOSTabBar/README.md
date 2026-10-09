@@ -1,4 +1,5 @@
 # IOSTabBar
+
 Barra de abas do iOS 26: cápsula de vidro flutuante com Início, Estante e Perfil, e Explorar como aba de busca no círculo à direita.
 
 - Altura `ios-tab-bar`, 16pt das laterais, 26pt acima do indicador de início.

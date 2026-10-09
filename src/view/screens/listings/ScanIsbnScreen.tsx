@@ -34,19 +34,25 @@ export function ScanIsbnScreen({
   const vm = useIsbnScan();
   const camera = useIsbnCameraPermission();
 
+  // Os efeitos dependem dos VALORES, não dos objetos: `vm` e `camera` seriam
+  // novos a cada render, e o primeiro efeito reabriria o pedido de permissão
+  // em laço enquanto a pessoa não respondesse.
+  const { granted, canAskAgain, request } = camera;
+  const { cameraDenied } = vm;
+
   // A permissão é pedida uma vez, ao abrir. Negada, a tela vira o quadro 04.17.
   useEffect(() => {
-    if (camera.granted === null && camera.canAskAgain) void camera.request();
-  }, [camera]);
+    if (granted === null && canAskAgain) void request();
+  }, [granted, canAskAgain, request]);
 
   useEffect(() => {
-    if (camera.granted === false) vm.cameraDenied();
-  }, [camera.granted, vm]);
+    if (granted === false) cameraDenied();
+  }, [granted, cameraDenied]);
 
   const retryCamera = () => {
     // Sem poder perguntar de novo, só as Configurações do aparelho resolvem; o
     // botão ainda assim volta ao visor, porque a pessoa pode ter liberado lá.
-    if (camera.canAskAgain) void camera.request();
+    if (canAskAgain) void request();
     vm.scanAgain();
   };
 
