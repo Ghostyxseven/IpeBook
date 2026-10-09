@@ -64,6 +64,8 @@ const symbols = {
   conservation: { ios: 'book.closed', android: 'menu_book', web: 'menu_book' },
   category: { ios: 'tag', android: 'sell', web: 'sell' },
   more: { ios: 'ellipsis', android: 'more_horiz', web: 'more_horiz' },
+  // Ajuda do iPhone (spec 040): dica "confira o livro antes de pagar".
+  eye: { ios: 'eye', android: 'visibility', web: 'visibility' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;
