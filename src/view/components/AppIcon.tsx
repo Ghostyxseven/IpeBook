@@ -54,6 +54,11 @@ const symbols = {
     android: 'check_box_outline_blank',
     web: 'check_box_outline_blank',
   },
+  // Detalhe do livro reformulado (spec 037, Figma 03.01 a 03.03).
+  share: { ios: 'square.and.arrow.up', android: 'share', web: 'share' },
+  conservation: { ios: 'book.closed', android: 'menu_book', web: 'menu_book' },
+  category: { ios: 'tag', android: 'sell', web: 'sell' },
+  more: { ios: 'ellipsis', android: 'more_horiz', web: 'more_horiz' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;

@@ -251,10 +251,26 @@ test('detalhe decide parágrafos, quem anunciou e notas pelas regras da modalida
     tradeTerms: 'Troco por um romance.',
     description: 'Capa gasta.',
   });
-  assert.deepEqual(trade.paragraphs, ['Troco por um romance.', 'Capa gasta.'], 'condições antes');
+  assert.deepEqual(trade.paragraphs, ['Capa gasta.'], 'condições saem no cartão, não aqui');
+  assert.deepEqual(trade.modalityNote, {
+    title: 'Aceita em troca',
+    text: 'Troco por um romance.',
+  });
 
   const withoutTerms = listingDetails({ ...listing, tradeTerms: 'ignorado na venda' });
   assert.deepEqual(withoutTerms.paragraphs, [], 'venda nunca mostra condições de troca');
+  assert.equal(withoutTerms.modalityNote, null, 'venda não tem cartão informativo');
+
+  const donation = listingDetails({ ...listing, modality: 'donation', priceCents: null });
+  assert.deepEqual(donation.modalityNote, {
+    title: 'Doação para quem vai ler',
+    text: 'Sem cobrança pelo exemplar. Retirada em local público, combinada pelo chat.',
+  });
+  assert.deepEqual(sale.facts, [
+    { label: 'Conservação', value: 'Bom estado' },
+    { label: 'Categoria', value: 'Literatura brasileira' },
+    { label: 'Retirada', value: 'Centro, Picos' },
+  ]);
 
   const anonymous = listingDetails({
     ...listing,

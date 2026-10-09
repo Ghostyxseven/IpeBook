@@ -179,8 +179,10 @@ export default function AppLayout() {
         <Stack.Screen
           name="livro/[id]"
           options={{
-            headerShown: true,
-            // Figma 03.01: voltar e "Detalhes" no topo, sobre a superfície.
+            // Figma 03.01 a 03.03: no iPhone, voltar/compartilhar/favoritar flutuam sobre a
+            // capa, sem barra — a própria tela desenha esses botões (spec 037). Android e Web
+            // continuam com "Detalhes" no topo, sobre a superfície.
+            headerShown: Platform.OS !== 'ios',
             title: 'Detalhes',
             headerStyle: { backgroundColor: colors.surface },
             headerTintColor: colors.text,
