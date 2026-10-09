@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -10,6 +10,7 @@ import {
 import { blockLabel } from '../../../model/services/securityFormat';
 import { useFavorites } from '../../../factories/favorites';
 import { useListingDetail } from '../../../factories/catalog';
+import { useStartConversation } from '../../../factories/bookRequest';
 import { AppIcon } from '../../components/AppIcon';
 import { FavoriteButton } from '../../components/catalog/FavoriteButton';
 import { ListingCover } from '../../components/catalog/ListingCover';
@@ -19,6 +20,7 @@ import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { Button } from '../../components/ui/Button';
+import { FormMessage } from '../../components/ui/FormMessage';
 import { useSessionContext } from '../../../viewmodel/useSession';
 import { badgeColors, colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
@@ -31,6 +33,11 @@ export function ListingDetailScreen() {
   const favorites = useFavorites();
   const listingId = String(id ?? '');
   const [blocking, setBlocking] = useState(false);
+  const conversation = useStartConversation(listingId);
+
+  useEffect(() => {
+    if (conversation.startedId) router.push(`/negociacoes/${conversation.startedId}`);
+  }, [conversation.startedId, router]);
 
   if (vm.status === 'loading') {
     return (
@@ -256,6 +263,18 @@ export function ListingDetailScreen() {
       </ScrollView>
       {primary && (
         <View style={styles.actionBar}>
+          {conversation.error && <FormMessage tone="error" message={conversation.error} />}
+          {/* Figma 03.01: Conversar some em cima da ação principal. Abre uma negociação
+              sem encontro, só para falar antes (ADR 0035). */}
+          {canNegotiate && (
+            <Button
+              label="Conversar"
+              variant="secondary"
+              onPress={conversation.start}
+              loading={conversation.starting}
+              accessibilityHint="Abre uma conversa com quem anunciou, sem propor encontro ainda."
+            />
+          )}
           <Button
             label={primary.label}
             onPress={primary.onPress}
@@ -345,6 +364,7 @@ const styles = StyleSheet.create({
   noteText: { ...typography.labelMedium, color: colors.onSurfaceVariant },
   // Barra fixa da ação principal (Figma: 80 de altura sobre o container baixo).
   actionBar: {
+    gap: spacing.xs,
     paddingHorizontal: metrics.pagePadding,
     paddingVertical: spacing.md,
     backgroundColor: colors.containerLow,

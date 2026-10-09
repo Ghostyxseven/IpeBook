@@ -185,6 +185,13 @@ test('formatação: status e dados do encontro', () => {
   assert.equal(meetingTimeLabel('09:30'), '09h30');
   assert.equal(meetingTimeLabel('16:00'), '16h00');
 
+  // ADR 0035: negociação só-conversa ainda não tem data/hora — formata sem quebrar.
+  assert.equal(meetingDateLabel(null), null);
+  assert.equal(meetingTimeLabel(null), '');
+  assert.equal(meetingDayLabel(null), null);
+  assert.equal(meetingHourLabel(null), '');
+  assert.equal(meetingWhen({ meetingDate: null, meetingTime: null }), '');
+
   const req = {
     id: 'r',
     listingId: 'l',
@@ -251,6 +258,68 @@ test('repositório em memória: createRequest sempre cria como pending', async (
     meetingTime: '14:00',
   });
   assert.equal(r.status, 'pending');
+});
+
+test('ADR 0035: "Conversar" cria sem encontro, e o encontro só entra depois por proposeMeeting', async () => {
+  const listingStatus = { 'l-1': 'disponivel' };
+  const repo = createMemoryBookRequestRepository([], { listingStatus });
+  const started = await repo.createRequest({
+    listingId: 'l-1',
+    publicLocation: null,
+    meetingDate: null,
+    meetingTime: null,
+  });
+  assert.equal(started.status, 'pending');
+  assert.equal(started.publicLocation, null);
+
+  // Sem encontro ainda, aceitar não devia fazer sentido nenhum — mesmo padrão do
+  // `transition_book_request` no banco, mas aqui o repositório em memória não impõe
+  // essa regra (fica só na ViewModel/tela); o que importa é propor funcionar.
+  const proposed = await repo.proposeMeeting(started.id, {
+    publicLocation: 'Praça da Matriz',
+    meetingDate: '2026-12-12',
+    meetingTime: '14:00',
+  });
+  assert.equal(proposed.publicLocation, 'Praça da Matriz');
+  assert.equal(proposed.meetingDate, '2026-12-12');
+  assert.equal(proposed.status, 'pending');
+
+  const accepted = await repo.transitionRequest(started.id, 'accepted');
+  assert.equal(accepted.status, 'accepted');
+});
+
+test('ADR 0035: proposeMeeting recusa quando já tem encontro ou não está pending', async () => {
+  const repo = createMemoryBookRequestRepository([]);
+  const withMeeting = await repo.createRequest({
+    listingId: 'l-1',
+    publicLocation: 'Praça',
+    meetingDate: '2026-12-12',
+    meetingTime: '10:00',
+  });
+  await assert.rejects(
+    repo.proposeMeeting(withMeeting.id, {
+      publicLocation: 'Outra praça',
+      meetingDate: '2026-12-13',
+      meetingTime: '11:00',
+    }),
+    { code: 'invalid_transition' },
+  );
+
+  const conversation = await repo.createRequest({
+    listingId: 'l-2',
+    publicLocation: null,
+    meetingDate: null,
+    meetingTime: null,
+  });
+  await repo.transitionRequest(conversation.id, 'canceled');
+  await assert.rejects(
+    repo.proposeMeeting(conversation.id, {
+      publicLocation: 'Praça',
+      meetingDate: '2026-12-12',
+      meetingTime: '10:00',
+    }),
+    { code: 'invalid_transition' },
+  );
 });
 
 test('repositório em memória: aceitar reserva o anúncio e recusa os outros pedidos', async () => {

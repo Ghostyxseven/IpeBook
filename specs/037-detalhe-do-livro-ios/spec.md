@@ -40,6 +40,9 @@ não um ajuste de layout.
 continuação natural, numa spec própria, quando houver decisão de banco para
 isso. Nada aqui bloqueia essa spec futura.
 
+**Atualização (09/10/2026):** feito na [spec 038](../038-conversar-antes-do-encontro/spec.md)
+(ADR 0035).
+
 ## Aceite
 
 - O Detalhe mostra Conservação, Categoria e Retirada como três linhas de um
