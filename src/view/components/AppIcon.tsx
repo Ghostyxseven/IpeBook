@@ -37,6 +37,8 @@ const symbols = {
   heart: { ios: 'heart', android: 'favorite_border', web: 'favorite_border' },
   heartFill: { ios: 'heart.fill', android: 'favorite', web: 'favorite' },
   info: { ios: 'info.circle', android: 'info', web: 'info' },
+  /** "O que aparece no perfil", em Privacidade e dados (Figma 07.07). */
+  visibility: { ios: 'eye', android: 'visibility', web: 'visibility' },
   chat: { ios: 'bubble.left.and.bubble.right', android: 'chat_bubble', web: 'chat_bubble' },
   tune: { ios: 'slider.horizontal.3', android: 'tune', web: 'tune' },
   back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },

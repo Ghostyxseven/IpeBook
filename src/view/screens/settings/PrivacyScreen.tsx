@@ -1,9 +1,21 @@
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  Share,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useDeleteAccount } from '../../../factories/account';
+import { useDeleteAccount, useExportMyData } from '../../../factories/account';
+import { useSessionContext } from '../../../viewmodel/useSession';
 import { AppIcon, type AppIconName } from '../../components/AppIcon';
+import { Button } from '../../components/ui/Button';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
+import { FormMessage } from '../../components/ui/FormMessage';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 const focusRing = Platform.select({
@@ -17,49 +29,73 @@ const focusRing = Platform.select({
 });
 
 /**
- * Privacidade e dados (Figma 07.07): o que fica visível, editar o bairro e excluir a conta.
- * Os textos descrevem só o que o app guarda hoje (sem telefone nem avaliações).
- * "Excluir conta" aqui é a linha que abre a confirmação (Figma 07.09), não uma tela própria.
+ * Privacidade e dados (Figma 07.07): o que fica visível, a localização e "Baixar meus dados",
+ * com a nota de LGPD; "Excluir conta" (Figma 07.09) é a confirmação, aberta pelo botão do
+ * rodapé. Mesmo layout nas três plataformas — o quadro é do iPhone, mas a tela nunca teve
+ * variante por plataforma e não há indicação de que Android/Web devam divergir aqui.
  *
- * Observação para quem revisar: o quadro 07.07 atual no Figma já está numa versão mais nova
- * (cartões "O que aparece no perfil" / "Localização" / "Baixar meus dados" com o aviso de LGPD,
- * e "Excluir conta" como botão cheio no rodapé). Esta tela ainda segue a versão anterior
- * (perfil público / dados de acesso privados / editar informações / excluir conta em linha).
- * Alinhar ao quadro novo é mudança de conteúdo e precisa de decisão de produto antes de mexer.
+ * "Baixar meus dados" (spec 039) monta um texto com o que o app já mostra sobre a pessoa
+ * (perfil, anúncios, negociações, avaliações) e abre o compartilhamento nativo — sem e-mail
+ * nem senha, como a tela já promete. Não é um pedido assíncrono por e-mail como o quadro mais
+ * novo do Figma sugere ("enviamos em até 48h"): prometer isso exigiria um envio de e-mail de
+ * verdade, que não existe no app hoje (ver spec.md da 039 para o raciocínio completo).
  */
 export function PrivacyScreen() {
   const router = useRouter();
   const { confirmar } = useLocalSearchParams<{ confirmar?: string }>();
   const vm = useDeleteAccount({ confirmOnOpen: confirmar === '1' });
+  const session = useSessionContext();
+  // Esta tela só existe dentro de (app), que já exige sessão — o reserva é só para o TypeScript.
+  const exportVm = useExportMyData(
+    session.user ?? { id: '', name: '', email: '', emailVerified: false },
+  );
+
+  const handleExport = async () => {
+    const text = await exportVm.prepare();
+    if (!text) return;
+    try {
+      await Share.share(
+        Platform.OS === 'ios'
+          ? { message: text }
+          : { message: text, title: 'Meus dados do IpêBook' },
+      );
+    } catch {
+      // Cancelar o compartilhamento (ex.: fechar a folha) não é erro; não há o que avisar.
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.content}>
-          <Text style={styles.title} accessibilityRole="header">
-            Você no controle.
+          <Text style={styles.sectionLabel}>Seus dados</Text>
+          <View style={styles.card}>
+            <InfoRow
+              icon="visibility"
+              title="O que aparece no perfil"
+              value="Nome e bairro"
+              onPress={() => router.push('/escolher-bairro')}
+            />
+            <View style={styles.separator} />
+            <InfoRow
+              icon="place"
+              title="Localização"
+              value="Ao usar o app"
+              onPress={() => router.push('/permitir-localizacao')}
+            />
+            <View style={styles.separator} />
+            <InfoRow
+              icon="document"
+              title="Baixar meus dados"
+              onPress={handleExport}
+              busy={exportVm.preparing}
+            />
+          </View>
+          <Text style={styles.description}>
+            O IpêBook segue a LGPD. Você pode pedir uma cópia ou a exclusão dos seus dados.
           </Text>
-          <Text style={styles.description}>Entenda quais informações ficam visíveis.</Text>
-          <Card
-            title="Seu perfil público"
-            text="Seu primeiro nome, seu bairro e seus anúncios ajudam a comunidade a conhecer você."
-          />
-          <Card
-            title="Dados de acesso privados"
-            text="Seu e-mail e sua senha não aparecem no perfil público nem nos anúncios."
-          />
-          <Row
-            icon="edit"
-            title="Editar informações"
-            body="Atualize seu bairro."
-            onPress={() => router.push('/escolher-bairro')}
-            chevron
-          />
-          <Row
-            icon="error"
-            title="Excluir conta"
-            body="Remova seus anúncios do catálogo."
-            onPress={vm.askToDelete}
-          />
+          <FormMessage tone="error" message={exportVm.error} />
+          <Button label="Excluir conta" variant="danger" onPress={vm.askToDelete} />
         </View>
       </ScrollView>
       <ConfirmDialog
@@ -77,46 +113,44 @@ export function PrivacyScreen() {
   );
 }
 
-function Card({ title, text }: { title: string; text: string }) {
-  return (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>{title}</Text>
-      <Text style={styles.cardText}>{text}</Text>
-    </View>
-  );
-}
-
-function Row({
+/** Linha do cartão agrupado: título, valor opcional à direita, seta ou indicador de espera. */
+function InfoRow({
   icon,
   title,
-  body,
+  value,
   onPress,
-  chevron = false,
+  busy = false,
 }: {
   icon: AppIconName;
   title: string;
-  body: string;
+  value?: string;
   onPress: () => void;
-  chevron?: boolean;
+  busy?: boolean;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
-      accessibilityHint={body}
+      accessibilityHint={value}
+      accessibilityState={{ busy }}
+      disabled={busy}
       onPress={onPress}
       style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
         styles.row,
-        pressed && styles.pressed,
+        pressed && !busy && styles.pressed,
         focused && focusRing,
       ]}
     >
-      <AppIcon name={icon} size={20} color={colors.onSurface} />
-      <View style={styles.rowCopy}>
-        <Text style={styles.rowTitle}>{title}</Text>
-        <Text style={styles.rowBody}>{body}</Text>
+      <View style={styles.rowIcon}>
+        <AppIcon name={icon} size={18} color={colors.action} />
       </View>
-      {chevron && <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />}
+      <Text style={styles.rowTitle}>{title}</Text>
+      {value && <Text style={styles.rowValue}>{value}</Text>}
+      {busy ? (
+        <ActivityIndicator color={colors.onSurfaceVariant} />
+      ) : (
+        <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+      )}
     </Pressable>
   );
 }
@@ -125,29 +159,36 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
   scroll: { flexGrow: 1, padding: metrics.pagePadding },
   content: { width: '100%', maxWidth: metrics.formMaxWidth, alignSelf: 'center', gap: spacing.md },
-  title: { ...typography.brandTitle, color: colors.onSurface },
-  description: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
-  // Cartão preenchido do Material 3 (Figma 07.07).
+  sectionLabel: { ...typography.labelLarge, color: colors.onSurfaceVariant },
+  // Cartão agrupado do Figma 07.07: linhas com separador, sem o espaço entre cartões de antes.
   card: {
-    gap: spacing.xxs,
-    padding: spacing.md,
     borderRadius: metrics.cardRadius,
     backgroundColor: colors.containerHigh,
+    overflow: 'hidden',
   },
-  cardTitle: { ...typography.titleMedium, color: colors.onSurface },
-  cardText: { ...typography.bodyMedium, color: colors.onSurface },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.outlineVariant,
+    marginHorizontal: spacing.md,
+  },
   row: {
     minHeight: metrics.touchTarget + spacing.xs,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
-    marginHorizontal: -spacing.md,
-    borderRadius: radius.small,
   },
   pressed: { backgroundColor: colors.pressed },
-  rowCopy: { flex: 1 },
-  rowTitle: { ...typography.bodyLarge, color: colors.onSurface },
-  rowBody: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
+  rowIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: radius.small,
+    backgroundColor: colors.selected,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rowTitle: { ...typography.bodyLarge, color: colors.onSurface, flex: 1 },
+  rowValue: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
+  description: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
 });
