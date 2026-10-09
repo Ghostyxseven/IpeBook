@@ -64,3 +64,13 @@ Configurações.
 A Minha estante continua como estava: já tinha sido conferida contra 05.01–05.06
 em 03/10/2026, e o "Concluídos" dela é a "Estante após venda, troca e doação" que
 a issue #53 pedia.
+
+## Fluxo real em Android físico — 09/10/2026
+
+Samsung Galaxy A16 (SM-A165M), Android 16, via `adb` e Expo Go, conta real "Micael".
+
+- Perfil: avatar "MC", "Micael", "Piripiri, PI · desde 2026", 1 anúncio, 1 troca, "— avaliação"; destinos Minhas publicações (1 concluída), Avaliações recebidas, Histórico, Notificações, Segurança e verificação (e-mail confirmado), Ajuda e Sair, exatamente como o quadro 07.01 pede.
+- Estante: aba Anúncios com estado vazio correto ("Nenhum anúncio ativo"), botão "Anunciar um livro" e atalho para Rascunhos; abas Propostas e Concluídos presentes.
+- Nenhum erro de JS no `logcat`.
+
+Falta: iPhone, e testar os fluxos de toque em cada destino (Minhas publicações, Avaliações, Histórico, Notificações, Segurança, Ajuda).
