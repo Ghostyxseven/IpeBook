@@ -14,13 +14,13 @@
 - [x] Telas: Início com feed (substitui a Início provisória e mantém Sair), Explorar com filtros e Detalhe do livro, com todos os estados.
 - [x] Validar tipos, testes e bundles nativos; registrar evidências e pendências em `verify.md`.
 - [x] Conferir Início e Explorar no Waydroid com o Supabase real (ver `verify.md`).
-- [ ] Conferir Book Card, Detalhe e paginação com anúncios de outra conta.
+- [ ] Conferir Book Card, Detalhe e paginação com anúncios de outra conta. Card e Detalhe conferidos em Android real (09/10/2026, ver `verify.md`); falta paginação com mais de 2 itens.
 - [ ] Testar ponta a ponta com anúncios reais num projeto Supabase de desenvolvimento.
 - [x] Comparar as telas com os quadros do Figma (02, 03, 04, 12, 13, 14 e 26) e refazer o visual (ADR 0009, tokens `color.cover.*`).
-- [ ] Conferir Book Card, grade do Início e Detalhe com anúncios reais contra os quadros 02, 03 e 04.
+- [ ] Conferir Book Card, grade do Início e Detalhe com anúncios reais contra os quadros 02, 03 e 04. Grade do Início e Detalhe conferidos em Android real com dados reais (09/10/2026); falta comparação lado a lado com os quadros do Figma.
 - [x] Revisão do MVVM (01/10/2026): regras do detalhe, linha de apoio dos cards e saudação movidas para o Model (`listingDetails`, `listingMeta`, `greeting`); alternância dos chips do Início virou ação da ViewModel (`toggleModality`, `showAll`).
-- [ ] Conferir no aparelho a saudação e a alternância dos chips depois da revisão do MVVM (sessão caiu no Waydroid; precisa de login).
+- [x] Conferir no aparelho a saudação e a alternância dos chips depois da revisão do MVVM. Feito em Android real (Galaxy A16) em 09/10/2026 com Supabase da equipe (ver `verify.md`).
 - [x] Refazer Início, Explorar e Detalhe pelos quadros finais do Figma (02.01, 02.02 e 03.01, iOS e Android): título da marca em serifa, carrossel "Recém-chegados", card da lista, capa ilustrativa com motivos e barra de ação fixa no Detalhe (ADR 0019).
 - [x] Aba Conversas na navegação principal, com as negociações.
-- [ ] Conferir no aparelho (Android e iOS) o Início, o Explorar e o Detalhe novos, incluindo a fonte da marca carregada.
+- [ ] Conferir no aparelho (Android e iOS) o Início, o Explorar e o Detalhe novos, incluindo a fonte da marca carregada. Android conferido em 09/10/2026 (fonte da marca ok); falta iPhone.
 - [x] Explorar com chips de categoria (02.02), botão de filtros e a tela Filtrar livros (02.03: modalidade, categoria e "Somente bom estado", com "Mostrar N livros"); com filtro, a linha de chips mostra as modalidades e os filtros removíveis (02.04).

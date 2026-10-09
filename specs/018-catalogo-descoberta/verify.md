@@ -55,10 +55,22 @@ Conta de teste da própria pessoa, migração `20260930120000_catalogo_anuncios.
 
 Checklist da skill `skill_mvvm_simplificado` aplicado ao catálogo: telas e componentes sem regra de domínio (sem `split`, `filter(Boolean).join` nem decisões por modalidade). Novas funções do Model testadas em `catalog-model.test.mjs`; `details`, `greeting`, `toggleModality` e `showAll` testados em `catalog-viewmodel.test.mjs`. `npm run lint`, `format:check`, `typecheck`, `npm test` (79), `build:web` e bundle Android: ok. Conferência no aparelho pendente: a sessão caiu no Waydroid após reiniciar e o login precisa ser feito pela pessoa.
 
+## Fluxo real em aparelho Android físico (09/10/2026)
+
+Samsung Galaxy A16 (SM-A165M), Android 16, via `adb` e Expo Go, conta real "Micael" (Piripiri, PI), Supabase da equipe.
+
+- Início: saudação "Encontre sua próxima história.", carrossel "Recém-chegados" com 2 anúncios reais de outras contas (Carlos Gomes, Maria Clara), filtros Todos/Venda/Troca/Doação.
+- Explorar: saudação "O que vamos ler hoje?", chips de categoria (Todos, Literatura brasileira, Literatura es...), busca, mesma lista de anúncios reais. Capa demorou ~1,5s para carregar no primeiro acesso (comportamento normal do `expo-image`, confirmado numa segunda captura); não é bug.
+- Detalhe (`Como eu vim parar aqui?`, Carlos Gomes): capa, título, autor, preço (R$ 2,00), modalidade (Venda), condição/categoria, link para o perfil do vendedor, "Denunciar anúncio", "Bloquear Carlos", data de publicação e botão "Combinar encontro" — todos presentes e funcionais.
+- Nenhum erro de JS no `logcat` durante a navegação (Início, Explorar, Detalhe, Estante, Conversas, Perfil).
+- Fonte da marca (serifa) carregada corretamente no título do Início e do Explorar.
+
+Isso cobre, com uma conta só e um aparelho só: card/detalhe com anúncios de outra conta, saudação e alternância dos chips pós-MVVM, e a fonte da marca no Início/Explorar. Ainda falta duas contas (para ver o próprio anúncio do outro lado), iPhone, paginação com mais de 2 itens, texto ampliado e TalkBack.
+
 ## Pendências
 
-- **Book Card e Detalhe com dados reais:** ainda não há anúncio de outra conta no projeto. Falta conferir card, capa, badges, preço, detalhe, livro reservado e paginação.
-- **Estados de erro e offline no aparelho:** cobertos só pelos testes; desligar a rede do Waydroid derruba o `adb`.
+- **Paginação com mais anúncios:** só havia 2 anúncios no catálogo; falta testar rolagem/carregamento com mais itens.
+- **Estados de erro e offline no aparelho:** cobertos só pelos testes.
 - **Texto ampliado e leitor de tela (TalkBack):** não conferidos.
 - **ADR 0008:** a migração já foi aplicada no projeto da equipe, mas o ADR continua proposto até a concordância do Eric.
 - **iOS:** os SF Symbols e o visual não foram conferidos num iPhone; só o bundle iOS foi gerado.
