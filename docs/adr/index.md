@@ -33,3 +33,4 @@
 - [0031 - Contraproposta de troca](0031-contraproposta-de-troca.md) (aceito, implementado; falta aplicar a migração)
 - [0032 - Favoritos](0032-favoritos.md) (aceito, implementado; falta aplicar a migração e conferir no aparelho)
 - [0033 - Conclusão do cadastro Google na mesma identidade](0033-conclusao-do-cadastro-google.md) (aceito; validação em andamento)
+- [0034 - Painel de moderação de denúncias](0034-painel-moderacao-denuncias.md) (aceito, implementado)
