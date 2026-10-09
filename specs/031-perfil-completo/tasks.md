@@ -15,4 +15,4 @@
 - [x] Testes: média sem nota, plural, iniciais, perfil público, histórico vazio,
       erro com "Tentar de novo".
 - [x] `npm run verify` e `npx expo export` nas duas plataformas.
-- [ ] Aplicar a migração no Supabase e conferir o fluxo real; registrar no `verify.md`.
+- [ ] Aplicar a migração no Supabase e conferir o fluxo real; registrar no `verify.md`. Migração aplicada e confirmada em 09/10/2026 (tabela `ratings`, RLS e funções `public_profile`/`my_history` presentes no projeto da equipe); falta conferir o fluxo real no app (avaliar alguém e ver o histórico).
