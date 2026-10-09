@@ -56,5 +56,7 @@ export interface AuthRepository {
   changePassword(currentPassword: string, newPassword: string): Promise<void>;
   /** Desiste de uma recuperação com código confirmado e senha não gravada. */
   cancelPasswordRecovery(): Promise<void>;
+  /** Troca o nome de quem está na conta (Figma 07.02, Editar perfil). Devolve o usuário atualizado. */
+  updateName(name: string): Promise<User>;
   signOut(): Promise<void>;
 }
