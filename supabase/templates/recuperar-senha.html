@@ -1,15 +1,126 @@
 <!-- Modelo "Reset password" (Authentication → Email Templates). Assunto: Código para criar uma nova senha no IpêBook: {{ .Token }} -->
-<h2>Crie uma nova senha no IpêBook</h2>
-<p>
-  Recebemos um pedido para recuperar a sua senha. Digite o código abaixo no aplicativo, na tela
-  <strong>Crie uma nova senha</strong>.
-</p>
-<p style="font-size: 32px; font-weight: 700; letter-spacing: 6px">{{ .Token }}</p>
-<p>
-  O código vale por tempo limitado. Se ele expirar, toque em <strong>Reenviar código</strong> no
-  aplicativo.
-</p>
-<p>
-  Não pediu a recuperação? Ignore este e-mail: sua senha continua a mesma. Ninguém do IpêBook vai
-  pedir este código por mensagem.
-</p>
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crie uma nova senha no IpêBook</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #f6f1e8;
+      font-family: Roboto, Helvetica, Arial, sans-serif;
+    "
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background-color: #f6f1e8; padding: 32px 16px"
+    >
+      <tr>
+        <td align="center">
+          <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              max-width: 480px;
+              background-color: #fcfaf5;
+              border: 1px solid #e7e0d4;
+              border-radius: 16px;
+              overflow: hidden;
+            "
+          >
+            <tr>
+              <td style="padding: 28px 32px 0 32px">
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 14px;
+                    font-weight: 700;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                    color: #2c5e45;
+                  "
+                >
+                  IpêBook
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px 32px 0 32px">
+                <h1
+                  style="
+                    margin: 0 0 12px 0;
+                    font-size: 24px;
+                    line-height: 32px;
+                    font-weight: 700;
+                    color: #58331f;
+                  "
+                >
+                  Crie uma nova senha
+                </h1>
+                <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 24px; color: #3c302a">
+                  Recebemos um pedido para recuperar a sua senha. Digite o código abaixo no
+                  aplicativo, na tela <strong>Crie uma nova senha</strong>.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 0 32px">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td
+                      align="center"
+                      style="
+                        background-color: #e7f0ea;
+                        border: 1px solid #2c5e45;
+                        border-radius: 12px;
+                        padding: 16px;
+                      "
+                    >
+                      <span
+                        style="
+                          font-size: 32px;
+                          font-weight: 700;
+                          letter-spacing: 6px;
+                          color: #2f503d;
+                        "
+                        >{{ .Token }}</span
+                      >
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 24px 32px 0 32px">
+                <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 20px; color: #645b55">
+                  O código vale por tempo limitado. Se ele expirar, toque em
+                  <strong>Reenviar código</strong> no aplicativo.
+                </p>
+                <p style="margin: 0; font-size: 14px; line-height: 20px; color: #645b55">
+                  Não pediu a recuperação? Ignore este e-mail: sua senha continua a mesma. Ninguém
+                  do IpêBook vai pedir este código por mensagem.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 28px 32px 28px 32px">
+                <hr style="border: none; border-top: 1px solid #e7e0d4; margin: 0 0 16px 0" />
+                <p style="margin: 0; font-size: 12px; line-height: 16px; color: #8f8478">
+                  IpêBook · encontre, troque e doe livros perto de você.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
