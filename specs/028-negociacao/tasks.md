@@ -13,7 +13,7 @@
 - [x] `transitionRequest` no lugar de `updateRequestStatus`; remover `updateListingStatus` do catálogo.
 - [x] Testes do repositório em memória e do repositório Supabase com cliente falso.
 - [x] Migrações aplicadas num Postgres local com os esquemas `auth` e `storage` simulados, conferindo: pedido duplicado recusado, quem pediu não aceita o próprio pedido, atualização direta sem efeito, aceitar reserva e recusa os outros, cancelar devolve o livro, concluir mantém o anúncio visível para quem pediu, avisos criados.
-- [ ] Aplicar as migrações `book_requests`, segurança e transições no Supabase da equipe.
+- [x] Aplicar as migrações `book_requests`, segurança e transições no Supabase da equipe. Confirmadas aplicadas em 09/10/2026 (`book_requests`, `reports`, `user_blocks`, `transition_book_request`, `counter_offer`, `answer_counter_offer`, `reschedule_book_request` presentes no projeto da equipe).
 - [ ] Conferir no aparelho (Android e iPhone) com duas contas e registrar no `verify.md`.
 
 ## Etapa 3 — negociação completa (#54)
