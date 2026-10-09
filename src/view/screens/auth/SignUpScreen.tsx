@@ -23,6 +23,7 @@ export function SignUpScreen() {
       brand
       titleSize="headline"
       title="Crie sua conta"
+      highlight="e faça parte."
       description="Anuncie, troque, venda ou doe livros perto de você."
       footer={
         <Button
