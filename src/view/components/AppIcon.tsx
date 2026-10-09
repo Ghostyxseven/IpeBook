@@ -56,6 +56,9 @@ const symbols = {
     android: 'check_box_outline_blank',
     web: 'check_box_outline_blank',
   },
+  // Perfil e Configurações reformulados (Figma 07.01, 07.05, 07.06).
+  star: { ios: 'star', android: 'star', web: 'star' },
+  flag: { ios: 'flag', android: 'flag', web: 'flag' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;
