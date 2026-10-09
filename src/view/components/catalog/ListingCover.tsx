@@ -2,16 +2,28 @@ import { Image } from 'expo-image';
 import { StyleSheet, Text, View } from 'react-native';
 import type { Listing } from '../../../model/entities/Listing';
 import { coverIndex } from '../../../model/services/catalogFormat';
-import detalheIpe from '../../../../assets/catalog/detalhe-amarelo-ipe.svg';
-import ilustracaoDetalhe from '../../../../assets/catalog/ilustracao-editorial-detalhe.svg';
-import ilustracaoLista from '../../../../assets/catalog/ilustracao-editorial-lista.svg';
-import { coverColors, radius, spacing, typography } from '../../theme/nativeTheme';
+import motivoEstrelas from '../../../../assets/catalog/capa-motivo-estrelas.svg';
+import motivoIpe from '../../../../assets/catalog/capa-motivo-ipe.svg';
+import motivoOndas from '../../../../assets/catalog/capa-motivo-ondas.svg';
+import { BRAND_FONT, coverColors } from '../../theme/nativeTheme';
 
-type Variant = 'row' | 'tile' | 'detail';
+type Variant = 'shelf' | 'row' | 'tile' | 'detail' | 'publish';
+
+/** Largura da capa em cada uso; a altura segue a proporção 96 × 136 do Figma. */
+const widths: Record<Variant, number> = {
+  shelf: 56,
+  row: 68,
+  tile: 92,
+  detail: 120,
+  publish: 176,
+};
+
+/** Motivo de cada cor de capa, na mesma ordem de `coverColors.backgrounds` (Figma, "Capa ilustrativa"). */
+const motifs = [motivoEstrelas, motivoOndas, motivoIpe];
 
 /**
- * Capa do anúncio nas três variantes do Figma (03 lista, 02 Início e 04 detalhe).
- * Sem foto, mostra a capa ilustrativa: cor estável pelo id, ilustração editorial, autor e título.
+ * Capa do anúncio no formato de livro do Figma ("Capa ilustrativa", 39:1546): lombada, moldura,
+ * autor, motivo e título em serifa. Com foto, a foto ocupa o mesmo formato.
  * É decorativa: título e autor já são lidos pelo card ou pela tela.
  */
 export function ListingCover({
@@ -21,70 +33,114 @@ export function ListingCover({
   listing: Pick<Listing, 'id' | 'title' | 'author' | 'coverUrl'>;
   variant: Variant;
 }) {
-  const frame = styles[variant];
+  const width = widths[variant];
+  // Todas as medidas do Figma foram desenhadas para 96 de largura.
+  const s = width / 96;
+  const frame = {
+    width,
+    height: 136 * s,
+    borderTopLeftRadius: 2.4 * s,
+    borderBottomLeftRadius: 2.4 * s,
+    borderTopRightRadius: 6.4 * s,
+    borderBottomRightRadius: 6.4 * s,
+  };
+
   if (listing.coverUrl) {
     return (
-      <Image
-        source={{ uri: listing.coverUrl }}
-        style={frame}
-        contentFit="cover"
-        accessible={false}
-        transition={0}
-      />
+      <View style={[styles.book, frame]} accessible={false}>
+        <Image
+          source={{ uri: listing.coverUrl }}
+          style={StyleSheet.absoluteFill}
+          contentFit="cover"
+          accessible={false}
+          transition={0}
+        />
+        <View style={[styles.spine, { width: 8 * s }]} />
+      </View>
     );
   }
-  const background =
-    coverColors.backgrounds[coverIndex(listing.id, coverColors.backgrounds.length)];
+
+  const index = coverIndex(listing.id, coverColors.backgrounds.length);
   return (
     <View
-      style={[
-        frame,
-        styles.illustrated,
-        variant === 'tile' && styles.illustratedTile,
-        { backgroundColor: background },
-      ]}
+      style={[styles.book, frame, { backgroundColor: coverColors.backgrounds[index] }]}
       accessible={false}
       importantForAccessibility="no-hide-descendants"
     >
-      {variant === 'row' ? (
-        <Image source={ilustracaoLista} style={styles.artRow} contentFit="contain" />
-      ) : (
-        <>
-          <Text style={styles.author} numberOfLines={1}>
-            {listing.author.toLocaleUpperCase('pt-BR')}
-          </Text>
-          {variant === 'detail' ? (
-            <Image source={ilustracaoDetalhe} style={styles.artDetail} contentFit="contain" />
-          ) : (
-            <Image source={detalheIpe} style={styles.dot} contentFit="contain" />
-          )}
-          <Text
-            style={variant === 'detail' ? styles.titleDetail : styles.titleTile}
-            numberOfLines={2}
-          >
-            {listing.title}
-          </Text>
-        </>
-      )}
+      <View style={[styles.spine, { width: 8 * s }]} />
+      <View
+        style={[
+          styles.frame,
+          {
+            left: 12.8 * s,
+            top: 5.6 * s,
+            width: 78.4 * s,
+            height: 124.8 * s,
+            borderWidth: 0.8 * s,
+            borderRadius: 4 * s,
+          },
+        ]}
+      />
+      <Text
+        numberOfLines={1}
+        style={[
+          styles.author,
+          {
+            left: 17.6 * s,
+            right: 8 * s,
+            top: 11.2 * s,
+            fontSize: 7.2 * s,
+            lineHeight: 12.8 * s,
+            letterSpacing: 0.576 * s,
+          },
+        ]}
+      >
+        {listing.author.toLocaleUpperCase('pt-BR')}
+      </Text>
+      <Image
+        source={motifs[index % motifs.length]}
+        style={{ position: 'absolute', left: 0, top: 35.2 * s, width, height: 56 * s }}
+        contentFit="contain"
+        accessible={false}
+      />
+      <Text
+        numberOfLines={2}
+        style={[
+          styles.title,
+          {
+            left: 17.6 * s,
+            right: 8 * s,
+            bottom: 8 * s,
+            fontSize: 12 * s,
+            lineHeight: 14.4 * s,
+          },
+        ]}
+      >
+        {listing.title}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // Figma: 80 × 112 com raio 12; o raio mais próximo nos tokens é `radius.medium`.
-  row: { width: 80, height: 112, borderRadius: radius.medium, overflow: 'hidden' },
-  tile: { width: '100%', height: 102, overflow: 'hidden' },
-  detail: { width: 176, height: 204, borderRadius: radius.small, overflow: 'hidden' },
-  illustrated: { padding: spacing.md, gap: spacing.xxs, justifyContent: 'space-between' },
-  illustratedTile: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    justifyContent: 'flex-start',
+  book: {
+    overflow: 'hidden',
+    // Sombra da capa no Figma: 0 3.2 8 rgba(0,0,0,0.18).
+    shadowColor: '#000000',
+    shadowOpacity: 0.18,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
-  artRow: { width: 48, height: 33.6 },
-  artDetail: { width: 100, height: 70 },
-  dot: { width: 20, height: 20 },
-  author: { ...typography.labelMedium, color: coverColors.text },
-  titleTile: { ...typography.labelMedium, color: coverColors.text },
-  titleDetail: { ...typography.bodyLarge, fontWeight: '500', color: coverColors.text },
+  // Lombada: faixa escura à esquerda que dá volume ao livro.
+  spine: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.22)',
+  },
+  frame: { position: 'absolute', borderColor: coverColors.text },
+  author: { position: 'absolute', fontWeight: '500', color: coverColors.text, opacity: 0.85 },
+  title: { position: 'absolute', fontFamily: BRAND_FONT, color: coverColors.text },
 });

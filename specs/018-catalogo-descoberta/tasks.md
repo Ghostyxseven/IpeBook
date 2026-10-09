@@ -1,6 +1,6 @@
 # Tarefas
 
-- [ ] Combinar o ADR 0008 (tabela `listings`, view `catalog_listings`, bucket de capas e RLS) com o Eric e marcar como aceito.
+- [x] Combinar o ADR 0008 (tabela `listings`, view `catalog_listings`, bucket de capas e RLS) com o Eric e marcar como aceito.
 - [x] Criar a migração SQL em `supabase/migrations/` e documentar como aplicá-la (`supabase/README.md`). SQL não validado localmente (sem Postgres nesta máquina).
 - [x] Aplicar a migração no projeto Supabase da equipe (aplicada pelo Micael em 30/09/2026; conferida pela API).
 - [x] Model: entidades, formatação, filtros, categorias e mensagens.
@@ -20,3 +20,7 @@
 - [ ] Conferir Book Card, grade do Início e Detalhe com anúncios reais contra os quadros 02, 03 e 04.
 - [x] Revisão do MVVM (01/10/2026): regras do detalhe, linha de apoio dos cards e saudação movidas para o Model (`listingDetails`, `listingMeta`, `greeting`); alternância dos chips do Início virou ação da ViewModel (`toggleModality`, `showAll`).
 - [ ] Conferir no aparelho a saudação e a alternância dos chips depois da revisão do MVVM (sessão caiu no Waydroid; precisa de login).
+- [x] Refazer Início, Explorar e Detalhe pelos quadros finais do Figma (02.01, 02.02 e 03.01, iOS e Android): título da marca em serifa, carrossel "Recém-chegados", card da lista, capa ilustrativa com motivos e barra de ação fixa no Detalhe (ADR 0019).
+- [x] Aba Conversas na navegação principal, com as negociações.
+- [ ] Conferir no aparelho (Android e iOS) o Início, o Explorar e o Detalhe novos, incluindo a fonte da marca carregada.
+- [x] Explorar com chips de categoria (02.02), botão de filtros e a tela Filtrar livros (02.03: modalidade, categoria e "Somente bom estado", com "Mostrar N livros"); com filtro, a linha de chips mostra as modalidades e os filtros removíveis (02.04).

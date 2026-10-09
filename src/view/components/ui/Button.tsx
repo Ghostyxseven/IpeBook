@@ -6,7 +6,8 @@ type Variant = 'primary' | 'secondary' | 'text' | 'danger';
 /**
  * Android e Web seguem o componente "Botão" do Figma (Material 3, ADR 0013): pílula,
  * rótulo `m3-label-lg` e variantes Preenchido, Contornado, Texto e Perigo.
- * O iOS mantém a forma atual até a adequação ao contrato nativo (issue #10).
+ * No iOS segue "Button - Content Area" do Figma (issue #10): cápsula de 50 px, rótulo
+ * `ios-body` sem negrito; Contornado vira o botão sem borda do sistema.
  */
 const material = Platform.OS !== 'ios';
 
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
     // está registrada em docs/design-system/divergencias.md.
     minHeight: Math.max(metrics.controlHeight, metrics.touchTarget),
     minWidth: metrics.touchTarget,
-    borderRadius: material ? radius.full : metrics.fieldRadius,
+    borderRadius: radius.full,
     paddingHorizontal: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
@@ -73,11 +74,13 @@ const styles = StyleSheet.create({
   },
   primary: { backgroundColor: colors.action },
   primaryPressed: { backgroundColor: colors.actionDeep },
-  secondary: {
-    borderWidth: metrics.borderThin,
-    borderColor: material ? colors.border : colors.action,
-    backgroundColor: material ? 'transparent' : colors.surface,
-  },
+  secondary: material
+    ? {
+        borderWidth: metrics.borderThin,
+        borderColor: colors.border,
+        backgroundColor: 'transparent',
+      }
+    : { backgroundColor: 'transparent' },
   textual: {
     backgroundColor: 'transparent',
     paddingHorizontal: spacing.sm,
@@ -94,5 +97,5 @@ const styles = StyleSheet.create({
     },
     default: {},
   }),
-  label: { ...(material ? typography.labelLarge : typography.action), textAlign: 'center' },
+  label: { ...(material ? typography.labelLarge : typography.iosBody), textAlign: 'center' },
 });

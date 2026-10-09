@@ -1,0 +1,15 @@
+<!-- Modelo "Reset password" (Authentication → Email Templates). Assunto: Código para criar uma nova senha no IpêBook: {{ .Token }} -->
+<h2>Crie uma nova senha no IpêBook</h2>
+<p>
+  Recebemos um pedido para recuperar a sua senha. Digite o código abaixo no aplicativo, na tela
+  <strong>Crie uma nova senha</strong>.
+</p>
+<p style="font-size: 32px; font-weight: 700; letter-spacing: 6px">{{ .Token }}</p>
+<p>
+  O código vale por tempo limitado. Se ele expirar, toque em <strong>Reenviar código</strong> no
+  aplicativo.
+</p>
+<p>
+  Não pediu a recuperação? Ignore este e-mail: sua senha continua a mesma. Ninguém do IpêBook vai
+  pedir este código por mensagem.
+</p>

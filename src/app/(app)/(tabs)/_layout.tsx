@@ -2,10 +2,7 @@ import { Tabs } from 'expo-router/js-tabs';
 import { NavigationBar } from '../../../view/components/NavigationBar';
 import { colors } from '../../../view/theme/nativeTheme';
 
-/**
- * Abas da área autenticada com a barra de navegação do Material 3 (Figma).
- * As abas Estante e Perfil entram com as features de Anúncios e Perfil.
- */
+/** Abas da área autenticada com a barra de navegação do Material 3 (Figma). */
 export default function TabsLayout() {
   return (
     <Tabs
@@ -17,6 +14,9 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="inicio" options={{ title: 'Início' }} />
       <Tabs.Screen name="explorar" options={{ title: 'Explorar' }} />
+      <Tabs.Screen name="estante" options={{ title: 'Estante' }} />
+      <Tabs.Screen name="conversas" options={{ title: 'Conversas' }} />
+      <Tabs.Screen name="perfil" options={{ title: 'Perfil' }} />
     </Tabs>
   );
 }

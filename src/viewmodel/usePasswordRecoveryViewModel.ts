@@ -12,6 +12,8 @@ import {
   validatePasswordConfirmation,
   type FieldErrors,
 } from '../model/services/authValidation.ts';
+import { afterSignIn } from './afterSignIn.ts';
+import { afterSignOut } from './afterSignOut.ts';
 import { useAsyncAction } from './useAsyncAction.ts';
 import { useResendCooldown } from './useResendCooldown.ts';
 
@@ -28,6 +30,8 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
   });
   const [errors, setErrors] = useState<FieldErrors<Field>>({});
   const [notice, setNotice] = useState<string | undefined>();
+  // Vira true a cada reenvio bem-sucedido (Figma 01.15): a tela usa para mostrar o aviso.
+  const [resent, setResent] = useState(false);
   const [submitting, run] = useAsyncAction();
   const [resending, runResend] = useAsyncAction();
   const cooldown = useResendCooldown(0);
@@ -35,10 +39,11 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
 
   // Sair da tela com o código confirmado e a senha não gravada encerra a sessão de
   // recuperação, para ninguém ficar autenticado sem ter trocado a senha (issue #8).
-  useEffect(
-    () => () => void repository.cancelPasswordRecovery().catch(() => undefined),
-    [repository],
-  );
+  useEffect(() => {
+    // Veio de Alterar senha: a marca já cumpriu o papel de abrir esta tela.
+    afterSignOut.clear();
+    return () => void repository.cancelPasswordRecovery().catch(() => undefined);
+  }, [repository]);
 
   // A resposta é a mesma com ou sem conta, para não revelar quem está cadastrado.
   const sentNotice = () =>
@@ -49,6 +54,7 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
     values,
     errors,
     notice,
+    resent,
     submitting,
     resending,
     resendSeconds: cooldown.seconds,
@@ -73,10 +79,12 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
     resend: () =>
       runResend(async () => {
         if (cooldown.seconds > 0) return;
+        setResent(false);
         try {
           await repository.requestPasswordReset(address);
           setNotice(sentNotice());
           cooldown.restart();
+          setResent(true);
         } catch (failure) {
           setErrors({ form: authErrorMessage(toAuthError(failure).code) });
         }
@@ -85,6 +93,7 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
       void repository.cancelPasswordRecovery().catch(() => undefined);
       setStep('request');
       setNotice(undefined);
+      setResent(false);
       setErrors({});
       setValues((current) => ({ ...current, code: '' }));
     },
@@ -98,9 +107,11 @@ export function usePasswordRecoveryViewModel(repository: AuthRepository, initial
         };
         setErrors(next);
         if (hasErrors(next)) return;
+        afterSignIn.mark('passwordUpdated');
         try {
           await repository.resetPassword(address, normalizeCode(values.code), values.password);
         } catch (failure) {
+          afterSignIn.clear();
           const { code } = toAuthError(failure);
           const message = authErrorMessage(code);
           if (code === 'invalid_code') setErrors({ code: message });

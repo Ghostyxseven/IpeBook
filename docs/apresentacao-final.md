@@ -1,6 +1,6 @@
 # Roteiro da apresentação final — IpêBook
 
-> **Rascunho** (issue #50). Data do grupo (10, 15 ou 17/12/2026) **a confirmar com o professor**. Os tempos abaixo são sugestões para ajustar ao limite definido. O que ainda não existe aparece como **depende de**; não apresentar como pronto antes de estar. Atualizado em 01/10/2026.
+> **Rascunho** (issue #50). Data do grupo (10, 15 ou 17/12/2026) **a confirmar com o professor**. Os tempos abaixo são sugestões para ajustar ao limite definido. O que ainda não existe aparece como **depende de**; não apresentar como pronto antes de estar. Atualizado em 02/10/2026.
 
 ## Objetivo
 
@@ -20,10 +20,10 @@ Mostrar um aplicativo que funciona de ponta a ponta, instalado no aparelho, com 
 
 Executar no celular, com o app instalado pela loja (teste fechado, issue #46). Usar contas e anúncios de demonstração identificados como tais.
 
-1. **Abertura e onboarding** (Maria Clara): primeira abertura, três páginas, Pular.
+1. **Abertura e onboarding** (Maria Clara): primeira abertura, tela de boas-vindas, Começar e Já tenho conta.
 2. **Criar conta e entrar** (Maria Clara): cadastro, código por e-mail, entrar, recuperar senha. Mostrar uma mensagem de erro em português.
 3. **Descobrir um livro** (Micael): Início com saudação e chips de modalidade, Explorar com busca, filtros e rolagem, Detalhe do livro. Mostrar vazio, erro e sem conexão.
-4. **Publicar um anúncio** (Eric) — _depende da issue #36_: criar, editar e arquivar.
+4. **Publicar um anúncio** (Eric): criar, editar e arquivar (specs 025 e 026, implementadas; falta validar em aparelho).
 5. **Pedir e concluir** (Antonio) — _depende da issue #38_: pedir o livro com outra conta, aceitar e concluir.
 6. **Segurança** (Antonio) — _depende da issue #40_: denunciar e bloquear.
 

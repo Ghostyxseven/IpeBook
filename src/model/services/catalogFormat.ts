@@ -16,6 +16,8 @@ export const conditionLabels: Record<ListingCondition, string> = {
 export const statusLabels: Record<ListingStatus, string> = {
   disponivel: 'Disponível',
   reservado: 'Reservado',
+  concluido: 'Concluído',
+  arquivado: 'Arquivado',
 };
 
 /** Formata centavos como "R$ 1.234,50" sem depender do suporte a Intl do motor JS. */
@@ -92,18 +94,62 @@ export function tileValue(listing: Pick<Listing, 'modality' | 'priceCents'>) {
   return listing.modality === 'trade' ? 'Para trocar' : priceLabel(listing);
 }
 
-/** Destaque do detalhe (Figma 04, 13 e 14): valor grande e rótulo da modalidade. */
+/** Sobretítulo do card de livro (Figma 02.01): "Venda · R$ 25,00", "Troca" ou "Doação". */
+/** Valor ao lado da etiqueta no card da lista (Figma 02.02): preço, condição de troca ou "Gratuito". */
+export function cardValue(listing: Pick<Listing, 'modality' | 'priceCents' | 'tradeTerms'>) {
+  if (listing.modality === 'trade') return listing.tradeTerms?.trim() || 'Para trocar';
+  return priceLabel(listing);
+}
+
+export function cardOverline(listing: Pick<Listing, 'modality' | 'priceCents'>) {
+  const price = listing.modality === 'sale' ? priceLabel(listing) : null;
+  return [modalityLabels[listing.modality], price].filter(Boolean).join(' · ');
+}
+
+/**
+ * Destaque do detalhe (Figma 03.01 a 03.03): valor grande e o selo da modalidade ao lado.
+ *
+ * O selo é sempre a modalidade escrita — "Venda", "Troca" ou "Doação" —, como manda o
+ * componente Tag do Figma ("etiqueta de modalidade e status"). A troca vinha trocada: o
+ * selo dizia "Por outro livro" e o valor dizia "Troca".
+ */
 export function detailHeadline(listing: Pick<Listing, 'modality' | 'priceCents'>) {
+  const label = modalityLabels[listing.modality];
   if (listing.modality === 'sale') {
-    return { value: priceLabel(listing) ?? modalityLabels.sale, label: 'À VENDA' };
+    return { value: priceLabel(listing) ?? modalityLabels.sale, label };
   }
-  if (listing.modality === 'trade') return { value: 'Troca', label: 'POR OUTRO LIVRO' };
-  return { value: 'Gratuito', label: 'DOAÇÃO' };
+  if (listing.modality === 'trade') return { value: 'Por outro livro', label };
+  return { value: 'Gratuito', label };
+}
+
+/**
+ * Rótulo da ação principal do detalhe (Figma 03.01 a 03.03).
+ *
+ * As três levam à mesma tela de combinar local, dia e horário; muda só o que a pessoa
+ * está pedindo, como nos quadros de cada modalidade.
+ */
+export function detailActionLabel(modality: Modality) {
+  if (modality === 'donation') return 'Quero receber';
+  if (modality === 'trade') return 'Propor troca';
+  return 'Combinar encontro';
+}
+
+/**
+ * Rótulo de quem ainda não entrou (Figma 03.01 a 03.03).
+ *
+ * Não dá para reaproveitar `detailActionLabel` aqui: ele é escrito na primeira pessoa
+ * ("Quero receber") e viraria "Entrar para quero receber". Este diz o que vem depois
+ * de entrar, no infinitivo.
+ */
+export function detailSignedOutLabel(modality: Modality) {
+  if (modality === 'donation') return 'Entrar para receber o livro';
+  if (modality === 'trade') return 'Entrar para propor troca';
+  return 'Entrar para combinar encontro';
 }
 
 /** "BOM ESTADO · LITERATURA BRASILEIRA" */
 export function detailMeta(listing: Pick<Listing, 'condition' | 'category'>) {
-  return `${conditionLabels[listing.condition]} · ${listing.category}`.toLocaleUpperCase('pt-BR');
+  return `${conditionLabels[listing.condition]} · ${listing.category}`;
 }
 
 /** Índice estável (0 a `count - 1`) para escolher a cor da capa ilustrativa pelo id. */

@@ -35,6 +35,11 @@ export const contact = {
   url: 'mailto:ipebook738@gmail.com',
 } as const;
 
+// Responsável pelos dados (controlador), definido pela equipe em 02/10/2026 (issue #25).
+export const controller = {
+  name: 'Micael Cardoso Reis',
+} as const;
+
 export const legalLinks = [
   { id: 'termos', label: 'Termos de Uso', href: '/termos' },
   { id: 'privacidade', label: 'Privacidade', href: '/privacidade' },
@@ -90,7 +95,8 @@ export const documents: Record<LegalPage, LegalDocument> = {
         paragraphs: [
           'Use um e-mail seu e uma senha exclusiva para o IpêBook. Mantenha a senha em segredo: quem tiver acesso a ela pode entrar na sua conta.',
           'A conta existe apenas no aplicativo. Depois de entrar, você pode ver o catálogo de livros anunciados por outras pessoas (Início, Explorar e detalhe do livro). Ainda não é possível publicar anúncios, fazer pedidos, trocar mensagens nem ter perfil público.',
-          `Excluir a conta pelo aplicativo ainda não é possível. Por enquanto, pedidos sobre a conta podem ser enviados para ${contact.email}, sem prazo de resposta garantido. Essa pendência precisa ser resolvida antes de o cadastro ser divulgado.`,
+          'No aplicativo há também uma lista de avisos e as Configurações. Em Configurações você liga ou desliga cada tipo de aviso (pedido recebido, aceito ou recusado, livro reservado e negociação concluída), consulta a versão do aplicativo e toca em Sair. Como ainda não há pedidos nem negociação, nenhum aviso desses é gerado por enquanto. Os avisos aparecem só dentro do aplicativo: não há notificação no celular, e-mail ou SMS.',
+          `Você pode excluir a conta pelo aplicativo, em Configurações › Privacidade e dados. A exclusão apaga a conta, os anúncios, as capas e as conversas, e não pode ser desfeita. Quem não tiver mais acesso ao aplicativo pode pedir a exclusão por ${contact.email}, sem prazo de resposta garantido.`,
         ],
       },
       {
@@ -127,7 +133,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quem é responsável e como pedir ajuda?',
         paragraphs: [
-          `O IpêBook é um projeto de faculdade, sem fins lucrativos, conduzido pela equipe do IpêBook, formada por pessoas físicas. O IpêBook não cobra comissão nem recebe o valor das vendas: quando as vendas existirem, serão combinadas diretamente entre os leitores. A identificação individual do controlador dos dados ainda não foi divulgada. Você pode escrever para ${contact.email}, sem prazo de resposta garantido. O Instagram é uma referência social e não substitui o e-mail.`,
+          `O IpêBook é um projeto de faculdade, sem fins lucrativos, conduzido por uma equipe de pessoas físicas. O responsável pelos dados é ${controller.name}. O IpêBook não cobra comissão nem recebe o valor das vendas: quando as vendas existirem, serão combinadas diretamente entre os leitores. Você pode escrever para ${contact.email}, sem prazo de resposta garantido. O Instagram é uma referência social e não substitui o e-mail.`,
           'Texto preliminar revisado em 1 de outubro de 2026. As mudanças serão apresentadas nesta página. Os documentos precisam ser completados e revisados antes de o serviço operar.',
         ],
       },
@@ -152,7 +158,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
           'O cadastro existe apenas no aplicativo para Android e iOS, ainda em desenvolvimento; o site não coleta esses dados. Para criar a conta, pedimos nome, e-mail e senha. O nome aparece na sua área inicial. O e-mail serve para entrar, confirmar a conta e recuperar a senha, por meio de códigos enviados a ele.',
           'Esses dados são tratados pelo Supabase, o serviço que hospeda a autenticação. A senha viaja por conexão segura e é guardada cifrada (hash): o IpêBook não consegue lê-la. O serviço pode registrar dados técnicos de acesso, como endereço IP, data e hora, para proteger a conta.',
           'Depois que você entra, a sessão fica guardada no armazenamento do aplicativo, no celular, para não pedir a senha a cada abertura. Tocar em Sair remove a sessão. O aplicativo também guarda se você já viu a apresentação inicial.',
-          'Ainda faltam confirmar a região onde os dados ficam, o prazo de conservação e a base legal. Excluir a conta pelo aplicativo ainda não é possível; pedidos podem ser enviados para ' +
+          'Os dados da conta ficam no projeto do IpêBook no Supabase, na região us-east-1 (Leste dos Estados Unidos). Isso significa que são tratados fora do Brasil. Ainda faltam confirmar o prazo de conservação e a base legal. Excluir a conta pelo aplicativo, em Configurações › Privacidade e dados, apaga esses dados e os anúncios. Quem não tiver mais acesso ao aplicativo pode pedir a exclusão por ' +
             contact.email +
             '.',
         ],
@@ -162,7 +168,15 @@ export const documents: Record<LegalPage, LegalDocument> = {
         paragraphs: [
           'No aplicativo, quem está com a conta ativa vê anúncios de outras pessoas: título, autor, categoria, modalidade (venda, troca ou doação), preço, condição do livro, descrição, capa, bairro, cidade e o primeiro nome de quem anunciou. Não há endereço completo.',
           'Quando for possível publicar anúncios, essas informações ficarão visíveis para as outras pessoas que tiverem conta no aplicativo. Não coloque no anúncio dados que você não queira mostrar, como telefone ou endereço.',
-          'Os anúncios ficam no Supabase. A região do servidor, o prazo de conservação e a base legal ainda precisam ser confirmados e serão informados aqui.',
+          'Os anúncios ficam no Supabase, na região us-east-1 (Leste dos Estados Unidos). O prazo de conservação e a base legal ainda precisam ser confirmados e serão informados aqui.',
+        ],
+      },
+      {
+        title: 'Que avisos e preferências o aplicativo guarda?',
+        paragraphs: [
+          'Os avisos do aplicativo ficam guardados no Supabase, ligados à sua conta: título, texto curto, data, o anúncio a que se referem e se você já os leu. Só você consegue ler e marcar como lidos os seus avisos; outras pessoas não os veem.',
+          'Em Configurações você escolhe quais tipos de aviso quer receber. Essa escolha também é guardada no Supabase, por conta. Desligar um tipo impede novos avisos dele, mas não apaga os que você já recebeu.',
+          'Os avisos aparecem apenas dentro do aplicativo, quando você o abre. Não há notificação no celular, e-mail ou SMS. Como ainda não existem pedidos nem negociação, hoje o aplicativo não gera avisos reais. O prazo de conservação dos avisos ainda precisa ser definido e será informado aqui.',
         ],
       },
       {
@@ -201,7 +215,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
       {
         title: 'Quem cuida dos dados e como faço um pedido?',
         paragraphs: [
-          `O controlador (quem decide como os dados são usados) é a equipe do IpêBook, formada por pessoas físicas, num projeto de faculdade, sem fins lucrativos. A identificação individual do controlador ainda não foi divulgada. O contato de privacidade é ${contact.email}.`,
+          `O controlador (quem decide como os dados são usados) é ${controller.name}, pessoa física, num projeto de faculdade, sem fins lucrativos, conduzido por uma equipe. O contato de privacidade é ${contact.email}.`,
           `A página Seus direitos e LGPD explica os pedidos previstos na lei. Pedidos podem ser enviados para ${contact.email}; esta apresentação não tem formulário, não emite protocolos e não garante prazo de resposta.`,
           'O Instagram permite acompanhar o projeto, mas não foi definido como canal formal para esses pedidos. Este aviso não é uma certificação de conformidade com a LGPD.',
         ],
@@ -218,7 +232,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: 'Quando este texto foi atualizado?',
         paragraphs: [
           'Última revisão: 1 de outubro de 2026. Este aviso trata da apresentação e da conta do IpêBook nesta versão.',
-          `Ainda faltam a identificação individual do controlador dos dados e os detalhes reais da hospedagem. O contato de privacidade é ${contact.email}. O texto deverá ser atualizado quando essas informações forem confirmadas.`,
+          `Ainda faltam o prazo de conservação, a base legal e os detalhes reais da hospedagem do site. O contato de privacidade é ${contact.email}. O texto deverá ser atualizado quando essas informações forem confirmadas.`,
         ],
       },
     ],
@@ -265,7 +279,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         title: '5. Como preparar uma solicitação',
         paragraphs: [
           'Indique qual direito deseja exercer, a situação envolvida e uma forma de receber resposta. Compartilhe somente informações necessárias; não publique documentos, senhas ou dados de terceiros em comentários de redes sociais.',
-          `Pedidos podem ser enviados para ${contact.email}, mas a identificação individual do controlador, que é a equipe do IpêBook (pessoas físicas, em projeto de faculdade sem fins lucrativos), ainda não foi divulgada. O perfil do Instagram não foi definido como canal formal LGPD. Por isso, esta apresentação não possui formulário de solicitação, prazo operacional anunciado ou protocolo de atendimento.`,
+          `Pedidos podem ser enviados para ${contact.email}, e o responsável por atendê-los é ${controller.name}, pessoa física, em projeto de faculdade sem fins lucrativos. O perfil do Instagram não foi definido como canal formal LGPD. Por isso, esta apresentação não possui formulário de solicitação, prazo operacional anunciado ou protocolo de atendimento.`,
           'O exercício dos direitos é gratuito. A identidade do solicitante pode precisar ser verificada de forma proporcional para evitar entrega de dados à pessoa errada. Prazos variam conforme o pedido e a legislação: não existe aqui uma promessa de resposta única para todos os casos.',
         ],
       },

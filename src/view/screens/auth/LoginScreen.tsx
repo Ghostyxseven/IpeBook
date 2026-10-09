@@ -1,10 +1,12 @@
 import { useRef } from 'react';
 import type { TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useLogin } from '../../../factories/auth';
+import { useLogin, useSocialAuth } from '../../../factories/auth';
 import { AuthLayout } from '../../components/ui/AuthLayout';
 import { Button } from '../../components/ui/Button';
+import { Divider } from '../../components/ui/Divider';
 import { FormMessage } from '../../components/ui/FormMessage';
+import { SocialButton } from '../../components/ui/SocialButton';
 import { TextField } from '../../components/ui/TextField';
 
 export function LoginScreen() {
@@ -14,22 +16,30 @@ export function LoginScreen() {
     onNeedsVerification: (email) =>
       router.push({ pathname: '/verificar-email', params: { email } }),
   });
+  const social = useSocialAuth();
   return (
     <AuthLayout
-      title="Entrar"
-      description="Que bom ter você de volta. Entre para encontrar, trocar e doar livros em Piripiri."
+      brand
+      withoutHeader
+      title="Sua próxima leitura começa aqui."
+      description="Entre com o e-mail e a senha da sua conta."
       footer={
-        <>
-          <Button
-            label="Criar conta"
-            variant="secondary"
-            onPress={() => router.push('/criar-conta')}
-            accessibilityHint="Abre o cadastro"
-          />
-        </>
+        <Button
+          label="Criar uma conta"
+          variant="text"
+          onPress={() => router.push('/criar-conta')}
+          accessibilityHint="Abre o cadastro"
+        />
       }
     >
       <FormMessage tone="error" message={vm.errors.form} />
+      <FormMessage tone="error" message={social.error} />
+      <SocialButton
+        label="Continuar com o Google"
+        onPress={social.continueWithGoogle}
+        loading={social.loading}
+      />
+      <Divider label="ou entre com e-mail" />
       <TextField
         label="E-mail"
         value={vm.email}

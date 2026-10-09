@@ -7,7 +7,8 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "br.com.ipebook.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -15,12 +16,47 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "br.com.ipebook.app"
     },
     "web": {
       "output": "single"
     },
-    "plugins": ["expo-router", "expo-sqlite"],
-    "scheme": "ipebook"
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O IpêBook acessa suas fotos apenas para você escolher a capa do anúncio.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "O IpêBook usa a câmera apenas para ler o código de barras (ISBN) do livro que você está anunciando.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "O IpêBook usa sua localização aproximada só para preencher o seu bairro. O endereço não é guardado.",
+          "isAndroidBackgroundLocationEnabled": false,
+          "isAndroidForegroundServiceEnabled": false
+        }
+      ]
+    ],
+    "scheme": "ipebook",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7593e188-168b-4282-87b9-74afae861981"
+      }
+    },
+    "owner": "usermicael"
   }
 }

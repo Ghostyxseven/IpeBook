@@ -11,7 +11,7 @@ export type CatalogPage = {
 };
 
 /**
- * Contrato de leitura do catálogo usado pelas ViewModels.
+ * Contrato de leitura do catálogo e alteração de situação, usado pelas ViewModels.
  * A busca por texto procura no título, no autor e na categoria.
  * Lista só anúncios disponíveis ou reservados de outras pessoas, dos mais recentes aos mais antigos.
  * Todas as operações rejeitam com `CatalogError` (ver entities/CatalogError.ts).

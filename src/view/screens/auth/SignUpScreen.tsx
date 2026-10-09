@@ -1,32 +1,48 @@
 import { useRef } from 'react';
-import { StyleSheet, Text, type TextInput } from 'react-native';
+import type { TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSignUp } from '../../../factories/auth';
+import { useSignUp, useSocialAuth } from '../../../factories/auth';
 import { AuthLayout } from '../../components/ui/AuthLayout';
 import { Button } from '../../components/ui/Button';
+import { Checkbox } from '../../components/ui/Checkbox';
+import { Divider } from '../../components/ui/Divider';
 import { FormMessage } from '../../components/ui/FormMessage';
+import { SocialButton } from '../../components/ui/SocialButton';
 import { TextField } from '../../components/ui/TextField';
-import { colors, typography } from '../../theme/nativeTheme';
 
 export function SignUpScreen() {
   const router = useRouter();
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
-  const confirmationRef = useRef<TextInput>(null);
   const vm = useSignUp({
     onSignedUp: (email) => router.replace({ pathname: '/verificar-email', params: { email } }),
   });
+  const social = useSocialAuth();
   return (
     <AuthLayout
-      title="Criar conta"
-      description="Com uma conta, você vai poder anunciar, pedir e combinar livros com outros leitores."
+      brand
+      titleSize="headline"
+      title="Crie sua conta"
+      highlight="e faça parte."
+      description="Anuncie, troque, venda ou doe livros perto de você."
       footer={
-        <Button label="Já tenho conta" variant="text" onPress={() => router.replace('/entrar')} />
+        <Button
+          label="Já tenho conta"
+          variant="secondary"
+          onPress={() => router.replace('/entrar')}
+        />
       }
     >
       <FormMessage tone="error" message={vm.errors.form} />
+      <FormMessage tone="error" message={social.error} />
+      <SocialButton
+        label="Continuar com o Google"
+        onPress={social.continueWithGoogle}
+        loading={social.loading}
+      />
+      <Divider label="ou crie com e-mail" />
       <TextField
-        label="Nome"
+        label="Nome completo"
         value={vm.values.name}
         onChangeText={(value) => vm.setField('name', value)}
         error={vm.errors.name}
@@ -63,32 +79,26 @@ export function SignUpScreen() {
         autoCapitalize="none"
         autoComplete="new-password"
         textContentType="newPassword"
-        returnKeyType="next"
-        onSubmitEditing={() => confirmationRef.current?.focus()}
-        submitBehavior="submit"
-      />
-      <TextField
-        ref={confirmationRef}
-        label="Confirmar senha"
-        password
-        value={vm.values.confirmation}
-        onChangeText={(value) => vm.setField('confirmation', value)}
-        error={vm.errors.confirmation}
-        autoCapitalize="none"
-        autoComplete="new-password"
-        textContentType="newPassword"
         returnKeyType="go"
         onSubmitEditing={vm.submit}
       />
-      <Text style={styles.legal}>
-        Ao criar a conta, seu nome e e-mail são usados para identificar você no IpêBook, como
-        descrito na Política de Privacidade.
-      </Text>
+      <Checkbox
+        label="Aceito os termos de uso"
+        supportingText="e a política de privacidade."
+        checked={vm.acceptedTerms}
+        onToggle={vm.toggleTerms}
+        error={vm.errors.terms}
+      />
       <Button label="Criar conta" onPress={vm.submit} loading={vm.submitting} />
+      {vm.emailInUse && (
+        <Button
+          label="Recuperar senha"
+          variant="text"
+          onPress={() =>
+            router.push({ pathname: '/recuperar-senha', params: { email: vm.values.email } })
+          }
+        />
+      )}
     </AuthLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  legal: { ...typography.caption, color: colors.secondaryText },
-});

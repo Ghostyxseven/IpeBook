@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { emptyFilters } from '../src/model/entities/Listing.ts';
+import { createMemoryCatalogRepository } from '../src/model/repositories/memoryCatalogRepository.ts';
 import {
   CATALOG_VIEW,
   createSupabaseCatalogRepository,
@@ -52,6 +53,10 @@ function fakeClient(result) {
   return {
     calls,
     client: {
+      rpc: (fn, args) => {
+        calls.push(['rpc', fn, args]);
+        return Promise.resolve({ data: 'Ana', error: null });
+      },
       from: (table) => {
         calls.push(['from', table]);
         return builder;
@@ -114,6 +119,50 @@ test('lista lê a view, aplica filtros e pede um item a mais para paginar', asyn
   assert.deepEqual(page.nextCursor, { createdAt: '2026-09-29T10:00:00Z', id: 'b' });
 });
 
+test('conservação e teto de preço viram condições da consulta (Figma 02.03)', async () => {
+  const fake = fakeClient({ data: [], error: null, count: 0 });
+  const repository = createSupabaseCatalogRepository(fake.client);
+  await repository.list({
+    filters: {
+      ...emptyFilters,
+      conditions: ['marcas_de_uso', 'novo'],
+      maxPriceCents: 3000,
+    },
+    cursor: null,
+    limit: 2,
+  });
+  assert.deepEqual(
+    fake.calls.find(([method]) => method === 'in'),
+    ['in', 'condition', ['novo', 'marcas_de_uso']],
+    'a ordem canônica evita consultas diferentes para a mesma escolha',
+  );
+  assert.deepEqual(
+    fake.calls.find(([method]) => method === 'or'),
+    ['or', 'price_cents.is.null,price_cents.lte.3000'],
+    'troca e doação não guardam preço e continuam na lista',
+  );
+});
+
+test('busca por texto e teto de preço convivem na mesma consulta', async () => {
+  const fake = fakeClient({ data: [], error: null, count: 0 });
+  const repository = createSupabaseCatalogRepository(fake.client);
+  await repository.list({
+    filters: { ...emptyFilters, query: 'dom casmurro', maxPriceCents: 2500 },
+    cursor: null,
+    limit: 2,
+  });
+  const ors = fake.calls.filter(([method]) => method === 'or').map(([, arg]) => arg);
+  assert.equal(ors.length, 2, 'uma condição para o texto e outra para o preço');
+  assert.ok(
+    ors.some((arg) => arg.includes('title.ilike')),
+    'a busca por texto continua valendo',
+  );
+  assert.ok(
+    ors.some((arg) => arg === 'price_cents.is.null,price_cents.lte.2500'),
+    'o teto de preço entra como condição própria',
+  );
+});
+
 test('busca curta não filtra e cursor continua depois do último item', async () => {
   const fake = fakeClient({ data: [row('a', '2026-09-28T10:00:00Z')], error: null, count: 9 });
   const repository = createSupabaseCatalogRepository(fake.client);
@@ -138,7 +187,8 @@ test('detalhe distingue anúncio inexistente de falha de rede', async () => {
   const missing = createSupabaseCatalogRepository(fakeClient({ data: null, error: null }).client);
   await assert.rejects(missing.getById('x'), { code: 'not_found' });
   const found = createSupabaseCatalogRepository(
-    fakeClient({ data: row('a', '2026-09-28T10:00:00Z'), error: null }).client,
+    fakeClient({ data: row('a', '2026-09-28T10:00:00Z', { owner_id: 'u-ana' }), error: null })
+      .client,
   );
   assert.equal((await found.getById('a')).ownerFirstName, 'Ana');
   const offline = createSupabaseCatalogRepository(
@@ -160,4 +210,69 @@ test('erros do PostgREST viram códigos do domínio', () => {
     'migração ainda não aplicada',
   );
   assert.equal(mapSupabaseCatalogError({ code: '42501', message: 'denied' }).code, 'unknown');
+});
+
+test('detalhe lê só colunas que existem na tabela e busca o nome do dono pela função', async () => {
+  const fake = fakeClient({
+    data: row('a', '2026-09-28T10:00:00Z', { owner_id: 'u-ana', owner_first_name: undefined }),
+    error: null,
+  });
+  const listing = await createSupabaseCatalogRepository(fake.client).getById('a');
+  const select = fake.calls.find(([method]) => method === 'select');
+  assert.ok(!select[1].includes('owner_first_name'), 'a tabela listings não tem essa coluna');
+  assert.deepEqual(
+    fake.calls.find(([method]) => method === 'rpc'),
+    ['rpc', 'listing_owner_first_name', { owner: 'u-ana' }],
+  );
+  assert.equal(listing.ownerFirstName, 'Ana');
+  assert.equal(listing.ownerId, 'u-ana');
+});
+
+test('o teto de preço corta a venda cara e preserva troca e doação (Figma 02.03)', async () => {
+  const listing = (id, modality, priceCents, condition = 'bom') => ({
+    id,
+    title: `Livro ${id}`,
+    author: 'Autora',
+    category: 'Outros',
+    modality,
+    priceCents,
+    tradeTerms: null,
+    condition,
+    neighborhood: 'Centro',
+    city: 'Piripiri',
+    description: null,
+    coverUrl: null,
+    status: 'disponivel',
+    ownerId: 'u1',
+    ownerFirstName: 'Ana',
+    createdAt: `2026-09-2${id}T10:00:00Z`,
+  });
+  const { repository } = createMemoryCatalogRepository([
+    listing('1', 'sale', 2500),
+    listing('2', 'sale', 9900),
+    listing('3', 'trade', null),
+    listing('4', 'donation', null, 'marcas_de_uso'),
+  ]);
+
+  const barato = await repository.list({
+    filters: { ...emptyFilters, maxPriceCents: 3000 },
+    cursor: null,
+    limit: 10,
+  });
+  assert.deepEqual(
+    barato.items.map((item) => item.id).sort(),
+    ['1', '3', '4'],
+    'só a venda acima do teto sai da lista',
+  );
+
+  const conservados = await repository.list({
+    filters: { ...emptyFilters, conditions: ['bom'] },
+    cursor: null,
+    limit: 10,
+  });
+  assert.deepEqual(
+    conservados.items.map((item) => item.id).sort(),
+    ['1', '2', '3'],
+    'a conservação escolhida filtra qualquer modalidade',
+  );
 });

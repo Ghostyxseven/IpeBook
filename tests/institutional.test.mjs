@@ -24,7 +24,7 @@ test('conteúdo delimita operação e identifica pendências sem contato inventa
   assert.match(JSON.stringify(documents.termos), /Nenhuma versão permite publicar anúncios/);
   assert.match(
     JSON.stringify(documents.privacidade),
-    /controlador.*pessoas físicas.*identificação individual do controlador ainda não foi divulgada/,
+    /controlador.*é Micael Cardoso Reis, pessoa física/,
   );
   assert.match(JSON.stringify(documents.privacidade), /não instala cookies/);
   // A política precisa descrever o que o código realmente usa (constituição).
@@ -61,6 +61,16 @@ test('segurança resolve por endereço e os documentos distinguem demonstração
     /catálogo de livros anunciados por outras pessoas/,
   );
   assert.doesNotMatch(JSON.stringify(documents), /área inicial em construção/);
+  // Região do Supabase conferida no projeto (us-east-1); o que falta continua dito como pendente.
+  assert.match(JSON.stringify(documents.privacidade), /us-east-1.*fora do Brasil/);
+  assert.match(JSON.stringify(documents.privacidade), /prazo de conservação e a base legal/);
+  // Avisos e preferências guardados no Supabase, sem push, e-mail ou SMS (ADR 0011).
+  assert.match(JSON.stringify(documents.privacidade), /Que avisos e preferências/);
+  assert.match(
+    JSON.stringify(documents.privacidade),
+    /Não há notificação no celular, e-mail ou SMS/,
+  );
+  assert.match(JSON.stringify(documents.termos), /lista de avisos e as Configurações/);
   for (const doc of Object.values(documents)) {
     assert.ok(doc.summary.length >= 3);
     assert.ok(doc.sources.length > 0);

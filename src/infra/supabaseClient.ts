@@ -1,3 +1,4 @@
+import './pkceCrypto';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { localStore } from './localStore';
 
@@ -9,6 +10,8 @@ export const supabase: SupabaseClient | null =
   url && publishableKey
     ? createClient(url, publishableKey, {
         auth: {
+          // O retorno do Google é trocado por sessão com exchangeCodeForSession (ADR 0028).
+          flowType: 'pkce',
           storage: localStore ?? undefined,
           autoRefreshToken: true,
           persistSession: true,

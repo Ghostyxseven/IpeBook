@@ -6,9 +6,11 @@ export type AuthErrorCode =
   | 'weak_password'
   | 'invalid_code'
   | 'same_password'
+  | 'wrong_current_password'
   | 'rate_limited'
   | 'network'
   | 'not_configured'
+  | 'oauth_cancelled'
   | 'unknown';
 
 /** Erro de autenticação independente do provedor (Supabase fica só no repositório). */

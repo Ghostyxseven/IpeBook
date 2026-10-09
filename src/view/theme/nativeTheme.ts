@@ -41,6 +41,37 @@ export const colors = {
   disabledBackground: tokens.color.state.disabledBackground.$value,
   disabledText: tokens.color.state.disabledText.$value,
   pressed: tokens.color.state.pressed.$value,
+  /** Papéis do Material 3 usados pelas telas redesenhadas a partir do Figma oficial. */
+  onSurface: tokens.color.onSurface.$value,
+  onSurfaceVariant: tokens.color.onSurfaceVariant.$value,
+  outlineVariant: tokens.color.outlineVariant.$value,
+  containerLowest: tokens.color.container.lowest.$value,
+  containerLow: tokens.color.container.low.$value,
+  container: tokens.color.container.default.$value,
+  containerHigh: tokens.color.container.high.$value,
+  selected: tokens.color.selected.background.$value,
+  onSelected: tokens.color.selected.text.$value,
+  /** Marca nas telas de acesso (Figma, seção 01): logotipo, traço e destaque do título. */
+  brandBrown: tokens.color.brandBrown.$value,
+  brandAmber: tokens.color.brandAmber.$value,
+  tertiaryContainer: tokens.color.tertiaryContainer.$value,
+  /** Estados do sistema (Figma, seção 10): fundo do ícone de erro e aviso escuro. */
+  errorContainer: tokens.color.errorContainer.$value,
+  inverseSurface: tokens.color.inverseSurface.$value,
+  inverseOnSurface: tokens.color.inverseOnSurface.$value,
+  /** Visor da leitura de ISBN (Figma 04.02): fundo escuro atrás da imagem da câmera. */
+  scannerSurface: tokens.color.scanner.surface.$value,
+  scannerOnSurface: tokens.color.scanner.onSurface.$value,
+  scannerVeil: tokens.color.scanner.veil.$value,
+  /** iOS (Figma 07 · iPhone): célula agrupada, rótulo secundário e separador. */
+  iosCell: tokens.color.ios.cell.$value,
+  iosSecondaryLabel: tokens.color.ios.secondaryLabel.$value,
+  iosSeparator: tokens.color.ios.separator.$value,
+  /** Liquid Glass (referência `ios.md`): só na camada de navegação que flutua. */
+  glassFill: tokens.color.ios.glassFill.$value,
+  glassStroke: tokens.color.ios.glassStroke.$value,
+  /** Sobre imagem ou câmera, com ícones brancos. */
+  glassFillDark: tokens.color.ios.glassFillDark.$value,
 } as const;
 
 const badge = (name: keyof typeof tokens.color.badge) => ({
@@ -102,9 +133,23 @@ export const metrics = {
   focusOffset: px(tokens.accessibility.focusOffset),
   borderThin: px(tokens.border.thin),
   borderStrong: px(tokens.border.strong),
+  /** Fio de 0,5 pt da borda do Liquid Glass. */
+  borderHairline: px(tokens.border.hairline),
   /** Largura máxima de formulários em tablets. */
   formMaxWidth: px(tokens.app.formMaxWidth),
 } as const;
+
+/**
+ * Receita do Liquid Glass (referência `ios.md`): desfoque de 22 pt e saturação de 180%.
+ * Só existe no iPhone; as outras plataformas usam superfície sólida.
+ */
+export const glass = {
+  blur: tokens.platform.ios.glassBlur.$value,
+  saturation: tokens.platform.ios.glassSaturation.$value,
+} as const;
+
+/** Nome com que a fonte da marca é registrada no `useFonts` do layout raiz. */
+export const BRAND_FONT = 'SourceSerif4-Bold';
 
 export const typography = {
   caption: typeStyle(tokens.typography.caption),
@@ -121,4 +166,41 @@ export const typography = {
   labelMedium: typeStyle(tokens.typography.scale.labelMedium),
   /** Rótulo de botão do Material 3 (Figma `Android/m3-label-lg`). */
   labelLarge: typeStyle(tokens.typography.scale.labelLarge),
+  /** Estilos do iOS no Figma (`iOS/ios-body`, `ios-subheadline`, `ios-footnote`), na fonte do sistema. */
+  iosBody: typeStyle(tokens.typography.ios.body),
+  iosSubheadline: typeStyle(tokens.typography.ios.subheadline),
+  iosFootnote: typeStyle(tokens.typography.ios.footnote),
+  /**
+   * Título de marca em Source Serif 4 (no máximo um por tela). O arquivo da fonte já é o
+   * negrito, então o peso não é repetido: no Android, peso junto de fonte própria troca a fonte.
+   */
+  brandHeadline: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.headline.fontSize),
+    lineHeight: px(tokens.typography.brand.headline.lineHeight),
+  } satisfies TextStyle,
+  /** Título da tela de boas-vindas (Figma `Marca/brand-large-title`, 34/41). */
+  brandLargeTitle: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.largeTitle.fontSize),
+    lineHeight: px(tokens.typography.brand.largeTitle.lineHeight),
+  } satisfies TextStyle,
+  /** Título grande das telas de acesso (Figma `Marca/brand-display-md`, 36/41). */
+  brandDisplay: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.display.fontSize),
+    lineHeight: px(tokens.typography.brand.display.lineHeight),
+  } satisfies TextStyle,
+  /** Logotipo tipográfico (Figma `brand-wordmark`, 28/31). */
+  brandWordmark: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.wordmark.fontSize),
+    lineHeight: px(tokens.typography.brand.wordmark.lineHeight),
+  } satisfies TextStyle,
+  /** Título de marca menor (Figma `Marca/brand-title`), usado nos estados vazios. */
+  brandTitle: {
+    fontFamily: BRAND_FONT,
+    fontSize: px(tokens.typography.brand.title.fontSize),
+    lineHeight: px(tokens.typography.brand.title.lineHeight),
+  } satisfies TextStyle,
 } as const;

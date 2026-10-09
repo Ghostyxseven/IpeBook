@@ -23,7 +23,9 @@ Nunca comunique modalidade ou estado somente pela cor.
 
 ## Tipografia
 
-Roboto é a família de marca. Componentes nativos podem usar a tipografia do sistema quando exigido pela plataforma.
+Roboto é a família de marca nos tokens atuais. Componentes nativos podem usar a tipografia do sistema quando exigido pela plataforma.
+
+Os títulos de marca usam Source Serif 4 Bold (`typography.brand`), como no Figma ([ADR 0019](../adr/0019-serifa-da-marca-e-superficies-do-figma.md)). A interface continua em Roboto; a referência usa Roboto Flex, diferença registrada em [divergências](divergencias.md#tipografia-e-superfícies-02102026).
 
 Escala preferencial:
 

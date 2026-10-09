@@ -23,7 +23,8 @@ type Props = Omit<TextInputProps, 'style' | 'secureTextEntry'> & {
 /**
  * Android e Web seguem o componente "Campo" do Figma (Material 3, ADR 0013): contornado,
  * rótulo dentro da caixa e erro com ícone e mensagem que diz como corrigir.
- * O iOS mantém o rótulo acima do campo até a adequação ao contrato nativo (issue #10).
+ * No iOS segue o "Text Field" do Figma (issue #10): rótulo `ios-footnote` acima, célula
+ * preenchida `ios.cell` com raio 12 e sem borda; a borda só aparece no foco e no erro.
  */
 const material = Platform.OS !== 'ios';
 
@@ -152,19 +153,19 @@ const noWebOutline = Platform.select({
 });
 
 const styles = StyleSheet.create({
-  // iOS (layout atual).
+  // iOS (Figma 01.10, iPhone).
   container: { gap: spacing.xs },
-  label: { ...typography.action, color: colors.text },
+  label: { ...typography.iosFootnote, color: colors.onSurfaceVariant },
   field: {
     borderRadius: metrics.fieldRadius,
     borderWidth: metrics.borderThin,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: 'transparent',
+    backgroundColor: colors.iosCell,
     flexDirection: 'row',
     alignItems: 'center',
   },
   input: {
-    ...typography.body,
+    ...typography.iosBody,
     flex: 1,
     alignSelf: 'stretch',
     minHeight: Math.max(metrics.controlHeight, metrics.touchTarget),
@@ -185,7 +186,10 @@ const styles = StyleSheet.create({
   },
   fieldDisabled: { backgroundColor: colors.disabledBackground },
   error: { ...typography.caption, color: colors.error },
-  hint: { ...typography.caption, color: colors.secondaryText },
+  hint: {
+    ...(material ? typography.caption : typography.iosFootnote),
+    color: material ? colors.secondaryText : colors.iosSecondaryLabel,
+  },
 
   // Android e Web (Figma "Campo"): caixa com rótulo dentro, espaçamento 16/12 e raio médio.
   materialContainer: { gap: spacing.xxs },

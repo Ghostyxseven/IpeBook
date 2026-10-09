@@ -1,17 +1,26 @@
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Listing } from '../../../model/entities/Listing';
-import {
-  listingAccessibilityLabel,
-  listingMeta,
-  tileValue,
-} from '../../../model/services/catalogFormat';
-import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { cardOverline, listingAccessibilityLabel } from '../../../model/services/catalogFormat';
+import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+import { FavoriteButton } from './FavoriteButton';
 import { ListingCover } from './ListingCover';
 import { StatusBadge } from './StatusBadge';
 
-/** Card compacto da grade do Início (Figma 02, "Seleção de livros"). */
-export function BookTile({ listing, onPress }: { listing: Listing; onPress: () => void }) {
-  const value = tileValue(listing);
+/** Largura do card no carrossel do Início (Figma 02.01, "Card de livro"). */
+export const BOOK_TILE_WIDTH = 166;
+
+/** Card de livro do carrossel do Início (Figma 02.01): capa sobre o fundo e três linhas de texto. */
+export function BookTile({
+  listing,
+  onPress,
+  favorite,
+  onToggleFavorite,
+}: {
+  listing: Listing;
+  onPress: () => void;
+  favorite?: boolean;
+  onToggleFavorite?: () => void;
+}) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -19,38 +28,54 @@ export function BookTile({ listing, onPress }: { listing: Listing; onPress: () =
       accessibilityHint="Abre os detalhes do livro"
       onPress={onPress}
       style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
-        styles.tile,
+        styles.card,
         pressed && styles.pressed,
         focused && styles.focused,
       ]}
     >
-      <ListingCover listing={listing} variant="tile" />
+      <View style={styles.coverArea}>
+        <ListingCover listing={listing} variant="tile" />
+        {onToggleFavorite && (
+          <View style={styles.favorite}>
+            <FavoriteButton
+              favorite={Boolean(favorite)}
+              onToggle={onToggleFavorite}
+              title={listing.title}
+              overlay
+            />
+          </View>
+        )}
+      </View>
       <View style={styles.info}>
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={styles.overline} numberOfLines={1}>
+          {cardOverline(listing)}
+        </Text>
+        <Text style={styles.title} numberOfLines={2}>
           {listing.title}
         </Text>
-        {value && <Text style={styles.value}>{value}</Text>}
-        {listing.status === 'reservado' && <StatusBadge variant="reserved" />}
-        <Text style={styles.meta} numberOfLines={1}>
-          {listingMeta(listing)}
+        <Text style={styles.author} numberOfLines={1}>
+          {listing.author}
         </Text>
+        {listing.status === 'reservado' && <StatusBadge variant="reserved" />}
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  tile: {
-    flex: 1,
-    minHeight: 190,
+  card: {
+    width: BOOK_TILE_WIDTH,
+    borderRadius: radius.medium,
+    backgroundColor: colors.containerLow,
     overflow: 'hidden',
-    gap: spacing.xxs,
-    borderRadius: metrics.fieldRadius,
-    borderWidth: metrics.borderThin,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
+    // Elevação 1 do Material 3.
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
   },
-  pressed: { backgroundColor: colors.pressed },
+  pressed: { backgroundColor: colors.containerHigh },
   focused: Platform.select({
     web: {
       outlineColor: colors.focus,
@@ -60,8 +85,21 @@ const styles = StyleSheet.create({
     },
     default: {},
   }),
-  info: { paddingHorizontal: spacing.sm, paddingBottom: spacing.xs, gap: spacing.xxs },
-  title: { ...typography.bodyMedium, fontWeight: '700', color: colors.text },
-  value: { ...typography.bodyMedium, fontWeight: '500', color: colors.text },
-  meta: { ...typography.labelMedium, color: colors.secondaryText },
+  coverArea: {
+    height: 144,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.container,
+  },
+  // Canto da capa, sobre a ilustração (Figma 02.01 "Card de livro"). O alvo de 48 px
+  // do botão recua além da borda visível da capa; só o ícone de 22 px fica por dentro.
+  favorite: {
+    position: 'absolute',
+    top: -(metrics.touchTarget - 32) / 2,
+    right: -(metrics.touchTarget - 32) / 2,
+  },
+  info: { paddingHorizontal: spacing.md, paddingVertical: 10, gap: 0, alignItems: 'flex-start' },
+  overline: { ...typography.labelMedium, letterSpacing: 0.5, color: colors.onSurfaceVariant },
+  title: { ...typography.bodyLarge, letterSpacing: 0.5, color: colors.onSurface },
+  author: { ...typography.bodyMedium, letterSpacing: 0.25, color: colors.onSurfaceVariant },
 });

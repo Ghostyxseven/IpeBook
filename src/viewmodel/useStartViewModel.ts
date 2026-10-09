@@ -10,6 +10,10 @@ export function useStartViewModel(repository: AuthRepository, preferences: Prefe
   const session = useSession(repository);
   return {
     session,
-    destination: startRoute(session.status, preferences.hasSeenOnboarding()),
+    destination: startRoute(
+      session.status,
+      preferences.hasSeenOnboarding(),
+      session.user?.needsRegistration,
+    ),
   };
 }

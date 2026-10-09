@@ -3,7 +3,7 @@ import type { User } from '../entities/User';
 import type { AuthRepository } from './AuthRepository';
 import { createUserChangeGate } from './userChangeGate.ts';
 
-type Account = { user: User; password: string };
+type Account = { user: User; password: string; termsAcceptedAt?: Date };
 
 /**
  * Implementação em memória para testes das ViewModels.
@@ -15,9 +15,12 @@ type Account = { user: User; password: string };
 export function createMemoryAuthRepository({
   code = '123456',
   beforePasswordUpdate,
+  googleAccount,
 }: {
   code?: string;
   beforePasswordUpdate?: () => Promise<void>;
+  /** Conta que o Google "devolve" em `signInWithGoogle`; `undefined` simula cancelar. */
+  googleAccount?: User;
 } = {}) {
   const accounts = new Map<string, Account>();
   const gate = createUserChangeGate();
@@ -49,12 +52,30 @@ export function createMemoryAuthRepository({
       setCurrent(account.user);
       return account.user;
     },
-    async signUp(name, email, password) {
+    async signInWithGoogle() {
+      calls.push('signInWithGoogle');
+      if (!googleAccount) throw new AuthError('oauth_cancelled');
+      const user = find(googleAccount.email)?.user ?? googleAccount;
+      setCurrent(user);
+      return user;
+    },
+    async completeGoogleRegistration(name, password, termsAcceptedAt) {
+      calls.push('completeGoogleRegistration');
+      if (!current?.needsRegistration) throw new AuthError('unknown');
+      await beforePasswordUpdate?.();
+      const { needsRegistration: _pending, ...previous } = current;
+      const user = { ...previous, name };
+      accounts.set(user.email, { user, password, termsAcceptedAt });
+      setCurrent(user);
+      return user;
+    },
+    async signUp(name, email, password, termsAcceptedAt) {
       calls.push('signUp');
       if (find(email)) return; // Mesmo comportamento do Supabase: não revela contas existentes.
       accounts.set(email, {
         user: { id: `u${accounts.size + 1}`, name, email, emailVerified: false },
         password,
+        termsAcceptedAt,
       });
     },
     async verifySignUp(email, token) {
@@ -86,6 +107,14 @@ export function createMemoryAuthRepository({
       account!.password = newPassword;
       recoveringEmail = null;
       gate.release(account!.user);
+    },
+    async changePassword(currentPassword, newPassword) {
+      calls.push('changePassword');
+      const account = current ? find(current.email) : undefined;
+      if (!account) throw new AuthError('unknown');
+      if (account.password !== currentPassword) throw new AuthError('wrong_current_password');
+      if (newPassword === currentPassword) throw new AuthError('same_password');
+      account.password = newPassword;
     },
     async cancelPasswordRecovery() {
       if (!gate.holding) return;
@@ -121,6 +150,10 @@ export function createMemoryAuthRepository({
     },
     passwordOf(email: string) {
       return accounts.get(email)?.password;
+    },
+    /** Data do aceite dos termos gravada no cadastro. */
+    termsAcceptedAt(email: string) {
+      return accounts.get(email)?.termsAcceptedAt;
     },
   };
 }
