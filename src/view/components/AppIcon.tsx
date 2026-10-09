@@ -54,6 +54,7 @@ const symbols = {
     android: 'check_box_outline_blank',
     web: 'check_box_outline_blank',
   },
+  share: { ios: 'square.and.arrow.up', android: 'share', web: 'share' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;

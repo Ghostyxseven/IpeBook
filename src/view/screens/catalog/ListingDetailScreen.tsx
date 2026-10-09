@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   detailActionLabel,
@@ -60,7 +60,9 @@ export function ListingDetailScreen() {
   }
 
   const { listing, details } = vm;
-  const { headline } = details;
+  const { headline, card } = details;
+  const share = () =>
+    Share.share({ message: `"${listing.title}" está no IpêBook, em Piripiri.` }).catch(() => {});
   const userId = session.user?.id;
   const isOwner = Boolean(listing.ownerId && userId && listing.ownerId === userId);
   const isAvailable = listing.status === 'disponivel';
@@ -94,22 +96,31 @@ export function ListingDetailScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.actions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Compartilhar ${listing.title}`}
+            onPress={share}
+            hitSlop={8}
+            style={({ pressed }) => [styles.actionButton, pressed && styles.actionPressed]}
+          >
+            <AppIcon name="share" size={22} color={colors.onSurfaceVariant} />
+          </Pressable>
+          {!isOwner && session.status === 'signedIn' && (
+            <FavoriteButton
+              favorite={favorites.isFavorite(listing.id)}
+              onToggle={() => favorites.toggle(listing.id)}
+              title={listing.title}
+            />
+          )}
+        </View>
         <View style={styles.gallery}>
           <ListingCover listing={listing} variant="detail" />
         </View>
         <View style={styles.titleBlock}>
-          <View style={styles.titleRow}>
-            <Text style={[styles.title, styles.titleText]} accessibilityRole="header">
-              {listing.title}
-            </Text>
-            {!isOwner && session.status === 'signedIn' && (
-              <FavoriteButton
-                favorite={favorites.isFavorite(listing.id)}
-                onToggle={() => favorites.toggle(listing.id)}
-                title={listing.title}
-              />
-            )}
-          </View>
+          <Text style={[styles.title, styles.titleText]} accessibilityRole="header">
+            {listing.title}
+          </Text>
           <Text style={styles.author}>{listing.author}</Text>
         </View>
         <View
@@ -132,7 +143,22 @@ export function ListingDetailScreen() {
             </Text>
           </View>
         )}
-        <Text style={styles.meta}>{details.meta}</Text>
+        <View style={styles.card}>
+          <View style={styles.cardRow}>
+            <Text style={styles.cardLabel}>Conservação</Text>
+            <Text style={styles.cardValue}>{card.condition}</Text>
+          </View>
+          <View style={styles.cardRow}>
+            <Text style={styles.cardLabel}>Categoria</Text>
+            <Text style={styles.cardValue}>{card.category}</Text>
+          </View>
+          {card.location && (
+            <View style={styles.cardRow}>
+              <Text style={styles.cardLabel}>Retirada</Text>
+              <Text style={styles.cardValue}>{card.location}</Text>
+            </View>
+          )}
+        </View>
         {details.paragraphs.map((text) => (
           <Text key={text} style={styles.about}>
             {text}
@@ -249,8 +275,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.container,
     marginBottom: spacing.xs,
   },
+  // Figma 03.01: compartilhar e favoritar juntos, acima da capa.
+  actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.xxs },
+  actionButton: {
+    width: metrics.touchTarget,
+    height: metrics.touchTarget,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionPressed: { backgroundColor: colors.pressed },
   titleBlock: { gap: spacing.xxs },
-  titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xs },
   titleText: { flex: 1 },
   title: {
     ...typography.titleLarge,
@@ -266,7 +301,16 @@ const styles = StyleSheet.create({
   tagText: { ...typography.labelLarge },
   reserved: { gap: spacing.xxs },
   reservedText: { ...typography.bodyMedium, color: colors.onSurface },
-  meta: { ...typography.labelLarge, color: colors.onSurfaceVariant },
+  // Cartão de três linhas (Figma 03.01): conservação, categoria e retirada.
+  card: {
+    gap: spacing.xxs,
+    padding: spacing.md,
+    borderRadius: radius.medium,
+    backgroundColor: colors.container,
+  },
+  cardRow: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
+  cardLabel: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
+  cardValue: { ...typography.bodyMedium, color: colors.onSurface, fontWeight: '500' },
   about: { ...typography.bodyLarge, color: colors.onSurface },
   listItem: {
     minHeight: 56,

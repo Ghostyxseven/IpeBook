@@ -147,9 +147,22 @@ export function detailSignedOutLabel(modality: Modality) {
   return 'Entrar para combinar encontro';
 }
 
-/** "BOM ESTADO · LITERATURA BRASILEIRA" */
-export function detailMeta(listing: Pick<Listing, 'condition' | 'category'>) {
-  return `${conditionLabels[listing.condition]} · ${listing.category}`;
+/** Cartão de três linhas do Detalhe (Figma 03.01): conservação, categoria e onde retirar. */
+export type DetailCard = {
+  condition: string;
+  category: string;
+  /** `null` sem bairro nem cidade: a linha de Retirada não aparece. */
+  location: string | null;
+};
+
+export function detailCard(
+  listing: Pick<Listing, 'condition' | 'category' | 'neighborhood' | 'city'>,
+): DetailCard {
+  return {
+    condition: conditionLabels[listing.condition],
+    category: listing.category,
+    location: locationLabel(listing),
+  };
 }
 
 /** Índice estável (0 a `count - 1`) para escolher a cor da capa ilustrativa pelo id. */
@@ -167,7 +180,7 @@ export function listingMeta(listing: Pick<Listing, 'condition' | 'neighborhood' 
 /** Tudo o que a tela de detalhe mostra, já decidido pelas regras de cada modalidade. */
 export type ListingDetails = {
   headline: { value: string; label: string };
-  meta: string;
+  card: DetailCard;
   /** Na troca, as condições vêm antes da descrição; nas outras, só a descrição. */
   paragraphs: string[];
   /** "Ana · Centro, Picos", ou `null` sem nome nem localização. */
@@ -187,7 +200,7 @@ export function listingDetails(listing: Listing): ListingDetails {
     .join(' · ');
   return {
     headline: detailHeadline(listing),
-    meta: detailMeta(listing),
+    card: detailCard(listing),
     paragraphs,
     owner: owner || null,
     notes,
