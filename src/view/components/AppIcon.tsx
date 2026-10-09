@@ -54,6 +54,8 @@ const symbols = {
     android: 'check_box_outline_blank',
     web: 'check_box_outline_blank',
   },
+  // Menu "mais opções" da conversa (Figma 06.02, spec 041).
+  more: { ios: 'ellipsis', android: 'more_vert', web: 'more_vert' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;
