@@ -180,6 +180,7 @@ export function ListingDetailScreen() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Denunciar anúncio"
+              accessibilityHint="Golpe, descrição falsa ou conteúdo ofensivo."
               onPress={openReport}
               style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
             >
@@ -193,6 +194,7 @@ export function ListingDetailScreen() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={blockLabel(listing.ownerFirstName)}
+              accessibilityHint="Os anúncios dessa pessoa somem para você."
               onPress={() => setBlocking(true)}
               style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
             >
