@@ -27,7 +27,7 @@ import {
   detailHeadline,
   detailActionLabel,
   detailSignedOutLabel,
-  detailMeta,
+  detailCard,
   modalitySummary,
   cardOverline,
   cardValue,
@@ -203,7 +203,12 @@ test('textos do Figma para lista, Início e detalhe', () => {
     value: 'Gratuito',
     label: 'Doação',
   });
-  assert.equal(detailMeta(listing), 'Bom estado · Literatura brasileira');
+  assert.deepEqual(detailCard(listing), {
+    condition: 'Bom estado',
+    category: 'Literatura brasileira',
+    location: 'Centro, Picos',
+  });
+  assert.equal(detailCard({ ...listing, neighborhood: null, city: null }).location, null);
 });
 
 test('título e resumo do Explorar acompanham os filtros', () => {
