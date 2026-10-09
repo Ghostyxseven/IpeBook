@@ -8,22 +8,23 @@ import { bookRequestErrorMessage } from '../model/services/bookRequestMessages.t
 import { isOwner } from '../model/services/bookRequestTransitions.ts';
 import { useAsyncAction } from './useAsyncAction.ts';
 
-export type RescheduleStatus = 'loading' | 'ready' | 'closed' | 'error';
+export type ProposeMeetingStatus = 'loading' | 'ready' | 'closed' | 'error';
 
 const VALID_DATE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 const VALID_TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 /**
- * Reagendar encontro (Figma 06.13 e 06.14): começa com o local combinado e pede um novo
- * dia e horário. Só o encontro aceito pode mudar; o banco confere de novo (ADR 0022).
+ * Propor o primeiro encontro de uma negociação que começou só como conversa (ADR 0034):
+ * local, dia e horário, do zero. Só funciona em `pending` sem proposta prévia; o banco
+ * confere de novo (`propose_meeting`). Espelha `useRescheduleViewModel`.
  */
-export function useRescheduleViewModel(
+export function useProposeMeetingViewModel(
   bookRequests: BookRequestRepository,
   catalog: CatalogRepository,
   requestId: string,
   userId: string,
 ) {
-  const [status, setStatus] = useState<RescheduleStatus>('loading');
+  const [status, setStatus] = useState<ProposeMeetingStatus>('loading');
   const [request, setRequest] = useState<BookRequest | null>(null);
   const [otherName, setOtherName] = useState<string | null>(null);
   const [publicLocation, setPublicLocation] = useState('');
@@ -48,8 +49,7 @@ export function useRescheduleViewModel(
       if (current !== loadId.current) return;
       setRequest(found);
       setOtherName(name);
-      setPublicLocation(found.publicLocation ?? '');
-      setStatus(found.status === 'accepted' ? 'ready' : 'closed');
+      setStatus(found.status === 'pending' && found.publicLocation === null ? 'ready' : 'closed');
     } catch (failure) {
       if (current !== loadId.current) return;
       setError(bookRequestErrorMessage(toBookRequestError(failure).code));
@@ -61,20 +61,13 @@ export function useRescheduleViewModel(
     void load();
   }, [load]);
 
-  const changed =
-    request !== null &&
-    (publicLocation.trim() !== request.publicLocation ||
-      meetingDate !== request.meetingDate ||
-      meetingTime !== request.meetingTime);
-
   const canSubmit = useMemo(
     () =>
       publicLocation.trim().length > 0 &&
       VALID_DATE.test(meetingDate) &&
       VALID_TIME.test(meetingTime) &&
-      changed &&
       !saving,
-    [publicLocation, meetingDate, meetingTime, changed, saving],
+    [publicLocation, meetingDate, meetingTime, saving],
   );
 
   const submit = useCallback(
@@ -83,7 +76,7 @@ export function useRescheduleViewModel(
         if (!request || !canSubmit) return;
         setError(null);
         try {
-          const updated = await bookRequests.reschedule(request.id, {
+          const updated = await bookRequests.proposeMeeting(request.id, {
             publicLocation: publicLocation.trim(),
             meetingDate,
             meetingTime,

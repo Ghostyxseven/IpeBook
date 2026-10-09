@@ -139,6 +139,24 @@ export function createMemoryBookRequestRepository(
       return items[index];
     },
 
+    async proposeMeeting(id, { publicLocation, meetingDate, meetingTime }) {
+      const index = findIndex(id);
+      if (index < 0) throw new BookRequestError('not_found');
+      const current = items[index];
+      // Igual à função `propose_meeting`: só antes do primeiro encontro proposto.
+      if (current.status !== 'pending' || current.publicLocation !== null) {
+        throw new BookRequestError('invalid_transition');
+      }
+      items[index] = {
+        ...current,
+        publicLocation: publicLocation.trim(),
+        meetingDate,
+        meetingTime,
+        updatedAt: nowIso(),
+      };
+      return items[index];
+    },
+
     async shelfOfRequester(requestId) {
       const index = findIndex(requestId);
       if (index < 0) throw new BookRequestError('not_found');

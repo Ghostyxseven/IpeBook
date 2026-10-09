@@ -5,10 +5,11 @@ export interface BookRequest {
   listingId: string;
   requesterId: string;
 
-  // Dados do encontro
-  publicLocation: string;
-  meetingDate: string; // Formato YYYY-MM-DD
-  meetingTime: string; // Formato HH:MM
+  // Dados do encontro. `null` nos três: "Conversar" (ADR 0034) abriu a negociação
+  // sem encontro nenhum ainda, só para falar antes de propor onde/quando.
+  publicLocation: string | null;
+  meetingDate: string | null; // Formato YYYY-MM-DD
+  meetingTime: string | null; // Formato HH:MM
 
   status: RequestStatus;
 

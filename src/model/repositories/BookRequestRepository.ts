@@ -1,8 +1,9 @@
 import { BookRequest, RequestStatus } from '../entities/BookRequest';
 import type { Listing } from '../entities/Listing';
 
-/** Novo local, dia e horário de um encontro combinado (Figma 06.13). */
-export type MeetingChange = Pick<BookRequest, 'publicLocation' | 'meetingDate' | 'meetingTime'>;
+/** Local, dia e horário de um encontro — sempre preenchidos: quem propõe ou reagenda
+ * manda os três; só a negociação sem proposta nenhuma ainda tem os três nulos. */
+export type MeetingChange = { publicLocation: string; meetingDate: string; meetingTime: string };
 
 export interface BookRequestRepository {
   /** Cria uma nova solicitação de negociação (requesterId é definido pelo repositório/RLS). */
@@ -27,6 +28,13 @@ export interface BookRequestRepository {
 
   /** Muda local, dia e horário de um encontro aceito; qualquer um dos dois pode (ADR 0022). */
   reschedule(id: string, meeting: MeetingChange): Promise<BookRequest>;
+
+  /**
+   * Propõe o primeiro encontro de uma negociação que começou só como conversa, sem
+   * local/dia/horário ainda (ADR 0034). Só funciona em `pending` sem proposta prévia;
+   * qualquer um dos dois lados pode propor.
+   */
+  proposeMeeting(id: string, meeting: MeetingChange): Promise<BookRequest>;
 
   /**
    * Anúncios de troca disponíveis de quem pediu, para o dono escolher a contraproposta
