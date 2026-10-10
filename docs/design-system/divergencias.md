@@ -403,3 +403,7 @@ inconsistência entre os 4 estados de desfecho foi aceita conscientemente, não 
 ## Spec 039 — mapa de pontos públicos
 
 O usuário solicitou capas flutuantes em pontos públicos. Os quadros de Explorar consultados (Android 10:2, iOS 70:1313) não têm este modo. A extensão reutiliza BookCard, Button, TextField, Checkbox e tokens; capas usam 48 × 72 px derivados da escala, com sombra de chão sem animação contínua. Agrupa livros no mesmo ponto e mantém lista acessível. Falta quadro específico do mapa no Figma; nenhum padrão global foi modificado.
+
+## Spec 040 — aplicativo Web responsivo
+
+A composição usa os padrões e medidas publicados em `referencia/web.md`. No cabeçalho largo, o controle “Buscar livros” abre a busca da tela Explorar, em vez de manter um campo editável no cabeçalho. A lista e o resumo da conversa aparecem lado a lado apenas quando a largura comporta os três painéis; entre 840 e 1199 px ficam lista e conversa, com o resumo do livro na área de mensagens. Essas escolhas preservam as rotas e componentes existentes. O arquivo atual do Figma não ficou acessível nesta sessão; a paridade visual dos quadros Web continua pendente de inspeção.

@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: metrics.pagePadding,
     paddingVertical: spacing.xs,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
   appTitle: {
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: metrics.pagePadding,
     paddingBottom: spacing.lg,
     gap: spacing.md,
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     width: '100%',
     alignSelf: 'center',
   },

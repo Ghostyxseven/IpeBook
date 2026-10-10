@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: metrics.pagePadding,
     paddingBottom: metrics.pagePadding,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
   // Rótulo de seção em verde (Figma 07.05).

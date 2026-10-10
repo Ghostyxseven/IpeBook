@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     padding: metrics.pagePadding,
     gap: spacing.md,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
   brand: { ...typography.brandTitle, color: colors.onSurface },

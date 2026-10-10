@@ -158,7 +158,12 @@ function InfoRow({
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
   scroll: { flexGrow: 1, padding: metrics.pagePadding },
-  content: { width: '100%', maxWidth: metrics.formMaxWidth, alignSelf: 'center', gap: spacing.md },
+  content: {
+    width: '100%',
+    maxWidth: metrics.readingMaxWidth,
+    alignSelf: 'center',
+    gap: spacing.md,
+  },
   sectionLabel: { ...typography.labelLarge, color: colors.onSurfaceVariant },
   // Cartão agrupado do Figma 07.07: linhas com separador, sem o espaço entre cartões de antes.
   card: {

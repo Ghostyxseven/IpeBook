@@ -19,6 +19,7 @@ import { useCatalogFeed } from '../../../factories/catalog';
 import { useFavorites } from '../../../factories/favorites';
 import { useUnreadCount } from '../../../factories/notifications';
 import { useSessionContext } from '../../../viewmodel/useSession';
+import { useWebLayout } from '../../hooks/useWebLayout';
 import { AppIcon } from '../../components/AppIcon';
 import { BookTile } from '../../components/catalog/BookTile';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
@@ -28,7 +29,7 @@ import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { NotificationBell } from '../../components/notifications/NotificationBell';
 import { FormMessage } from '../../components/ui/FormMessage';
-import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, radius, spacing, typography, webLayout } from '../../theme/nativeTheme';
 import { exploreHref } from './routeParams';
 
 const modalities: Modality[] = ['sale', 'trade', 'donation'];
@@ -57,6 +58,7 @@ const focusRing = Platform.select({
  * busca, modalidades, carrossel dos livros mais recentes e atalho para doações.
  */
 export function HomeScreen() {
+  const { medium, large } = useWebLayout();
   const router = useRouter();
   const session = useSessionContext();
   const vm = useCatalogFeed(session.user?.name);
@@ -79,10 +81,21 @@ export function HomeScreen() {
     }, [refreshUnread]),
   );
 
+  const previewTiles = vm.preview.map((listing) => (
+    <BookTile
+      key={listing.id}
+      listing={listing}
+      onPress={() => router.push({ pathname: '/livro/[id]', params: { id: listing.id } })}
+      favorite={favorites.isFavorite(listing.id)}
+      onToggleFavorite={() => favorites.toggle(listing.id)}
+      wide={large}
+    />
+  ));
+
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, medium && styles.webContent]}
         refreshControl={
           <RefreshControl
             refreshing={vm.refreshing}
@@ -176,6 +189,13 @@ export function HomeScreen() {
             title="Ainda não há livros anunciados"
             message={emptyMessages[vm.modality ?? 'all']}
           />
+        ) : large ? (
+          <View
+            style={[styles.carousel, styles.desktopCarousel]}
+            accessibilityLabel="Livros recém-chegados"
+          >
+            {previewTiles}
+          </View>
         ) : (
           <ScrollView
             horizontal
@@ -184,15 +204,7 @@ export function HomeScreen() {
             contentContainerStyle={styles.carousel}
             accessibilityLabel="Livros recém-chegados"
           >
-            {vm.preview.map((listing) => (
-              <BookTile
-                key={listing.id}
-                listing={listing}
-                onPress={() => router.push({ pathname: '/livro/[id]', params: { id: listing.id } })}
-                favorite={favorites.isFavorite(listing.id)}
-                onToggleFavorite={() => favorites.toggle(listing.id)}
-              />
-            ))}
+            {previewTiles}
           </ScrollView>
         )}
 
@@ -228,6 +240,7 @@ const styles = StyleSheet.create({
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
   },
+  webContent: { maxWidth: webLayout.contentMaxWidth },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -280,6 +293,7 @@ const styles = StyleSheet.create({
     // Espaço para a sombra dos cards não ser cortada.
     paddingVertical: spacing.xxs,
   },
+  desktopCarousel: { marginHorizontal: 0, paddingHorizontal: 0, gap: spacing.lg },
   // Item de lista do Material 3 (Figma 02.01): ícone, duas linhas e seta.
   donations: {
     minHeight: 64,

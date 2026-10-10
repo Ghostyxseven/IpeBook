@@ -1,10 +1,13 @@
-import type { ReactElement } from 'react';
+import { useMemo, type ReactElement } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import type { Listing } from '../../../model/entities/Listing';
 import { colors, metrics, spacing } from '../../theme/nativeTheme';
 import { Button } from '../ui/Button';
 import { FormMessage } from '../ui/FormMessage';
 import { BookCard } from './BookCard';
+import { BookTile } from './BookTile';
+import { useWebLayout } from '../../hooks/useWebLayout';
+import { webLayout } from '../../theme/nativeTheme';
 
 /** Lista de Book Cards com rolagem infinita, puxar para atualizar e rodapé de carregamento. */
 export function CatalogList({
@@ -36,18 +39,40 @@ export function CatalogList({
   isFavorite?: (id: string) => boolean;
   onToggleFavorite?: (id: string) => void;
 }) {
+  const { medium, large } = useWebLayout();
+  const columns = large ? 4 : medium ? 2 : 1;
+  const gridItems = useMemo(() => {
+    if (columns === 1 || items.length === 0) return items;
+    const missing = (columns - (items.length % columns)) % columns;
+    return [...items, ...Array<null>(missing).fill(null)];
+  }, [items, columns]);
   return (
     <FlatList
-      data={items}
-      keyExtractor={(item) => item.id}
+      key={columns}
+      numColumns={columns}
+      data={gridItems}
+      keyExtractor={(item, index) => item?.id ?? `vazio-${index}`}
       renderItem={({ item }) => (
-        <BookCard
-          listing={item}
-          onPress={() => onOpen(item.id)}
-          favorite={isFavorite?.(item.id)}
-          onToggleFavorite={onToggleFavorite ? () => onToggleFavorite(item.id) : undefined}
-        />
+        <View style={columns > 1 ? styles.gridCell : undefined}>
+          {item == null ? null : columns > 1 ? (
+            <BookTile
+              listing={item}
+              onPress={() => onOpen(item.id)}
+              favorite={isFavorite?.(item.id)}
+              onToggleFavorite={onToggleFavorite ? () => onToggleFavorite(item.id) : undefined}
+              wide
+            />
+          ) : (
+            <BookCard
+              listing={item}
+              onPress={() => onOpen(item.id)}
+              favorite={isFavorite?.(item.id)}
+              onToggleFavorite={onToggleFavorite ? () => onToggleFavorite(item.id) : undefined}
+            />
+          )}
+        </View>
       )}
+      columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
       ListHeaderComponent={header}
       ListEmptyComponent={empty}
       ListFooterComponent={
@@ -71,7 +96,7 @@ export function CatalogList({
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.action} />
       }
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, medium && styles.webContent]}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
     />
@@ -88,5 +113,8 @@ const styles = StyleSheet.create({
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
   },
+  webContent: { maxWidth: webLayout.contentMaxWidth, gap: spacing.md },
+  gridRow: { gap: spacing.md },
+  gridCell: { flex: 1, minWidth: 0 },
   footer: { paddingVertical: spacing.lg, gap: spacing.xs },
 });

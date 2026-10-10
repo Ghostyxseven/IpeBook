@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     padding: metrics.pagePadding,
     gap: spacing.md,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
   identity: { alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.md },
