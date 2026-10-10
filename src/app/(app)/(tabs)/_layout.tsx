@@ -1,12 +1,14 @@
 import { Tabs } from 'expo-router/js-tabs';
+import { useWebLayout } from '../../../view/hooks/useWebLayout';
 import { NavigationBar } from '../../../view/components/NavigationBar';
 import { colors } from '../../../view/theme/nativeTheme';
 
 /** Abas da área autenticada com a barra de navegação do Material 3 (Figma). */
 export default function TabsLayout() {
+  const { medium } = useWebLayout();
   return (
     <Tabs
-      tabBar={(props) => <NavigationBar {...props} />}
+      tabBar={(props) => (medium ? null : <NavigationBar {...props} />)}
       screenOptions={{
         headerShown: false,
         sceneStyle: { backgroundColor: colors.surface },

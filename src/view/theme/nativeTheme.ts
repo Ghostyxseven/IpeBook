@@ -137,6 +137,26 @@ export const metrics = {
   borderHairline: px(tokens.border.hairline),
   /** Largura máxima de formulários em tablets. */
   formMaxWidth: px(tokens.app.formMaxWidth),
+  /** Listas e painéis ocupam a página Web; o layout nativo mantém a medida atual. */
+  contentMaxWidth:
+    Platform.OS === 'web' ? px(tokens.app.web.contentMaxWidth) : px(tokens.app.formMaxWidth),
+  /** Textos longos mantêm uma linha legível no navegador. */
+  readingMaxWidth:
+    Platform.OS === 'web' ? px(tokens.app.web.readingMaxWidth) : px(tokens.app.formMaxWidth),
+} as const;
+
+/** Medidas da composição Web; correspondem à referência de breakpoints publicada. */
+export const webLayout = {
+  medium: px(tokens.app.web.mediumBreakpoint),
+  expanded: px(tokens.app.web.expandedBreakpoint),
+  large: px(tokens.app.web.largeBreakpoint),
+  contentMaxWidth: px(tokens.app.web.contentMaxWidth),
+  railWidth: px(tokens.app.web.railWidth),
+  headerHeight: px(tokens.app.web.headerHeight),
+  searchMaxWidth: px(tokens.app.web.searchMaxWidth),
+  filterWidth: px(tokens.app.web.filterWidth),
+  detailsPaneWidth: px(tokens.app.web.detailsPaneWidth),
+  conversationListWidth: px(tokens.app.web.conversationListWidth),
 } as const;
 
 /**

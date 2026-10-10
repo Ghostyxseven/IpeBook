@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: metrics.pagePadding - spacing.md,
     paddingBottom: metrics.pagePadding,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
   header: { gap: spacing.sm, alignItems: 'flex-end' },

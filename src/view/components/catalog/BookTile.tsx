@@ -15,11 +15,13 @@ export function BookTile({
   onPress,
   favorite,
   onToggleFavorite,
+  wide = false,
 }: {
   listing: Listing;
   onPress: () => void;
   favorite?: boolean;
   onToggleFavorite?: () => void;
+  wide?: boolean;
 }) {
   return (
     <Pressable
@@ -29,11 +31,12 @@ export function BookTile({
       onPress={onPress}
       style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
         styles.card,
+        wide && styles.wideCard,
         pressed && styles.pressed,
         focused && styles.focused,
       ]}
     >
-      <View style={styles.coverArea}>
+      <View style={[styles.coverArea, wide && styles.wideCoverArea]}>
         <ListingCover listing={listing} variant="tile" />
         {onToggleFavorite && (
           <View style={styles.favorite}>
@@ -75,6 +78,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     elevation: 1,
   },
+  wideCard: { width: 'auto', flex: 1, minWidth: 0 },
+  wideCoverArea: { height: 220 },
   pressed: { backgroundColor: colors.containerHigh },
   focused: Platform.select({
     web: {

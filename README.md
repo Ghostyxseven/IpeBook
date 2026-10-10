@@ -142,6 +142,8 @@ Apresenta o projeto, modalidades, como funciona e dúvidas. Documentos acessíve
 
 A entrada Web (`index.web.js`) registra `src/view/screens/InstitutionalScreen.web.tsx`, sem o Expo Router, para manter o JavaScript inicial pequeno (ADR 0005). Componentes e estilos ficam na View; estado em `src/viewmodel/useInstitutionalViewModel.ts`; documentos e resolução de destinos no Model.
 
+O aplicativo completo fica em `/app` na exportação Web. Para executá-lo localmente, use `EXPO_PUBLIC_WEB_APP=1 npm run web`; para exportar apresentação e app juntos, use `npm run build:web`. O app usa navegação inferior abaixo de 600 px, lateral entre 600 e 1199 px e cabeçalho a partir de 1200 px; listas e painéis seguem a [spec 040](specs/040-web-responsiva/spec.md). A publicação desta adaptação depende de revisão e validação visual do fluxo real.
+
 ```bash
 npm run web
 npm run typecheck

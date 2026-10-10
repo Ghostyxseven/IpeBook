@@ -28,7 +28,15 @@ const statusIcons: Record<RequestStatus, AppIconName> = {
  * mensagem e o livro. Tocar abre a conversa (spec 029); dela se chega à negociação.
  * Na aba, a tela mostra o título; aberta pela pilha, o cabeçalho já o mostra.
  */
-export function BookRequestListScreen({ showTitle = true }: { showTitle?: boolean }) {
+export function BookRequestListScreen({
+  showTitle = true,
+  embedded = false,
+  selectedId,
+}: {
+  showTitle?: boolean;
+  embedded?: boolean;
+  selectedId?: string;
+}) {
   const vm = useBookRequestList();
   const { retry } = vm;
 
@@ -112,8 +120,17 @@ export function BookRequestListScreen({ showTitle = true }: { showTitle?: boolea
               accessibilityRole="button"
               accessibilityLabel={`${name}, ${when}. ${body}. Sobre ${bookTitle}. ${status}`}
               accessibilityHint="Abre a conversa"
-              onPress={() => router.push(`/negociacoes/${request.id}/conversa`)}
-              style={({ pressed }) => [styles.item, pressed && styles.pressed]}
+              accessibilityState={{ selected: request.id === selectedId }}
+              onPress={() =>
+                embedded
+                  ? router.replace(`/negociacoes/${request.id}/conversa`)
+                  : router.push(`/negociacoes/${request.id}/conversa`)
+              }
+              style={({ pressed }) => [
+                styles.item,
+                request.id === selectedId && styles.selected,
+                pressed && styles.pressed,
+              ]}
             >
               <View style={styles.avatar}>
                 {otherName ? (
@@ -146,11 +163,12 @@ export function BookRequestListScreen({ showTitle = true }: { showTitle?: boolea
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
+  selected: { backgroundColor: colors.soft },
   content: {
     padding: metrics.pagePadding,
     gap: spacing.xs,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
   title: {

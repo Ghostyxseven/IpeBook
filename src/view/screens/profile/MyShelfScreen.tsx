@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBookRequestList } from '../../../factories/bookRequest';
+import { useWebLayout } from '../../hooks/useWebLayout';
 import { useMyListings } from '../../../factories/listings';
 import { requestListLabel } from '../../../model/services/bookRequestFormat';
 import { modalityLabels } from '../../../model/services/catalogFormat';
@@ -35,6 +36,7 @@ const intros: Partial<Record<ShelfTab, { title: string; text: string }>> = {
 
 /** Minha estante (Figma Android 05.01 a 05.06): anúncios, propostas recebidas e concluídos. */
 export function MyShelfScreen() {
+  const { large } = useWebLayout();
   const router = useRouter();
   const vm = useMyListings();
   const requests = useBookRequestList();
@@ -142,7 +144,7 @@ export function MyShelfScreen() {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       {appBar}
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, large && styles.desktopContent]}>
         {intro ? (
           <View style={styles.intro}>
             <Text style={styles.introTitle} accessibilityRole="header">
@@ -169,18 +171,21 @@ export function MyShelfScreen() {
                   <Button label="Entendi" variant="text" onPress={() => setRemovedNotice(null)} />
                 </View>
               ) : null}
-              {active.map((listing) => (
-                <ShelfBookRow
-                  key={listing.id}
-                  listing={listing}
-                  supporting={shelfSupportingText(listing, now)}
-                  hint="Abre o gerenciamento deste anúncio"
-                  disabled={vm.pendingId === listing.id}
-                  onPress={() =>
-                    router.push({ pathname: '/anuncio/[id]', params: { id: listing.id } })
-                  }
-                />
-              ))}
+              <View style={[styles.bookRows, large && styles.desktopRows]}>
+                {active.map((listing) => (
+                  <View key={listing.id} style={large && styles.desktopCell}>
+                    <ShelfBookRow
+                      listing={listing}
+                      supporting={shelfSupportingText(listing, now)}
+                      hint="Abre o gerenciamento deste anúncio"
+                      disabled={vm.pendingId === listing.id}
+                      onPress={() =>
+                        router.push({ pathname: '/anuncio/[id]', params: { id: listing.id } })
+                      }
+                    />
+                  </View>
+                ))}
+              </View>
               <Text style={styles.footnote}>Toque em um livro para editar, pausar ou excluir.</Text>
               <DraftsEntry onPress={() => router.push('/anunciar/rascunhos')} />
             </>
@@ -203,27 +208,30 @@ export function MyShelfScreen() {
             <ErrorState message={requests.error ?? ''} onRetry={requests.retry} />
           ) : proposals.length ? (
             <>
-              {proposals.map(({ request, listing }) => (
-                <ShelfBookRow
-                  key={request.id}
-                  listing={
-                    listing ?? {
-                      id: request.listingId,
-                      title: 'Livro indisponível',
-                      author: '',
-                      coverUrl: null,
-                    }
-                  }
-                  supporting={[
-                    requestListLabel(request, { asOwner: true }),
-                    listing ? modalityLabels[listing.modality] : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                  hint="Abre a negociação"
-                  onPress={() => router.push(`/negociacoes/${request.id}`)}
-                />
-              ))}
+              <View style={[styles.bookRows, large && styles.desktopRows]}>
+                {proposals.map(({ request, listing }) => (
+                  <View key={request.id} style={large && styles.desktopCell}>
+                    <ShelfBookRow
+                      listing={
+                        listing ?? {
+                          id: request.listingId,
+                          title: 'Livro indisponível',
+                          author: '',
+                          coverUrl: null,
+                        }
+                      }
+                      supporting={[
+                        requestListLabel(request, { asOwner: true }),
+                        listing ? modalityLabels[listing.modality] : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                      hint="Abre a negociação"
+                      onPress={() => router.push(`/negociacoes/${request.id}`)}
+                    />
+                  </View>
+                ))}
+              </View>
               <Note
                 title="Tudo pela conversa"
                 text="Confira a proposta e combine os detalhes antes de reservar seu livro."
@@ -243,17 +251,20 @@ export function MyShelfScreen() {
         {tab === 'concluidos' ? (
           done.length ? (
             <>
-              {done.map((listing) => (
-                <ShelfBookRow
-                  key={listing.id}
-                  listing={listing}
-                  supporting={shelfSupportingText(listing, now)}
-                  hint="Abre o anúncio"
-                  onPress={() =>
-                    router.push({ pathname: '/livro/[id]', params: { id: listing.id } })
-                  }
-                />
-              ))}
+              <View style={[styles.bookRows, large && styles.desktopRows]}>
+                {done.map((listing) => (
+                  <View key={listing.id} style={large && styles.desktopCell}>
+                    <ShelfBookRow
+                      listing={listing}
+                      supporting={shelfSupportingText(listing, now)}
+                      hint="Abre o anúncio"
+                      onPress={() =>
+                        router.push({ pathname: '/livro/[id]', params: { id: listing.id } })
+                      }
+                    />
+                  </View>
+                ))}
+              </View>
               <Note
                 title="Cada livro, um novo capítulo"
                 text="Suas negociações concluídas continuam aqui para você consultar."
@@ -271,15 +282,17 @@ export function MyShelfScreen() {
       </ScrollView>
 
       {/* Extended FAB pequeno do M3 (Figma 05.01, "Anunciar livro"). */}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Anunciar livro"
-        onPress={announce}
-        style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
-      >
-        <AppIcon name="add" color={colors.onSelected} />
-        <Text style={styles.fabLabel}>Anunciar livro</Text>
-      </Pressable>
+      {!large && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Anunciar livro"
+          onPress={announce}
+          style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
+        >
+          <AppIcon name="add" color={colors.onSelected} />
+          <Text style={styles.fabLabel}>Anunciar livro</Text>
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 }
@@ -417,8 +430,16 @@ const styles = StyleSheet.create({
     paddingBottom: 96,
     gap: spacing.md,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
+  },
+  desktopContent: { maxWidth: metrics.contentMaxWidth },
+  bookRows: { gap: spacing.xs },
+  desktopRows: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+  desktopCell: {
+    width: '48%',
+    backgroundColor: colors.containerLow,
+    borderRadius: radius.medium,
   },
   intro: { gap: spacing.xs },
   introTitle: { ...typography.brandHeadline, color: colors.onSurface },

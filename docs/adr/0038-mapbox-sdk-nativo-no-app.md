@@ -1,4 +1,4 @@
-# ADR 0037 — SDK nativo do Mapbox no Android/iOS; Web continua com Mapbox GL JS
+# ADR 0038 — SDK nativo do Mapbox no Android/iOS; Web continua com Mapbox GL JS
 
 Data: 2026-10-10. Status: aceito e validado — build de desenvolvimento gerado via EAS (perfil `preview`, APK) e confirmado funcionando em aparelho Android real.
 

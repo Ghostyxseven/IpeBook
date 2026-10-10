@@ -11,6 +11,7 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { Button } from '../../components/ui/Button';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { FormMessage } from '../../components/ui/FormMessage';
+import { useWebLayout } from '../../hooks/useWebLayout';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 /**
@@ -20,6 +21,7 @@ import { colors, metrics, radius, spacing, typography } from '../../theme/native
  * cima da lista, exatamente como no Figma.
  */
 export function DraftsScreen() {
+  const { large } = useWebLayout();
   const router = useRouter();
   const vm = useDrafts();
   const [selected, setSelected] = useState<string | null>(null);
@@ -72,7 +74,7 @@ export function DraftsScreen() {
   // 04.11 · Rascunhos (com o diálogo 04.15 por cima, quando pedido)
   return (
     <SafeAreaView style={styles.screen} edges={['left', 'right', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, large && styles.desktopContent]}>
         <Text accessibilityRole="header" style={styles.brand}>
           Sua ideia está guardada.
         </Text>
@@ -82,68 +84,74 @@ export function DraftsScreen() {
 
         <FormMessage tone="error" message={vm.actionError} />
 
-        <View style={styles.list}>
-          {vm.drafts.map((record) => {
-            const chosen = record.id === current?.id;
-            return (
-              <Pressable
-                key={record.id}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: chosen, checked: chosen }}
-                accessibilityLabel={`${draftTitle(record)}. ${draftSupporting(record)}`}
-                accessibilityHint="Escolhe este rascunho"
-                onPress={() => setSelected(record.id)}
-                style={({ pressed }) => [
-                  styles.row,
-                  chosen && styles.rowChosen,
-                  pressed && styles.rowPressed,
-                ]}
-              >
-                <View style={styles.rowText}>
-                  <Text style={styles.rowTitle} numberOfLines={1}>
-                    {draftTitle(record)}
-                  </Text>
-                  <Text style={styles.body} numberOfLines={2}>
-                    {draftSupporting(record)}
-                  </Text>
-                </View>
-                <AppIcon
-                  name={chosen ? 'checkCircle' : 'chevronRight'}
-                  color={chosen ? colors.action : colors.onSurfaceVariant}
-                />
-              </Pressable>
-            );
-          })}
-        </View>
+        <View style={[styles.draftLayout, large && styles.desktopDraftLayout]}>
+          <View style={[styles.list, large && styles.desktopList]}>
+            {vm.drafts.map((record) => {
+              const chosen = record.id === current?.id;
+              return (
+                <Pressable
+                  key={record.id}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: chosen, checked: chosen }}
+                  accessibilityLabel={`${draftTitle(record)}. ${draftSupporting(record)}`}
+                  accessibilityHint="Escolhe este rascunho"
+                  onPress={() => setSelected(record.id)}
+                  style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+                    styles.row,
+                    chosen && styles.rowChosen,
+                    pressed && styles.rowPressed,
+                    focused && styles.focused,
+                  ]}
+                >
+                  <View style={styles.rowText}>
+                    <Text style={styles.rowTitle} numberOfLines={1}>
+                      {draftTitle(record)}
+                    </Text>
+                    <Text style={styles.body} numberOfLines={2}>
+                      {draftSupporting(record)}
+                    </Text>
+                  </View>
+                  <AppIcon
+                    name={chosen ? 'checkCircle' : 'chevronRight'}
+                    color={chosen ? colors.action : colors.onSurfaceVariant}
+                  />
+                </Pressable>
+              );
+            })}
+          </View>
 
-        {/* A foto não entra no rascunho (ADR 0030), e é melhor dizer antes. */}
-        <View style={styles.note}>
-          <AppIcon name="info" size={18} color={colors.onSurfaceVariant} />
-          <Text style={styles.noteText}>
-            O rascunho guarda o texto. A foto é escolhida de novo ao retomar.
-          </Text>
-        </View>
+          <View style={[styles.actionPanel, large && styles.desktopActionPanel]}>
+            {/* A foto não entra no rascunho (ADR 0030), e é melhor dizer antes. */}
+            <View style={styles.note}>
+              <AppIcon name="info" size={18} color={colors.onSurfaceVariant} />
+              <Text style={styles.noteText}>
+                O rascunho guarda o texto. A foto é escolhida de novo ao retomar.
+              </Text>
+            </View>
 
-        <View style={styles.actions}>
-          <Button
-            label="Retomar anúncio"
-            disabled={!current || vm.discarding}
-            onPress={() =>
-              current && router.replace({ pathname: '/anunciar', params: { rascunho: current.id } })
-            }
-          />
-          <Button
-            label="Descartar rascunho"
-            variant="text"
-            disabled={!current || vm.discarding}
-            onPress={() => current && setDiscarding(current)}
-          />
-          <Button
-            label="Criar outro anúncio"
-            variant="secondary"
-            disabled={vm.discarding}
-            onPress={() => router.replace('/anunciar')}
-          />
+            <View style={styles.actions}>
+              <Button
+                label="Retomar anúncio"
+                disabled={!current || vm.discarding}
+                onPress={() =>
+                  current &&
+                  router.replace({ pathname: '/anunciar', params: { rascunho: current.id } })
+                }
+              />
+              <Button
+                label="Descartar rascunho"
+                variant="text"
+                disabled={!current || vm.discarding}
+                onPress={() => current && setDiscarding(current)}
+              />
+              <Button
+                label="Criar outro anúncio"
+                variant="secondary"
+                disabled={vm.discarding}
+                onPress={() => router.replace('/anunciar')}
+              />
+            </View>
+          </View>
         </View>
       </ScrollView>
 
@@ -174,8 +182,20 @@ const styles = StyleSheet.create({
     padding: metrics.pagePadding,
     gap: spacing.md,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
+  },
+  desktopContent: { maxWidth: metrics.contentMaxWidth },
+  draftLayout: { gap: spacing.md },
+  desktopDraftLayout: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xl },
+  desktopList: { flex: 1, minWidth: 0 },
+  actionPanel: { gap: spacing.md },
+  desktopActionPanel: {
+    flex: 1,
+    minWidth: 0,
+    padding: spacing.lg,
+    borderRadius: radius.extraLarge,
+    backgroundColor: colors.containerLow,
   },
   brand: { ...typography.brandHeadline, color: colors.onSurface },
   body: { ...typography.bodyLarge, color: colors.onSurfaceVariant },
@@ -191,6 +211,12 @@ const styles = StyleSheet.create({
   },
   rowChosen: { backgroundColor: colors.containerLow },
   rowPressed: { backgroundColor: colors.pressed },
+  focused: {
+    outlineColor: colors.focus,
+    outlineStyle: 'solid',
+    outlineWidth: metrics.focusWidth,
+    outlineOffset: metrics.focusOffset,
+  },
   rowText: { flex: 1, gap: spacing.xxs },
   rowTitle: { ...typography.bodyLarge, color: colors.onSurface },
   note: { flexDirection: 'row', gap: spacing.xs, alignItems: 'flex-start' },

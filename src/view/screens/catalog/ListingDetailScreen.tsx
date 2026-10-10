@@ -23,6 +23,7 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { useSessionContext } from '../../../viewmodel/useSession';
+import { useWebLayout } from '../../hooks/useWebLayout';
 import { badgeColors, colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 /**
@@ -41,6 +42,7 @@ function factIcon(label: string): AppIconName {
 
 /** Detalhe do livro (Figma 03.01 a 03.03): tudo o que é preciso para decidir antes de agir. */
 export function ListingDetailScreen() {
+  const { expanded } = useWebLayout();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const vm = useListingDetail(String(id ?? ''));
@@ -128,214 +130,227 @@ export function ListingDetailScreen() {
       style={styles.safe}
       edges={isIOS ? ['top', 'left', 'right', 'bottom'] : ['left', 'right', 'bottom']}
     >
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.gallery}>
-          {isIOS && (
-            <View style={styles.floatingHeader} pointerEvents="box-none">
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Voltar"
-                onPress={() => router.back()}
-                hitSlop={8}
-                style={({ pressed }) => [styles.circleButton, pressed && styles.circlePressed]}
-              >
-                <AppIcon name="back" size={20} color={colors.onSurface} />
-              </Pressable>
-              <View style={styles.floatingActions}>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`Compartilhar ${listing.title}`}
-                  onPress={shareListing}
-                  hitSlop={8}
-                  style={({ pressed }) => [styles.circleButton, pressed && styles.circlePressed]}
-                >
-                  <AppIcon name="share" size={20} color={colors.onSurface} />
-                </Pressable>
-                {canFavorite && (
-                  <FavoriteButton
-                    favorite={favorites.isFavorite(listing.id)}
-                    onToggle={() => favorites.toggle(listing.id)}
-                    title={listing.title}
-                    overlay
-                  />
+      <ScrollView contentContainerStyle={[styles.content, expanded && styles.desktopContent]}>
+        <View style={[styles.detailGrid, expanded && styles.desktopDetailGrid]}>
+          <View style={styles.detailVisual}>
+            <View style={styles.gallery}>
+              {isIOS && (
+                <View style={styles.floatingHeader} pointerEvents="box-none">
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Voltar"
+                    onPress={() => router.back()}
+                    hitSlop={8}
+                    style={({ pressed }) => [styles.circleButton, pressed && styles.circlePressed]}
+                  >
+                    <AppIcon name="back" size={20} color={colors.onSurface} />
+                  </Pressable>
+                  <View style={styles.floatingActions}>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`Compartilhar ${listing.title}`}
+                      onPress={shareListing}
+                      hitSlop={8}
+                      style={({ pressed }) => [
+                        styles.circleButton,
+                        pressed && styles.circlePressed,
+                      ]}
+                    >
+                      <AppIcon name="share" size={20} color={colors.onSurface} />
+                    </Pressable>
+                    {canFavorite && (
+                      <FavoriteButton
+                        favorite={favorites.isFavorite(listing.id)}
+                        onToggle={() => favorites.toggle(listing.id)}
+                        title={listing.title}
+                        overlay
+                      />
+                    )}
+                  </View>
+                </View>
+              )}
+              <ListingCover listing={listing} variant="detail" />
+            </View>
+            <View style={styles.titleBlock}>
+              <View style={styles.titleRow}>
+                <Text style={[styles.title, styles.titleText]} accessibilityRole="header">
+                  {listing.title}
+                </Text>
+                {!isIOS && (
+                  <View style={styles.titleActions}>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`Compartilhar ${listing.title}`}
+                      onPress={shareListing}
+                      hitSlop={8}
+                      style={({ pressed }) => [styles.iconButton, pressed && styles.iconPressed]}
+                    >
+                      <AppIcon name="share" size={20} color={colors.onSurfaceVariant} />
+                    </Pressable>
+                    {canFavorite && (
+                      <FavoriteButton
+                        favorite={favorites.isFavorite(listing.id)}
+                        onToggle={() => favorites.toggle(listing.id)}
+                        title={listing.title}
+                      />
+                    )}
+                  </View>
                 )}
               </View>
+              <Text style={styles.author}>{listing.author}</Text>
             </View>
-          )}
-          <ListingCover listing={listing} variant="detail" />
-        </View>
-        <View style={styles.titleBlock}>
-          <View style={styles.titleRow}>
-            <Text style={[styles.title, styles.titleText]} accessibilityRole="header">
-              {listing.title}
-            </Text>
-            {!isIOS && (
-              <View style={styles.titleActions}>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={`Compartilhar ${listing.title}`}
-                  onPress={shareListing}
-                  hitSlop={8}
-                  style={({ pressed }) => [styles.iconButton, pressed && styles.iconPressed]}
-                >
-                  <AppIcon name="share" size={20} color={colors.onSurfaceVariant} />
-                </Pressable>
-                {canFavorite && (
-                  <FavoriteButton
-                    favorite={favorites.isFavorite(listing.id)}
-                    onToggle={() => favorites.toggle(listing.id)}
-                    title={listing.title}
-                  />
-                )}
+            <View
+              style={styles.headline}
+              accessible
+              accessibilityLabel={`${headline.value}, ${headline.label.toLocaleLowerCase('pt-BR')}`}
+            >
+              <Text style={styles.value}>{headline.value}</Text>
+              <View
+                style={[styles.tag, { backgroundColor: badgeColors[listing.modality].background }]}
+              >
+                <Text style={[styles.tagText, { color: badgeColors[listing.modality].text }]}>
+                  {headline.label}
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.detailInformation}>
+            {listing.meetingPoint ? (
+              <View style={styles.titleBlock}>
+                <Text
+                  style={styles.noteText}
+                >{`Ponto público sugerido: ${listing.meetingPoint.name}`}</Text>
+                <MeetingPointPreview point={listing.meetingPoint} />
+              </View>
+            ) : null}
+            {listing.status === 'reservado' && (
+              <View style={styles.reserved}>
+                <StatusBadge variant="reserved" />
+                <Text style={styles.reservedText}>
+                  Este livro está reservado para outra pessoa no momento.
+                </Text>
               </View>
             )}
-          </View>
-          <Text style={styles.author}>{listing.author}</Text>
-        </View>
-        <View
-          style={styles.headline}
-          accessible
-          accessibilityLabel={`${headline.value}, ${headline.label.toLocaleLowerCase('pt-BR')}`}
-        >
-          <Text style={styles.value}>{headline.value}</Text>
-          <View style={[styles.tag, { backgroundColor: badgeColors[listing.modality].background }]}>
-            <Text style={[styles.tagText, { color: badgeColors[listing.modality].text }]}>
-              {headline.label}
-            </Text>
-          </View>
-        </View>
-        {listing.meetingPoint ? (
-          <View style={styles.titleBlock}>
-            <Text
-              style={styles.noteText}
-            >{`Ponto público sugerido: ${listing.meetingPoint.name}`}</Text>
-            <MeetingPointPreview point={listing.meetingPoint} />
-          </View>
-        ) : null}
-        {listing.status === 'reservado' && (
-          <View style={styles.reserved}>
-            <StatusBadge variant="reserved" />
-            <Text style={styles.reservedText}>
-              Este livro está reservado para outra pessoa no momento.
-            </Text>
-          </View>
-        )}
-        {details.modalityNote && (
-          <View
-            style={[styles.modalityNote, { backgroundColor: noteBackground }]}
-            accessible
-            accessibilityLabel={`${details.modalityNote.title}. ${details.modalityNote.text}`}
-          >
-            <AppIcon name="info" size={18} color={noteColor} />
-            <View style={styles.modalityNoteText}>
-              <Text style={[styles.modalityNoteTitle, { color: noteColor }]}>
-                {details.modalityNote.title}
+            {details.modalityNote && (
+              <View
+                style={[styles.modalityNote, { backgroundColor: noteBackground }]}
+                accessible
+                accessibilityLabel={`${details.modalityNote.title}. ${details.modalityNote.text}`}
+              >
+                <AppIcon name="info" size={18} color={noteColor} />
+                <View style={styles.modalityNoteText}>
+                  <Text style={[styles.modalityNoteTitle, { color: noteColor }]}>
+                    {details.modalityNote.title}
+                  </Text>
+                  <Text style={[styles.modalityNoteBody, { color: noteColor }]}>
+                    {details.modalityNote.text}
+                  </Text>
+                </View>
+              </View>
+            )}
+            <View style={styles.factsCard}>
+              {details.facts.map((fact, index) => (
+                <View key={fact.label} style={[styles.factRow, index > 0 && styles.factDivider]}>
+                  <AppIcon name={factIcon(fact.label)} size={18} color={colors.onSurfaceVariant} />
+                  <Text style={styles.factLabel}>{fact.label}</Text>
+                  <Text style={styles.factValue}>{fact.value}</Text>
+                </View>
+              ))}
+            </View>
+            {details.paragraphs.map((text) => (
+              <Text key={text} style={styles.about}>
+                {text}
               </Text>
-              <Text style={[styles.modalityNoteBody, { color: noteColor }]}>
-                {details.modalityNote.text}
-              </Text>
-            </View>
+            ))}
+            {listing.ownerFirstName ? (
+              // Spec 031: o nome de quem anunciou abre o perfil daquela pessoa. Sem
+              // `ownerId` não há perfil para abrir — fica a informação, como antes.
+              listing.ownerId && !isOwner ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver o perfil de ${listing.ownerFirstName}`}
+                  accessibilityHint="Mostra avaliações e histórico na comunidade."
+                  onPress={() =>
+                    router.push({
+                      pathname: '/pessoa/[id]',
+                      params: { id: listing.ownerId as string, livro: listing.id },
+                    })
+                  }
+                  style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
+                >
+                  <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
+                  <View style={styles.listText}>
+                    <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
+                    {place && <Text style={styles.listBody}>{place}</Text>}
+                  </View>
+                  <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+                </Pressable>
+              ) : (
+                <View
+                  style={styles.listItem}
+                  accessible
+                  accessibilityLabel={`Anunciado por ${details.owner}`}
+                >
+                  <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
+                  <View style={styles.listText}>
+                    <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
+                    {place && <Text style={styles.listBody}>{place}</Text>}
+                  </View>
+                </View>
+              )
+            ) : null}
+            {!isOwner && session.status === 'signedIn' && listing.ownerId ? (
+              <>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Denunciar anúncio"
+                  accessibilityHint="Golpe, descrição falsa ou conteúdo ofensivo."
+                  onPress={openReport}
+                  style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
+                >
+                  <AppIcon name="error" size={20} color={colors.error} />
+                  <View style={styles.listText}>
+                    <Text style={[styles.listTitle, styles.dangerText]}>Denunciar anúncio</Text>
+                    <Text style={styles.listBody}>
+                      Golpe, descrição falsa ou conteúdo ofensivo.
+                    </Text>
+                  </View>
+                  <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={blockLabel(listing.ownerFirstName)}
+                  accessibilityHint="Os anúncios dessa pessoa somem para você."
+                  onPress={() => setBlocking(true)}
+                  style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
+                >
+                  <AppIcon name="close" size={20} color={colors.error} />
+                  <View style={styles.listText}>
+                    <Text style={[styles.listTitle, styles.dangerText]}>
+                      {blockLabel(listing.ownerFirstName)}
+                    </Text>
+                    <Text style={styles.listBody}>Os anúncios dessa pessoa somem para você.</Text>
+                  </View>
+                </Pressable>
+                <BlockUserDialog
+                  visible={blocking}
+                  userId={listing.ownerId}
+                  firstName={listing.ownerFirstName}
+                  onCancel={() => setBlocking(false)}
+                  onBlocked={() => {
+                    setBlocking(false);
+                    router.back();
+                  }}
+                />
+              </>
+            ) : null}
+            <View style={styles.separator} />
+            <Text style={styles.noteText}>{details.notes}</Text>
           </View>
-        )}
-        <View style={styles.factsCard}>
-          {details.facts.map((fact, index) => (
-            <View key={fact.label} style={[styles.factRow, index > 0 && styles.factDivider]}>
-              <AppIcon name={factIcon(fact.label)} size={18} color={colors.onSurfaceVariant} />
-              <Text style={styles.factLabel}>{fact.label}</Text>
-              <Text style={styles.factValue}>{fact.value}</Text>
-            </View>
-          ))}
         </View>
-        {details.paragraphs.map((text) => (
-          <Text key={text} style={styles.about}>
-            {text}
-          </Text>
-        ))}
-        {listing.ownerFirstName ? (
-          // Spec 031: o nome de quem anunciou abre o perfil daquela pessoa. Sem
-          // `ownerId` não há perfil para abrir — fica a informação, como antes.
-          listing.ownerId && !isOwner ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Ver o perfil de ${listing.ownerFirstName}`}
-              accessibilityHint="Mostra avaliações e histórico na comunidade."
-              onPress={() =>
-                router.push({
-                  pathname: '/pessoa/[id]',
-                  params: { id: listing.ownerId as string, livro: listing.id },
-                })
-              }
-              style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
-            >
-              <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
-              <View style={styles.listText}>
-                <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
-                {place && <Text style={styles.listBody}>{place}</Text>}
-              </View>
-              <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
-            </Pressable>
-          ) : (
-            <View
-              style={styles.listItem}
-              accessible
-              accessibilityLabel={`Anunciado por ${details.owner}`}
-            >
-              <AppIcon name="person" size={20} color={colors.onSurfaceVariant} />
-              <View style={styles.listText}>
-                <Text style={styles.listTitle}>{listing.ownerFirstName}</Text>
-                {place && <Text style={styles.listBody}>{place}</Text>}
-              </View>
-            </View>
-          )
-        ) : null}
-        {!isOwner && session.status === 'signedIn' && listing.ownerId ? (
-          <>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Denunciar anúncio"
-              accessibilityHint="Golpe, descrição falsa ou conteúdo ofensivo."
-              onPress={openReport}
-              style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
-            >
-              <AppIcon name="error" size={20} color={colors.error} />
-              <View style={styles.listText}>
-                <Text style={[styles.listTitle, styles.dangerText]}>Denunciar anúncio</Text>
-                <Text style={styles.listBody}>Golpe, descrição falsa ou conteúdo ofensivo.</Text>
-              </View>
-              <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={blockLabel(listing.ownerFirstName)}
-              accessibilityHint="Os anúncios dessa pessoa somem para você."
-              onPress={() => setBlocking(true)}
-              style={({ pressed }) => [styles.listItem, pressed && styles.listPressed]}
-            >
-              <AppIcon name="close" size={20} color={colors.error} />
-              <View style={styles.listText}>
-                <Text style={[styles.listTitle, styles.dangerText]}>
-                  {blockLabel(listing.ownerFirstName)}
-                </Text>
-                <Text style={styles.listBody}>Os anúncios dessa pessoa somem para você.</Text>
-              </View>
-            </Pressable>
-            <BlockUserDialog
-              visible={blocking}
-              userId={listing.ownerId}
-              firstName={listing.ownerFirstName}
-              onCancel={() => setBlocking(false)}
-              onBlocked={() => {
-                setBlocking(false);
-                router.back();
-              }}
-            />
-          </>
-        ) : null}
-        <View style={styles.separator} />
-        <Text style={styles.noteText}>{details.notes}</Text>
       </ScrollView>
       {primary && (
-        <View style={styles.actionBar}>
+        <View style={[styles.actionBar, expanded && styles.desktopActionBar]}>
           {conversation.error && <FormMessage tone="error" message={conversation.error} />}
           {/* Figma 03.01: Conversar some em cima da ação principal. Abre uma negociação
               sem encontro, só para falar antes (ADR 0035). */}
@@ -365,8 +380,20 @@ const styles = StyleSheet.create({
     padding: metrics.pagePadding,
     gap: spacing.sm,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
+  },
+  desktopContent: { maxWidth: metrics.contentMaxWidth },
+  detailGrid: { gap: spacing.sm },
+  desktopDetailGrid: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xl },
+  detailVisual: { flex: 1, minWidth: 0, gap: spacing.sm },
+  detailInformation: { flex: 1, minWidth: 0, gap: spacing.sm },
+  desktopActionBar: {
+    width: '100%',
+    maxWidth: metrics.contentMaxWidth,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
   // Figma 03.01: capa centrada sobre o container, com raio 16.
   gallery: {

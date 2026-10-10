@@ -962,6 +962,19 @@
       "$type": "dimension",
       "$value": "480px",
       "$description": "Largura máxima de formulários de autenticação na Web e em tablets."
+    },
+    "web": {
+      "mediumBreakpoint": { "$type": "dimension", "$value": "600px" },
+      "expandedBreakpoint": { "$type": "dimension", "$value": "840px" },
+      "largeBreakpoint": { "$type": "dimension", "$value": "1200px" },
+      "contentMaxWidth": { "$type": "dimension", "$value": "1280px" },
+      "readingMaxWidth": { "$type": "dimension", "$value": "720px" },
+      "railWidth": { "$type": "dimension", "$value": "88px" },
+      "headerHeight": { "$type": "dimension", "$value": "72px" },
+      "searchMaxWidth": { "$type": "dimension", "$value": "520px" },
+      "filterWidth": { "$type": "dimension", "$value": "280px" },
+      "detailsPaneWidth": { "$type": "dimension", "$value": "320px" },
+      "conversationListWidth": { "$type": "dimension", "$value": "360px" }
     }
   }
 }
