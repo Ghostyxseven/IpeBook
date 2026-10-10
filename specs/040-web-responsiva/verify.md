@@ -10,7 +10,14 @@
 - `npm run build:web`: passou; exportou a apresentação em `dist/` e o aplicativo em `dist/app/`.
 - `git diff --check`: passou.
 - Chromium headless, sem Playwright, com a exportação local: cadastro em 1440 × 900 mostra composição em duas colunas; em 393 × 852 mantém a composição compacta e rolagem vertical. A tela inicial em 1440 × 900 também ocupa duas colunas. Capturas do cadastro: [desktop](assets/cadastro-desktop.png) e [celular](assets/cadastro-celular.png).
-- A primeira execução da CI falhou em `tests/moderation.test.mjs`: duas denúncias criadas no mesmo milissegundo não tinham ordem garantida, mas o teste exigia uma posição fixa. O teste foi ajustado para localizar cada denúncia pelo alvo e preservar as asserções sobre nomes e estado. `node --test tests/moderation.test.mjs` e `npm run verify` passaram após o ajuste; a nova execução da CI deve confirmar o resultado remoto.
+- A primeira execução da CI falhou em `tests/moderation.test.mjs`: duas denúncias criadas no mesmo milissegundo não tinham ordem garantida, mas o teste exigia uma posição fixa. O teste foi ajustado para localizar cada denúncia pelo alvo e preservar as asserções sobre nomes e estado. `node --test tests/moderation.test.mjs`, `npm run verify` e a execução seguinte da CI passaram após o ajuste.
+
+## Segunda etapa — telas auxiliares
+
+- Bairro, alteração de senha, confirmação de acesso, perfis e configurações receberam composição em duas áreas na janela larga. Histórico e moderação usam cartões em duas colunas; rascunhos colocam a seleção ao lado das ações. As páginas de leitura e listas cronológicas mantêm largura limitada para evitar linhas excessivamente longas.
+- `npm run verify` e `npm run build:web` passaram novamente após as mudanças. `git diff --check` passou.
+- Chromium headless com a exportação local: a tela de conta excluída ficou centralizada e distribuída em 1440 × 900, preservando a composição compacta em 393 × 852. Capturas: [desktop](assets/confirmacao-desktop.png) e [celular](assets/confirmacao-celular.png).
+- As demais rotas desta etapa exigem sessão autenticada para inspeção no navegador. A conexão do navegador pessoal ainda não estava disponível; portanto, foco, teclado e apresentação dos dados reais nessas rotas seguem pendentes.
 
 ## Limites da verificação
 

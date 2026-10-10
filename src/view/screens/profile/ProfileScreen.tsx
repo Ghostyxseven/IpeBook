@@ -11,6 +11,7 @@ import { useSessionContext } from '../../../viewmodel/useSession';
 import { AppIcon, type AppIconName } from '../../components/AppIcon';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { Avatar } from '../../components/profile/Avatar';
+import { useWebLayout } from '../../hooks/useWebLayout';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 /**
@@ -22,6 +23,7 @@ import { colors, metrics, radius, spacing, typography } from '../../theme/native
  * e uma lista de seis destinos — ver `verify.md` das specs 026 e 031.
  */
 export function ProfileScreen() {
+  const { large } = useWebLayout();
   const router = useRouter();
   const session = useSessionContext();
   const listings = useMyListings();
@@ -36,7 +38,7 @@ export function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <View style={styles.appBar}>
+      <View style={[styles.appBar, large && styles.desktopAppBar]}>
         <Text accessibilityRole="header" style={styles.appTitle}>
           Perfil
         </Text>
@@ -44,35 +46,40 @@ export function ProfileScreen() {
           accessibilityRole="button"
           accessibilityLabel="Configurações"
           onPress={() => router.push('/configuracoes')}
-          style={({ pressed }) => [styles.iconButton, pressed && styles.pressed]}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.iconButton,
+            pressed && styles.pressed,
+            focused && styles.focused,
+          ]}
         >
           <AppIcon name="settings" color={colors.onSurface} />
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.identity}>
-          <Avatar name={user?.name} size={64} />
-          <View style={styles.identityText}>
-            <Text style={styles.name}>{user ? (firstName(user.name) ?? 'Você') : 'Você'}</Text>
-            <Text style={styles.detail}>{place}</Text>
+      <ScrollView contentContainerStyle={[styles.content, large && styles.desktopContent]}>
+        <View style={[styles.summary, large && styles.desktopSummary]}>
+          <View style={styles.identity}>
+            <Avatar name={user?.name} size={64} />
+            <View style={styles.identityText}>
+              <Text style={styles.name}>{user ? (firstName(user.name) ?? 'Você') : 'Você'}</Text>
+              <Text style={styles.detail}>{place}</Text>
+            </View>
+          </View>
+          <View style={styles.numbers}>
+            <Number value={counts ? String(counts.total) : '—'} label="anúncios" />
+            <Number value={profile ? String(profile.completedCount) : '—'} label="trocas" />
+            {/* Sem nota nenhuma o número é "—", não "0,0": zero numa escala de 1 a 5
+                é uma nota ruim dada a quem nunca fez nada de errado (ADR 0027). */}
+            <Number
+              value={
+                profile?.ratingAverage ? profile.ratingAverage.toFixed(1).replace('.', ',') : '—'
+              }
+              label="avaliação"
+            />
           </View>
         </View>
 
-        <View style={styles.numbers}>
-          <Number value={counts ? String(counts.total) : '—'} label="anúncios" />
-          <Number value={profile ? String(profile.completedCount) : '—'} label="trocas" />
-          {/* Sem nota nenhuma o número é "—", não "0,0": zero numa escala de 1 a 5
-              é uma nota ruim dada a quem nunca fez nada de errado (ADR 0027). */}
-          <Number
-            value={
-              profile?.ratingAverage ? profile.ratingAverage.toFixed(1).replace('.', ',') : '—'
-            }
-            label="avaliação"
-          />
-        </View>
-
-        <View style={styles.list}>
+        <View style={[styles.list, large && styles.desktopList]}>
           <Entry
             icon="document"
             title="Minhas publicações"
@@ -111,9 +118,8 @@ export function ProfileScreen() {
             busy={session.signingOut}
             tone="danger"
           />
+          <FormMessage tone="error" message={session.error} />
         </View>
-
-        <FormMessage tone="error" message={session.error} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -153,7 +159,11 @@ function Entry({
       accessibilityState={{ busy, disabled: busy }}
       disabled={busy}
       onPress={onPress}
-      style={({ pressed }) => [styles.entry, pressed && styles.pressed]}
+      style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+        styles.entry,
+        pressed && styles.pressed,
+        focused && styles.focused,
+      ]}
     >
       <AppIcon name={icon} size={20} color={color} />
       <View style={styles.entryText}>
@@ -178,6 +188,7 @@ const styles = StyleSheet.create({
     maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
+  desktopAppBar: { maxWidth: metrics.contentMaxWidth },
   appTitle: {
     ...typography.titleLarge,
     fontSize: 22,
@@ -194,6 +205,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pressed: { backgroundColor: colors.pressed },
+  focused: {
+    outlineColor: colors.focus,
+    outlineStyle: 'solid',
+    outlineWidth: metrics.focusWidth,
+    outlineOffset: metrics.focusOffset,
+  },
   content: {
     paddingHorizontal: metrics.pagePadding,
     paddingBottom: spacing.lg,
@@ -202,6 +219,22 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
+  desktopContent: {
+    maxWidth: metrics.contentMaxWidth,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.xl,
+    paddingTop: spacing.lg,
+  },
+  summary: { gap: spacing.md },
+  desktopSummary: {
+    flex: 1,
+    minWidth: 0,
+    padding: spacing.xl,
+    borderRadius: radius.extraLarge,
+    backgroundColor: colors.containerLow,
+  },
+  desktopList: { flex: 1, minWidth: 0 },
   identity: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   identityText: { flex: 1, gap: spacing.xxs },
   name: { ...typography.brandTitle, color: colors.onSurface },

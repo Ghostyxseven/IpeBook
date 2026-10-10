@@ -14,9 +14,11 @@ import { Button } from '../../components/ui/Button';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TopAppBar } from '../../components/ui/TopAppBar';
+import { useWebLayout } from '../../hooks/useWebLayout';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 export default function ModerationReportsScreen() {
+  const { large } = useWebLayout();
   const router = useRouter();
   const vm = useModerationReports();
   const leave = () => (router.canGoBack() ? router.back() : router.replace('/configuracoes'));
@@ -46,13 +48,18 @@ export default function ModerationReportsScreen() {
     );
   } else {
     body = (
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, large && styles.desktopContent]}>
         <View style={styles.filterRow}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Pendentes (${vm.counts.pending})`}
+            accessibilityState={{ selected: vm.filter === 'pending' }}
             onPress={() => vm.setFilter('pending')}
-            style={[styles.filterChip, vm.filter === 'pending' && styles.filterChipActive]}
+            style={({ focused }: { pressed: boolean; focused?: boolean }) => [
+              styles.filterChip,
+              vm.filter === 'pending' && styles.filterChipActive,
+              focused && styles.focused,
+            ]}
           >
             <Text
               style={[
@@ -66,8 +73,13 @@ export default function ModerationReportsScreen() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Resolvidas (${vm.counts.resolved})`}
+            accessibilityState={{ selected: vm.filter === 'resolved' }}
             onPress={() => vm.setFilter('resolved')}
-            style={[styles.filterChip, vm.filter === 'resolved' && styles.filterChipActive]}
+            style={({ focused }: { pressed: boolean; focused?: boolean }) => [
+              styles.filterChip,
+              vm.filter === 'resolved' && styles.filterChipActive,
+              focused && styles.focused,
+            ]}
           >
             <Text
               style={[
@@ -81,8 +93,13 @@ export default function ModerationReportsScreen() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Todas (${vm.counts.total})`}
+            accessibilityState={{ selected: vm.filter === 'all' }}
             onPress={() => vm.setFilter('all')}
-            style={[styles.filterChip, vm.filter === 'all' && styles.filterChipActive]}
+            style={({ focused }: { pressed: boolean; focused?: boolean }) => [
+              styles.filterChip,
+              vm.filter === 'all' && styles.filterChipActive,
+              focused && styles.focused,
+            ]}
           >
             <Text
               style={[styles.filterChipText, vm.filter === 'all' && styles.filterChipTextActive]}
@@ -103,65 +120,69 @@ export default function ModerationReportsScreen() {
             </Text>
           </View>
         ) : (
-          vm.reports.map((report) => {
-            const isResolved = report.status === 'resolved';
-            return (
-              <View
-                key={report.id}
-                style={styles.card}
-                accessible
-                accessibilityLabel={`${reportTargetLabel(report)}, motivo: ${report.reason}, status: ${reportStatusLabel(report.status)}`}
-              >
-                <View style={styles.cardHeader}>
-                  <Text style={styles.cardTarget}>{reportTargetLabel(report)}</Text>
-                  <View
-                    style={[
-                      styles.statusBadge,
-                      isResolved ? styles.statusBadgeResolved : styles.statusBadgePending,
-                    ]}
-                  >
-                    <Text
+          <View style={[styles.cards, large && styles.desktopCards]}>
+            {vm.reports.map((report) => {
+              const isResolved = report.status === 'resolved';
+              return (
+                <View
+                  key={report.id}
+                  style={[styles.card, large && styles.desktopCard]}
+                  accessible
+                  accessibilityLabel={`${reportTargetLabel(report)}, motivo: ${report.reason}, status: ${reportStatusLabel(report.status)}`}
+                >
+                  <View style={styles.cardHeader}>
+                    <Text style={styles.cardTarget}>{reportTargetLabel(report)}</Text>
+                    <View
                       style={[
-                        styles.statusBadgeText,
-                        isResolved ? styles.statusBadgeTextResolved : styles.statusBadgeTextPending,
+                        styles.statusBadge,
+                        isResolved ? styles.statusBadgeResolved : styles.statusBadgePending,
                       ]}
                     >
-                      {reportStatusLabel(report.status)}
-                    </Text>
+                      <Text
+                        style={[
+                          styles.statusBadgeText,
+                          isResolved
+                            ? styles.statusBadgeTextResolved
+                            : styles.statusBadgeTextPending,
+                        ]}
+                      >
+                        {reportStatusLabel(report.status)}
+                      </Text>
+                    </View>
                   </View>
-                </View>
 
-                <View style={styles.cardSection}>
-                  <Text style={styles.reasonLabel}>Motivo</Text>
-                  <Text style={styles.reasonValue}>{report.reason}</Text>
-                </View>
-
-                {report.details ? (
                   <View style={styles.cardSection}>
-                    <Text style={styles.reasonLabel}>Detalhes informados</Text>
-                    <Text style={styles.detailsValue}>{report.details}</Text>
+                    <Text style={styles.reasonLabel}>Motivo</Text>
+                    <Text style={styles.reasonValue}>{report.reason}</Text>
                   </View>
-                ) : null}
 
-                <View style={styles.metaRow}>
-                  <Text style={styles.metaText}>
-                    Denunciado por: {personName(report.reporterFirstName)}
-                  </Text>
-                  <Text style={styles.metaText}>{formatReportDate(report.createdAt)}</Text>
+                  {report.details ? (
+                    <View style={styles.cardSection}>
+                      <Text style={styles.reasonLabel}>Detalhes informados</Text>
+                      <Text style={styles.detailsValue}>{report.details}</Text>
+                    </View>
+                  ) : null}
+
+                  <View style={styles.metaRow}>
+                    <Text style={styles.metaText}>
+                      Denunciado por: {personName(report.reporterFirstName)}
+                    </Text>
+                    <Text style={styles.metaText}>{formatReportDate(report.createdAt)}</Text>
+                  </View>
+
+                  {!isResolved && (
+                    <View style={styles.actionRow}>
+                      <Button
+                        label="Marcar como resolvida"
+                        variant="secondary"
+                        onPress={() => vm.askResolve(report)}
+                      />
+                    </View>
+                  )}
                 </View>
-
-                {!isResolved && (
-                  <View style={styles.actionRow}>
-                    <Button
-                      label="Marcar como resolvida"
-                      variant="secondary"
-                      onPress={() => vm.askResolve(report)}
-                    />
-                  </View>
-                )}
-              </View>
-            );
-          })
+              );
+            })}
+          </View>
         )}
       </ScrollView>
     );
@@ -195,6 +216,10 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
+  desktopContent: { maxWidth: metrics.contentMaxWidth },
+  cards: { gap: spacing.md },
+  desktopCards: { flexDirection: 'row', flexWrap: 'wrap' },
+  desktopCard: { width: '48%' },
   centerBox: {
     paddingHorizontal: metrics.pagePadding,
     paddingTop: spacing.xl,
@@ -207,14 +232,23 @@ const styles = StyleSheet.create({
   body: { ...typography.bodyLarge, color: colors.onSurfaceVariant },
   filterRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing.xs,
     paddingBottom: spacing.xs,
   },
   filterChip: {
+    minHeight: metrics.touchTarget,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
     borderRadius: radius.full,
     backgroundColor: colors.containerLow,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  focused: {
+    outlineColor: colors.focus,
+    outlineStyle: 'solid',
+    outlineWidth: metrics.focusWidth,
+    outlineOffset: metrics.focusOffset,
   },
   filterChipActive: {
     backgroundColor: colors.action,

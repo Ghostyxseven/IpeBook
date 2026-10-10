@@ -5,5 +5,6 @@
 - [x] Adaptar a navegação da área autenticada por classe de janela.
 - [x] Adaptar início, exploração e estante para o espaço disponível.
 - [x] Adaptar detalhes, conversas, anúncios, perfil, configurações e telas auxiliares.
+- [ ] Conferir a segunda etapa de layout para bairro, senha, confirmações, perfis, histórico, rascunhos e moderação em desktop e celular.
 - [ ] Verificar no navegador os fluxos autenticados, teclado, foco e estados vazios nas larguras compacta e larga.
 - [x] Executar `npm run verify` e `npm run build:web`; revisar diff e registrar resultados.

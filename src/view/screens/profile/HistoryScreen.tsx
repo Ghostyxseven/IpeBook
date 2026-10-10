@@ -12,6 +12,7 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { RatingForm } from '../../components/profile/RatingForm';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
+import { useWebLayout } from '../../hooks/useWebLayout';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 /**
@@ -21,6 +22,7 @@ import { colors, metrics, radius, spacing, typography } from '../../theme/native
  * que acabou, não numa tela separada onde a pessoa teria de lembrar qual foi.
  */
 export function HistoryScreen() {
+  const { large } = useWebLayout();
   const router = useRouter();
   const vm = useHistory();
   const [rating, setRating] = useState<string | null>(null);
@@ -45,7 +47,10 @@ export function HistoryScreen() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['left', 'right', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={[styles.content, large && styles.desktopContent]}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text accessibilityRole="header" style={styles.brand}>
           O que já circulou.
         </Text>
@@ -61,20 +66,23 @@ export function HistoryScreen() {
             onAction={() => router.push('/explorar')}
           />
         ) : (
-          vm.history.map((entry) => (
-            <Entry
-              key={entry.requestId}
-              entry={entry}
-              open={rating === entry.requestId}
-              submitting={vm.submitting}
-              onOpen={() => setRating(entry.requestId)}
-              onCancel={() => setRating(null)}
-              onSubmit={async (score, comment) => {
-                await vm.rate(entry, score, comment);
-                setRating(null);
-              }}
-            />
-          ))
+          <View style={[styles.entries, large && styles.desktopEntries]}>
+            {vm.history.map((entry) => (
+              <View key={entry.requestId} style={large && styles.desktopEntry}>
+                <Entry
+                  entry={entry}
+                  open={rating === entry.requestId}
+                  submitting={vm.submitting}
+                  onOpen={() => setRating(entry.requestId)}
+                  onCancel={() => setRating(null)}
+                  onSubmit={async (score, comment) => {
+                    await vm.rate(entry, score, comment);
+                    setRating(null);
+                  }}
+                />
+              </View>
+            ))}
+          </View>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -137,6 +145,10 @@ const styles = StyleSheet.create({
     maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
+  desktopContent: { maxWidth: metrics.contentMaxWidth },
+  entries: { gap: spacing.md },
+  desktopEntries: { flexDirection: 'row', flexWrap: 'wrap' },
+  desktopEntry: { width: '48%' },
   brand: { ...typography.brandTitle, color: colors.onSurface },
   body: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
   card: {

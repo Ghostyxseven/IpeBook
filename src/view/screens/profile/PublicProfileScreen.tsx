@@ -11,6 +11,7 @@ import { Avatar } from '../../components/profile/Avatar';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { Button } from '../../components/ui/Button';
+import { useWebLayout } from '../../hooks/useWebLayout';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 /**
@@ -20,6 +21,7 @@ import { colors, metrics, radius, spacing, typography } from '../../theme/native
  * sobrenome ou a lista de anúncios da pessoa (ADR 0027).
  */
 export function PublicProfileScreen() {
+  const { large } = useWebLayout();
   const router = useRouter();
   const { id, livro } = useLocalSearchParams<{ id: string; livro?: string }>();
   const userId = String(id ?? '');
@@ -47,62 +49,69 @@ export function PublicProfileScreen() {
   const { profile } = vm;
   const name = personName(profile.firstName);
   const since = memberSinceLabel(profile.memberSince);
+  const actions = (
+    <View style={styles.actions}>
+      <Button
+        label={`Conversar com ${name}`}
+        onPress={() =>
+          listingId ? router.push(`/livro/${listingId}/combinar`) : router.push('/conversas')
+        }
+        accessibilityHint={
+          listingId ? 'Abre o formulário para propor local, dia e horário.' : 'Abre suas conversas.'
+        }
+      />
+      <Button
+        label="Denunciar ou bloquear"
+        variant="danger"
+        onPress={() =>
+          router.push({
+            pathname: '/(app)/seguranca/report',
+            params: { userId, userName: profile.firstName ?? '', listingId: listingId ?? '' },
+          })
+        }
+      />
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.screen} edges={['left', 'right', 'bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.identity}>
-          <Avatar name={profile.firstName} />
-          <Text accessibilityRole="header" style={styles.name}>
-            {name}
-          </Text>
-          <Text style={styles.body}>Conheça a pessoa antes de combinar.</Text>
+      <ScrollView contentContainerStyle={[styles.content, large && styles.desktopContent]}>
+        <View style={[styles.summaryColumn, large && styles.desktopSummary]}>
+          <View style={styles.identity}>
+            <Avatar name={profile.firstName} />
+            <Text accessibilityRole="header" style={styles.name}>
+              {name}
+            </Text>
+            <Text style={styles.body}>Conheça a pessoa antes de combinar.</Text>
+          </View>
+          {large && actions}
         </View>
-
-        <Card
-          title="Perfil confirmado"
-          body={
-            since
-              ? `E-mail confirmado · ${since.toLocaleLowerCase('pt-BR')}.`
-              : 'E-mail confirmado.'
-          }
-          tone="highlight"
-        />
-        <Card
-          title="Histórico na comunidade"
-          body={`${reputationLine(profile)}.`}
-          onPress={
-            // Sem nota nenhuma não há lista para abrir — o cartão vira só informação.
-            profile.ratingCount > 0
-              ? () => router.push({ pathname: '/avaliacoes', params: { pessoa: userId } })
-              : undefined
-          }
-        />
-        <Card title="Encontre com segurança" body="Prefira locais públicos e confirme pelo chat." />
-
-        <View style={styles.actions}>
-          <Button
-            label={`Conversar com ${name}`}
-            onPress={() =>
-              listingId ? router.push(`/livro/${listingId}/combinar`) : router.push('/conversas')
+        <View style={[styles.cardsColumn, large && styles.desktopCards]}>
+          <Card
+            title="Perfil confirmado"
+            body={
+              since
+                ? `E-mail confirmado · ${since.toLocaleLowerCase('pt-BR')}.`
+                : 'E-mail confirmado.'
             }
-            accessibilityHint={
-              listingId
-                ? 'Abre o formulário para propor local, dia e horário.'
-                : 'Abre suas conversas.'
+            tone="highlight"
+          />
+          <Card
+            title="Histórico na comunidade"
+            body={`${reputationLine(profile)}.`}
+            onPress={
+              // Sem nota nenhuma não há lista para abrir — o cartão vira só informação.
+              profile.ratingCount > 0
+                ? () => router.push({ pathname: '/avaliacoes', params: { pessoa: userId } })
+                : undefined
             }
           />
-          <Button
-            label="Denunciar ou bloquear"
-            variant="danger"
-            onPress={() =>
-              router.push({
-                pathname: '/(app)/seguranca/report',
-                params: { userId, userName: profile.firstName ?? '', listingId: listingId ?? '' },
-              })
-            }
+          <Card
+            title="Encontre com segurança"
+            body="Prefira locais públicos e confirme pelo chat."
           />
         </View>
+        {!large && actions}
       </ScrollView>
     </SafeAreaView>
   );
@@ -153,6 +162,23 @@ const styles = StyleSheet.create({
     maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
+  desktopContent: {
+    maxWidth: metrics.contentMaxWidth,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.xl,
+    paddingTop: spacing.xl,
+  },
+  summaryColumn: { gap: spacing.md },
+  desktopSummary: {
+    flex: 1,
+    minWidth: 0,
+    padding: spacing.xl,
+    borderRadius: radius.extraLarge,
+    backgroundColor: colors.containerLow,
+  },
+  cardsColumn: { gap: spacing.md },
+  desktopCards: { flex: 1, minWidth: 0 },
   identity: { alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.md },
   name: { ...typography.brandHeadline, color: colors.onSurface, textAlign: 'center' },
   body: { ...typography.bodyMedium, color: colors.onSurfaceVariant },

@@ -12,8 +12,9 @@ Esta entrega altera somente apresentação e navegação Web. Não muda autentic
 2. Entre 600 e 1199 px, a área autenticada usa navegação lateral; a partir de 1200 px, usa cabeçalho Web. A rota e a indicação da seção ativa permanecem corretas.
 3. As telas de acesso oferecem composição em duas colunas em janela larga, preservando largura legível para formulários e estados de erro, carregamento e sucesso.
 4. Descoberta, estante e listas aproveitam a largura disponível com cartões em múltiplas colunas onde apropriado; detalhes, formulários, conversas e configurações recebem limites de leitura ou painéis coerentes.
-5. Controles permanecem acessíveis por teclado, com foco visível, alvos de pelo menos 48 px, rótulos e ordem de leitura coerentes. Não há dependência exclusiva de hover.
-6. Tokens e padrões Web documentados são reutilizados; divergências da referência visual são registradas. Typecheck, lint, formatação, testes e exportação Web passam. Fluxos visuais compactos e largos são conferidos quando houver navegador disponível.
+5. Bairro, alteração de senha e confirmações de acesso deixam de aparecer como uma faixa de celular em janela larga. Perfis, configurações, histórico, rascunhos e moderação distribuem seções ou cartões no espaço disponível sem alterar a ordem de leitura compacta.
+6. Controles permanecem acessíveis por teclado, com foco visível, alvos de pelo menos 48 px, rótulos e ordem de leitura coerentes. Não há dependência exclusiva de hover.
+7. Tokens e padrões Web documentados são reutilizados; divergências da referência visual são registradas. Typecheck, lint, formatação, testes e exportação Web passam. Fluxos visuais compactos e largos são conferidos quando houver navegador disponível.
 
 ## Riscos concretos
 

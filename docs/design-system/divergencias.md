@@ -407,3 +407,5 @@ O usuário solicitou capas flutuantes em pontos públicos. Os quadros de Explora
 ## Spec 040 — aplicativo Web responsivo
 
 A composição usa os padrões e medidas publicados em `referencia/web.md`. No cabeçalho largo, o controle “Buscar livros” abre a busca da tela Explorar, em vez de manter um campo editável no cabeçalho. A lista e o resumo da conversa aparecem lado a lado apenas quando a largura comporta os três painéis; entre 840 e 1199 px ficam lista e conversa, com o resumo do livro na área de mensagens. Essas escolhas preservam as rotas e componentes existentes. O arquivo atual do Figma não ficou acessível nesta sessão; a paridade visual dos quadros Web continua pendente de inspeção.
+
+Na segunda etapa, bairro, senha, confirmação, perfis, configurações e rascunhos usam duas áreas na janela larga; histórico e moderação distribuem cartões em duas colunas. As medidas vêm dos tokens existentes. Essa composição segue a referência Web local, mas ainda não pôde ser comparada aos quadros atuais do Figma nem inspecionada com uma sessão autenticada.
