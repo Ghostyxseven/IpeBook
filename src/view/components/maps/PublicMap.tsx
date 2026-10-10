@@ -14,11 +14,14 @@ export function PublicMap({
   point = null,
   onPoint,
   onSelect,
+  scrollable = true,
 }: {
   markers?: MapMarker[];
   point?: Coordinates | null;
   onPoint?: (point: Coordinates) => void;
   onSelect?: (id: string) => void;
+  /** Mapa embutido em algo rolável (ScrollView/Modal rolável)? Padrão true, o caso mais comum. */
+  scrollable?: boolean;
 }) {
   const vm = useMapViewModel(onPoint, onSelect);
   const data = useMemo(() => ({ markers, point }), [markers, point]);
@@ -28,6 +31,7 @@ export function PublicMap({
     selectable: Boolean(onPoint),
     css: mapCss,
     color: colors.action,
+    scrollable,
     padding: {
       top: metrics.touchTarget * 2 + spacing.md,
       bottom: spacing.xxl,

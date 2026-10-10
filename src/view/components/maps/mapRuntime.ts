@@ -20,6 +20,8 @@ export type MapConfig = MapData & {
   css: string;
   color: string;
   padding: { top: number; bottom: number; left: number; right: number };
+  /** No Android nativo, decide TextureView (dentro de ScrollView) vs. GLSurfaceView (mais fluido). */
+  scrollable: boolean;
 };
 
 /** Sem dependências externas ao argumento: serializado também na WebView do Expo Go. */

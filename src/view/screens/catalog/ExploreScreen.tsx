@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image } from 'expo-image';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import sublinhadoMarca from '../../../../assets/catalog/sublinhado-marca.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Modality } from '../../../model/entities/Listing';
@@ -11,8 +11,10 @@ import { categories } from '../../../model/services/categories';
 import { useCatalogSearch } from '../../../factories/catalog';
 import { useFavorites } from '../../../factories/favorites';
 import { useWebLayout } from '../../hooks/useWebLayout';
+import { useBooksMapViewModel } from '../../../viewmodel/useBooksMapViewModel';
 import { AppIcon } from '../../components/AppIcon';
-import { BooksMap } from '../../components/maps/BooksMap';
+import { BookCard } from '../../components/catalog/BookCard';
+import { PublicMap } from '../../components/maps/PublicMap';
 import { CatalogList } from '../../components/catalog/CatalogList';
 import { FilterModal } from '../../components/catalog/FilterModal';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
@@ -37,6 +39,7 @@ export function ExploreScreen() {
   const vm = useCatalogSearch(shortcut);
   const { showOnly } = vm;
   const favorites = useFavorites();
+  const mapVm = useBooksMapViewModel(vm.items);
 
   // Cada atalho do Início reaplica a modalidade, mesmo quando ela se repete.
   useEffect(() => {
@@ -225,31 +228,84 @@ export function ExploreScreen() {
         )}
         <View style={styles.results}>
           {vm.mapMode ? (
-            <ScrollView contentContainerStyle={styles.mapContent}>
-              {header}
-              {vm.status === 'loading' || vm.status === 'error' ? (
-                empty
-              ) : (
-                <BooksMap
-                  items={vm.items}
-                  onOpen={(id) => router.push({ pathname: '/livro/[id]', params: { id } })}
-                />
+            <FlatList
+              data={vm.status === 'loading' || vm.status === 'error' ? [] : mapVm.visibleBooks}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.mapBookRow}>
+                  <Text style={styles.mapText}>{item.meetingPoint?.name}</Text>
+                  <BookCard
+                    listing={item}
+                    onPress={() =>
+                      router.push({ pathname: '/livro/[id]', params: { id: item.id } })
+                    }
+                  />
+                </View>
               )}
-              {vm.loadMoreError ? <FormMessage tone="error" message={vm.loadMoreError} /> : null}
-              {vm.hasMore ? (
-                <Button
-                  label="Carregar mais livros no mapa"
-                  loading={vm.loadingMore}
-                  onPress={vm.loadMore}
-                />
-              ) : null}
-              <Button
-                label="Atualizar livros"
-                variant="text"
-                loading={vm.refreshing}
-                onPress={vm.refresh}
-              />
-            </ScrollView>
+              ListHeaderComponent={
+                <View style={styles.mapHeader}>
+                  {header}
+                  {vm.status === 'loading' || vm.status === 'error' ? (
+                    empty
+                  ) : (
+                    <>
+                      <Text style={styles.mapText}>
+                        As capas indicam pontos públicos de encontro escolhidos por quem anunciou,
+                        não onde as pessoas moram ou estão.
+                      </Text>
+                      {/* Fora de um ScrollView: o mapa pode usar GLSurfaceView (mais fluido). */}
+                      <PublicMap
+                        markers={mapVm.markers}
+                        onSelect={mapVm.select}
+                        scrollable={false}
+                      />
+                      <View accessibilityLiveRegion="polite">
+                        <Text accessibilityRole="header" style={styles.title}>
+                          {mapVm.selectionName ?? 'Livros com ponto de encontro'}
+                        </Text>
+                        {mapVm.books.length === 0 ? (
+                          <Text style={styles.mapText}>
+                            Ainda não há livros com ponto público para estes filtros. Você pode
+                            voltar à lista.
+                          </Text>
+                        ) : null}
+                      </View>
+                      {mapVm.selected ? (
+                        <Button
+                          label="Mostrar todos os pontos carregados"
+                          variant="text"
+                          onPress={mapVm.clearSelection}
+                        />
+                      ) : null}
+                    </>
+                  )}
+                </View>
+              }
+              ListFooterComponent={
+                vm.status === 'loading' || vm.status === 'error' ? null : (
+                  <View style={styles.mapHeader}>
+                    {vm.loadMoreError ? (
+                      <FormMessage tone="error" message={vm.loadMoreError} />
+                    ) : null}
+                    {vm.hasMore ? (
+                      <Button
+                        label="Carregar mais livros no mapa"
+                        loading={vm.loadingMore}
+                        onPress={vm.loadMore}
+                      />
+                    ) : null}
+                    <Button
+                      label="Atualizar livros"
+                      variant="text"
+                      loading={vm.refreshing}
+                      onPress={vm.refresh}
+                    />
+                  </View>
+                )
+              }
+              contentContainerStyle={styles.mapContent}
+              keyboardShouldPersistTaps="handled"
+            />
           ) : (
             <CatalogList
               items={vm.status === 'loading' ? [] : vm.items}
@@ -298,7 +354,10 @@ const styles = StyleSheet.create({
   body: { flex: 1 },
   desktopBody: { flexDirection: 'row' },
   results: { flex: 1, minWidth: 0 },
-  mapContent: { padding: metrics.pagePadding, gap: spacing.md },
+  mapContent: { padding: metrics.pagePadding },
+  mapHeader: { gap: spacing.md, paddingBottom: spacing.md },
+  mapBookRow: { gap: spacing.md, paddingBottom: spacing.md },
+  mapText: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
   safe: { flex: 1, backgroundColor: colors.surface },
   // O título e a busca ficam na margem da página; os cards da lista, mais perto da borda (Figma).
   header: {

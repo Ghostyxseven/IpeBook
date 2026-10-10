@@ -57,8 +57,9 @@ export function MapSurface({ config, data, onEvent }: MapSurfaceProps) {
       scaleBarEnabled={false}
       // GLSurfaceView (padrão no Android) ignora o recorte da árvore de views e
       // "vaza" sobre o resto da tela ao arrastar/dar zoom dentro de um ScrollView
-      // (ex.: o seletor de ponto). TextureView respeita o layout normalmente.
-      surfaceView={false}
+      // (ex.: o seletor de ponto). TextureView respeita o layout, mas é mais lento
+      // para arrastar — por isso só entra quando o mapa está dentro de algo rolável.
+      surfaceView={!config.scrollable}
       onDidFinishLoadingMap={() => onEvent({ type: 'ready' })}
       onMapLoadingError={() => onEvent({ type: 'error' })}
       onPress={handlePress}
