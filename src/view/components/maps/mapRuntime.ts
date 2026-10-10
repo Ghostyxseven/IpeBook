@@ -10,7 +10,8 @@ export type MapMarker = Coordinates & {
 };
 export type MapData = { markers: MapMarker[]; point: Coordinates | null };
 export type MapEvent =
-  | { type: 'ready' | 'error' }
+  | { type: 'ready' }
+  | { type: 'error'; detail?: string }
   | { type: 'select'; id: string }
   | { type: 'point'; latitude: number; longitude: number };
 export type MapConfig = MapData & {
@@ -116,7 +117,12 @@ export function mountMap(
     update(data);
     emit({ type: 'ready' });
   });
-  map.on('error', () => emit({ type: 'error' }));
+  map.on('error', (e) =>
+    emit({
+      type: 'error',
+      detail: String((e && e.error && e.error.message) || (e && e.error) || ''),
+    }),
+  );
   if (config.selectable)
     map.on('click', (event) =>
       emit({ type: 'point', latitude: event.lngLat.lat, longitude: event.lngLat.wrap().lng }),
