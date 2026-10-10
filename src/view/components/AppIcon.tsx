@@ -37,6 +37,8 @@ const symbols = {
   heart: { ios: 'heart', android: 'favorite_border', web: 'favorite_border' },
   heartFill: { ios: 'heart.fill', android: 'favorite', web: 'favorite' },
   info: { ios: 'info.circle', android: 'info', web: 'info' },
+  /** "O que aparece no perfil", em Privacidade e dados (Figma 07.07). */
+  visibility: { ios: 'eye', android: 'visibility', web: 'visibility' },
   chat: { ios: 'bubble.left.and.bubble.right', android: 'chat_bubble', web: 'chat_bubble' },
   tune: { ios: 'slider.horizontal.3', android: 'tune', web: 'tune' },
   back: { ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' },
@@ -54,7 +56,16 @@ const symbols = {
     android: 'check_box_outline_blank',
     web: 'check_box_outline_blank',
   },
+  // Perfil e Configurações reformulados (Figma 07.01, 07.05, 07.06).
+  star: { ios: 'star', android: 'star', web: 'star' },
+  flag: { ios: 'flag', android: 'flag', web: 'flag' },
+  // Detalhe do livro reformulado (spec 037, Figma 03.01 a 03.03).
   share: { ios: 'square.and.arrow.up', android: 'share', web: 'share' },
+  conservation: { ios: 'book.closed', android: 'menu_book', web: 'menu_book' },
+  category: { ios: 'tag', android: 'sell', web: 'sell' },
+  more: { ios: 'ellipsis', android: 'more_horiz', web: 'more_horiz' },
+  // Ajuda do iPhone (spec 040): dica "confira o livro antes de pagar".
+  eye: { ios: 'eye', android: 'visibility', web: 'visibility' },
 } as const;
 
 export type AppIconName = keyof typeof symbols;

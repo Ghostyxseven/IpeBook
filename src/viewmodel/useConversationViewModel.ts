@@ -33,6 +33,8 @@ export function useConversationViewModel(
   const [request, setRequest] = useState<BookRequest | null>(null);
   const [listing, setListing] = useState<Listing | null>(null);
   const [otherName, setOtherName] = useState<string | null>(null);
+  /** Id de quem está do outro lado, para Bloquear e Denunciar no menu (Figma 06.02, spec 041). */
+  const [otherId, setOtherId] = useState<string | null>(null);
   const [items, setItems] = useState<RequestMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
@@ -57,6 +59,7 @@ export function useConversationViewModel(
       setRequest(found);
       setListing(book);
       setOtherName(resolved);
+      setOtherId(otherId ?? null);
       setItems(list);
       setStatus('ready');
     } catch (failure) {
@@ -116,6 +119,7 @@ export function useConversationViewModel(
     request,
     listing,
     otherName,
+    otherId,
     open: request ? isConversationOpen(request.status) : false,
     messages: items,
     isMine: (message: RequestMessage) => message.senderId === userId,

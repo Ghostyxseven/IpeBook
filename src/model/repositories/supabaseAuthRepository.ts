@@ -206,6 +206,12 @@ export function createSupabaseAuthRepository(
       await run(() => auth().updateUser({ password: newPassword }));
     },
 
+    async updateName(name) {
+      const { data } = await run(() => auth().updateUser({ data: { name } }));
+      if (!data.user) throw new AuthError('unknown');
+      return toUser(data.user);
+    },
+
     async cancelPasswordRecovery() {
       if (!gate.holding) return;
       recoveringEmail = null;

@@ -147,22 +147,46 @@ export function detailSignedOutLabel(modality: Modality) {
   return 'Entrar para combinar encontro';
 }
 
-/** Cartão de três linhas do Detalhe (Figma 03.01): conservação, categoria e onde retirar. */
-export type DetailCard = {
-  condition: string;
-  category: string;
-  /** `null` sem bairro nem cidade: a linha de Retirada não aparece. */
-  location: string | null;
-};
-
-export function detailCard(
+/**
+ * As linhas do cartão de detalhes (Figma 03.01 a 03.03): conservação, categoria e,
+ * se o anúncio tiver bairro ou cidade, onde retirar. A view escolhe o ícone de cada
+ * uma pelo `label` — este serviço não conhece componente nem ícone (ADR da arquitetura
+ * que tira React Native e Expo do Model).
+ */
+export function detailFacts(
   listing: Pick<Listing, 'condition' | 'category' | 'neighborhood' | 'city'>,
-): DetailCard {
-  return {
-    condition: conditionLabels[listing.condition],
-    category: listing.category,
-    location: locationLabel(listing),
-  };
+): Array<{ label: string; value: string }> {
+  const facts = [
+    { label: 'Conservação', value: conditionLabels[listing.condition] },
+    { label: 'Categoria', value: listing.category },
+  ];
+  const place = locationLabel(listing);
+  if (place) facts.push({ label: 'Retirada', value: place });
+  return facts;
+}
+
+/**
+ * Cartão informativo da troca e da doação (Figma 03.02 e 03.03): as condições de
+ * quem anunciou, na troca; um aviso fixo de gratuidade, na doação. Não existe na
+ * venda. Na troca, substitui o parágrafo de condições que antes entrava na
+ * descrição — fica só aqui agora, para não repetir a informação.
+ */
+export function detailModalityNote(
+  listing: Pick<Listing, 'modality' | 'tradeTerms'>,
+): { title: string; text: string } | null {
+  if (listing.modality === 'trade') {
+    return {
+      title: 'Aceita em troca',
+      text: listing.tradeTerms?.trim() || 'Combine o livro oferecido pela conversa.',
+    };
+  }
+  if (listing.modality === 'donation') {
+    return {
+      title: 'Doação para quem vai ler',
+      text: 'Sem cobrança pelo exemplar. Retirada em local público, combinada pelo chat.',
+    };
+  }
+  return null;
 }
 
 /** Índice estável (0 a `count - 1`) para escolher a cor da capa ilustrativa pelo id. */
@@ -180,8 +204,11 @@ export function listingMeta(listing: Pick<Listing, 'condition' | 'neighborhood' 
 /** Tudo o que a tela de detalhe mostra, já decidido pelas regras de cada modalidade. */
 export type ListingDetails = {
   headline: { value: string; label: string };
-  card: DetailCard;
-  /** Na troca, as condições vêm antes da descrição; nas outras, só a descrição. */
+  /** Cartão de conservação, categoria e retirada (Figma 03.01 a 03.03). */
+  facts: Array<{ label: string; value: string }>;
+  /** Cartão de condições da troca ou aviso de gratuidade da doação; nada na venda. */
+  modalityNote: { title: string; text: string } | null;
+  /** Só a descrição de quem anunciou; condições de troca saíram para `modalityNote`. */
   paragraphs: string[];
   /** "Ana · Centro, Picos", ou `null` sem nome nem localização. */
   owner: string | null;
@@ -190,17 +217,15 @@ export type ListingDetails = {
 };
 
 export function listingDetails(listing: Listing): ListingDetails {
-  const paragraphs = [
-    listing.modality === 'trade' ? listing.tradeTerms : null,
-    listing.description,
-  ].filter((text): text is string => Boolean(text?.trim()));
+  const paragraphs = [listing.description].filter((text): text is string => Boolean(text?.trim()));
   const owner = [listing.ownerFirstName, locationLabel(listing)].filter(Boolean).join(' · ');
   const notes = [listing.coverUrl ? null : 'Capa ilustrativa', publishedLabel(listing.createdAt)]
     .filter(Boolean)
     .join(' · ');
   return {
     headline: detailHeadline(listing),
-    card: detailCard(listing),
+    facts: detailFacts(listing),
+    modalityNote: detailModalityNote(listing),
     paragraphs,
     owner: owner || null,
     notes,

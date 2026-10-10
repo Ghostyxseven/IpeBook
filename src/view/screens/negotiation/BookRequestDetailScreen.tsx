@@ -19,8 +19,10 @@ import { CounterOfferSheet } from '../../components/negotiation/CounterOfferShee
 import { RequestBookRow } from '../../components/negotiation/RequestBookRow';
 import { RatingForm } from '../../components/profile/RatingForm';
 import { Button } from '../../components/ui/Button';
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+import { afterNegotiationOutcome } from '../../../viewmodel/afterNegotiationOutcome';
 
 /**
  * Negociação de um livro (Figma 06.03 a 06.18): a mesma tela mostra a proposta recebida ou
@@ -48,6 +50,31 @@ export function BookRequestDetailScreen() {
     // `rating.retry` é estável (memoizado pelo repositório); só `rating.retry` entra
     // na lista, não `rating` inteiro, que é um objeto novo a cada render.
   }, [vm.request?.status, rating.retry]);
+
+  // Figma 06.12: cancelar não tem mais tela própria de desfecho — a conversa mostra o aviso.
+  const requestId2 = vm.request?.id;
+  const requestStatus = vm.request?.status;
+  useEffect(() => {
+    if (requestStatus === 'canceled' && requestId2) {
+      router.replace(`/negociacoes/${requestId2}/conversa`);
+    }
+  }, [requestStatus, requestId2]);
+
+  // Figma 06.18: recusar vira um aviso sobre Conversas, não uma tela própria.
+  const lastAction = vm.lastAction;
+  useEffect(() => {
+    if (requestStatus === 'rejected') {
+      if (lastAction === 'rejected') {
+        // Quem recusa é sempre quem anuncia (só o dono vê o botão Recusar).
+        afterNegotiationOutcome.mark(
+          'rejected',
+          'Proposta recusada.',
+          'Seu anúncio continua disponível. Você pode receber outras propostas.',
+        );
+      }
+      router.replace('/conversas');
+    }
+  }, [requestStatus, lastAction]);
 
   if (vm.status === 'loading') {
     return (
@@ -109,37 +136,59 @@ export function BookRequestDetailScreen() {
     />
   );
 
-  // Figma 06.17, 06.11 e 06.07: confirmação antes de recusar, cancelar ou concluir.
-  if (vm.confirming) {
+  // Figma 06.07: confirmação antes de concluir continua em tela cheia (não mexido na spec 041).
+  if (vm.confirming === 'complete') {
     const text = confirmCopy(vm.confirming, {
       asOwner,
       ownerName: listing.ownerFirstName,
       requesterName: vm.requesterName,
       listingTitle: listing.title,
     });
-    const completing = vm.confirming === 'complete';
     return (
       <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
         <ScrollView contentContainerStyle={styles.content}>
           <OutcomeHero title={text.title} body={text.body} />
           {error}
           <View style={styles.stack}>
+            <Button label={text.confirm} onPress={vm.confirm} loading={vm.busy} />
             <Button
-              label={completing ? text.confirm : text.keep}
-              onPress={completing ? vm.confirm : vm.dismissConfirm}
-              loading={completing && vm.busy}
-            />
-            <Button
-              label={completing ? text.keep : text.confirm}
-              variant={completing ? 'text' : 'danger'}
-              onPress={completing ? vm.dismissConfirm : vm.confirm}
-              loading={!completing && vm.busy}
+              label={text.keep}
+              variant="text"
+              onPress={vm.dismissConfirm}
+              disabled={vm.busy}
             />
           </View>
         </ScrollView>
       </SafeAreaView>
     );
   }
+
+  // Figma 06.11 e 06.17 (spec 041): cancelar e recusar viram diálogo modal, não tela cheia.
+  const confirmingCancelOrReject = vm.confirming === 'cancel' || vm.confirming === 'reject';
+  const confirmDialog = confirmingCancelOrReject
+    ? (() => {
+        const text = confirmCopy(vm.confirming as 'cancel' | 'reject', {
+          asOwner,
+          ownerName: listing.ownerFirstName,
+          requesterName: vm.requesterName,
+          listingTitle: listing.title,
+        });
+        return (
+          <ConfirmDialog
+            visible
+            title={text.title}
+            message={text.body}
+            cancelLabel={text.keep}
+            confirmLabel={text.confirm}
+            destructive
+            busy={vm.busy}
+            error={vm.error}
+            onConfirm={vm.confirm}
+            onCancel={vm.dismissConfirm}
+          />
+        );
+      })()
+    : null;
 
   // Figma 06.05: logo depois de aceitar, o retorno com o encontro combinado.
   if (vm.lastAction === 'accepted' && request.status === 'accepted') {
@@ -161,20 +210,16 @@ export function BookRequestDetailScreen() {
     );
   }
 
-  // Figma 06.08, 06.12 e 06.18: a negociação terminou.
-  if (
-    request.status === 'completed' ||
-    request.status === 'canceled' ||
-    request.status === 'rejected'
-  ) {
+  // Cancelar (06.12) e recusar (06.18) não ficam mais aqui (spec 041): o efeito acima
+  // redireciona para a conversa ou para Conversas assim que o status muda.
+  if (request.status === 'canceled' || request.status === 'rejected') return null;
+
+  // Figma 06.08: a negociação terminou (concluída — único desfecho que continua em tela cheia).
+  if (request.status === 'completed') {
     return (
       <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
         <ScrollView contentContainerStyle={styles.content}>
-          <OutcomeHero
-            icon={request.status === 'completed' ? 'checkCircle' : undefined}
-            title={copy.title}
-            body={copy.body}
-          />
+          <OutcomeHero icon="checkCircle" title={copy.title} body={copy.body} />
           <RequestBookRow listing={listing} onPress={openListing} />
           {/* Avaliar aqui mesmo (spec 028): só na conclusão, e só de quem ainda não avaliou. */}
           {request.status === 'completed' ? (
@@ -253,6 +298,7 @@ export function BookRequestDetailScreen() {
             />
           </View>
         </ScrollView>
+        {confirmDialog}
       </SafeAreaView>
     );
   }
@@ -385,6 +431,7 @@ export function BookRequestDetailScreen() {
           />
         </ActionBar>
       ) : null}
+      {confirmDialog}
     </SafeAreaView>
   );
 }

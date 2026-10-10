@@ -12,6 +12,7 @@ export function ConfirmDialog({
   title,
   message,
   confirmLabel,
+  cancelLabel = 'Cancelar',
   onConfirm,
   onCancel,
   busy = false,
@@ -22,6 +23,8 @@ export function ConfirmDialog({
   title: string;
   message: string;
   confirmLabel: string;
+  /** Rótulo do botão que desiste, para diálogos onde "Cancelar" seria ambíguo (spec 041). */
+  cancelLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
   busy?: boolean;
@@ -58,7 +61,7 @@ export function ConfirmDialog({
             </Text>
           ) : null}
           <View style={styles.actions}>
-            <Button label="Cancelar" variant="text" onPress={onCancel} disabled={busy} />
+            <Button label={cancelLabel} variant="text" onPress={onCancel} disabled={busy} />
             <Button
               label={confirmLabel}
               variant={destructive ? 'danger' : 'text'}

@@ -1,6 +1,6 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   detailActionLabel,
@@ -11,7 +11,7 @@ import { blockLabel } from '../../../model/services/securityFormat';
 import { useFavorites } from '../../../factories/favorites';
 import { useListingDetail } from '../../../factories/catalog';
 import { useStartConversation } from '../../../factories/bookRequest';
-import { AppIcon } from '../../components/AppIcon';
+import { AppIcon, type AppIconName } from '../../components/AppIcon';
 import { FavoriteButton } from '../../components/catalog/FavoriteButton';
 import { ListingCover } from '../../components/catalog/ListingCover';
 import { BlockUserDialog } from '../../components/security/BlockUserDialog';
@@ -23,6 +23,20 @@ import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { useSessionContext } from '../../../viewmodel/useSession';
 import { badgeColors, colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+
+/**
+ * No iPhone (Figma 03.01 a 03.03), voltar/compartilhar/favoritar flutuam sobre a capa, sem
+ * barra de título — por isso o Stack esconde o cabeçalho padrão só nessa plataforma
+ * (`(app)/_layout.tsx`). Android e Web continuam com a barra "Detalhes" de sempre.
+ */
+const isIOS = Platform.OS === 'ios';
+
+/** Ícone de cada linha do cartão de fatos (Figma 03.01 a 03.03); o serviço só sabe o texto. */
+function factIcon(label: string): AppIconName {
+  if (label === 'Conservação') return 'conservation';
+  if (label === 'Categoria') return 'category';
+  return 'place';
+}
 
 /** Detalhe do livro (Figma 03.01 a 03.03): tudo o que é preciso para decidir antes de agir. */
 export function ListingDetailScreen() {
@@ -67,15 +81,23 @@ export function ListingDetailScreen() {
   }
 
   const { listing, details } = vm;
-  const { headline, card } = details;
-  const share = () =>
-    Share.share({ message: `"${listing.title}" está no IpêBook, em Piripiri.` }).catch(() => {});
+  const { headline } = details;
   const userId = session.user?.id;
   const isOwner = Boolean(listing.ownerId && userId && listing.ownerId === userId);
   const isAvailable = listing.status === 'disponivel';
   const canNegotiate = !isOwner && isAvailable && session.status === 'signedIn';
+  const canFavorite = !isOwner && session.status === 'signedIn';
+  const noteColor =
+    listing.modality === 'trade' ? badgeColors.trade.text : badgeColors.donation.text;
+  const noteBackground =
+    listing.modality === 'trade' ? badgeColors.tradeChip : badgeColors.donation.background;
 
   const place = locationLabel(listing);
+  const shareListing = () => {
+    Share.share({
+      message: `${listing.title}, de ${listing.author} · ${headline.value} · ${headline.label} no IpêBook.`,
+    }).catch(() => {});
+  };
   const openReport = () =>
     router.push({
       pathname: '/(app)/seguranca/report',
@@ -101,40 +123,72 @@ export function ListingDetailScreen() {
         : null;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
-      <Stack.Screen
-        options={{
-          // Figma 03.01: compartilhar e favoritar no próprio cabeçalho, junto do voltar.
-          headerRight: () => (
-            <View style={styles.headerActions}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={`Compartilhar ${listing.title}`}
-                onPress={share}
-                hitSlop={8}
-                style={({ pressed }) => [styles.headerButton, pressed && styles.actionPressed]}
-              >
-                <AppIcon name="share" size={22} color={colors.onSurfaceVariant} />
-              </Pressable>
-              {!isOwner && session.status === 'signedIn' && (
-                <FavoriteButton
-                  favorite={favorites.isFavorite(listing.id)}
-                  onToggle={() => favorites.toggle(listing.id)}
-                  title={listing.title}
-                />
-              )}
-            </View>
-          ),
-        }}
-      />
+    <SafeAreaView
+      style={styles.safe}
+      edges={isIOS ? ['top', 'left', 'right', 'bottom'] : ['left', 'right', 'bottom']}
+    >
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.gallery}>
+          {isIOS && (
+            <View style={styles.floatingHeader} pointerEvents="box-none">
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Voltar"
+                onPress={() => router.back()}
+                hitSlop={8}
+                style={({ pressed }) => [styles.circleButton, pressed && styles.circlePressed]}
+              >
+                <AppIcon name="back" size={20} color={colors.onSurface} />
+              </Pressable>
+              <View style={styles.floatingActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Compartilhar ${listing.title}`}
+                  onPress={shareListing}
+                  hitSlop={8}
+                  style={({ pressed }) => [styles.circleButton, pressed && styles.circlePressed]}
+                >
+                  <AppIcon name="share" size={20} color={colors.onSurface} />
+                </Pressable>
+                {canFavorite && (
+                  <FavoriteButton
+                    favorite={favorites.isFavorite(listing.id)}
+                    onToggle={() => favorites.toggle(listing.id)}
+                    title={listing.title}
+                    overlay
+                  />
+                )}
+              </View>
+            </View>
+          )}
           <ListingCover listing={listing} variant="detail" />
         </View>
         <View style={styles.titleBlock}>
-          <Text style={[styles.title, styles.titleText]} accessibilityRole="header">
-            {listing.title}
-          </Text>
+          <View style={styles.titleRow}>
+            <Text style={[styles.title, styles.titleText]} accessibilityRole="header">
+              {listing.title}
+            </Text>
+            {!isIOS && (
+              <View style={styles.titleActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Compartilhar ${listing.title}`}
+                  onPress={shareListing}
+                  hitSlop={8}
+                  style={({ pressed }) => [styles.iconButton, pressed && styles.iconPressed]}
+                >
+                  <AppIcon name="share" size={20} color={colors.onSurfaceVariant} />
+                </Pressable>
+                {canFavorite && (
+                  <FavoriteButton
+                    favorite={favorites.isFavorite(listing.id)}
+                    onToggle={() => favorites.toggle(listing.id)}
+                    title={listing.title}
+                  />
+                )}
+              </View>
+            )}
+          </View>
           <Text style={styles.author}>{listing.author}</Text>
         </View>
         <View
@@ -157,21 +211,31 @@ export function ListingDetailScreen() {
             </Text>
           </View>
         )}
-        <View style={styles.card}>
-          <View style={styles.cardRow}>
-            <Text style={styles.cardLabel}>Conservação</Text>
-            <Text style={styles.cardValue}>{card.condition}</Text>
-          </View>
-          <View style={styles.cardRow}>
-            <Text style={styles.cardLabel}>Categoria</Text>
-            <Text style={styles.cardValue}>{card.category}</Text>
-          </View>
-          {card.location && (
-            <View style={styles.cardRow}>
-              <Text style={styles.cardLabel}>Retirada</Text>
-              <Text style={styles.cardValue}>{card.location}</Text>
+        {details.modalityNote && (
+          <View
+            style={[styles.modalityNote, { backgroundColor: noteBackground }]}
+            accessible
+            accessibilityLabel={`${details.modalityNote.title}. ${details.modalityNote.text}`}
+          >
+            <AppIcon name="info" size={18} color={noteColor} />
+            <View style={styles.modalityNoteText}>
+              <Text style={[styles.modalityNoteTitle, { color: noteColor }]}>
+                {details.modalityNote.title}
+              </Text>
+              <Text style={[styles.modalityNoteBody, { color: noteColor }]}>
+                {details.modalityNote.text}
+              </Text>
             </View>
-          )}
+          </View>
+        )}
+        <View style={styles.factsCard}>
+          {details.facts.map((fact, index) => (
+            <View key={fact.label} style={[styles.factRow, index > 0 && styles.factDivider]}>
+              <AppIcon name={factIcon(fact.label)} size={18} color={colors.onSurfaceVariant} />
+              <Text style={styles.factLabel}>{fact.label}</Text>
+              <Text style={styles.factValue}>{fact.value}</Text>
+            </View>
+          ))}
         </View>
         {details.paragraphs.map((text) => (
           <Text key={text} style={styles.about}>
@@ -297,25 +361,47 @@ const styles = StyleSheet.create({
   },
   // Figma 03.01: capa centrada sobre o container, com raio 16.
   gallery: {
+    position: 'relative',
     alignItems: 'center',
     paddingVertical: spacing.xs,
     borderRadius: spacing.md,
     backgroundColor: colors.container,
     marginBottom: spacing.xs,
   },
-  // Figma 03.01: compartilhar e favoritar no cabeçalho, ao lado de "Detalhes".
-  // Mesmo alvo de 48 do FavoriteButton, para os dois ícones terem o mesmo peso.
-  headerActions: { flexDirection: 'row', alignItems: 'center' },
-  headerButton: {
+  // Voltar/compartilhar/favoritar flutuando sobre a capa, só no iPhone (Figma 03.01 a 03.03).
+  floatingHeader: {
+    position: 'absolute',
+    top: spacing.xs,
+    left: spacing.xs,
+    right: spacing.xs,
+    zIndex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  floatingActions: { flexDirection: 'row', gap: spacing.xs },
+  circleButton: {
+    width: metrics.touchTarget,
+    height: metrics.touchTarget,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+  },
+  circlePressed: { backgroundColor: colors.pressed },
+  titleBlock: { gap: spacing.xxs },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.xs },
+  titleText: { flex: 1 },
+  // Compartilhar e favoritar ao lado do título no Android e na Web (sem capa flutuante).
+  titleActions: { flexDirection: 'row', alignItems: 'center' },
+  iconButton: {
     width: metrics.touchTarget,
     height: metrics.touchTarget,
     borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionPressed: { backgroundColor: colors.pressed },
-  titleBlock: { gap: spacing.xxs },
-  titleText: { flex: 1 },
+  iconPressed: { backgroundColor: colors.pressed },
   title: {
     ...typography.titleLarge,
     fontSize: 22,
@@ -330,16 +416,34 @@ const styles = StyleSheet.create({
   tagText: { ...typography.labelLarge },
   reserved: { gap: spacing.xxs },
   reservedText: { ...typography.bodyMedium, color: colors.onSurface },
-  // Cartão de três linhas (Figma 03.01): conservação, categoria e retirada.
-  card: {
-    gap: spacing.xxs,
+  // Cartão da troca ("Aceita em troca") e da doação ("Doação para quem vai ler"); nada na venda.
+  modalityNote: {
+    flexDirection: 'row',
+    gap: spacing.xs,
+    alignItems: 'flex-start',
     padding: spacing.md,
     borderRadius: radius.medium,
-    backgroundColor: colors.container,
   },
-  cardRow: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm },
-  cardLabel: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
-  cardValue: { ...typography.bodyMedium, color: colors.onSurface, fontWeight: '500' },
+  modalityNoteText: { flex: 1, gap: spacing.xxs },
+  modalityNoteTitle: { ...typography.bodyLarge, fontWeight: '600' },
+  modalityNoteBody: { ...typography.bodyMedium },
+  // Cartão agrupado de conservação, categoria e retirada (Figma 03.01 a 03.03).
+  factsCard: {
+    borderRadius: radius.medium,
+    backgroundColor: colors.containerLow,
+    overflow: 'hidden',
+  },
+  factRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    minHeight: 48,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  factDivider: { borderTopWidth: 1, borderTopColor: colors.outlineVariant },
+  factLabel: { ...typography.bodyLarge, color: colors.onSurface, flex: 1 },
+  factValue: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
   about: { ...typography.bodyLarge, color: colors.onSurface },
   listItem: {
     minHeight: 56,
@@ -358,8 +462,8 @@ const styles = StyleSheet.create({
   dangerText: { color: colors.error },
   listBody: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
   // Separa a nota de publicação das linhas clicáveis acima (perfil, denunciar,
-  // bloquear): sem o traço, as quatro linhas pareciam uma lista só, mas só as
-  // três primeiras respondem ao toque.
+  // bloquear): sem o traço, as linhas pareciam uma lista só, mas nem todas
+  // respondem ao toque.
   separator: { height: StyleSheet.hairlineWidth, backgroundColor: colors.outlineVariant },
   noteText: { ...typography.labelMedium, color: colors.onSurfaceVariant },
   // Barra fixa da ação principal (Figma: 80 de altura sobre o container baixo).

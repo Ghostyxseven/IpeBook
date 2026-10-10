@@ -123,6 +123,14 @@ export function createMemoryAuthRepository({
       current = null;
       gate.release(null);
     },
+    async updateName(name) {
+      calls.push('updateName');
+      const account = current ? find(current.email) : undefined;
+      if (!account) throw new AuthError('unknown');
+      account.user = { ...account.user, name };
+      setCurrent(account.user);
+      return account.user;
+    },
     async signOut() {
       calls.push('signOut');
       setCurrent(null);
