@@ -55,6 +55,10 @@ export function MapSurface({ config, data, onEvent }: MapSurfaceProps) {
       style={styles.map}
       styleURL={Mapbox.StyleURL.Street}
       scaleBarEnabled={false}
+      // GLSurfaceView (padrão no Android) ignora o recorte da árvore de views e
+      // "vaza" sobre o resto da tela ao arrastar/dar zoom dentro de um ScrollView
+      // (ex.: o seletor de ponto). TextureView respeita o layout normalmente.
+      surfaceView={false}
       onDidFinishLoadingMap={() => onEvent({ type: 'ready' })}
       onMapLoadingError={() => onEvent({ type: 'error' })}
       onPress={handlePress}
