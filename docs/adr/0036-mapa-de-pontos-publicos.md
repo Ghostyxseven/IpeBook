@@ -1,6 +1,6 @@
 # ADR 0036 — Mapbox para pontos públicos, sem localização pessoal
 
-Data: 2026-10-09. Status: aceito para implementação local.
+Data: 2026-10-09. Status: parcialmente substituído pelo [ADR 0037](0037-mapbox-sdk-nativo-no-app.md) — a decisão de usar WebView com Mapbox GL JS no Android/iOS não se sustentou (os Web Workers do Mapbox GL JS não iniciam nessa WebView) e foi trocada pelo SDK nativo (`@rnmapbox/maps`). A Web continua usando Mapbox GL JS como decidido aqui.
 
 ## Contexto
 
@@ -18,6 +18,6 @@ RNMapbox exige novo build e não funciona no Expo Go; mapa estático não permit
 
 ## Consequências
 
-Há consumo de mapas na conta Mapbox e dependência de rede/WebGL. Falhas preservam lista e entrada textual. Coordenadas são indicadas pela pessoa: o sistema não atesta que o local é público. A migração deve preceder publicação do cliente; não aplicada remotamente nesta tarefa. Reverter cliente não apaga pontos; remover dados exige decisão própria.
+Há consumo de mapas na conta Mapbox e dependência de rede/WebGL (Web) ou do SDK nativo (Android/iOS, ver ADR 0037). Falhas preservam lista e entrada textual. Coordenadas são indicadas pela pessoa: o sistema não atesta que o local é público. A migração (`20261009140000_mapa_pontos_encontro.sql`) foi aplicada no projeto Supabase remoto em 2026-10-10. Reverter cliente não apaga pontos; remover dados exige decisão própria.
 
 Referências: [spec](../../specs/039-mapa-pontos-encontro/spec.md), [plano](../../specs/039-mapa-pontos-encontro/plan.md), [Expo 57 WebView](https://docs.expo.dev/versions/v57.0.0/sdk/webview/), [Mapbox](https://docs.mapbox.com/mapbox-gl-js/example/custom-marker-icons/).

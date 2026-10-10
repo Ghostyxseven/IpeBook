@@ -36,4 +36,5 @@
 - [0034 - Painel de moderação de denúncias](0034-painel-moderacao-denuncias.md) (aceito, implementado)
 - [0035 - Conversar antes do encontro](0035-conversar-antes-do-encontro.md) (aceito, implementado; renumerado de 0034 para 0035 por colisão com o painel de moderação; falta aplicar a migração e conferir no aparelho)
 
-- [0036 - Mapa de pontos públicos](0036-mapa-de-pontos-publicos.md) (implementação local; migração remota pendente)
+- [0036 - Mapa de pontos públicos](0036-mapa-de-pontos-publicos.md) (parcialmente substituído pelo 0037: WebView com Mapbox GL JS no nativo trocada por SDK nativo; migração já aplicada remotamente)
+- [0037 - SDK nativo do Mapbox no Android/iOS; Web continua com Mapbox GL JS](0037-mapbox-sdk-nativo-no-app.md) (aceito para implementação local; build nativo ainda não executado)

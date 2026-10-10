@@ -1,51 +1,153 @@
-import { useEffect, useRef, useState } from 'react';
-import { Linking } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { mountMap } from './mapRuntime';
-import type { MapEvent } from './mapRuntime';
+import { useCallback, useEffect, useRef, type ElementRef } from 'react';
+import { Image } from 'expo-image';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Mapbox, { Camera, MapView, MarkerView } from '@rnmapbox/maps';
 import type { MapSurfaceProps } from './MapSurface.types';
+import { colors, coverColors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
-const encode = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c');
-/** O token público e pontos públicos são os únicos dados enviados ao documento isolado. */
+/** Mapa abre em Piripiri (ADR 0036); nunca deriva do GPS nem do perfil. */
+const DEFAULT_CENTER: [number, number] = [-41.776, -4.273];
+
+type PressFeature = { geometry: { coordinates: number[] } };
+
+/** SDK nativo do Mapbox (Android/iOS); a Web usa mapbox-gl em MapSurface.web.tsx. */
 export function MapSurface({ config, data, onEvent }: MapSurfaceProps) {
-  const web = useRef<WebView>(null);
-  const latest = useRef(data);
-  latest.current = data;
-  const [html] = useState(
-    () => `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.32.0/mapbox-gl.css"><style>html,body,#map{height:100%;margin:0}</style></head><body><div id="map" class="ipe-map-root"></div><script src="https://api.mapbox.com/mapbox-gl-js/v3.32.0/mapbox-gl.js"></script><script>
-  try { window.ipeMap = (${mountMap.toString()})(mapboxgl, document.getElementById('map'), ${encode(config)}, function(event){window.ReactNativeWebView.postMessage(JSON.stringify(event));}); } catch(e) {window.ReactNativeWebView.postMessage('{"type":"error"}');}
-  </script></body></html>`,
-  );
-  const update = () =>
-    web.current?.injectJavaScript(
-      `window.ipeMap && window.ipeMap.update(${encode(latest.current)});true;`,
+  const camera = useRef<ElementRef<typeof Camera>>(null);
+  const lastIds = useRef('');
+  useEffect(() => {
+    Mapbox.setAccessToken(config.token || null).catch(() => onEvent({ type: 'error' }));
+  }, [config.token, onEvent]);
+
+  useEffect(() => {
+    const ids = JSON.stringify(data.markers.map((marker) => marker.id));
+    if (ids === lastIds.current || data.markers.length === 0) return;
+    lastIds.current = ids;
+    if (data.markers.length === 1) {
+      camera.current?.setCamera({
+        centerCoordinate: [data.markers[0].longitude, data.markers[0].latitude],
+        zoomLevel: 14,
+        animationDuration: 0,
+      });
+      return;
+    }
+    const lats = data.markers.map((marker) => marker.latitude);
+    const lngs = data.markers.map((marker) => marker.longitude);
+    camera.current?.fitBounds(
+      [Math.max(...lngs), Math.max(...lats)],
+      [Math.min(...lngs), Math.min(...lats)],
+      [config.padding.top, config.padding.right, config.padding.bottom, config.padding.left],
+      0,
     );
-  useEffect(update, [data]);
+  }, [data.markers, config.padding]);
+
+  const handlePress = useCallback(
+    (feature: PressFeature) => {
+      if (!config.selectable) return;
+      const [longitude, latitude] = feature.geometry.coordinates;
+      if (typeof latitude === 'number' && typeof longitude === 'number')
+        onEvent({ type: 'point', latitude, longitude });
+    },
+    [config.selectable, onEvent],
+  );
+
   return (
-    <WebView
-      ref={web}
-      source={{ html }}
-      originWhitelist={['*']}
-      javaScriptEnabled
-      geolocationEnabled={false}
-      allowsInlineMediaPlayback={false}
-      mixedContentMode="never"
-      onMessage={(event) => {
-        try {
-          const message = JSON.parse(event.nativeEvent.data) as MapEvent;
-          if (message.type === 'ready') update();
-          onEvent(message);
-        } catch {
-          onEvent({ type: 'error' });
-        }
-      }}
-      onShouldStartLoadWithRequest={(request) => {
-        if (request.url === 'about:blank') return true;
-        if (/^https:\/\/(www\.)?(mapbox\.com|openstreetmap\.org)\//.test(request.url))
-          void Linking.openURL(request.url).catch(() => {});
-        return false;
-      }}
-      onError={() => onEvent({ type: 'error' })}
-    />
+    <MapView
+      style={styles.map}
+      styleURL={Mapbox.StyleURL.Street}
+      scaleBarEnabled={false}
+      onDidFinishLoadingMap={() => onEvent({ type: 'ready' })}
+      onMapLoadingError={() => onEvent({ type: 'error' })}
+      onPress={handlePress}
+    >
+      <Camera
+        ref={camera}
+        defaultSettings={{
+          centerCoordinate: data.point
+            ? [data.point.longitude, data.point.latitude]
+            : DEFAULT_CENTER,
+          zoomLevel: 13,
+        }}
+        animationDuration={0}
+      />
+      {data.markers.map((item) => (
+        <MarkerView
+          key={item.id}
+          coordinate={[item.longitude, item.latitude]}
+          anchor={{ x: 0.5, y: 1 }}
+        >
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={item.label}
+            onPress={() => onEvent({ type: 'select', id: item.id })}
+            style={styles.markerButton}
+          >
+            <View style={styles.cover}>
+              {item.coverUrl ? (
+                <Image
+                  source={{ uri: item.coverUrl }}
+                  style={StyleSheet.absoluteFill}
+                  contentFit="cover"
+                />
+              ) : (
+                <Text numberOfLines={3} style={styles.coverText}>
+                  {item.title}
+                </Text>
+              )}
+            </View>
+            {item.count > 1 ? (
+              <View style={styles.count}>
+                <Text style={styles.countText}>{item.count}</Text>
+              </View>
+            ) : null}
+          </Pressable>
+        </MarkerView>
+      ))}
+      {data.point ? (
+        <MarkerView
+          coordinate={[data.point.longitude, data.point.latitude]}
+          anchor={{ x: 0.5, y: 1 }}
+        >
+          <View style={[styles.pin, { backgroundColor: config.color }]} />
+        </MarkerView>
+      ) : null}
+    </MapView>
   );
 }
+
+const styles = StyleSheet.create({
+  map: { flex: 1 },
+  markerButton: {
+    minWidth: metrics.touchTarget,
+    minHeight: metrics.touchTarget,
+    padding: spacing.xs,
+    alignItems: 'center',
+  },
+  cover: {
+    width: metrics.touchTarget,
+    height: metrics.touchTarget + spacing.lg,
+    borderRadius: radius.small,
+    backgroundColor: coverColors.backgrounds[2],
+    borderLeftWidth: metrics.borderStrong,
+    borderLeftColor: colors.actionDeep,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coverText: {
+    ...typography.bodyMedium,
+    color: coverColors.text,
+    padding: spacing.xxs,
+    textAlign: 'center',
+  },
+  count: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    borderRadius: radius.full,
+    backgroundColor: colors.action,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.xxs,
+  },
+  countText: { ...typography.bodyMedium, color: colors.surface, fontWeight: 'bold' },
+  pin: { width: spacing.lg, height: spacing.lg, borderRadius: radius.full },
+});
