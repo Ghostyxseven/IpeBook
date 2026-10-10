@@ -92,7 +92,7 @@ Implementado na branch `feature/autenticacao` para Android e iOS: abertura, onbo
 
 **Modelos de e-mail** preparados em `supabase/templates/` (`confirmar-cadastro.html` e `recuperar-senha.html`, com `{{ .Token }}`), com o passo a passo em `supabase/README.md`.
 
-**Pendente:** aplicar os modelos no painel (exige acesso de administrador ao projeto; a chave publicável não altera modelos de e-mail) e testar o cadastro e a recuperação recebendo o código.
+**Concluído (09/10/2026):** SMTP próprio configurado com **Resend** (Authentication → Emails → SMTP Settings), os dois modelos colados no painel, e o cadastro e a recuperação de senha testados recebendo o código por e-mail. Issue #31 fechada.
 
 ## Documentos legais
 

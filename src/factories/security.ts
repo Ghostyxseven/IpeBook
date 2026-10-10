@@ -3,6 +3,7 @@ import { supabase } from '../infra/supabaseClient';
 import { useBlockedPeopleViewModel } from '../viewmodel/useBlockedPeopleViewModel';
 import { useBlockViewModel } from '../viewmodel/useBlockViewModel';
 import { useReportViewModel } from '../viewmodel/useReportViewModel';
+import { useModerationReportsViewModel } from '../viewmodel/useModerationReportsViewModel';
 
 export const securityRepository = createSupabaseSecurityRepository(supabase);
 
@@ -13,3 +14,5 @@ export const useReport = (target: Parameters<typeof useReportViewModel>[1]) =>
   useReportViewModel(securityRepository, target);
 
 export const useBlockedPeople = () => useBlockedPeopleViewModel(securityRepository);
+
+export const useModerationReports = () => useModerationReportsViewModel(securityRepository);

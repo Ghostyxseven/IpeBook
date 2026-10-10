@@ -1,18 +1,36 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { SecurityRepository } from './SecurityRepository';
-import type { Report } from '../entities/Report';
+import type { Report, ReportModerationItem, ReportStatus } from '../entities/Report';
 import type { BlockedPerson, UserBlock } from '../entities/UserBlock';
 import { SecurityError } from '../entities/SecurityError.ts';
 
-export type SupabaseSecurityClient = Pick<SupabaseClient, 'from' | 'rpc'>;
+export type SupabaseSecurityClient = Pick<SupabaseClient, 'from' | 'rpc' | 'auth'>;
 
 type BlockRow = { id: string; blocker_id: string; blocked_id: string; created_at: string };
+
+type ReportModerationRow = {
+  id: string;
+  reporter_id: string;
+  reporter_first_name: string | null;
+  reported_user_id: string | null;
+  reported_user_first_name: string | null;
+  reported_listing_id: string | null;
+  reported_listing_title: string | null;
+  reason: string;
+  details: string | null;
+  status: string;
+  created_at: string;
+};
 
 export function mapSupabaseSecurityError(error: unknown): SecurityError {
   if (error instanceof SecurityError) return error;
   const { code, message } = (error ?? {}) as { code?: string; message?: string };
   // PGRST205/42P01: as tabelas da migração de segurança ainda não existem neste projeto.
   if (code === 'PGRST205' || code === '42P01') return new SecurityError('not_configured', error);
+  // 42501: sem permissão de moderador.
+  if (code === '42501') return new SecurityError('unauthorized', error);
+  // P0002: não encontrado.
+  if (code === 'P0002') return new SecurityError('not_found', error);
   // 23514/23502: motivo vazio ou denúncia sem alvo; 23503: pessoa ou anúncio que não existe.
   if (code === '23514' || code === '23502' || code === '23503')
     return new SecurityError('invalid', error);
@@ -27,9 +45,22 @@ const toBlock = (row: BlockRow): UserBlock => ({
   createdAt: row.created_at,
 });
 
+const toReportModerationItem = (row: ReportModerationRow): ReportModerationItem => ({
+  id: row.id,
+  reporterId: row.reporter_id,
+  reporterFirstName: row.reporter_first_name,
+  reportedUserId: row.reported_user_id,
+  reportedUserFirstName: row.reported_user_first_name,
+  reportedListingId: row.reported_listing_id,
+  reportedListingTitle: row.reported_listing_title,
+  reason: row.reason,
+  details: row.details,
+  status: (row.status === 'resolved' ? 'resolved' : 'pending') as ReportStatus,
+  createdAt: row.created_at,
+});
+
 /**
- * Denúncias e bloqueios (spec 027, ADR 0017). A RLS de `user_blocks` só mostra e
- * apaga os bloqueios da própria pessoa, então nenhuma consulta filtra por dono.
+ * Denúncias e bloqueios (spec 027, spec 036, ADR 0017, ADR 0034).
  */
 export function createSupabaseSecurityRepository(
   supabase: SupabaseSecurityClient | null,
@@ -106,6 +137,35 @@ export function createSupabaseSecurityRepository(
         status: data.status,
         createdAt: data.created_at,
       };
+    },
+
+    async isModerator(): Promise<boolean> {
+      try {
+        const userRes = await client().auth?.getUser?.();
+        const userId = userRes?.data?.user?.id;
+        if (!userId) return false;
+        const { data, error } = await client().rpc('is_moderator', { user_id: userId });
+        if (error) return false;
+        return Boolean(data);
+      } catch {
+        return false;
+      }
+    },
+
+    async listModerationReports(status?: ReportStatus): Promise<ReportModerationItem[]> {
+      const { data, error } = await client().rpc('admin_list_reports', {
+        p_status: status ?? null,
+      });
+      if (error) throw mapSupabaseSecurityError(error);
+      const rows = (data ?? []) as ReportModerationRow[];
+      return rows.map(toReportModerationItem);
+    },
+
+    async resolveReport(reportId: string): Promise<void> {
+      const { error } = await client().rpc('admin_resolve_report', {
+        p_report_id: reportId,
+      });
+      if (error) throw mapSupabaseSecurityError(error);
     },
   };
 }

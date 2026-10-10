@@ -1,0 +1,24 @@
+# Tarefas — Painel de Moderação de Denúncias
+
+- [x] 1. Migração SQL (`20261009120000_painel_moderacao_reports.sql`)
+  - [x] 1.1 Criar função `is_moderator`.
+  - [x] 1.2 Criar RPC `admin_list_reports`.
+  - [x] 1.3 Criar RPC `admin_resolve_report`.
+- [x] 2. Model & Repositórios
+  - [x] 2.1 Atualizar `src/model/entities/Report.ts` com `ReportModerationItem`.
+  - [x] 2.2 Atualizar `src/model/entities/SecurityError.ts` com `'unauthorized'`.
+  - [x] 2.3 Atualizar interface `src/model/repositories/SecurityRepository.ts`.
+  - [x] 2.4 Implementar métodos em `src/model/repositories/memorySecurityRepository.ts`.
+  - [x] 2.5 Implementar métodos em `src/model/repositories/supabaseSecurityRepository.ts`.
+  - [x] 2.6 Adicionar utilitários de formatação em `src/model/services/securityFormat.ts`.
+- [x] 3. ViewModel & Factory
+  - [x] 3.1 Criar `src/viewmodel/useModerationReportsViewModel.ts`.
+  - [x] 3.2 Exportar factory em `src/factories/security.ts`.
+- [x] 4. View & Navegação
+  - [x] 4.1 Criar `src/view/screens/security/ModerationReportsScreen.tsx`.
+  - [x] 4.2 Criar rota `src/app/(app)/seguranca/moderacao.tsx`.
+  - [x] 4.3 Adicionar atalho de navegação em `src/view/screens/settings/SettingsScreen.tsx`.
+- [x] 5. Testes Automatizados & Verificação
+  - [x] 5.1 Criar `tests/moderation.test.mjs`.
+  - [x] 5.2 Executar `npm run verify`.
+  - [x] 5.3 Atualizar `specs/036-painel-moderacao/verify.md`.

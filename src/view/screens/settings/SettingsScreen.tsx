@@ -148,6 +148,23 @@ export function SettingsScreen() {
         </Pressable>
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel="Painel de moderação"
+          onPress={() => router.push('/(app)/seguranca/moderacao')}
+          style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+            styles.listItem,
+            pressed && styles.pressed,
+            focused && focusRing,
+          ]}
+        >
+          <AppIcon name="tune" size={20} color={colors.onSurfaceVariant} />
+          <View style={styles.rowCopy}>
+            <Text style={styles.rowTitle}>Painel de moderação</Text>
+            <Text style={styles.rowBody}>Acompanhe e resolva denúncias da comunidade.</Text>
+          </View>
+          <AppIcon name="chevronRight" color={colors.onSurfaceVariant} />
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
           accessibilityLabel="Privacidade e dados"
           onPress={() => router.push('/privacidade-dados')}
           style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [

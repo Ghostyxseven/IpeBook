@@ -208,7 +208,7 @@ export function createSupabaseAuthRepository(
 
     async updateName(name) {
       const { data } = await run(() => auth().updateUser({ data: { name } }));
-      return toUser(data.user);
+      return toUser(data.user!);
     },
 
     async cancelPasswordRecovery() {

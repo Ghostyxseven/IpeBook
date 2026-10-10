@@ -1,5 +1,5 @@
 import type { SecurityRepository } from './SecurityRepository';
-import type { Report } from '../entities/Report';
+import type { Report, ReportModerationItem, ReportStatus } from '../entities/Report';
 import type { BlockedPerson, UserBlock } from '../entities/UserBlock';
 import { SecurityError, type SecurityErrorCode } from '../entities/SecurityError.ts';
 
@@ -7,10 +7,13 @@ import { SecurityError, type SecurityErrorCode } from '../entities/SecurityError
 export function createMemorySecurityRepository(
   currentUserId: string,
   names: Record<string, string> = {},
+  listingTitles: Record<string, string> = {},
+  isModerator = false,
 ) {
   let blocks: UserBlock[] = [];
   const reports: Report[] = [];
   let failure: SecurityErrorCode | null = null;
+  let moderatorState = isModerator;
   let clock = 0;
 
   const guard = () => {
@@ -63,12 +66,51 @@ export function createMemorySecurityRepository(
       reports.push(report);
       return report;
     },
+    async isModerator() {
+      guard();
+      return moderatorState;
+    },
+    async listModerationReports(status?: ReportStatus): Promise<ReportModerationItem[]> {
+      guard();
+      if (!moderatorState) throw new SecurityError('unauthorized');
+      const filtered = status ? reports.filter((r) => r.status === status) : reports;
+      return [...filtered]
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .map((r) => ({
+          id: r.id,
+          reporterId: r.reporterId,
+          reporterFirstName: names[r.reporterId] ?? null,
+          reportedUserId: r.reportedUserId,
+          reportedUserFirstName: r.reportedUserId ? (names[r.reportedUserId] ?? null) : null,
+          reportedListingId: r.reportedListingId,
+          reportedListingTitle: r.reportedListingId
+            ? (listingTitles[r.reportedListingId] ?? null)
+            : null,
+          reason: r.reason,
+          details: r.details,
+          status: r.status,
+          createdAt: r.createdAt,
+        }));
+    },
+    async resolveReport(reportId: string): Promise<void> {
+      guard();
+      if (!moderatorState) throw new SecurityError('unauthorized');
+      const report = reports.find((r) => r.id === reportId);
+      if (!report) throw new SecurityError('not_found');
+      report.status = 'resolved';
+    },
   };
 
   return {
     repository,
     reports: () => [...reports],
     blocks: () => [...blocks],
+    setModerator: (state: boolean) => {
+      moderatorState = state;
+    },
+    seedReport: (report: Report) => {
+      reports.push(report);
+    },
     fail: (code: SecurityErrorCode | null) => {
       failure = code;
     },

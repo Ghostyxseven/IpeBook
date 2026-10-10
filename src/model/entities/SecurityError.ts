@@ -1,4 +1,5 @@
-export type SecurityErrorCode = 'invalid' | 'network' | 'not_configured' | 'unknown';
+export type SecurityErrorCode =
+  'invalid' | 'network' | 'not_configured' | 'unauthorized' | 'not_found' | 'unknown';
 
 /** Erro de denúncia e bloqueio independente do provedor (Supabase fica só no repositório). */
 export class SecurityError extends Error {

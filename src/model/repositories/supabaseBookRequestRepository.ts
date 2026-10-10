@@ -41,9 +41,9 @@ type Row = {
   requester_id: string;
   offered_listing_id?: string | null;
   counter_listing_id?: string | null;
-  public_location: string;
-  meeting_date: string;
-  meeting_time: string;
+  public_location: string | null;
+  meeting_date: string | null;
+  meeting_time: string | null;
   status: RequestStatus;
   created_at: string;
   updated_at: string;
@@ -178,6 +178,20 @@ export function createSupabaseBookRequestRepository(
       const db = requireClient();
       const result = await db
         .rpc('reschedule_book_request', {
+          request_id: id,
+          new_location: publicLocation,
+          new_date: meetingDate,
+          new_time: meetingTime,
+        })
+        .select(COLUMNS)
+        .maybeSingle();
+      return readOne(result as { data: Row | null; error: unknown });
+    },
+
+    async proposeMeeting(id, { publicLocation, meetingDate, meetingTime }) {
+      const db = requireClient();
+      const result = await db
+        .rpc('propose_meeting', {
           request_id: id,
           new_location: publicLocation,
           new_date: meetingDate,

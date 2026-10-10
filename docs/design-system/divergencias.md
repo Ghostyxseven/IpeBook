@@ -355,14 +355,40 @@ para virarem spec pelo Spec Kit, e não um patch visual avulso.
 
 ### Implementado e Integrado (09/10/2026)
 
-Todas as 6 frentes derivadas desta revisão foram construídas seguindo Spec Kit + MVVM Simplificado e mescladas no projeto principal:
+Quatro das 6 frentes derivadas desta revisão foram construídas seguindo Spec Kit + MVVM
+Simplificado e mescladas no projeto principal. A Ajuda saiu só pela metade (ver nota) e o
+Detalhe do livro colidiu com uma implementação independente que já estava em andamento — ver
+nota abaixo de cada uma.
 
 1. **Privacidade e dados (07.07)**: Recurso "Baixar meus dados" (LGPD) com `exportMyData.ts`, `useExportMyDataViewModel` e layout de cartões agrupados.
 2. **Meu perfil (07.01) e Configurações (07.05)**: Reformulados com o componente `IconBadge`, atualização do repositório `updateName` e layout fiel ao Figma.
 3. **Estante (05.01 a 05.04, iOS)**: Variante nativa com `ShelfGroupedList` e `ShelfBookRow` adaptada com Status Badge no iOS.
-4. **Detalhe do livro (03.01 a 03.03)**: Ações flutuantes no header (voltar, compartilhar, favoritar), cartão de fatos (conservação, categoria, retirada) e notas de modalidade.
-5. **Ajuda (09.01)**: Passos numerados e seção de dicas de segurança no iOS.
-6. **Conversa e Cancelamento (06.02 e 06.12)**: Menu de opções (`...`) no cabeçalho (Bloquear e Denunciar) e aviso inline de encontro cancelado.
+4. **Ajuda (09.01)**: Passos numerados e seção de dicas de segurança no iOS.
+5. **Conversa e Cancelamento (06.02 e 06.12)**: Menu de opções (`...`) no cabeçalho (Bloquear e Denunciar) e aviso inline de encontro cancelado.
+
+**Escolher bairro (11.01) — não implementado, ao contrário do que o branch sugere:** a frente
+que cuidou de Ajuda também foi instruída a fazer Escolher bairro (bottom sheet), mas só
+`helpTopics.ts`/`HelpScreen.tsx` foram tocados — `escolher-bairro.tsx` continua igual e nenhum
+componente `BottomSheet` foi criado. Continua pendente, registrado na tabela abaixo.
+
+**Detalhe do livro (03.01 a 03.03) — retrabalho duplicado (09/10/2026):** esta frente também
+chegou a implementar o cartão agrupado e as ações flutuantes do header, mas descobrimos, ao
+atualizar contra o `develop`, que Micael (Ghostyxseven) já tinha feito a mesma spec 037
+independentemente, com um desenho de dados diferente (`DetailCard` único em vez de
+`facts[]` + `modalityNote` separados). Mantivemos a versão dele, já mesclada no `develop`
+(commit `b995cf4`), e descartamos esta. Vale combinar com a equipe antes de duas pessoas
+pegarem a mesma spec ao mesmo tempo.
+
+| Área                                                   | O que o Figma já tem, que o app ainda não                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Escolher bairro (11.01)                                | Virou bottom sheet ("Onde você está?") com lista fixa de bairros sobre a tela de Explorar. O app é uma tela cheia com campo de texto livre — não construído ainda, ver nota acima.                                                                                                                                                                                                                                                                                            |
+| Cancelar/Recusar encontro (06.11, 06.12, 06.17, 06.18) | Viraram diálogo modal curto (dois botões lado a lado) seguido de aviso inline dentro do próprio chat, ou toast flutuante (padrão `Snackbar` que o acesso já usa). O app ainda usa telas cheias dedicadas (`OutcomeHero`), compartilhadas por Android/iOS/Web.                                                                                                                                                                                                                 |
+| Combinar encontro (06.04)                              | Trocou os chips de "Onde" por mapa com 6 miniaturas e lista de locais com endereço; "Dia"/"Horário" viraram linhas únicas com chevron. **Decisão (09/10/2026): mantém os chips.** Têm justificativa de acessibilidade documentada em `PlacePicker.tsx` (sempre alimentam um campo de texto, para quem usa teclado/leitor de tela nunca ficar sem saída); o Figma é que precisa ser corrigido pra voltar aos chips, ou pelo menos deixar de marcar isso como pendência do app. |
+| Conversa — menu "•••"                                  | Novo no cabeçalho do chat. **Decisão (09/10/2026): abre Bloquear [pessoa] e Denunciar anúncio**, reaproveitando `useBlockViewModel.ts`/`useReportViewModel.ts`/`BlockUserDialog.tsx` já existentes — sem inventar ação nova. Implementação na spec 041.                                                                                                                                                                                                                       |
+
+Resolvidas por esta revisão: Meu perfil, Configurações, Estante, Privacidade e dados e Ajuda.
+Detalhe do livro foi resolvida por outra pessoa (spec 037, ver acima). Escolher bairro continua
+pendente.
 
 **Histórico**: confirmado de novo que não existe quadro no Figma para essa tela (já registrado
 acima, em "Perfil completo (spec 031)") — é tela que o time acrescentou além do kit original, não é bug.
@@ -371,3 +397,21 @@ acima, em "Perfil completo (spec 031)") — é tela que o time acrescentou além
 mostraram node-id do Figma que já "morreu" ou mudou de quadro desde a última vez que o código
 foi conferido contra ele — algumas mais de uma vez. Vale um ADR ou uma rotina de reconferência
 periódica para isso não virar surpresa de novo.
+
+### Construção dos achados (09/10/2026)
+
+A dona do produto pediu para construir a maior parte dos achados acima em vez de só documentar.
+Specs abertas pelo Spec Kit, cada uma com seu PR próprio contra `develop`:
+
+| Spec                                      | Cobre                                                                 |
+| ----------------------------------------- | --------------------------------------------------------------------- |
+| `036-perfil-e-configuracoes-reformulados` | Meu perfil (cartão único, Favoritos, Editar perfil) e Configurações   |
+| `037-detalhe-do-livro-ios`                | Cartão agrupado, botões do rodapé, compartilhar/favoritar             |
+| `038-estante-ios-nativa`                  | Variante nativa iOS da Estante                                        |
+| `039-privacidade-exportar-dados`          | "Baixar meus dados", com escopo contido (sem invenção de coleta nova) |
+| `040-ajuda-e-escolher-bairro`             | Ajuda em 3 passos e Escolher bairro em bottom sheet                   |
+| `041-cancelar-recusar-e-menu-conversa`    | Cancelar/Recusar em modal (só esses dois estados) e o menu "•••"      |
+
+**Decisão (09/10/2026) sobre Cancelar/Recusar:** só esses dois estados viram modal/aviso inline;
+"Encontro combinado" e "Negociação concluída" continuam tela cheia (`OutcomeHero`). A
+inconsistência entre os 4 estados de desfecho foi aceita conscientemente, não é descuido.

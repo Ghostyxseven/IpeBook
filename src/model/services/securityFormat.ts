@@ -1,4 +1,5 @@
 import type { SecurityErrorCode } from '../entities/SecurityError';
+import type { ReportStatus } from '../entities/Report';
 
 /** Motivos da denúncia de anúncio, na ordem do Figma 09.03. */
 export const listingReportReasons = [
@@ -36,10 +37,53 @@ export function unblockLabel(firstName: string | null | undefined): string {
   return name ? `Desbloquear ${name}` : 'Desbloquear pessoa';
 }
 
+export function reportStatusLabel(status: ReportStatus): string {
+  switch (status) {
+    case 'resolved':
+      return 'Resolvida';
+    case 'pending':
+    default:
+      return 'Pendente';
+  }
+}
+
+export function reportTargetLabel(item: {
+  reportedListingTitle?: string | null;
+  reportedUserFirstName?: string | null;
+}): string {
+  if (item.reportedListingTitle) {
+    return `Anúncio: ${item.reportedListingTitle}`;
+  }
+  if (item.reportedUserFirstName) {
+    return `Pessoa: ${item.reportedUserFirstName}`;
+  }
+  return 'Item denunciado';
+}
+
+export function formatReportDate(iso: string): string {
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return '';
+  }
+}
+
 export function securityErrorMessage(code: SecurityErrorCode): string {
   switch (code) {
     case 'invalid':
       return 'Escolha um motivo para enviar a denúncia.';
+    case 'unauthorized':
+      return 'Você não tem permissão para acessar o painel de moderação.';
+    case 'not_found':
+      return 'A denúncia não foi encontrada ou já foi removida.';
     case 'network':
       return 'Sem conexão com a internet. Tente de novo quando a conexão voltar.';
     case 'not_configured':

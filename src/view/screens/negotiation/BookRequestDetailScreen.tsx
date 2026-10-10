@@ -317,8 +317,22 @@ export function BookRequestDetailScreen() {
         <Text style={styles.label}>{asOwner ? 'Você entrega' : 'Você pediu'}</Text>
         <RequestBookRow listing={listing} onPress={openListing} />
         {offeredRow}
-        <Text style={styles.label}>Encontro proposto</Text>
-        <MeetingCard request={request} />
+        {request.publicLocation ? (
+          <>
+            <Text style={styles.label}>Encontro proposto</Text>
+            <MeetingCard request={request} />
+          </>
+        ) : (
+          // ADR 0035: "Conversar" abre sem encontro algum; qualquer um dos dois propõe.
+          <View style={styles.propose}>
+            <Text style={styles.note}>Ainda não há encontro proposto.</Text>
+            <Button
+              label="Propor encontro"
+              variant="secondary"
+              onPress={() => router.push(`/negociacoes/${request.id}/propor-encontro`)}
+            />
+          </View>
+        )}
         {asOwner && <Text style={styles.note}>{copy.body}</Text>}
         {/* Contraproposta de pé: quem propôs responde, e o dono espera (Figma 06.19). */}
         {request.counterListingId ? (
@@ -400,9 +414,13 @@ export function BookRequestDetailScreen() {
               disabled={vm.busy}
             />
           </View>
-          <View style={styles.flex}>
-            <Button label="Aceitar" onPress={vm.accept} loading={vm.busy} />
-          </View>
+          {/* Sem encontro proposto, não tem o que aceitar ainda (ADR 0035) — o banco
+              também recusaria. */}
+          {request.publicLocation && (
+            <View style={styles.flex}>
+              <Button label="Aceitar" onPress={vm.accept} loading={vm.busy} />
+            </View>
+          )}
         </ActionBar>
       ) : capabilities.canCancel ? (
         <ActionBar>
@@ -446,6 +464,7 @@ const styles = StyleSheet.create({
   },
   label: { ...typography.labelLarge, color: colors.onSurfaceVariant, marginBottom: -spacing.xs },
   note: { ...typography.bodyMedium, color: colors.onSurfaceVariant },
+  propose: { gap: spacing.xs },
   stack: { gap: spacing.xs },
   flex: { flex: 1 },
 });
