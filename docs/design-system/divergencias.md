@@ -171,6 +171,16 @@ Comparação das 17 telas do fluxo "01 · Acesso" nas páginas `06 · Android` e
 | 01.09 e 01.13 como telas de sucesso (iPhone)            | Resolvido pelo ADR 0028 só no iPhone: o app leva direto para a tela seguinte (Início ou Seu bairro) com um aviso por cima. No Android e na Web, o quadro pede tela dedicada com cartão — o app manteve `EmailConfirmedScreen`/`PasswordUpdatedScreen` nesses dois. |
 | "Explorar livros sem entrar" (01.01, só no Android)     | Não existe no app: o catálogo exige sessão em `(app)`. Sem decisão ainda (ADR 0028); mudaria a proteção de rotas.                                                                                                                                                  |
 
+### Boas-vindas e Confira seu e-mail — completando a issue #11 (09/10/2026)
+
+As duas telas que faltavam comparar da issue #11 (splash não existe no Figma, já confirmado em
+comentário anterior da própria issue):
+
+| Item                       | Situação                                                                                                                                                                                                                                                                                                        |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Boas-vindas (01.01)        | Título, destaque, ilustração, selo "Piripiri · Piauí" e os botões Começar/Já tenho conta batem. A descrição diverge: Figma diz "Encontre, troque, venda ou doe livros perto de você."; o app diz "Livros de quem mora perto de você." — mais curta, mesmo sentido. Não corrigido, registrado como achado menor. |
+| Confira seu e-mail (01.05) | Já coberto pela linha "Link" acima (ADR 0006): o quadro fala em link e "Abrir o app Mail"; o app usa código digitado na própria tela de recuperação, sem tela de espera à parte.                                                                                                                                |
+
 ## Onde do Combinar encontro e ação do detalhe (07/10/2026)
 
 Decidido com o Micael em 07/10/2026, pelos quadros 06.04 e 03.03 das duas plataformas.
