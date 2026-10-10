@@ -1,9 +1,15 @@
+import type { MeetingPoint } from '../entities/MeetingPoint';
 import { BookRequest, RequestStatus } from '../entities/BookRequest';
 import type { Listing } from '../entities/Listing';
 
 /** Local, dia e horário de um encontro — sempre preenchidos: quem propõe ou reagenda
  * manda os três; só a negociação sem proposta nenhuma ainda tem os três nulos. */
-export type MeetingChange = { publicLocation: string; meetingDate: string; meetingTime: string };
+export type MeetingChange = {
+  publicLocation: string;
+  meetingDate: string;
+  meetingTime: string;
+  meetingPoint?: MeetingPoint | null;
+};
 
 export interface BookRequestRepository {
   /** Cria uma nova solicitação de negociação (requesterId é definido pelo repositório/RLS). */

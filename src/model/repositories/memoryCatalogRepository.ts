@@ -1,3 +1,4 @@
+import { validMeetingPoint } from '../services/meetingPoints.ts';
 import { CatalogError } from '../entities/CatalogError.ts';
 import type { Listing } from '../entities/Listing';
 import { effectiveFilters } from '../services/catalogFilters.ts';
@@ -31,6 +32,11 @@ export function createMemoryCatalogRepository(initial: Listing[] = []) {
       const { query, modalities, category, conditions, maxPriceCents } = effectiveFilters(filters);
       const text = query.toLocaleLowerCase('pt-BR');
       const matches = listings
+        .filter(
+          (item) =>
+            !filters.meetingPointsOnly ||
+            (item.status === 'disponivel' && validMeetingPoint(item.meetingPoint)),
+        )
         .filter((item) => item.status === 'disponivel' || item.status === 'reservado')
         .filter(
           (item) =>

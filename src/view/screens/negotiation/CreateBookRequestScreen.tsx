@@ -15,6 +15,7 @@ import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { ActionBar } from '../../components/negotiation/ActionBar';
+import { MeetingPointField } from '../../components/maps/MeetingPointField';
 import { PlacePicker } from '../../components/negotiation/PlacePicker';
 import { OfferPicker } from '../../components/negotiation/OfferPicker';
 import { Button } from '../../components/ui/Button';
@@ -136,6 +137,11 @@ export function CreateBookRequestScreen() {
             Onde
           </Text>
           <PlacePicker value={vm.publicLocation} onChange={vm.setPublicLocation} />
+          <MeetingPointField
+            value={vm.meetingPoint}
+            onChange={vm.chooseMeetingPoint}
+            disabled={vm.submitting}
+          />
 
           <Text style={styles.section} accessibilityRole="header">
             Dia

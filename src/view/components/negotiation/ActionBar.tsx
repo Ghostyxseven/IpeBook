@@ -12,7 +12,9 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     paddingHorizontal: metrics.pagePadding,
     paddingVertical: spacing.md,
-    backgroundColor: colors.containerLow,
+    backgroundColor: colors.surface,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.outlineVariant,
   },
   row: { flexDirection: 'row' },
 });

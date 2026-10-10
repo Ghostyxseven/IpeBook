@@ -1,3 +1,4 @@
+import { readMeetingPoint } from '../services/meetingPoints.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { ListingDraft, MyListing } from '../entities/Listing';
 import { isEditable } from '../entities/Listing.ts';
@@ -12,7 +13,7 @@ export const LISTINGS_TABLE = 'listings';
 export const COVERS_BUCKET = 'listing-covers';
 
 const columns =
-  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_id,created_at';
+  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_id,created_at,meeting_point';
 
 type Row = {
   id: string;
@@ -30,13 +31,15 @@ type Row = {
   status: MyListing['status'];
   owner_id: string | null;
   created_at: string;
+  meeting_point?: unknown;
 };
 
 export function mapSupabaseListingError(error: unknown): ListingError {
   if (error instanceof ListingError) return error;
   const { code, message } = (error ?? {}) as { code?: string; message?: string };
   // PGRST205/42P01: a tabela do ADR 0008 ainda não foi criada neste projeto.
-  if (code === 'PGRST205' || code === '42P01') return new ListingError('not_configured', error);
+  if (code === 'PGRST205' || code === '42P01' || code === '42703' || code === 'PGRST204')
+    return new ListingError('not_configured', error);
   // 22P02: texto que não é UUID na rota; PGRST116: nenhuma linha devolvida.
   if (code === '22P02' || code === 'PGRST116') return new ListingError('not_found', error);
   // 23514: uma das constraints de modalidade (ADR 0008); 23502: campo obrigatório.
@@ -96,6 +99,7 @@ export function createSupabaseListingsRepository(
     neighborhood: row.neighborhood,
     city: row.city,
     description: row.description,
+    meetingPoint: readMeetingPoint(row.meeting_point),
     ownerId: row.owner_id,
     coverPath: row.cover_path,
     coverUrl: row.cover_path
@@ -122,6 +126,7 @@ export function createSupabaseListingsRepository(
       neighborhood: clean.neighborhood,
       city: clean.city,
       description: clean.description,
+      meeting_point: clean.meetingPoint ?? null,
     };
   };
 

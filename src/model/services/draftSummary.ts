@@ -13,6 +13,7 @@ const fieldLabels: Record<ListingField | 'neighborhood', string> = {
   priceCents: 'preço',
   tradeTerms: 'o que aceita em troca',
   neighborhood: 'localização',
+  meetingPoint: 'ponto público',
 };
 
 /** A ordem em que os campos aparecem na frase: a mesma do formulário. */
@@ -25,6 +26,7 @@ const order: readonly (ListingField | 'neighborhood')[] = [
   'category',
   'condition',
   'neighborhood',
+  'meetingPoint',
 ];
 
 /**

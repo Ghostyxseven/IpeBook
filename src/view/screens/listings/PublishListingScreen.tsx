@@ -26,6 +26,7 @@ import { Button } from '../../components/ui/Button';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TextField } from '../../components/ui/TextField';
+import { MeetingPointField } from '../../components/maps/MeetingPointField';
 import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 /** Título da barra e nome da etapa, como nos quadros 04.01, 04.04 e 04.05. */
@@ -333,7 +334,13 @@ export function PublishListingScreen() {
               editable={!vm.submitting}
               autoCapitalize="words"
               placeholder="Centro"
-              hint="Só o bairro aparece no anúncio."
+              hint="O bairro aparece no anúncio. Se você marcar um ponto público abaixo, ele também aparecerá no mapa."
+            />
+            <MeetingPointField
+              value={vm.draft.meetingPoint}
+              onChange={vm.setMeetingPoint}
+              disabled={vm.submitting}
+              publicListing
             />
           </>
         ) : null}

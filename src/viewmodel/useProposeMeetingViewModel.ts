@@ -1,3 +1,4 @@
+import { useMeetingLocation } from './useMeetingLocation.ts';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BookRequest } from '../model/entities/BookRequest';
 import { toBookRequestError } from '../model/entities/BookRequestError.ts';
@@ -27,7 +28,8 @@ export function useProposeMeetingViewModel(
   const [status, setStatus] = useState<ProposeMeetingStatus>('loading');
   const [request, setRequest] = useState<BookRequest | null>(null);
   const [otherName, setOtherName] = useState<string | null>(null);
-  const [publicLocation, setPublicLocation] = useState('');
+  const { publicLocation, setPublicLocation, meetingPoint, chooseMeetingPoint } =
+    useMeetingLocation();
   const [meetingDate, setMeetingDate] = useState('');
   const [meetingTime, setMeetingTime] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +50,7 @@ export function useProposeMeetingViewModel(
         : (listing?.ownerFirstName ?? null);
       if (current !== loadId.current) return;
       setRequest(found);
+      chooseMeetingPoint(listing?.meetingPoint ?? null);
       setOtherName(name);
       setStatus(found.status === 'pending' && found.publicLocation === null ? 'ready' : 'closed');
     } catch (failure) {
@@ -55,7 +58,7 @@ export function useProposeMeetingViewModel(
       setError(bookRequestErrorMessage(toBookRequestError(failure).code));
       setStatus('error');
     }
-  }, [bookRequests, catalog, requestId, userId]);
+  }, [bookRequests, catalog, requestId, userId, chooseMeetingPoint, setPublicLocation]);
 
   useEffect(() => {
     void load();
@@ -78,6 +81,7 @@ export function useProposeMeetingViewModel(
         try {
           const updated = await bookRequests.proposeMeeting(request.id, {
             publicLocation: publicLocation.trim(),
+            meetingPoint,
             meetingDate,
             meetingTime,
           });
@@ -87,7 +91,7 @@ export function useProposeMeetingViewModel(
           setError(bookRequestErrorMessage(toBookRequestError(failure).code));
         }
       }),
-    [run, request, canSubmit, bookRequests, publicLocation, meetingDate, meetingTime],
+    [run, request, canSubmit, bookRequests, publicLocation, meetingDate, meetingTime, meetingPoint],
   );
 
   return {
@@ -97,6 +101,8 @@ export function useProposeMeetingViewModel(
     otherName,
     publicLocation,
     setPublicLocation,
+    meetingPoint,
+    chooseMeetingPoint,
     meetingDate,
     setMeetingDate,
     meetingTime,

@@ -8,6 +8,7 @@ import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
+import { MeetingPointField } from '../../components/maps/MeetingPointField';
 import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
 
 /** Editar anúncio (spec 025, Figma 38 e 40): o mesmo formulário, já preenchido. */
@@ -76,6 +77,12 @@ export function EditListingScreen({ id }: { id: string }) {
           disabled={vm.locked || vm.saving}
         />
 
+        <MeetingPointField
+          value={vm.draft.meetingPoint}
+          onChange={vm.setMeetingPoint}
+          disabled={vm.locked || vm.saving}
+          publicListing
+        />
         <View style={styles.cover}>
           <Text style={styles.sectionTitle}>Foto do exemplar</Text>
           <CoverPicker
