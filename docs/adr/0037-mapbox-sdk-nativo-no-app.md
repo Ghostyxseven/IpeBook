@@ -1,6 +1,6 @@
 # ADR 0037 — SDK nativo do Mapbox no Android/iOS; Web continua com Mapbox GL JS
 
-Data: 2026-10-10. Status: aceito para implementação local; build nativo (EAS) ainda não executado.
+Data: 2026-10-10. Status: aceito e validado — build de desenvolvimento gerado via EAS (perfil `preview`, APK) e confirmado funcionando em aparelho Android real.
 
 ## Contexto
 
@@ -26,6 +26,8 @@ Manter Mapbox GL JS em WebView no nativo (ADR 0036): descartado porque reproduz 
 
 O app deixa de rodar a tela do mapa no Expo Go puro no Android/iOS: a partir de agora, testar o mapa nativo exige build de desenvolvimento (EAS ou local). As demais telas continuam funcionando no Expo Go normalmente, pois `@rnmapbox/maps` só é importado pela árvore de telas do mapa. A Web não muda e continua funcionando como estava.
 
-Build local requer configurar o `~/.netrc` com o token secreto de download do Mapbox antes de `expo prebuild`/`eas build`; builds na nuvem (EAS) precisam desse mesmo segredo configurado como credencial do projeto (fora do escopo desta tarefa — quem builda decide quando e como configurar).
+Build local requer configurar o `~/.netrc` com o token secreto de download do Mapbox antes de `expo prebuild`/`eas build`; builds na nuvem (EAS) precisam do mesmo token também como variável de ambiente do projeto (`EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN`, que já existia, mais o segredo de download, configurado separadamente). `@rnmapbox/maps` declara `mapbox-gl@^2.9.0` como peer opcional; como o projeto usa `mapbox-gl` 3.x na Web, `npm ci` no EAS Build falhava com `ERESOLVE` — corrigido com um `.npmrc` (`legacy-peer-deps=true`) no repositório.
+
+Validado: build `preview` (APK) gerada via EAS e instalada em aparelho Android real, com o mapa funcionando.
 
 Referências: [spec](../../specs/039-mapa-pontos-encontro/spec.md), [plano](../../specs/039-mapa-pontos-encontro/plan.md), [ADR 0036](0036-mapa-de-pontos-publicos.md), [Mapbox Maps SDK — Android](https://docs.mapbox.com/android/maps/guides/), [Mapbox Maps SDK — iOS](https://docs.mapbox.com/ios/maps/guides/), [@rnmapbox/maps](https://github.com/rnmapbox/maps).
