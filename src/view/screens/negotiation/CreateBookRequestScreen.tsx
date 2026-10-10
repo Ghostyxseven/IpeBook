@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     padding: metrics.pagePadding,
     gap: spacing.sm,
     width: '100%',
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     alignSelf: 'center',
   },
   section: { ...typography.labelLarge, color: colors.onSurface, marginTop: spacing.xs },

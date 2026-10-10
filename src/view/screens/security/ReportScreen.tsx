@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     paddingBottom: spacing.lg,
     gap: spacing.md,
-    maxWidth: metrics.formMaxWidth,
+    maxWidth: metrics.readingMaxWidth,
     width: '100%',
     alignSelf: 'center',
   },

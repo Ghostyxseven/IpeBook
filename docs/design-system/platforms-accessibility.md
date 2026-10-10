@@ -25,6 +25,7 @@
 - Altura base de controle: 48 px.
 - Hover não substitui foco.
 - Navegação completa por teclado.
+- No app, a navegação compacta fica no rodapé, a média e a expandida usam trilho lateral e a larga usa cabeçalho persistente. Conteúdo geral cabe em até 1280 px; leitura e formulários usam limites menores.
 
 ## Equivalência, não cópia
 

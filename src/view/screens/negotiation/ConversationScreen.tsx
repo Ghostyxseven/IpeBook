@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useConversation } from '../../../factories/messages';
+import { useWebLayout } from '../../hooks/useWebLayout';
 import { MESSAGE_MAX, messageTime } from '../../../model/services/messageFormat';
 import { AppIcon } from '../../components/AppIcon';
 import { ListingCover } from '../../components/catalog/ListingCover';
@@ -22,14 +23,16 @@ import { BlockUserDialog } from '../../components/security/BlockUserDialog';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
 import { Button } from '../../components/ui/Button';
+import { BookRequestListScreen } from './BookRequestListScreen';
 import { TopAppBar } from '../../components/ui/TopAppBar';
-import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
+import { colors, metrics, radius, spacing, typography, webLayout } from '../../theme/nativeTheme';
 
 /** De quanto em quanto tempo a conversa aberta busca mensagens novas. */
 const REFRESH_MS = 10_000;
 
 /** Conversa com quem está do outro lado da negociação (Figma 06.02, 06.10 e 06.16). */
 export function ConversationScreen() {
+  const { expanded, large } = useWebLayout();
   const { id, draft } = useLocalSearchParams<{ id: string; draft?: string }>();
   const requestId = String(id ?? '');
   const vm = useConversation(requestId);
@@ -109,6 +112,23 @@ export function ConversationScreen() {
 
   const listing = vm.listing;
   const canModerate = Boolean(vm.otherId);
+  const bookSummary = (
+    <View style={[styles.bookCard, expanded && styles.desktopBookCard]}>
+      {listing ? <ListingCover listing={listing} variant="shelf" /> : null}
+      <View style={styles.bookText}>
+        <Text style={styles.bookTitle} numberOfLines={1}>
+          {listing?.title ?? 'Livro indisponível'}
+        </Text>
+        {listing ? <StatusBadge variant={listing.modality} /> : null}
+      </View>
+      <Button
+        label="Negociação"
+        variant="text"
+        accessibilityHint="Abre o pedido com local, data e horário"
+        onPress={() => router.push(`/negociacoes/${requestId}`)}
+      />
+    </View>
+  );
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <TopAppBar
@@ -184,103 +204,99 @@ export function ConversationScreen() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.bookCard}>
-          {listing ? <ListingCover listing={listing} variant="shelf" /> : null}
-          <View style={styles.bookText}>
-            <Text style={styles.bookTitle} numberOfLines={1}>
-              {listing?.title ?? 'Livro indisponível'}
-            </Text>
-            {listing ? <StatusBadge variant={listing.modality} /> : null}
-          </View>
-          <Button
-            label="Negociação"
-            variant="text"
-            accessibilityHint="Abre o pedido com local, data e horário"
-            onPress={() => router.push(`/negociacoes/${requestId}`)}
-          />
-        </View>
-
-        <FlatList
-          ref={list}
-          data={vm.messages}
-          keyExtractor={(message) => message.id}
-          contentContainerStyle={styles.messages}
-          ListEmptyComponent={
-            <Text style={styles.empty}>
-              {vm.open
-                ? `Comece a conversa com ${vm.otherName ?? 'a outra pessoa'}. Combine pelo IpêBook e não compartilhe senhas ou códigos.`
-                : 'Esta negociação não teve mensagens.'}
-            </Text>
-          }
-          renderItem={({ item }) => {
-            const mine = vm.isMine(item);
-            return (
-              <View
-                style={[styles.bubble, mine ? styles.mine : styles.theirs]}
-                accessible
-                accessibilityLabel={`${mine ? 'Você' : (vm.otherName ?? 'Outra pessoa')}, ${messageTime(item.createdAt)}: ${item.body}`}
-              >
-                <Text style={styles.body}>{item.body}</Text>
-                <Text style={styles.time}>{messageTime(item.createdAt)}</Text>
-              </View>
-            );
-          }}
-        />
-
-        {vm.sendError ? (
-          <View style={styles.alert} accessibilityRole="alert" accessibilityLiveRegion="polite">
-            <AppIcon name="error" size={18} color={colors.error} />
-            <Text style={styles.alertText}>{vm.sendError}</Text>
-          </View>
-        ) : null}
-
-        {vm.open ? (
-          <View style={styles.composer}>
-            <TextInput
-              value={vm.draft}
-              onChangeText={vm.setDraft}
-              placeholder="Escreva uma mensagem"
-              placeholderTextColor={colors.onSurfaceVariant}
-              accessibilityLabel="Mensagem"
-              multiline
-              maxLength={MESSAGE_MAX}
-              editable={!vm.sending}
-              style={styles.input}
-            />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={vm.sendError ? 'Tentar enviar de novo' : 'Enviar mensagem'}
-              accessibilityState={{ disabled: !vm.canSend, busy: vm.sending }}
-              disabled={!vm.canSend}
-              onPress={vm.send}
-              style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
-                styles.send,
-                vm.canSend ? styles.sendActive : styles.sendDisabled,
-                pressed && vm.canSend && styles.sendPressed,
-                focused && styles.focused,
-              ]}
-            >
-              <AppIcon name="send" color={vm.canSend ? colors.surface : colors.disabledText} />
-            </Pressable>
-          </View>
-        ) : vm.request?.status === 'canceled' ? (
-          // Figma 06.12: o desfecho de cancelar vira aviso aqui, não uma tela própria.
-          <View style={styles.canceledNotice} accessibilityRole="alert">
-            <AppIcon name="close" size={18} color={colors.onSurfaceVariant} />
-            <View style={styles.canceledText}>
-              <Text style={styles.canceledTitle}>Encontro cancelado.</Text>
-              <Text style={styles.canceledBody}>
-                O horário foi liberado. Combine uma nova data quando quiser.
-              </Text>
+        <View style={[styles.conversationLayout, expanded && styles.desktopConversationLayout]}>
+          {expanded && (
+            <View style={styles.conversationListColumn}>
+              <BookRequestListScreen showTitle={false} embedded selectedId={requestId} />
             </View>
+          )}
+          <View style={styles.chatColumn}>
+            {!large && bookSummary}
+
+            <FlatList
+              ref={list}
+              data={vm.messages}
+              keyExtractor={(message) => message.id}
+              contentContainerStyle={styles.messages}
+              ListEmptyComponent={
+                <Text style={styles.empty}>
+                  {vm.open
+                    ? `Comece a conversa com ${vm.otherName ?? 'a outra pessoa'}. Combine pelo IpêBook e não compartilhe senhas ou códigos.`
+                    : 'Esta negociação não teve mensagens.'}
+                </Text>
+              }
+              renderItem={({ item }) => {
+                const mine = vm.isMine(item);
+                return (
+                  <View
+                    style={[styles.bubble, mine ? styles.mine : styles.theirs]}
+                    accessible
+                    accessibilityLabel={`${mine ? 'Você' : (vm.otherName ?? 'Outra pessoa')}, ${messageTime(item.createdAt)}: ${item.body}`}
+                  >
+                    <Text style={styles.body}>{item.body}</Text>
+                    <Text style={styles.time}>{messageTime(item.createdAt)}</Text>
+                  </View>
+                );
+              }}
+            />
+
+            {vm.sendError ? (
+              <View style={styles.alert} accessibilityRole="alert" accessibilityLiveRegion="polite">
+                <AppIcon name="error" size={18} color={colors.error} />
+                <Text style={styles.alertText}>{vm.sendError}</Text>
+              </View>
+            ) : null}
+
+            {vm.open ? (
+              <View style={styles.composer}>
+                <TextInput
+                  value={vm.draft}
+                  onChangeText={vm.setDraft}
+                  placeholder="Escreva uma mensagem"
+                  placeholderTextColor={colors.onSurfaceVariant}
+                  accessibilityLabel="Mensagem"
+                  multiline
+                  maxLength={MESSAGE_MAX}
+                  editable={!vm.sending}
+                  style={styles.input}
+                />
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={vm.sendError ? 'Tentar enviar de novo' : 'Enviar mensagem'}
+                  accessibilityState={{ disabled: !vm.canSend, busy: vm.sending }}
+                  disabled={!vm.canSend}
+                  onPress={vm.send}
+                  style={({ pressed, focused }: { pressed: boolean; focused?: boolean }) => [
+                    styles.send,
+                    vm.canSend ? styles.sendActive : styles.sendDisabled,
+                    pressed && vm.canSend && styles.sendPressed,
+                    focused && styles.focused,
+                  ]}
+                >
+                  <AppIcon name="send" color={vm.canSend ? colors.surface : colors.disabledText} />
+                </Pressable>
+              </View>
+            ) : vm.request?.status === 'canceled' ? (
+              // Figma 06.12: o desfecho de cancelar vira aviso aqui, não uma tela própria.
+              <View style={styles.canceledNotice} accessibilityRole="alert">
+                <AppIcon name="close" size={18} color={colors.onSurfaceVariant} />
+                <View style={styles.canceledText}>
+                  <Text style={styles.canceledTitle}>Encontro cancelado.</Text>
+                  <Text style={styles.canceledBody}>
+                    O horário foi liberado. Combine uma nova data quando quiser.
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <View style={styles.composer}>
+                <Text style={styles.closed}>
+                  Esta negociação foi encerrada. A conversa fica só para consulta.
+                </Text>
+              </View>
+            )}
           </View>
-        ) : (
-          <View style={styles.composer}>
-            <Text style={styles.closed}>
-              Esta negociação foi encerrada. A conversa fica só para consulta.
-            </Text>
-          </View>
-        )}
+          {large && <View style={styles.detailsColumn}>{bookSummary}</View>}
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -289,6 +305,26 @@ export function ConversationScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   flex: { flex: 1 },
+  conversationLayout: { flex: 1 },
+  desktopConversationLayout: {
+    width: '100%',
+    maxWidth: metrics.contentMaxWidth,
+    alignSelf: 'center',
+    flexDirection: 'row',
+  },
+  chatColumn: { flex: 1, minWidth: 0 },
+  conversationListColumn: {
+    width: webLayout.conversationListWidth,
+    borderRightWidth: metrics.borderThin,
+    borderRightColor: colors.border,
+  },
+  detailsColumn: {
+    width: webLayout.detailsPaneWidth,
+    paddingTop: spacing.sm,
+    borderLeftWidth: metrics.borderThin,
+    borderLeftColor: colors.border,
+  },
+  desktopBookCard: { flexDirection: 'column', alignItems: 'stretch' },
   bookCard: {
     flexDirection: 'row',
     alignItems: 'center',

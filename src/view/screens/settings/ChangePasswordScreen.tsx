@@ -8,7 +8,8 @@ import type { ChangePasswordState } from '../../../viewmodel/useChangePasswordVi
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
 import { TextField } from '../../components/ui/TextField';
-import { colors, metrics, spacing, typography } from '../../theme/nativeTheme';
+import { useWebLayout } from '../../hooks/useWebLayout';
+import { colors, metrics, radius, spacing, typography } from '../../theme/nativeTheme';
 
 /** Título, explicação e nota de cada estado (Figma 07.18 a 07.21). */
 const copy: Record<ChangePasswordState, { title: string; description: string; note: string }> = {
@@ -36,6 +37,7 @@ const copy: Record<ChangePasswordState, { title: string; description: string; no
 };
 
 export function ChangePasswordScreen() {
+  const { large } = useWebLayout();
   const router = useRouter();
   const session = useSessionContext();
   const vm = useChangePassword({ email: session.user?.email ?? null });
@@ -49,104 +51,106 @@ export function ChangePasswordScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <View style={styles.content}>
-          <View style={styles.header}>
+        <View style={[styles.content, large && styles.desktopContent]}>
+          <View style={[styles.header, large && styles.desktopHeader]}>
             <Text style={styles.title} accessibilityRole="header">
               {text.title}
             </Text>
             <Text style={styles.description}>{text.description}</Text>
           </View>
-          {vm.state !== 'done' && (
-            <View style={styles.form}>
-              <FormMessage tone="error" message={vm.errors.form} />
-              {showCurrent && (
-                <TextField
-                  label="Senha atual"
-                  password
-                  value={vm.values.current}
-                  onChangeText={(value) => vm.setField('current', value)}
-                  error={vm.errors.current}
-                  autoCapitalize="none"
-                  autoComplete="current-password"
-                  textContentType="password"
-                  returnKeyType={showNew ? 'next' : 'go'}
-                  onSubmitEditing={() => (showNew ? passwordRef.current?.focus() : vm.submit())}
-                  submitBehavior={showNew ? 'submit' : undefined}
-                />
-              )}
-              {showNew && (
+          <View style={[styles.fields, large && styles.desktopFields]}>
+            {vm.state !== 'done' && (
+              <View style={styles.form}>
+                <FormMessage tone="error" message={vm.errors.form} />
+                {showCurrent && (
+                  <TextField
+                    label="Senha atual"
+                    password
+                    value={vm.values.current}
+                    onChangeText={(value) => vm.setField('current', value)}
+                    error={vm.errors.current}
+                    autoCapitalize="none"
+                    autoComplete="current-password"
+                    textContentType="password"
+                    returnKeyType={showNew ? 'next' : 'go'}
+                    onSubmitEditing={() => (showNew ? passwordRef.current?.focus() : vm.submit())}
+                    submitBehavior={showNew ? 'submit' : undefined}
+                  />
+                )}
+                {showNew && (
+                  <>
+                    <TextField
+                      ref={passwordRef}
+                      label="Nova senha"
+                      password
+                      value={vm.values.password}
+                      onChangeText={(value) => vm.setField('password', value)}
+                      error={vm.errors.password}
+                      autoCapitalize="none"
+                      autoComplete="new-password"
+                      textContentType="newPassword"
+                      returnKeyType="next"
+                      onSubmitEditing={() => confirmationRef.current?.focus()}
+                      submitBehavior="submit"
+                    />
+                    <TextField
+                      ref={confirmationRef}
+                      label="Confirmar nova senha"
+                      password
+                      value={vm.values.confirmation}
+                      onChangeText={(value) => vm.setField('confirmation', value)}
+                      error={vm.errors.confirmation}
+                      autoCapitalize="none"
+                      autoComplete="new-password"
+                      textContentType="newPassword"
+                      returnKeyType="go"
+                      onSubmitEditing={vm.submit}
+                    />
+                  </>
+                )}
+              </View>
+            )}
+            <Text style={styles.note}>{text.note}</Text>
+            <View style={styles.actions}>
+              {vm.state === 'done' ? (
                 <>
-                  <TextField
-                    ref={passwordRef}
-                    label="Nova senha"
-                    password
-                    value={vm.values.password}
-                    onChangeText={(value) => vm.setField('password', value)}
-                    error={vm.errors.password}
-                    autoCapitalize="none"
-                    autoComplete="new-password"
-                    textContentType="newPassword"
-                    returnKeyType="next"
-                    onSubmitEditing={() => confirmationRef.current?.focus()}
-                    submitBehavior="submit"
+                  <Button label="Voltar à segurança" onPress={() => router.replace('/seguranca')} />
+                  <Button
+                    label="Voltar às configurações"
+                    variant="text"
+                    onPress={() => router.back()}
                   />
-                  <TextField
-                    ref={confirmationRef}
-                    label="Confirmar nova senha"
-                    password
-                    value={vm.values.confirmation}
-                    onChangeText={(value) => vm.setField('confirmation', value)}
-                    error={vm.errors.confirmation}
-                    autoCapitalize="none"
-                    autoComplete="new-password"
-                    textContentType="newPassword"
-                    returnKeyType="go"
-                    onSubmitEditing={vm.submit}
+                </>
+              ) : (
+                <>
+                  <Button
+                    label={
+                      vm.state === 'wrongCurrent'
+                        ? 'Tentar novamente'
+                        : vm.state === 'invalidNew'
+                          ? 'Corrigir nova senha'
+                          : 'Salvar nova senha'
+                    }
+                    onPress={vm.submit}
+                    loading={vm.submitting}
                   />
+                  {vm.state !== 'invalidNew' && (
+                    <Button
+                      label={
+                        vm.state === 'wrongCurrent' ? 'Recuperar acesso' : 'Esqueci a senha atual'
+                      }
+                      variant="text"
+                      onPress={vm.recoverAccess}
+                      loading={vm.leaving}
+                      accessibilityHint="Sai da conta e envia um código para o seu e-mail"
+                    />
+                  )}
+                  {vm.state !== 'wrongCurrent' && (
+                    <Button label="Cancelar" variant="text" onPress={() => router.back()} />
+                  )}
                 </>
               )}
             </View>
-          )}
-          <Text style={styles.note}>{text.note}</Text>
-          <View style={styles.actions}>
-            {vm.state === 'done' ? (
-              <>
-                <Button label="Voltar à segurança" onPress={() => router.replace('/seguranca')} />
-                <Button
-                  label="Voltar às configurações"
-                  variant="text"
-                  onPress={() => router.back()}
-                />
-              </>
-            ) : (
-              <>
-                <Button
-                  label={
-                    vm.state === 'wrongCurrent'
-                      ? 'Tentar novamente'
-                      : vm.state === 'invalidNew'
-                        ? 'Corrigir nova senha'
-                        : 'Salvar nova senha'
-                  }
-                  onPress={vm.submit}
-                  loading={vm.submitting}
-                />
-                {vm.state !== 'invalidNew' && (
-                  <Button
-                    label={
-                      vm.state === 'wrongCurrent' ? 'Recuperar acesso' : 'Esqueci a senha atual'
-                    }
-                    variant="text"
-                    onPress={vm.recoverAccess}
-                    loading={vm.leaving}
-                    accessibilityHint="Sai da conta e envia um código para o seu e-mail"
-                  />
-                )}
-                {vm.state !== 'wrongCurrent' && (
-                  <Button label="Cancelar" variant="text" onPress={() => router.back()} />
-                )}
-              </>
-            )}
           </View>
         </View>
       </ScrollView>
@@ -158,7 +162,23 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
   scroll: { flexGrow: 1, padding: metrics.pagePadding },
   content: { width: '100%', maxWidth: metrics.formMaxWidth, alignSelf: 'center', gap: spacing.lg },
+  desktopContent: {
+    maxWidth: metrics.contentMaxWidth,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.xl,
+    paddingTop: spacing.xl,
+  },
   header: { gap: spacing.xs },
+  desktopHeader: {
+    flex: 1,
+    minWidth: 0,
+    padding: spacing.xl,
+    borderRadius: radius.extraLarge,
+    backgroundColor: colors.containerLow,
+  },
+  fields: { gap: spacing.lg },
+  desktopFields: { flex: 1, minWidth: 0, maxWidth: metrics.readingMaxWidth },
   title: { ...typography.brandHeadline, color: colors.onSurface },
   description: { ...typography.bodyLarge, color: colors.onSurfaceVariant },
   form: { gap: spacing.md },

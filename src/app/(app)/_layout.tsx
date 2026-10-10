@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Redirect, Stack } from 'expo-router';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { OfflineBanner } from '../../view/components/feedback/OfflineBanner';
+import { WebAppNavigation } from '../../view/components/WebAppNavigation';
 import { Snackbar } from '../../view/components/feedback/Snackbar';
 import { SessionPendingScreen } from '../../view/screens/SessionPendingScreen';
-import { colors, typography } from '../../view/theme/nativeTheme';
+import { colors, typography, webLayout } from '../../view/theme/nativeTheme';
 import { useAppSession } from '../../factories/auth';
+import { useWebLayout } from '../../view/hooks/useWebLayout';
 import { afterSignIn, type AfterSignIn } from '../../viewmodel/afterSignIn';
 import { afterSignOut } from '../../viewmodel/afterSignOut';
 import { SessionContext } from '../../viewmodel/useSession';
@@ -34,6 +36,7 @@ const stackHeader = (title: string) => ({
 
 /** Área autenticada: as outras features acrescentam suas rotas nesta pasta. */
 export default function AppLayout() {
+  const { medium, large } = useWebLayout();
   const session = useAppSession();
   const [toast, setToast] = useState(() => {
     if (Platform.OS !== 'ios') return null;
@@ -59,140 +62,163 @@ export default function AppLayout() {
       {toast && (
         <Snackbar title={toast.title} message={toast.message} onDismiss={() => setToast(null)} />
       )}
-      <Stack
-        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
-      >
-        <Stack.Screen name="(tabs)" />
-        {/* Android e Web (Figma 01.09 e 01.13): tela própria de sucesso, com cartão. */}
-        <Stack.Screen name="senha-atualizada" options={{ title: 'Senha atualizada' }} />
-        <Stack.Screen name="email-confirmado" options={{ title: 'E-mail confirmado' }} />
-        <Stack.Screen name="anunciar/index" options={stackHeader('Anunciar um livro')} />
-        <Stack.Screen name="anunciar/[id]" options={stackHeader('Editar anúncio')} />
-        {/* Rascunhos e ciclo de vida do anúncio (spec 032). */}
-        <Stack.Screen name="anunciar/rascunhos" options={stackHeader('Rascunhos')} />
-        <Stack.Screen
-          name="anuncio/[id]"
-          options={{
-            ...stackHeader('Gerenciar anúncio'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="negociacoes/index"
-          options={{
-            ...stackHeader('Conversas'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="negociacoes/[id]"
-          options={{
-            ...stackHeader('Negociação'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="livro/[id]/combinar"
-          options={{
-            ...stackHeader('Combinar encontro'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="notificacoes"
-          options={{
-            ...stackHeader('Notificações'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="seu-bairro"
-          options={{
-            ...stackHeader('Seu bairro'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="escolher-bairro"
-          options={{
-            ...stackHeader('Escolher bairro'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="permitir-localizacao"
-          options={{
-            ...stackHeader('Permitir localização'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="privacidade-dados"
-          options={{
-            ...stackHeader('Privacidade e dados'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="alterar-senha"
-          options={{
-            ...stackHeader('Alterar senha'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="configuracoes"
-          options={{
-            ...stackHeader('Configurações'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        {/* Perfil completo (spec 031). */}
-        <Stack.Screen
-          name="pessoa/[id]"
-          options={{
-            ...stackHeader('Perfil'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="avaliacoes"
-          options={{
-            ...stackHeader('Avaliações recebidas'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="historico"
-          options={{
-            ...stackHeader('Histórico'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="ajuda"
-          options={{
-            ...stackHeader('Ajuda'),
-            contentStyle: { backgroundColor: colors.surface },
-          }}
-        />
-        <Stack.Screen
-          name="livro/[id]"
-          options={{
-            // Figma 03.01 a 03.03: no iPhone, voltar/compartilhar/favoritar flutuam sobre a
-            // capa, sem barra — a própria tela desenha esses botões (spec 037). Android e Web
-            // continuam com "Detalhes" no topo, sobre a superfície.
-            headerShown: Platform.OS !== 'ios',
-            title: 'Detalhes',
-            headerStyle: { backgroundColor: colors.surface },
-            headerTintColor: colors.text,
-            headerTitleStyle: { ...typography.bodyLarge, fontWeight: '500', color: colors.text },
-            contentStyle: { backgroundColor: colors.surface },
-            headerShadowVisible: false,
-            headerBackTitle: 'Voltar',
-          }}
-        />
-      </Stack>
+      <View style={[styles.appFrame, medium && !large && styles.railFrame]}>
+        <WebAppNavigation />
+        <View style={styles.stackFrame}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.background },
+            }}
+          >
+            <Stack.Screen name="(tabs)" />
+            {/* Android e Web (Figma 01.09 e 01.13): tela própria de sucesso, com cartão. */}
+            <Stack.Screen name="senha-atualizada" options={{ title: 'Senha atualizada' }} />
+            <Stack.Screen name="email-confirmado" options={{ title: 'E-mail confirmado' }} />
+            <Stack.Screen name="anunciar/index" options={stackHeader('Anunciar um livro')} />
+            <Stack.Screen name="anunciar/[id]" options={stackHeader('Editar anúncio')} />
+            {/* Rascunhos e ciclo de vida do anúncio (spec 032). */}
+            <Stack.Screen name="anunciar/rascunhos" options={stackHeader('Rascunhos')} />
+            <Stack.Screen
+              name="anuncio/[id]"
+              options={{
+                ...stackHeader('Gerenciar anúncio'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="negociacoes/index"
+              options={{
+                ...stackHeader('Conversas'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="negociacoes/[id]"
+              options={{
+                ...stackHeader('Negociação'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="livro/[id]/combinar"
+              options={{
+                ...stackHeader('Combinar encontro'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="notificacoes"
+              options={{
+                ...stackHeader('Notificações'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="seu-bairro"
+              options={{
+                ...stackHeader('Seu bairro'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="escolher-bairro"
+              options={{
+                ...stackHeader('Escolher bairro'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="permitir-localizacao"
+              options={{
+                ...stackHeader('Permitir localização'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="privacidade-dados"
+              options={{
+                ...stackHeader('Privacidade e dados'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="alterar-senha"
+              options={{
+                ...stackHeader('Alterar senha'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="configuracoes"
+              options={{
+                ...stackHeader('Configurações'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            {/* Perfil completo (spec 031). */}
+            <Stack.Screen
+              name="pessoa/[id]"
+              options={{
+                ...stackHeader('Perfil'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="avaliacoes"
+              options={{
+                ...stackHeader('Avaliações recebidas'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="historico"
+              options={{
+                ...stackHeader('Histórico'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="ajuda"
+              options={{
+                ...stackHeader('Ajuda'),
+                contentStyle: { backgroundColor: colors.surface },
+              }}
+            />
+            <Stack.Screen
+              name="livro/[id]"
+              options={{
+                // Figma 03.01 a 03.03: no iPhone, voltar/compartilhar/favoritar flutuam sobre a
+                // capa, sem barra — a própria tela desenha esses botões (spec 037). Android e Web
+                // continuam com "Detalhes" no topo, sobre a superfície.
+                headerShown: Platform.OS !== 'ios',
+                title: 'Detalhes',
+                headerStyle: { backgroundColor: colors.surface },
+                headerTintColor: colors.text,
+                headerTitleStyle: {
+                  ...typography.bodyLarge,
+                  fontWeight: '500',
+                  color: colors.text,
+                },
+                contentStyle: { backgroundColor: colors.surface },
+                headerShadowVisible: false,
+                headerBackTitle: 'Voltar',
+              }}
+            />
+          </Stack>
+        </View>
+      </View>
     </SessionContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  appFrame: {
+    flex: 1,
+    width: '100%',
+    maxWidth: Platform.OS === 'web' ? webLayout.contentMaxWidth : undefined,
+    alignSelf: 'center',
+  },
+  railFrame: { flexDirection: 'row' },
+  stackFrame: { flex: 1, minWidth: 0 },
+});

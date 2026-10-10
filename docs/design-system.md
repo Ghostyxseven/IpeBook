@@ -96,6 +96,8 @@ Componentes nativos da biblioteca iOS do projeto + SF Symbols.
 
 Layout responsivo, grid de 12 colunas, estados hover/focus e navegação por teclado.
 
+No aplicativo em `/app`, a classe compacta usa a barra inferior; a média e a expandida usam navegação lateral; a larga usa cabeçalho persistente. Listas passam a 2 ou 4 colunas, conforme a largura, e páginas de leitura usam uma medida menor que o contêiner máximo de 1280 px. Os valores estão em `app.web` de `design-tokens.json` e seguem [Web e responsivo](design-system/referencia/web.md). A implementação e os limites de validação estão na [spec 040](../specs/040-web-responsiva/spec.md).
+
 O objetivo é **equivalência de experiência, não cópia pixel a pixel**.
 
 ## Acessibilidade

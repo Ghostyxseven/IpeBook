@@ -3,14 +3,16 @@ import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useOnboarding } from '../../factories/auth';
+import { useWebLayout } from '../hooks/useWebLayout';
 import { Button } from '../components/ui/Button';
 import { Wordmark } from '../components/ui/Wordmark';
-import { colors, metrics, radius, spacing, typography } from '../theme/nativeTheme';
+import { colors, metrics, radius, spacing, typography, webLayout } from '../theme/nativeTheme';
 
 const illustration = require('../../../assets/images/boas-vindas-classicos.png');
 
 /** Boas-vindas (Figma 01.01): marca, cidade, título com destaque, ilustração e ações. */
 export function OnboardingScreen() {
+  const { large } = useWebLayout();
   const router = useRouter();
   const vm = useOnboarding({
     onStart: () => router.replace('/criar-conta'),
@@ -19,45 +21,57 @@ export function OnboardingScreen() {
   const { content } = vm;
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.content}>
-          <View style={styles.top}>
-            <Wordmark underline={false} />
-            <View style={styles.place} accessibilityLabel={`Cidade: ${content.place}`}>
-              <View style={styles.dot} />
-              <Text style={styles.placeText}>{content.place.toUpperCase()}</Text>
+      <ScrollView contentContainerStyle={[styles.scroll, large && styles.desktopScroll]}>
+        <View style={[styles.content, large && styles.desktopContent]}>
+          <View style={styles.copyColumn}>
+            <View style={styles.top}>
+              <Wordmark underline={false} />
+              <View style={styles.place} accessibilityLabel={`Cidade: ${content.place}`}>
+                <View style={styles.dot} />
+                <Text style={styles.placeText}>{content.place.toUpperCase()}</Text>
+              </View>
+            </View>
+            <Text
+              style={styles.title}
+              accessibilityRole="header"
+              accessibilityLabel={`${content.title} ${content.highlight}`}
+            >
+              {content.title}
+              {'\n'}
+              <Text style={styles.highlight}>{content.highlight}</Text>
+            </Text>
+            {!large && (
+              <Image
+                source={illustration}
+                style={styles.illustration}
+                contentFit="contain"
+                accessibilityLabel={content.illustrationLabel}
+              />
+            )}
+            <Text style={styles.description}>{content.description}</Text>
+            <View
+              style={styles.modalities}
+              accessibilityLabel={`Modalidades: ${content.modalities.join(', ')}`}
+            >
+              {content.modalities.map((name) => (
+                <View key={name} style={styles.modality}>
+                  <Text style={styles.modalityText}>{name}</Text>
+                </View>
+              ))}
+            </View>
+            <View style={styles.actions}>
+              <Button label="Começar" onPress={vm.start} accessibilityHint="Vai para Criar conta" />
+              <Button label="Já tenho conta" variant="secondary" onPress={vm.signIn} />
             </View>
           </View>
-          <Text
-            style={styles.title}
-            accessibilityRole="header"
-            accessibilityLabel={`${content.title} ${content.highlight}`}
-          >
-            {content.title}
-            {'\n'}
-            <Text style={styles.highlight}>{content.highlight}</Text>
-          </Text>
-          <Image
-            source={illustration}
-            style={styles.illustration}
-            contentFit="contain"
-            accessibilityLabel={content.illustrationLabel}
-          />
-          <Text style={styles.description}>{content.description}</Text>
-          <View
-            style={styles.modalities}
-            accessibilityLabel={`Modalidades: ${content.modalities.join(', ')}`}
-          >
-            {content.modalities.map((name) => (
-              <View key={name} style={styles.modality}>
-                <Text style={styles.modalityText}>{name}</Text>
-              </View>
-            ))}
-          </View>
-          <View style={styles.actions}>
-            <Button label="Começar" onPress={vm.start} accessibilityHint="Vai para Criar conta" />
-            <Button label="Já tenho conta" variant="secondary" onPress={vm.signIn} />
-          </View>
+          {large && (
+            <Image
+              source={illustration}
+              style={[styles.illustration, styles.desktopIllustration]}
+              contentFit="contain"
+              accessibilityLabel={content.illustrationLabel}
+            />
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -67,6 +81,7 @@ export function OnboardingScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
   scroll: { flexGrow: 1, padding: metrics.pagePadding },
+  desktopScroll: { justifyContent: 'center' },
   content: {
     flex: 1,
     gap: spacing.md,
@@ -74,6 +89,14 @@ const styles = StyleSheet.create({
     maxWidth: metrics.formMaxWidth,
     alignSelf: 'center',
   },
+  desktopContent: {
+    maxWidth: webLayout.contentMaxWidth,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.xxl,
+  },
+  copyColumn: { flex: 1, gap: spacing.md },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   place: {
     flexDirection: 'row',
@@ -102,6 +125,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: -spacing.xl,
   },
+  desktopIllustration: { flex: 1, maxHeight: metrics.formMaxWidth, marginVertical: 0 },
   description: { ...typography.bodyLarge, color: colors.onSurfaceVariant, zIndex: 1 },
   modalities: { flexDirection: 'row', gap: spacing.xs },
   modality: {

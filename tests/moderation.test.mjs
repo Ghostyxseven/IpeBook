@@ -95,9 +95,14 @@ test('memória: permissão e listagem de moderação', async () => {
 
   const reports = await mem.repository.listModerationReports();
   assert.equal(reports.length, 2);
-  assert.equal(reports[0].reporterFirstName, 'Micael');
-  assert.equal(reports[0].reportedUserFirstName, 'Carlos');
-  assert.equal(reports[0].status, 'pending');
+  const userReport = reports.find((report) => report.reportedUserId === 'user-2');
+  assert.ok(userReport);
+  assert.equal(userReport.reporterFirstName, 'Micael');
+  assert.equal(userReport.reportedUserFirstName, 'Carlos');
+  assert.equal(userReport.status, 'pending');
+  const listingReport = reports.find((report) => report.reportedListingId === 'listing-1');
+  assert.ok(listingReport);
+  assert.equal(listingReport.reportedListingTitle, 'Livro de Cálculo');
 
   const pending = await mem.repository.listModerationReports('pending');
   assert.equal(pending.length, 2);

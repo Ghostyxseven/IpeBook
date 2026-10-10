@@ -37,3 +37,4 @@
 - [0035 - Conversar antes do encontro](0035-conversar-antes-do-encontro.md) (aceito, implementado; renumerado de 0034 para 0035 por colisão com o painel de moderação; falta aplicar a migração e conferir no aparelho)
 
 - [0036 - Mapa de pontos públicos](0036-mapa-de-pontos-publicos.md) (implementação local; migração remota pendente)
+- [0037 - Layout responsivo do aplicativo Web](0037-layout-responsivo-do-app-web.md) (implementação local; inspeção visual pendente)
