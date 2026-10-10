@@ -60,6 +60,8 @@ const symbols = {
   star: { ios: 'star', android: 'star', web: 'star' },
   flag: { ios: 'flag', android: 'flag', web: 'flag' },
   share: { ios: 'square.and.arrow.up', android: 'share', web: 'share' },
+  // Menu de opções da conversa (spec 041, Figma 06.02).
+  more: { ios: 'ellipsis', android: 'more_horiz', web: 'more_horiz' },
   // Ajuda do iPhone (spec 040): dica "confira o livro antes de pagar".
   eye: { ios: 'eye', android: 'visibility', web: 'visibility' },
 } as const;
