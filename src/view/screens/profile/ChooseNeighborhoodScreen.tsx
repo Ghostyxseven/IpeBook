@@ -2,10 +2,14 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { useNeighborhood } from '../../../factories/profile';
 import { Button } from '../../components/ui/Button';
+import { FormMessage } from '../../components/ui/FormMessage';
+import { RadioGroup, RadioListItem } from '../../components/ui/RadioListItem';
 import { TextField } from '../../components/ui/TextField';
 import { NeighborhoodLayout, neighborhoodStyles as s } from './NeighborhoodLayout';
 
-/** Escolher bairro (Figma 11.01): cidade fixa e bairro digitado, a partir das Configurações. */
+/** Escolher bairro (Figma 11.01): cidade fixa e bairro escolhido numa lista, a partir das
+ * Configurações. Mesma lista de bairros de Piripiri da tela Seu bairro (Figma 01.17), para
+ * a pessoa não precisar digitar — "Outro bairro…" continua existindo para quem não está nela. */
 export function ChooseNeighborhoodScreen() {
   const router = useRouter();
   const { bairro } = useLocalSearchParams<{ bairro?: string }>();
@@ -23,15 +27,36 @@ export function ChooseNeighborhoodScreen() {
     >
       <View style={s.actions}>
         <TextField label="Cidade" value={vm.city} editable={false} />
-        <TextField
-          label="Bairro"
-          value={vm.value}
-          onChangeText={vm.setText}
-          error={vm.error}
-          autoCapitalize="words"
-          returnKeyType="go"
-          onSubmitEditing={vm.save}
-        />
+        <RadioGroup label="Bairro" header="Bairros em Piripiri">
+          {vm.suggestions.map((name) => (
+            <RadioListItem
+              key={name}
+              label={name}
+              selected={vm.choice === name}
+              onPress={() => vm.choose(name)}
+            />
+          ))}
+          <RadioListItem
+            label="Outro bairro…"
+            supportingText="Digite o nome do seu bairro"
+            selected={vm.choice === 'other'}
+            onPress={() => vm.choose('other')}
+          />
+        </RadioGroup>
+        {vm.choice === 'other' ? (
+          <TextField
+            label="Nome do bairro"
+            value={vm.text}
+            onChangeText={vm.setText}
+            error={vm.error}
+            autoCapitalize="words"
+            autoFocus
+            returnKeyType="go"
+            onSubmitEditing={vm.save}
+          />
+        ) : (
+          <FormMessage tone="error" message={vm.error} />
+        )}
       </View>
       <View style={s.actions}>
         <Button label="Salvar localização" onPress={vm.save} loading={vm.saving} />

@@ -42,7 +42,20 @@ async function renderHook(useHook) {
 }
 
 test('bairro: sugestões do Figma 01.17, normalização e validação', () => {
-  assert.deepEqual([...SUGGESTED_NEIGHBORHOODS], ['Centro', 'Bairro Piauí', 'Fonte dos Matos']);
+  // Os três do Figma continuam primeiro, na ordem do quadro; o resto são os demais
+  // bairros de Piripiri (fonte: Wikipédia, seção "Bairros"), sem digitar.
+  assert.deepEqual(SUGGESTED_NEIGHBORHOODS.slice(0, 3), [
+    'Centro',
+    'Bairro Piauí',
+    'Fonte dos Matos',
+  ]);
+  assert.ok(SUGGESTED_NEIGHBORHOODS.length > 3, 'tem mais bairros além dos três do Figma');
+  assert.equal(
+    new Set(SUGGESTED_NEIGHBORHOODS).size,
+    SUGGESTED_NEIGHBORHOODS.length,
+    'sem repetir',
+  );
+  assert.ok(SUGGESTED_NEIGHBORHOODS.includes('Prado'));
   assert.equal(normalizeNeighborhood('  Morro   da Saudade '), 'Morro da Saudade');
   assert.match(validateNeighborhood('   '), /Escolha ou digite/);
   assert.match(validateNeighborhood('A'), /2 letras/);

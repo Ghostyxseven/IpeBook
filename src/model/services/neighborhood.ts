@@ -3,8 +3,48 @@ import type { ProfileErrorCode } from '../entities/Profile.ts';
 
 export const SERVICE_CITY = { name: 'Piripiri', label: 'Piripiri, PI' } as const;
 
-/** Bairros sugeridos na tela Seu bairro (Figma 01.17), na ordem do quadro. */
-export const SUGGESTED_NEIGHBORHOODS = ['Centro', 'Bairro Piauí', 'Fonte dos Matos'] as const;
+/**
+ * Bairros sugeridos nas telas Seu bairro e Escolher bairro: os três do Figma 01.17,
+ * na ordem do quadro, seguidos do restante dos bairros de Piripiri (PI) — fonte:
+ * seção "Bairros" de https://pt.wikipedia.org/wiki/Piripiri_(Piau%C3%A1), conferida
+ * em 10/10/2026. Lista fixa para a pessoa escolher sem digitar; "Outro bairro…"
+ * continua existindo para quem mora num bairro fora dela.
+ */
+export const SUGGESTED_NEIGHBORHOODS = [
+  'Centro',
+  'Bairro Piauí',
+  'Fonte dos Matos',
+  'Prado',
+  'Floresta',
+  'Vista Alegre',
+  "Caixa d'Água",
+  'Paciência',
+  'Recreio',
+  'Germano',
+  'Santa Maria',
+  'Anajás',
+  'São João',
+  'Estação',
+  'Matadouro',
+  'Petecas',
+  'Ytacoatiara',
+  'Conjunto Expedito Rezende',
+  'Crioli',
+  'Morro da Ana',
+  'Flor dos Campos',
+  'Russinha',
+  'Garibaldi',
+  'Morro de Saudade',
+  'Barcelona',
+  'Conceição',
+  'Residencial Parque Recreio',
+  'Morada dos Alpes',
+  'Residencial Petecas',
+  'Conjunto Jenipapeiro',
+  'Pedreiras',
+  'Villa São Francisco',
+  'Esperança Garcia',
+] as const;
 
 export const NEIGHBORHOOD_MAX_LENGTH = 60;
 
