@@ -10,6 +10,7 @@
 - `npm run build:web`: passou; exportou a apresentação em `dist/` e o aplicativo em `dist/app/`.
 - `git diff --check`: passou.
 - Chromium headless, sem Playwright, com a exportação local: cadastro em 1440 × 900 mostra composição em duas colunas; em 393 × 852 mantém a composição compacta e rolagem vertical. A tela inicial em 1440 × 900 também ocupa duas colunas. Capturas do cadastro: [desktop](assets/cadastro-desktop.png) e [celular](assets/cadastro-celular.png).
+- A primeira execução da CI falhou em `tests/moderation.test.mjs`: duas denúncias criadas no mesmo milissegundo não tinham ordem garantida, mas o teste exigia uma posição fixa. O teste foi ajustado para localizar cada denúncia pelo alvo e preservar as asserções sobre nomes e estado. `node --test tests/moderation.test.mjs` e `npm run verify` passaram após o ajuste; a nova execução da CI deve confirmar o resultado remoto.
 
 ## Limites da verificação
 
