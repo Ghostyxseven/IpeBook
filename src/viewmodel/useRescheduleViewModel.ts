@@ -1,3 +1,4 @@
+import { useMeetingLocation } from './useMeetingLocation.ts';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { BookRequest } from '../model/entities/BookRequest';
 import { toBookRequestError } from '../model/entities/BookRequestError.ts';
@@ -26,7 +27,8 @@ export function useRescheduleViewModel(
   const [status, setStatus] = useState<RescheduleStatus>('loading');
   const [request, setRequest] = useState<BookRequest | null>(null);
   const [otherName, setOtherName] = useState<string | null>(null);
-  const [publicLocation, setPublicLocation] = useState('');
+  const { publicLocation, setPublicLocation, meetingPoint, chooseMeetingPoint } =
+    useMeetingLocation();
   const [meetingDate, setMeetingDate] = useState('');
   const [meetingTime, setMeetingTime] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -49,13 +51,14 @@ export function useRescheduleViewModel(
       setRequest(found);
       setOtherName(name);
       setPublicLocation(found.publicLocation ?? '');
+      chooseMeetingPoint(found.meetingPoint ?? null);
       setStatus(found.status === 'accepted' ? 'ready' : 'closed');
     } catch (failure) {
       if (current !== loadId.current) return;
       setError(bookRequestErrorMessage(toBookRequestError(failure).code));
       setStatus('error');
     }
-  }, [bookRequests, catalog, requestId, userId]);
+  }, [bookRequests, catalog, requestId, userId, chooseMeetingPoint, setPublicLocation]);
 
   useEffect(() => {
     void load();
@@ -63,7 +66,8 @@ export function useRescheduleViewModel(
 
   const changed =
     request !== null &&
-    (publicLocation.trim() !== request.publicLocation ||
+    (JSON.stringify(meetingPoint) !== JSON.stringify(request.meetingPoint ?? null) ||
+      publicLocation.trim() !== request.publicLocation ||
       meetingDate !== request.meetingDate ||
       meetingTime !== request.meetingTime);
 
@@ -85,6 +89,7 @@ export function useRescheduleViewModel(
         try {
           const updated = await bookRequests.reschedule(request.id, {
             publicLocation: publicLocation.trim(),
+            meetingPoint,
             meetingDate,
             meetingTime,
           });
@@ -94,7 +99,7 @@ export function useRescheduleViewModel(
           setError(bookRequestErrorMessage(toBookRequestError(failure).code));
         }
       }),
-    [run, request, canSubmit, bookRequests, publicLocation, meetingDate, meetingTime],
+    [run, request, canSubmit, bookRequests, publicLocation, meetingDate, meetingTime, meetingPoint],
   );
 
   return {
@@ -104,6 +109,8 @@ export function useRescheduleViewModel(
     otherName,
     publicLocation,
     setPublicLocation,
+    meetingPoint,
+    chooseMeetingPoint,
     meetingDate,
     setMeetingDate,
     meetingTime,

@@ -168,6 +168,7 @@ export const documents: Record<LegalPage, LegalDocument> = {
         paragraphs: [
           'No aplicativo, quem está com a conta ativa vê anúncios de outras pessoas: título, autor, categoria, modalidade (venda, troca ou doação), preço, condição do livro, descrição, capa, bairro, cidade e o primeiro nome de quem anunciou. Não há endereço completo.',
           'Quando for possível publicar anúncios, essas informações ficarão visíveis para as outras pessoas que tiverem conta no aplicativo. Não coloque no anúncio dados que você não queira mostrar, como telefone ou endereço.',
+          'Você pode escolher um ponto público de encontro para o anúncio: nome e coordenadas ficam visíveis no mapa de livros. Não marque sua casa. O mapa não solicita GPS nem usa sua localização pessoal; a escolha é manual. Na negociação, guardamos uma cópia do ponto combinado. Ao abrir o mapa, a Mapbox recebe solicitações de mapas e dados técnicos de conexão, como IP; as imagens das capas são carregadas do serviço de armazenamento.',
           'Os anúncios ficam no Supabase, na região us-east-1 (Leste dos Estados Unidos). O prazo de conservação e a base legal ainda precisam ser confirmados e serão informados aqui.',
         ],
       },

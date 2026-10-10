@@ -399,3 +399,7 @@ Specs abertas pelo Spec Kit, cada uma com seu PR próprio contra `develop`:
 **Decisão (09/10/2026) sobre Cancelar/Recusar:** só esses dois estados viram modal/aviso inline;
 "Encontro combinado" e "Negociação concluída" continuam tela cheia (`OutcomeHero`). A
 inconsistência entre os 4 estados de desfecho foi aceita conscientemente, não é descuido.
+
+## Spec 039 — mapa de pontos públicos
+
+O usuário solicitou capas flutuantes em pontos públicos. Os quadros de Explorar consultados (Android 10:2, iOS 70:1313) não têm este modo. A extensão reutiliza BookCard, Button, TextField, Checkbox e tokens; capas usam 48 × 72 px derivados da escala, com sombra de chão sem animação contínua. Agrupa livros no mesmo ponto e mantém lista acessível. Falta quadro específico do mapa no Figma; nenhum padrão global foi modificado.

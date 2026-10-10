@@ -1,3 +1,5 @@
+import type { MeetingPoint } from './MeetingPoint';
+
 export type RequestStatus = 'pending' | 'accepted' | 'rejected' | 'canceled' | 'completed';
 
 export interface BookRequest {
@@ -8,6 +10,7 @@ export interface BookRequest {
   // Dados do encontro. `null` nos três: "Conversar" (ADR 0035) abriu a negociação
   // sem encontro nenhum ainda, só para falar antes de propor onde/quando.
   publicLocation: string | null;
+  meetingPoint?: MeetingPoint | null;
   meetingDate: string | null; // Formato YYYY-MM-DD
   meetingTime: string | null; // Formato HH:MM
 

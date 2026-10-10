@@ -62,6 +62,7 @@ export function createMemoryListingsRepository(initial: MyListing[] = []) {
       neighborhood: clean.neighborhood,
       city: clean.city,
       description: clean.description,
+      ...(clean.meetingPoint !== undefined ? { meetingPoint: clean.meetingPoint } : {}),
     };
   };
 

@@ -1,3 +1,4 @@
+import { readMeetingPoint } from '../services/meetingPoints.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { BookRequest, RequestStatus } from '../entities/BookRequest';
 import { BookRequestError } from '../entities/BookRequestError.ts';
@@ -33,7 +34,7 @@ type ListingRow = {
 
 const TABLE = 'book_requests';
 const COLUMNS =
-  'id,listing_id,requester_id,offered_listing_id,counter_listing_id,public_location,meeting_date,meeting_time,status,created_at,updated_at';
+  'id,listing_id,requester_id,offered_listing_id,counter_listing_id,public_location,meeting_date,meeting_time,status,created_at,updated_at,meeting_point';
 
 type Row = {
   id: string;
@@ -42,6 +43,7 @@ type Row = {
   offered_listing_id?: string | null;
   counter_listing_id?: string | null;
   public_location: string | null;
+  meeting_point?: unknown;
   meeting_date: string | null;
   meeting_time: string | null;
   status: RequestStatus;
@@ -79,6 +81,7 @@ const toBookRequest = (row: Row): BookRequest => ({
   offeredListingId: row.offered_listing_id ?? null,
   counterListingId: row.counter_listing_id ?? null,
   publicLocation: row.public_location,
+  meetingPoint: readMeetingPoint(row.meeting_point),
   meetingDate: row.meeting_date,
   meetingTime: row.meeting_time,
   status: isStatus(row.status) ? row.status : 'pending',
@@ -109,13 +112,21 @@ export function createSupabaseBookRequestRepository(
   };
 
   return {
-    async createRequest({ listingId, publicLocation, meetingDate, meetingTime, offeredListingId }) {
+    async createRequest({
+      listingId,
+      publicLocation,
+      meetingDate,
+      meetingTime,
+      offeredListingId,
+      meetingPoint,
+    }) {
       const db = requireClient();
       const result = await db
         .from(TABLE)
         .insert({
           listing_id: listingId,
           public_location: publicLocation,
+          ...(meetingPoint !== undefined ? { meeting_point: meetingPoint } : {}),
           meeting_date: meetingDate,
           meeting_time: meetingTime,
           ...(offeredListingId ? { offered_listing_id: offeredListingId } : {}),
@@ -174,28 +185,35 @@ export function createSupabaseBookRequestRepository(
       return readOne(result as { data: Row | null; error: unknown });
     },
 
-    async reschedule(id, { publicLocation, meetingDate, meetingTime }) {
+    async reschedule(id, { publicLocation, meetingDate, meetingTime, meetingPoint }) {
       const db = requireClient();
       const result = await db
-        .rpc('reschedule_book_request', {
-          request_id: id,
-          new_location: publicLocation,
-          new_date: meetingDate,
-          new_time: meetingTime,
-        })
+        .rpc(
+          meetingPoint === undefined
+            ? 'reschedule_book_request'
+            : 'reschedule_book_request_with_point',
+          {
+            request_id: id,
+            new_location: publicLocation,
+            new_date: meetingDate,
+            new_time: meetingTime,
+            ...(meetingPoint !== undefined ? { new_point: meetingPoint } : {}),
+          },
+        )
         .select(COLUMNS)
         .maybeSingle();
       return readOne(result as { data: Row | null; error: unknown });
     },
 
-    async proposeMeeting(id, { publicLocation, meetingDate, meetingTime }) {
+    async proposeMeeting(id, { publicLocation, meetingDate, meetingTime, meetingPoint }) {
       const db = requireClient();
       const result = await db
-        .rpc('propose_meeting', {
+        .rpc(meetingPoint === undefined ? 'propose_meeting' : 'propose_meeting_with_point', {
           request_id: id,
           new_location: publicLocation,
           new_date: meetingDate,
           new_time: meetingTime,
+          ...(meetingPoint !== undefined ? { new_point: meetingPoint } : {}),
         })
         .select(COLUMNS)
         .maybeSingle();

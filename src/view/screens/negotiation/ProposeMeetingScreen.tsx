@@ -16,6 +16,7 @@ import { LoadingState } from '../../components/feedback/LoadingState';
 import { ActionBar } from '../../components/negotiation/ActionBar';
 import { MeetingCard } from '../../components/negotiation/MeetingCard';
 import { OutcomeHero } from '../../components/negotiation/OutcomeHero';
+import { MeetingPointField } from '../../components/maps/MeetingPointField';
 import { PlacePicker } from '../../components/negotiation/PlacePicker';
 import { Button } from '../../components/ui/Button';
 import { FormMessage } from '../../components/ui/FormMessage';
@@ -82,6 +83,11 @@ export function ProposeMeetingScreen() {
             {`Escolha um local público, dia e horário. ${other} vê a proposta e decide aceitar.`}
           </Text>
           <PlacePicker label="Local" value={vm.publicLocation} onChange={vm.setPublicLocation} />
+          <MeetingPointField
+            value={vm.meetingPoint}
+            onChange={vm.chooseMeetingPoint}
+            disabled={vm.saving}
+          />
 
           <Text style={styles.section} accessibilityRole="header">
             Dia

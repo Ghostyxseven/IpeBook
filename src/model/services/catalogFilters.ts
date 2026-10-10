@@ -28,6 +28,7 @@ export function effectiveFilters(filters: CatalogFilters): CatalogFilters {
   const conditions = new Set(filters.conditions ?? []);
   return {
     query: normalizeQuery(filters.query),
+    ...(filters.meetingPointsOnly ? { meetingPointsOnly: true } : {}),
     modalities: [...new Set(filters.modalities)],
     category: filters.category,
     // Ordem canônica: o resumo e a consulta não dependem da ordem de toque.

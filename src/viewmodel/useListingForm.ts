@@ -1,3 +1,4 @@
+import type { MeetingPoint } from '../model/entities/MeetingPoint';
 import { useCallback, useMemo, useState } from 'react';
 import type { ListingCondition, ListingDraft, Modality } from '../model/entities/Listing';
 import { centsToInput, parseBRLToCents } from '../model/services/listingFormat.ts';
@@ -114,6 +115,8 @@ export function useListingForm(initial?: ListingDraft) {
     setPriceInput,
     setText,
     setCategory,
+    setMeetingPoint: (meetingPoint: MeetingPoint | null) =>
+      setDraft((previous) => ({ ...previous, meetingPoint })),
     setCondition,
     setModality,
     errorsOf,

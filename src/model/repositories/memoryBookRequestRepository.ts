@@ -52,7 +52,14 @@ export function createMemoryBookRequestRepository(
       return [...items];
     },
 
-    async createRequest({ listingId, publicLocation, meetingDate, meetingTime, offeredListingId }) {
+    async createRequest({
+      listingId,
+      publicLocation,
+      meetingDate,
+      meetingTime,
+      offeredListingId,
+      meetingPoint,
+    }) {
       const now = nowIso();
       const created: BookRequest = {
         id: uid(),
@@ -60,6 +67,7 @@ export function createMemoryBookRequestRepository(
         requesterId: options?.currentUserId ?? 'requester-user',
         offeredListingId: offeredListingId ?? null,
         publicLocation,
+        ...(meetingPoint !== undefined ? { meetingPoint } : {}),
         meetingDate,
         meetingTime,
         status: 'pending',
@@ -123,7 +131,7 @@ export function createMemoryBookRequestRepository(
       return items[index];
     },
 
-    async reschedule(id, { publicLocation, meetingDate, meetingTime }) {
+    async reschedule(id, { publicLocation, meetingDate, meetingTime, meetingPoint }) {
       const index = findIndex(id);
       if (index < 0) throw new BookRequestError('not_found');
       const current = items[index];
@@ -132,6 +140,7 @@ export function createMemoryBookRequestRepository(
       items[index] = {
         ...current,
         publicLocation: publicLocation.trim(),
+        meetingPoint: meetingPoint ?? null,
         meetingDate,
         meetingTime,
         updatedAt: nowIso(),
@@ -139,7 +148,7 @@ export function createMemoryBookRequestRepository(
       return items[index];
     },
 
-    async proposeMeeting(id, { publicLocation, meetingDate, meetingTime }) {
+    async proposeMeeting(id, { publicLocation, meetingDate, meetingTime, meetingPoint }) {
       const index = findIndex(id);
       if (index < 0) throw new BookRequestError('not_found');
       const current = items[index];
@@ -150,6 +159,7 @@ export function createMemoryBookRequestRepository(
       items[index] = {
         ...current,
         publicLocation: publicLocation.trim(),
+        meetingPoint: meetingPoint ?? null,
         meetingDate,
         meetingTime,
         updatedAt: nowIso(),

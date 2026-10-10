@@ -1,3 +1,4 @@
+import { MeetingPointPreview } from '../../components/maps/MeetingPointPreview';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
@@ -203,6 +204,14 @@ export function ListingDetailScreen() {
             </Text>
           </View>
         </View>
+        {listing.meetingPoint ? (
+          <View style={styles.titleBlock}>
+            <Text
+              style={styles.noteText}
+            >{`Ponto público sugerido: ${listing.meetingPoint.name}`}</Text>
+            <MeetingPointPreview point={listing.meetingPoint} />
+          </View>
+        ) : null}
         {listing.status === 'reservado' && (
           <View style={styles.reserved}>
             <StatusBadge variant="reserved" />
@@ -466,11 +475,13 @@ const styles = StyleSheet.create({
   // respondem ao toque.
   separator: { height: StyleSheet.hairlineWidth, backgroundColor: colors.outlineVariant },
   noteText: { ...typography.labelMedium, color: colors.onSurfaceVariant },
-  // Barra fixa da ação principal (Figma: 80 de altura sobre o container baixo).
+  // Barra fixa da ação principal (integrada à superfície com divisor sutil).
   actionBar: {
     gap: spacing.xs,
     paddingHorizontal: metrics.pagePadding,
     paddingVertical: spacing.md,
-    backgroundColor: colors.containerLow,
+    backgroundColor: colors.surface,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.outlineVariant,
   },
 });

@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { BookRequest } from '../../../model/entities/BookRequest';
 import { meetingWhen } from '../../../model/services/bookRequestFormat';
 import { colors, spacing, typography } from '../../theme/nativeTheme';
+import { MeetingPointPreview } from '../maps/MeetingPointPreview';
 import { AppIcon } from '../AppIcon';
 
 /** Resumo do encontro (Figma 06.05): dia e horário, depois o local, cada um com seu ícone. */
@@ -9,7 +10,7 @@ export function MeetingCard({
   request,
   highlighted = false,
 }: {
-  request: Pick<BookRequest, 'publicLocation' | 'meetingDate' | 'meetingTime'>;
+  request: Pick<BookRequest, 'publicLocation' | 'meetingDate' | 'meetingTime' | 'meetingPoint'>;
   /** Encontro já combinado: fundo verde claro, como no Figma 06.06. */
   highlighted?: boolean;
 }) {
@@ -29,6 +30,7 @@ export function MeetingCard({
           <Text style={styles.body}>Local público combinado</Text>
         </View>
       </View>
+      <MeetingPointPreview point={request.meetingPoint} />
     </View>
   );
 }

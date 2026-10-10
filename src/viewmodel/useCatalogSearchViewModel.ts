@@ -25,6 +25,7 @@ export function useCatalogSearchViewModel(
   options: { initialModality?: Modality | null; debounceMs?: number } = {},
 ) {
   const { initialModality = null, debounceMs = SEARCH_DEBOUNCE_MS } = options;
+  const [mapMode, setMapMode] = useState(false);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [modalities, setModalities] = useState<Modality[]>(
@@ -42,8 +43,15 @@ export function useCatalogSearchViewModel(
   }, [query, appliedQuery, debounceMs]);
 
   const filters = useMemo<CatalogFilters>(
-    () => ({ query: appliedQuery, modalities, category, conditions, maxPriceCents }),
-    [appliedQuery, modalities, category, conditions, maxPriceCents],
+    () => ({
+      query: appliedQuery,
+      modalities,
+      category,
+      conditions,
+      maxPriceCents,
+      ...(mapMode ? { meetingPointsOnly: true } : {}),
+    }),
+    [appliedQuery, modalities, category, conditions, maxPriceCents, mapMode],
   );
   const pages = useCatalogPages(repository, filters);
   const empty = pages.status === 'ready' && pages.items.length === 0;
@@ -59,6 +67,8 @@ export function useCatalogSearchViewModel(
 
   return {
     ...pages,
+    mapMode,
+    setMapMode,
     query,
     setQuery,
     modalities,

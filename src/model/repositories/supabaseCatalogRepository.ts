@@ -1,3 +1,4 @@
+import { readMeetingPoint } from '../services/meetingPoints.ts';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { CatalogError } from '../entities/CatalogError.ts';
 import type { Listing } from '../entities/Listing';
@@ -12,10 +13,10 @@ export const CATALOG_VIEW = 'catalog_listings';
 export const COVERS_BUCKET = 'listing-covers';
 
 const viewColumns =
-  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_first_name,created_at';
+  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_first_name,created_at,meeting_point';
 /** A tabela não tem `owner_first_name` (só a view tem); o nome vem de `listing_owner_first_name`. */
 const tableColumns =
-  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_id,created_at';
+  'id,title,author,category,modality,price_cents,trade_terms,condition,neighborhood,city,description,cover_path,status,owner_id,created_at,meeting_point';
 
 type Row = {
   id: string;
@@ -34,13 +35,15 @@ type Row = {
   owner_id?: string | null;
   owner_first_name?: string | null;
   created_at: string;
+  meeting_point?: unknown;
 };
 
 export function mapSupabaseCatalogError(error: unknown): CatalogError {
   if (error instanceof CatalogError) return error;
   const { code, message } = (error ?? {}) as { code?: string; message?: string };
   // PGRST205/42P01: a view do ADR 0008 ainda não foi criada neste projeto.
-  if (code === 'PGRST205' || code === '42P01') return new CatalogError('not_configured', error);
+  if (code === 'PGRST205' || code === '42P01' || code === '42703' || code === 'PGRST204')
+    return new CatalogError('not_configured', error);
   // 22P02: texto que não é UUID na rota de detalhe; PGRST116: nenhuma linha.
   if (code === '22P02' || code === 'PGRST116') return new CatalogError('not_found', error);
   if (/fetch|network/i.test(message ?? '')) return new CatalogError('network', error);
@@ -70,6 +73,7 @@ export function createSupabaseCatalogRepository(
     neighborhood: row.neighborhood,
     city: row.city,
     description: row.description,
+    meetingPoint: readMeetingPoint(row.meeting_point),
     coverUrl: row.cover_path
       ? supabase.storage.from(COVERS_BUCKET).getPublicUrl(row.cover_path).data.publicUrl
       : null,
@@ -87,6 +91,8 @@ export function createSupabaseCatalogRepository(
       let request = supabase
         .from(CATALOG_VIEW)
         .select(viewColumns, cursor ? undefined : { count: 'exact' });
+      if (filters.meetingPointsOnly)
+        request = request.not('meeting_point', 'is', null).eq('status', 'disponivel');
       if (query) {
         const pattern = quoted(toLikePattern(query));
         request = request.or(

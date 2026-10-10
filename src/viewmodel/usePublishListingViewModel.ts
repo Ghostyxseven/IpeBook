@@ -13,8 +13,7 @@ import { missingFields } from '../model/services/draftSummary.ts';
 import { useAsyncAction } from './useAsyncAction.ts';
 import {
   emptyDraft,
-  validateBookStep,
-  validateModalityStep,
+  validateDraft,
   type ListingErrors,
 } from '../model/services/listingValidation.ts';
 import { useListingForm } from './useListingForm.ts';
@@ -30,7 +29,7 @@ export type PublishStep = (typeof publishSteps)[number];
 const fieldsOf: Record<PublishStep, readonly (keyof ListingErrors)[]> = {
   livro: ['title', 'author', 'modality', 'priceCents', 'tradeTerms'],
   fotos: [],
-  detalhes: ['category', 'condition'],
+  detalhes: ['category', 'condition', 'meetingPoint'],
 };
 
 /** A foto escolhida: os bytes que vão subir e o endereço local só para mostrar. */
@@ -69,10 +68,7 @@ export function usePublishListingViewModel(
   const { draft } = form;
 
   // A validação é a mesma da edição; aqui só é reagrupada pelas etapas do Figma.
-  const allErrors = useMemo<ListingErrors>(
-    () => ({ ...validateBookStep(draft), ...validateModalityStep(draft) }),
-    [draft],
-  );
+  const allErrors = useMemo<ListingErrors>(() => validateDraft(draft), [draft]);
 
   const rawErrorsOf = useCallback(
     (target: PublishStep): ListingErrors =>

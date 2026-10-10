@@ -22,6 +22,7 @@ const draftOf = (listing: MyListing): ListingDraft => ({
   neighborhood: listing.neighborhood,
   city: listing.city,
   description: listing.description,
+  meetingPoint: listing.meetingPoint ?? null,
 });
 
 /** Editar um anúncio: o mesmo formulário, já preenchido (spec 025, Figma 38 e 40). */

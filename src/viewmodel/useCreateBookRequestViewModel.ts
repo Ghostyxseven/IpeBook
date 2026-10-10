@@ -1,3 +1,4 @@
+import { useMeetingLocation } from './useMeetingLocation.ts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { BookRequestRepository } from '../model/repositories/BookRequestRepository';
 import { BookRequestError, toBookRequestError } from '../model/entities/BookRequestError.ts';
@@ -33,7 +34,8 @@ export function useCreateBookRequestViewModel(
   const [submitted, setSubmitted] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const [publicLocation, setPublicLocation] = useState('');
+  const { publicLocation, setPublicLocation, meetingPoint, chooseMeetingPoint } =
+    useMeetingLocation();
   const [meetingDate, setMeetingDate] = useState('');
   const [meetingTime, setMeetingTime] = useState('');
 
@@ -49,6 +51,7 @@ export function useCreateBookRequestViewModel(
     try {
       const found = await catalogRepository.getById(listingId);
       setListing(found);
+      chooseMeetingPoint(found.meetingPoint ?? null);
       if (found.modality !== 'trade' || !listingsRepository) {
         setStep('meeting');
         setOfferStatus('ready');
@@ -64,7 +67,7 @@ export function useCreateBookRequestViewModel(
       // Sem a lista, quem pede pode tentar de novo; o envio confere o anúncio outra vez.
       setOfferStatus('error');
     }
-  }, [catalogRepository, listingsRepository, listingId]);
+  }, [catalogRepository, listingsRepository, listingId, chooseMeetingPoint]);
 
   useEffect(() => {
     void loadOffer();
@@ -116,6 +119,7 @@ export function useCreateBookRequestViewModel(
         const created = await bookRequestRepository.createRequest({
           listingId,
           publicLocation: publicLocation.trim(),
+          meetingPoint,
           meetingDate,
           meetingTime,
           offeredListingId: needsOffer ? offeredListingId : null,
@@ -140,6 +144,7 @@ export function useCreateBookRequestViewModel(
     bookRequestRepository,
     listingId,
     publicLocation,
+    meetingPoint,
     meetingDate,
     meetingTime,
     needsOffer,
@@ -162,6 +167,8 @@ export function useCreateBookRequestViewModel(
     // Estado do formulário
     publicLocation,
     setPublicLocation,
+    meetingPoint,
+    chooseMeetingPoint,
     meetingDate,
     setMeetingDate,
     meetingTime,

@@ -1,9 +1,17 @@
 import type { ListingCondition, ListingDraft, Modality } from '../entities/Listing';
+import { validMeetingPoint, readMeetingPoint } from './meetingPoints.ts';
 import { isCategory } from './categories.ts';
 
 /** Os campos que podem receber uma mensagem de erro no formulário. */
 export type ListingField =
-  'title' | 'author' | 'category' | 'condition' | 'modality' | 'priceCents' | 'tradeTerms';
+  | 'title'
+  | 'author'
+  | 'category'
+  | 'condition'
+  | 'modality'
+  | 'priceCents'
+  | 'tradeTerms'
+  | 'meetingPoint';
 
 /** O IpêBook atende só Piripiri (ADR 0020): a cidade não é pedida no formulário. */
 export const SERVED_CITY = 'Piripiri';
@@ -91,7 +99,13 @@ export function validateModalityStep(
 
 /** O rascunho inteiro, como última conferência antes de gravar. */
 export function validateDraft(draft: ListingDraft): ListingErrors {
-  return { ...validateBookStep(draft), ...validateModalityStep(draft) };
+  return {
+    ...validateBookStep(draft),
+    ...validateModalityStep(draft),
+    ...(draft.meetingPoint != null && !validMeetingPoint(draft.meetingPoint)
+      ? { meetingPoint: 'Escolha um ponto válido e informe o nome do local público.' }
+      : {}),
+  };
 }
 
 export function isValid(errors: ListingErrors): boolean {
@@ -113,6 +127,9 @@ export function normalizeDraft(draft: ListingDraft): ListingDraft {
   };
   return {
     ...draft,
+    ...(draft.meetingPoint != null && validMeetingPoint(draft.meetingPoint)
+      ? { meetingPoint: readMeetingPoint(draft.meetingPoint) }
+      : {}),
     title: draft.title.trim(),
     author: draft.author.trim(),
     category: draft.category.trim(),

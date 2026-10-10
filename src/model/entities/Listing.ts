@@ -1,3 +1,5 @@
+import type { MeetingPoint } from './MeetingPoint';
+
 /** Modalidades do anúncio (ADR 0008). Os rótulos em português ficam em `catalogFormat`. */
 export type Modality = 'sale' | 'trade' | 'donation';
 
@@ -22,6 +24,8 @@ export type Listing = {
   neighborhood: string | null;
   city: string | null;
   description: string | null;
+  /** Ponto público opcional declarado por quem anuncia. */
+  meetingPoint?: MeetingPoint | null;
   coverUrl: string | null;
   status: ListingStatus;
   ownerId: string | null;
@@ -32,6 +36,7 @@ export type Listing = {
 
 export type CatalogFilters = {
   query: string;
+  meetingPointsOnly?: boolean;
   modalities: Modality[];
   category: string | null;
   /** Conservações aceitas (Figma 02.03). Lista vazia aceita todas. */
@@ -86,6 +91,8 @@ export type ListingDraft = {
   neighborhood: string | null;
   city: string | null;
   description: string | null;
+  /** Ponto público opcional declarado por quem anuncia. */
+  meetingPoint?: MeetingPoint | null;
 };
 
 /** Situações em que o anúncio ainda é do dono para mexer. */

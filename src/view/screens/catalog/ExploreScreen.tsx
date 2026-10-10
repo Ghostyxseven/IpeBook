@@ -11,6 +11,7 @@ import { categories } from '../../../model/services/categories';
 import { useCatalogSearch } from '../../../factories/catalog';
 import { useFavorites } from '../../../factories/favorites';
 import { AppIcon } from '../../components/AppIcon';
+import { BooksMap } from '../../components/maps/BooksMap';
 import { CatalogList } from '../../components/catalog/CatalogList';
 import { FilterModal } from '../../components/catalog/FilterModal';
 import { ModalityChip } from '../../components/catalog/ModalityChip';
@@ -89,6 +90,11 @@ export function ExploreScreen() {
         </>
       )}
       <SearchBarInput value={vm.query} onChangeText={vm.setQuery} />
+      <Button
+        label={vm.mapMode ? 'Ver livros na lista' : 'Ver livros no mapa'}
+        variant="secondary"
+        onPress={() => vm.setMapMode(!vm.mapMode)}
+      />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -202,30 +208,58 @@ export function ExploreScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
-      <CatalogList
-        items={vm.status === 'loading' ? [] : vm.items}
-        header={header}
-        empty={empty}
-        isFavorite={favorites.isFavorite}
-        onToggleFavorite={favorites.toggle}
-        footer={
-          vm.searching && vm.items.length > 0 && !vm.hasMore ? (
-            <View style={styles.footer}>
-              <Button
-                label={vm.activeFilterCount > 1 ? 'Limpar filtros' : 'Limpar filtro'}
-                variant="text"
-                onPress={vm.clear}
-              />
-            </View>
-          ) : null
-        }
-        refreshing={vm.refreshing}
-        loadingMore={vm.loadingMore}
-        loadMoreError={vm.loadMoreError}
-        onRefresh={vm.refresh}
-        onEndReached={vm.loadMore}
-        onOpen={(id) => router.push({ pathname: '/livro/[id]', params: { id } })}
-      />
+      {vm.mapMode ? (
+        <ScrollView contentContainerStyle={styles.mapContent}>
+          {header}
+          {vm.status === 'loading' || vm.status === 'error' ? (
+            empty
+          ) : (
+            <BooksMap
+              items={vm.items}
+              onOpen={(id) => router.push({ pathname: '/livro/[id]', params: { id } })}
+            />
+          )}
+          {vm.loadMoreError ? <FormMessage tone="error" message={vm.loadMoreError} /> : null}
+          {vm.hasMore ? (
+            <Button
+              label="Carregar mais livros no mapa"
+              loading={vm.loadingMore}
+              onPress={vm.loadMore}
+            />
+          ) : null}
+          <Button
+            label="Atualizar livros"
+            variant="text"
+            loading={vm.refreshing}
+            onPress={vm.refresh}
+          />
+        </ScrollView>
+      ) : (
+        <CatalogList
+          items={vm.status === 'loading' ? [] : vm.items}
+          header={header}
+          empty={empty}
+          isFavorite={favorites.isFavorite}
+          onToggleFavorite={favorites.toggle}
+          footer={
+            vm.searching && vm.items.length > 0 && !vm.hasMore ? (
+              <View style={styles.footer}>
+                <Button
+                  label={vm.activeFilterCount > 1 ? 'Limpar filtros' : 'Limpar filtro'}
+                  variant="text"
+                  onPress={vm.clear}
+                />
+              </View>
+            ) : null
+          }
+          refreshing={vm.refreshing}
+          loadingMore={vm.loadingMore}
+          loadMoreError={vm.loadMoreError}
+          onRefresh={vm.refresh}
+          onEndReached={vm.loadMore}
+          onOpen={(id) => router.push({ pathname: '/livro/[id]', params: { id } })}
+        />
+      )}
       <FilterModal
         visible={filtering}
         initial={applied}
@@ -241,6 +275,7 @@ export function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
+  mapContent: { padding: metrics.pagePadding, gap: spacing.md },
   safe: { flex: 1, backgroundColor: colors.surface },
   // O título e a busca ficam na margem da página; os cards da lista, mais perto da borda (Figma).
   header: {
