@@ -60,6 +60,9 @@ export function MapSurface({ config, data, onEvent }: MapSurfaceProps) {
       // (ex.: o seletor de ponto). TextureView respeita o layout, mas é mais lento
       // para arrastar — por isso só entra quando o mapa está dentro de algo rolável.
       surfaceView={!config.scrollable}
+      // Sem isso, o mapa nunca ganha a prioridade do gesto: o ScrollView/FlatList
+      // em volta sempre intercepta o arrasto antes de chegar no mapa.
+      requestDisallowInterceptTouchEvent
       onDidFinishLoadingMap={() => onEvent({ type: 'ready' })}
       onMapLoadingError={() => onEvent({ type: 'error' })}
       onPress={handlePress}
