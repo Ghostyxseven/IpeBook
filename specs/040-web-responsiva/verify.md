@@ -9,7 +9,7 @@
 - `npm run verify`: passou (typecheck, lint, formatação e 41 arquivos de testes, sem falhas).
 - `npm run build:web`: passou; exportou a apresentação em `dist/` e o aplicativo em `dist/app/`.
 - `git diff --check`: passou.
-- Chromium headless, sem Playwright, com a exportação local: cadastro em 1440 × 900 mostra composição em duas colunas; em 393 × 852 mantém a composição compacta e rolagem vertical. A tela inicial em 1440 × 900 também ocupa duas colunas. Capturas temporárias: `/tmp/ipebook-cadastro-1440.png`, `/tmp/ipebook-cadastro-393.png` e `/tmp/ipebook-web-1440.png`.
+- Chromium headless, sem Playwright, com a exportação local: cadastro em 1440 × 900 mostra composição em duas colunas; em 393 × 852 mantém a composição compacta e rolagem vertical. A tela inicial em 1440 × 900 também ocupa duas colunas. Capturas do cadastro: [desktop](assets/cadastro-desktop.png) e [celular](assets/cadastro-celular.png).
 
 ## Limites da verificação
 
